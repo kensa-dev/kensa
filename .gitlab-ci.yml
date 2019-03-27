@@ -1,4 +1,4 @@
-image: 11.0.2-jdk-slim-stretch
+image: openjdk:11.0.2-jdk-slim-stretch
 
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
