@@ -8,9 +8,9 @@ import static java.util.Arrays.asList;
 
 public final class Dictionary {
 
-    private static final List<String> ONE_LETTER_WORDS = List.of("A", "a", "I");
+    private static final List<String> ONE_LETTER_WORDS = asList("A", "a", "I");
     private static final List<String> ACRONYMS = new ArrayList<>();
-    private static final List<String> KEYWORDS = new ArrayList<>(List.of("given", "when", "then", "and"));
+    private static final List<String> KEYWORDS = asList("given", "when", "then", "and");
 
     public static void putAcronym(String value) {
         if(value.length() < 2) {

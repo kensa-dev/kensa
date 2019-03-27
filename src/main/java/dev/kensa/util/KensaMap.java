@@ -7,14 +7,14 @@ import static dev.kensa.util.Attributes.emptyAttributes;
 import static java.util.Collections.synchronizedMap;
 
 @SuppressWarnings({"unchecked", "WeakerAccess"})
-public class KensaMap<M extends KensaMap> {
+public class KensaMap<M extends KensaMap<M>> {
 
     private final Map<String, Entry> values = synchronizedMap(new LinkedHashMap<>());
 
     public M put(Object value) {
         Objects.requireNonNull(value);
 
-        var key = defaultKeyFor(value);
+        String key = defaultKeyFor(value);
         values.put(key, new Entry(key, value));
 
         return self();
@@ -41,7 +41,7 @@ public class KensaMap<M extends KensaMap> {
     }
 
     public <T> T get(String key, Class<T> clazz) {
-        var entry = values.get(key);
+        Entry entry = values.get(key);
         if (entry == null) {
             return null;
         }
@@ -65,8 +65,8 @@ public class KensaMap<M extends KensaMap> {
     }
 
     private String keyFrom(String value) {
-        var index = 1;
-        var key = value;
+        int index = 1;
+        String key = value;
 
         while (values.containsKey(key)) {
             key = value + " " + index++;

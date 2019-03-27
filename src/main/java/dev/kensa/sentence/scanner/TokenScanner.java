@@ -26,7 +26,7 @@ public class TokenScanner {
     private void scanForWords(String string, Indices indices) {
         Set<Index> wordList = new HashSet<>();
 
-        var lastIndexEnd = 0;
+        int lastIndexEnd = 0;
         for (Index thisIndex : indices) {
             if (lastIndexEnd < thisIndex.start() - 1) {
                 splitIntoWords(wordList, string.substring(lastIndexEnd, thisIndex.start()), lastIndexEnd);

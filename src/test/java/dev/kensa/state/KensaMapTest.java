@@ -86,7 +86,7 @@ class KensaMapTest {
         assertThat(result).isEqualTo(values);
     }
 
-    private static Stream<? extends KensaMap> mapInstances() {
+    private static Stream<? extends KensaMap<?>> mapInstances() {
         return Stream.of(
                 new Givens(),
                 new CapturedInteractions()

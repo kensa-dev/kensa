@@ -5,16 +5,19 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
+
 public class Attributes implements Iterable<NameValuePair> {
 
-    private static final Attributes EMPTY_ATTRIBUTES = new Attributes(Set.of());
+    private static final Attributes EMPTY_ATTRIBUTES = new Attributes(emptySet());
 
     static Attributes emptyAttributes() {
         return EMPTY_ATTRIBUTES;
     }
 
     public static Attributes of(String name, String value) {
-        return of(Set.of(new NameValuePair(name, value)));
+        return of(new NameValuePair(name, value));
     }
 
     public static Attributes of(String name1, String value1, String name2, String value2) {
@@ -37,7 +40,7 @@ public class Attributes implements Iterable<NameValuePair> {
     }
 
     public static Attributes of(NameValuePair... attributes) {
-        return new Attributes(new LinkedHashSet<>(Set.of(attributes)));
+        return new Attributes(new LinkedHashSet<>(asList(attributes)));
     }
 
     private final Set<NameValuePair> attributes;

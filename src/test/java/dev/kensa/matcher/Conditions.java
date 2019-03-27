@@ -43,7 +43,7 @@ public final class Conditions {
         return String.join(" ", camelCasedWords.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])"));
     }
 
-    private static String unCamel(Class c) {
+    private static String unCamel(Class<?> c) {
         return unCamel(c.getSimpleName());
     }
 

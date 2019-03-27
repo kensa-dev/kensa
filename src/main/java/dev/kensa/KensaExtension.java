@@ -4,12 +4,14 @@ import dev.kensa.context.TestContainer;
 import dev.kensa.context.TestContainerFactory;
 import dev.kensa.context.TestContext;
 import dev.kensa.output.ResultWriter;
+import dev.kensa.parse.MethodParser;
 import dev.kensa.parse.MethodParserFactory;
 import dev.kensa.render.diagram.SequenceDiagramFactory;
 import dev.kensa.sentence.Dictionary;
 import dev.kensa.state.CapturedInteractions;
 import dev.kensa.state.Givens;
 import dev.kensa.state.TestInvocation;
+import dev.kensa.state.TestInvocationData;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor;
 
@@ -44,10 +46,10 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        var executionContext = bindToRootContextOf(context);
+        KensaExecutionContext executionContext = bindToRootContextOf(context);
 
-        var store = context.getStore(KENSA);
-        var container = testContainerFactory.createFor(context);
+        ExtensionContext.Store store = context.getStore(KENSA);
+        TestContainer container = testContainerFactory.createFor(context);
 
         store.put(TEST_CONTAINER_KEY, container);
         executionContext.register(container);
@@ -55,11 +57,11 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
 
     @Override
     public void beforeTestExecution(ExtensionContext context) {
-        var store = context.getStore(KENSA);
+        ExtensionContext.Store store = context.getStore(KENSA);
         store.put(TEST_START_TIME_KEY, System.currentTimeMillis());
-        var givens = new Givens();
-        var interactions = new CapturedInteractions();
-        var testContext = new TestContext(givens, interactions);
+        Givens givens = new Givens();
+        CapturedInteractions interactions = new CapturedInteractions();
+        TestContext testContext = new TestContext(givens, interactions);
         store.put(TEST_GIVENS_KEY, givens);
         store.put(TEST_INTERACTIONS_KEY, interactions);
         store.put(TEST_CONTEXT_KEY, testContext);
@@ -67,25 +69,25 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
         bindTestContextToThread(testContext);
 
         // Workaround for JUnit5 argument access
-        var testDescriptor = getTestDescriptor(context);
-        var arguments = getArguments(testDescriptor);
+        TestMethodTestDescriptor testDescriptor = getTestDescriptor(context);
+        Object[] arguments = getArguments(testDescriptor);
         processTestMethodArguments(context, arguments);
     }
 
     @Override
     public void afterTestExecution(ExtensionContext context) {
         try {
-            var endTime = System.currentTimeMillis();
+            long endTime = System.currentTimeMillis();
 
-            var store = context.getStore(KENSA);
-            var startTime = store.get(TEST_START_TIME_KEY, Long.class);
+            ExtensionContext.Store store = context.getStore(KENSA);
+            Long startTime = store.get(TEST_START_TIME_KEY, Long.class);
 
-            var testContainer = store.get(TEST_CONTAINER_KEY, TestContainer.class);
-            var methodParserFactory = store.get(TEST_PARSER_FACTORY_KEY, MethodParserFactory.class);
-            var arguments = store.get(TEST_ARGUMENTS_KEY, Object[].class);
-            var invocationData = testContainer.invocationDataFor(context.getRequiredTestMethod());
-            var parser = methodParserFactory.createFor(arguments);
-            var interactions = store.get(TEST_INTERACTIONS_KEY, CapturedInteractions.class);
+            TestContainer testContainer = store.get(TEST_CONTAINER_KEY, TestContainer.class);
+            MethodParserFactory methodParserFactory = store.get(TEST_PARSER_FACTORY_KEY, MethodParserFactory.class);
+            Object[] arguments = store.get(TEST_ARGUMENTS_KEY, Object[].class);
+            TestInvocationData invocationData = testContainer.invocationDataFor(context.getRequiredTestMethod());
+            MethodParser parser = methodParserFactory.createFor(arguments);
+            CapturedInteractions interactions = store.get(TEST_INTERACTIONS_KEY, CapturedInteractions.class);
 
             invocationData.add(
                     new TestInvocation(
@@ -109,7 +111,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
     // TODO:: https://github.com/junit-team/junit5/issues/1139
     @SuppressWarnings("WeakerAccess")
     public void processTestMethodArguments(ExtensionContext context, Object[] arguments) {
-        var store = context.getStore(KENSA);
+        ExtensionContext.Store store = context.getStore(KENSA);
         store.put(TEST_ARGUMENTS_KEY, arguments);
     }
 
@@ -155,7 +157,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
     // Add the KensaExecutionContext to the store so we can hook up the close method to be executed when the
     // whole test run is complete
     private synchronized KensaExecutionContext bindToRootContextOf(ExtensionContext context) {
-        var store = context.getRoot().getStore(KENSA);
+        ExtensionContext.Store store = context.getRoot().getStore(KENSA);
 
         return store.getOrComputeIfAbsent(KENSA_EXECUTION_CONTEXT_KEY, EXECUTION_CONTEXT_FACTORY, KensaExecutionContext.class);
     }

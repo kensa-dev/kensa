@@ -17,6 +17,7 @@ import dev.kensa.util.NameValuePair;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static dev.kensa.parse.SentenceCollector.asSentences;
 import static java.util.stream.Collectors.toList;
@@ -33,9 +34,11 @@ public class MethodParser {
 
     public Sentences sentences() {
         return methodDeclaration.getBody()
-                                .map(BlockStmt::getStatements).stream().flatMap(Collection::stream)
-                                .map(this::toSentence)
-                                .collect(asSentences());
+                         .map(BlockStmt::getStatements)
+                         .map(Collection::stream)
+                         .orElse(Stream.empty())
+                         .map(this::toSentence)
+                         .collect(asSentences());
     }
 
     public List<NameValuePair> parameters() {
@@ -43,7 +46,7 @@ public class MethodParser {
     }
 
     private List<NameValuePair> parameterDescriptorsFrom(NodeList<Parameter> parameters, Object[] parameterValues) {
-        var index = new AtomicInteger();
+        AtomicInteger index = new AtomicInteger();
         return parameters.stream()
                          .map(parameter -> {
                              String name = parameter.getNameAsString();

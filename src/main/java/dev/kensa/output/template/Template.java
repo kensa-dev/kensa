@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -50,8 +51,12 @@ public class Template {
     }
 
     public void write() {
-        write(Map.of("scripts", scripts, "indices", indices, "mode", mode.name()));
-        scripts.clear();
+        Map<String, Object> context = new HashMap<>();
+        context.put("scripts", scripts);
+        context.put("indices", indices);
+        context.put("mode", mode.name());
+        write(context);
+        this.scripts.clear();
         indices.clear();
     }
 

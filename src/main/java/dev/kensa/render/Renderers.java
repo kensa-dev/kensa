@@ -26,7 +26,7 @@ public final class Renderers {
                         .orElse(objectRenderer());
     }
 
-    public Renderer rendererFor(KensaMap.Entry entry) {
+    public Renderer<?> rendererFor(KensaMap.Entry entry) {
         return rendererFor(entry.value().getClass());
     }
 

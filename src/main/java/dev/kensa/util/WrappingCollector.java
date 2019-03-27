@@ -26,7 +26,11 @@ public final class WrappingCollector<T> implements Collector<T, List<T>, List<T>
 
     @Override
     public Supplier<List<T>> supplier() {
-        return () -> new ArrayList<>(List.of(start));
+        return () -> {
+            List<T> ts = new ArrayList<>();
+            ts.add(start);
+            return ts;
+        };
     }
 
     @Override

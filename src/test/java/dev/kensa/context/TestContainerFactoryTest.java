@@ -9,8 +9,8 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class TestContainerFactoryTest {
 
@@ -24,10 +24,9 @@ class TestContainerFactoryTest {
         factory = new TestContainerFactory();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void createsTestContainerWithPredictableIterationOrderOfInvocationData() {
-        Class testClass = TestClass.class;
+        Class<?> testClass = TestClass.class;
         List<String> expected = List.of(
                 "test1",
                 "test2",
@@ -37,7 +36,7 @@ class TestContainerFactoryTest {
                 "parameterizedTest2"
         );
 
-        when(extensionContext.getRequiredTestClass()).thenReturn(testClass);
+        doReturn(testClass).when(extensionContext).getRequiredTestClass();
 
         TestContainer result = factory.createFor(extensionContext);
         assertThat(result.invocationData().collect(toList())).extracting("displayName").isEqualTo(expected);

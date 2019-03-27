@@ -26,7 +26,7 @@ public class SourceCodeIndex {
         if(s > 0) {
             name = name.substring(0, s);
         }
-        var walker = new Walker(name);
+        Walker walker = new Walker(name);
         try {
             Files.walkFileTree(workingDirectory, walker);
         } catch (IOException e) {

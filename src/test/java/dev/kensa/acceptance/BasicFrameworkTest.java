@@ -14,10 +14,10 @@ class BasicFrameworkTest extends KensaAcceptanceTest {
 
     @Test
     void createsOutputFilesWhenMultipleTestClassesExecuted() {
-        Class[] testClasses = {TestWithSinglePassingTest.class, TestWithMultiplePassingTests.class};
+        Class<?>[] testClasses = {TestWithSinglePassingTest.class, TestWithMultiplePassingTests.class};
         executeTests(testClasses);
 
-        for (Class testClass : testClasses) {
+        for (Class<?> testClass : testClasses) {
             Path outputFilePath = kensaOutputDir.resolve(testClass.getName() + ".html");
             assertThat(Files.exists(outputFilePath))
                     .withFailMessage("Expected file [%s] to exist.", outputFilePath)

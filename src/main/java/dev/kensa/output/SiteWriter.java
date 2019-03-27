@@ -4,6 +4,7 @@ import com.eclipsesource.json.JsonValue;
 import dev.kensa.Kensa;
 import dev.kensa.KensaException;
 import dev.kensa.context.TestContainer;
+import dev.kensa.output.template.Template;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,10 +23,10 @@ public class SiteWriter implements BiConsumer<List<TestContainer>, Kensa.Configu
 
     @Override
     public void accept(List<TestContainer> containers, Kensa.Configuration configuration) {
-        var indexTemplate = configuration.createTemplate("index.html", Site);
+        Template indexTemplate = configuration.createTemplate("index.html", Site);
 
-        for (var container : containers) {
-            var path = configuration.outputDir().resolve(container.getClass().getName() + ".json");
+        for (TestContainer container : containers) {
+            Path path = configuration.outputDir().resolve(container.getClass().getName() + ".json");
             writeToFile(path).accept(container.transform(toJsonWith(configuration.renderers())));
 
             indexTemplate.addIndex(container, asIndex());

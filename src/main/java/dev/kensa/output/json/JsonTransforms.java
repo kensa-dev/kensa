@@ -3,6 +3,7 @@ package dev.kensa.output.json;
 import com.eclipsesource.json.*;
 import dev.kensa.KensaException;
 import dev.kensa.context.TestContainer;
+import dev.kensa.render.Renderer;
 import dev.kensa.render.Renderers;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.state.TestInvocation;
@@ -58,7 +59,7 @@ public final class JsonTransforms {
     public static Function<JsonValue, String> toJsonString() {
         return jv -> {
             try {
-                var stringWriter = new StringWriter();
+                StringWriter stringWriter = new StringWriter();
                 jv.writeTo(stringWriter, WriterConfig.MINIMAL);
                 return stringWriter.toString();
             } catch (IOException e) {
@@ -87,7 +88,7 @@ public final class JsonTransforms {
     @SuppressWarnings("unchecked")
     private static Function<KensaMap.Entry, JsonValue> entryAsJson(Renderers renderers) {
         return entry -> {
-            var renderer = renderers.rendererFor(entry);
+            Renderer renderer = renderers.rendererFor(entry);
 
             return Json.object()
                        .add("name", entry.key())

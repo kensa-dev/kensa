@@ -7,13 +7,14 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static dev.kensa.render.diagram.svg.Patterns.MESSAGE_KEY;
+import static java.util.Arrays.asList;
 
 public class SvgCompatiblePredicate implements Predicate<KensaMap.Entry> {
     public static Predicate<KensaMap.Entry> isSvgCompatible() {
         return new SvgCompatiblePredicate();
     }
 
-    private final static List<Pattern> valuePatterns = List.of(
+    private final static List<Pattern> valuePatterns = asList(
             Pattern.compile("^\\.\\.\\..*\\.\\.\\.$"),
             Pattern.compile("^==.*==$")
     );

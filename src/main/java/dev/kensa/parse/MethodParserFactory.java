@@ -1,6 +1,7 @@
 package dev.kensa.parse;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import dev.kensa.KensaException;
 import dev.kensa.util.SourceCodeIndex;
@@ -15,10 +16,10 @@ public class MethodParserFactory {
 
     public MethodParserFactory(Method method) {
         try {
-            var clazz = method.getDeclaringClass();
-            var criteria = new MethodCriteria(method.getName(), method.getParameterTypes());
+            Class<?> clazz = method.getDeclaringClass();
+            MethodCriteria criteria = new MethodCriteria(method.getName(), method.getParameterTypes());
 
-            var cu = JavaParser.parse(sourcePathFor(clazz));
+            CompilationUnit cu = JavaParser.parse(sourcePathFor(clazz));
             declaration = cu.accept(new SimpleMethodMatchingVisitor(), criteria);
         } catch (IOException e) {
             throw new KensaException("Unable to create MethodParserFactory", e);

@@ -11,7 +11,6 @@ buildscript {
 
 plugins {
     `java-library`
-    java
     `maven-publish`
     id("com.moowork.node") version "1.3.1"
 }
@@ -20,9 +19,28 @@ repositories {
     mavenCentral()
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+val mainJavaVersion by extra(JavaVersion.VERSION_1_8)
+val testJavaVersion by extra(JavaVersion.VERSION_11)
+
+afterEvaluate {
+    tasks {
+        compileJava {
+            options.compilerArgs.addAll(
+                    listOf("--release", mainJavaVersion.majorVersion)
+            )
+        }
+        compileTestJava {
+            options.encoding = "UTF-8"
+            sourceCompatibility = testJavaVersion.majorVersion
+            targetCompatibility = testJavaVersion.majorVersion
+
+            options.compilerArgs.addAll(listOf(
+                    "-Xlint", // Enables all recommended warnings.
+                    "-Xlint:-overrides", // Disables "method overrides" warnings.
+                    "-parameters" // Generates metadata for reflection on method parameters.
+            ))
+        }
+    }
 }
 
 tasks.test {
