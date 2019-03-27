@@ -1,0 +1,43 @@
+{
+  "name": "kensa-ui",
+  "version": "1.0.0",
+  "description": "Simple ReactJS App for displaying Kensa test results",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack -p --progress --mode production",
+    "build-dev": "webpack -p --progress --mode development",
+    "start": "webpack-dev-server --open --mode development"
+  },
+  "keywords": [],
+  "author": "Paul Brooks",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "@fortawesome/fontawesome-free": "^5.7.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "babel-loader": "^8.0.5",
+    "babel-preset-minify": "^0.5.0",
+    "css-loader": "^2.1.0",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.5.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.29.0",
+    "webpack-bundle-analyzer": "^3.0.4",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14",
+    "webpack-visualizer-plugin": "^0.1.11"
+  },
+  "dependencies": {
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "bulma": "^0.7.4",
+    "highlight.js": "^9.14.2",
+    "react-lowlight": "^2.0.0"
+  }
+}

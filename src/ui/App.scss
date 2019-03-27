@@ -1,0 +1,79 @@
+@import "bulma-custom";
+
+.token-keyword {
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+.token-parameter {
+  font-weight: bold;
+}
+
+// This class uses underscores because it is created inside PlantUML
+// where dashes are special
+.sequence_diagram_clickable {
+  cursor: pointer;
+}
+
+.test-disabled {
+  @extend .is-warning;
+}
+
+.test-failed {
+  @extend .is-danger
+}
+
+.test-passed {
+  @extend .is-success
+}
+
+.kensa-highlight {
+  background-color: yellow;
+  color: $grey-dark
+}
+
+.execution-exception {
+  color: $danger;
+  max-height: 435px;
+}
+
+.execution-exception .exception-message {
+  padding: 15px;
+  white-space: pre-line;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.execution-exception .exception-stacktrace {
+  resize: none;
+  color: $danger;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: bold;
+  height: 250px;
+}
+
+.message .test-passed .message-body {
+  border-color: $success !important;
+  color: $black !important;
+}
+
+.message .test-failed .message-body {
+  border-color: $danger !important;
+  color: $black !important;
+}
+
+.captured-interaction {
+  background-color: transparent;
+}
+
+.captured-interaction .card-content {
+  //padding: 5px;
+  background-color: transparent;
+  font-size: 15px;
+}
+
+.captured-interaction .card-content .lowlight {
+  //background-color: #2b2b2b;
+}
