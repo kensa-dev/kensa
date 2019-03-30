@@ -49,21 +49,15 @@ tasks.test {
     }
 }
 
-tasks.register<Jar>("testsJar") {
-    archiveClassifier.set("tests")
-    from(sourceSets.test.get().allJava, sourceSets.test.get().resources)
-}
-
-tasks.register<Jar>("sourcesJar") {
+val sourcesJar by tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
-    from(sourceSets.main.get().allJava, sourceSets.main.get().resources)
+    from(sourceSets.main.get().allSource)
 }
 
 node {
     version = Versions.node
     download = true
 }
-
 
 tasks.register<NodeTask>("webpack") {
     setScript(project.file("node_modules/.bin/webpack"))
@@ -104,9 +98,8 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-//
-//            artifact(tasks["sourcesJar"])
-//            artifact(tasks["testsJar"])
+
+            artifact(sourcesJar)
         }
     }
 }
