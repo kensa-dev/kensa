@@ -5,7 +5,7 @@ variables:
 
 build:
   stage: build
-  script: ./gradlew --build-cache build
+  script: ./gradlew --build-cache clean build publish
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
