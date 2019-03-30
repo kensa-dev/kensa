@@ -1,7 +1,7 @@
 import com.moowork.gradle.node.task.NodeTask
 
 group = "dev.kensa"
-version = "DEV-SNAPSHOT"
+version = System.getenv("CI_PIPELINE_IID") ?: "DEV-SNAPSHOT"
 
 buildscript {
     repositories {
@@ -95,6 +95,18 @@ dependencies {
 }
 
 publishing {
+    if (version != "DEV-SNAPSHOT") {
+        repositories {
+            maven {
+                url = uri(System.getenv("KENSA_PUBLISH_REPO_URI"))
+                credentials {
+                    username = System.getenv("KENSA_PUBLISH_REPO_USERNAME")
+                    password = System.getenv("KENSA_PUBLISH_REPO_PASSWORD")
+                }
+            }
+        }
+    }
+
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
