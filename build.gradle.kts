@@ -12,7 +12,7 @@ buildscript {
 plugins {
     `java-library`
     `maven-publish`
-    id("com.moowork.node") version "1.3.1"
+    id("com.moowork.node") version Versions.moowork
 }
 
 repositories {
@@ -60,7 +60,7 @@ tasks.register<Jar>("sourcesJar") {
 }
 
 node {
-    version = "10.6.0"
+    version = Versions.node
     download = true
 }
 
@@ -80,23 +80,24 @@ tasks.processResources {
 
 tasks.wrapper {
     distributionType = Wrapper.DistributionType.ALL
-    gradleVersion = "5.3"
+    gradleVersion = Versions.gradleWrapper
 }
 
 dependencies {
-    implementation("com.github.javaparser:javaparser-core:3.6.22")
-    implementation("net.sourceforge.plantuml:plantuml:8059")
-    implementation("io.pebbletemplates:pebble:3.0.8")
+    api("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
+    api("org.junit.jupiter:junit-jupiter-engine:${Versions.junitJupiter}")
+    api("org.junit.jupiter:junit-jupiter-params:${Versions.junitJupiter}")
+    api("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")
+    api("org.assertj:assertj-core:${Versions.assertJ}")
+    api("org.hamcrest:hamcrest-core:${Versions.hamcrest}")
+    api("com.eclipsesource.minimal-json:minimal-json:${Versions.minimalJson}")
 
-    testCompile("org.mockito:mockito-core:2.24.0")
-    testCompile("org.junit.platform:junit-platform-testkit:1.4.0")
-    api("org.junit.jupiter:junit-jupiter-engine:5.4.1")
-    api("org.junit.jupiter:junit-jupiter-params:5.4.1")
-    api("org.junit.jupiter:junit-jupiter-api:5.4.1")
-    api("org.junit.platform:junit-platform-launcher:1.3.2")
-    api("org.assertj:assertj-core:3.11.1")
-    api("org.hamcrest:hamcrest-core:1.3")
-    api("com.eclipsesource.minimal-json:minimal-json:0.9.5")
+    implementation("com.github.javaparser:javaparser-core:${Versions.javaParser}")
+    implementation("net.sourceforge.plantuml:plantuml:${Versions.plantUml}")
+    implementation("io.pebbletemplates:pebble:${Versions.pebble}")
+
+    testCompile("org.mockito:mockito-core:${Versions.mockito}")
+    testCompile("org.junit.platform:junit-platform-testkit:${Versions.junitPlatform}")
 }
 
 publishing {
