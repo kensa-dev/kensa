@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './App.scss';
 import TestWrapper from "./Test";
-import MultiPageIndex from "./MultiPageIndex";
+import Indices from "./IndexPage";
 
 const Mode = {
     SingleFile: 'SingleFile',
@@ -15,11 +15,12 @@ export default class App extends Component {
         super(props);
         this.state = {
             data: null,
+            indices: null,
             isLoaded: false
         };
     }
 
-    static testStateFor(state) {
+    static stateClassFor(state) {
         return "test-" + state.toLowerCase();
     }
 
@@ -36,33 +37,29 @@ export default class App extends Component {
 
         let indexNode = document.querySelector("script[id='indices']");
         let indexJson;
+        let indices = null;
+        let data = null;
         if (indexNode) {
             indexJson = JSON.parse(indexNode.textContent);
             mode = App.selectModeFrom(indexJson);
         }
 
-        if (mode === Mode.TestFile) {
-            let jsonNode = document.querySelector("script[id^='test-result']");
-            let jsonData = JSON.parse(jsonNode.textContent);
-
-            this.setState({
-                data: jsonData,
-                isLoaded: true,
-                mode: mode
-            })
-        } else if (mode === Mode.SingleFile) {
-            this.setState({
-                indices: indexJson.indices,
-                isLoaded: true,
-                mode: mode
-            });
-        } else if (mode === Mode.MultiFile) {
-            this.setState({
-                indices: indexJson.indices,
-                isLoaded: true,
-                mode: mode
-            });
+        switch (mode) {
+            case Mode.TestFile:
+                data = JSON.parse(document.querySelector("script[id^='test-result']").textContent);
+                break;
+            case Mode.SingleFile:
+            case Mode.MultiFile:
+            case Mode.Site:
+                indices = indexJson.indices;
         }
+
+        this.setState({
+            mode: mode,
+            data: data,
+            indices: indices,
+            isLoaded: true
+        });
     }
 
     renderSingleFile() {
@@ -72,13 +69,13 @@ export default class App extends Component {
     renderMultiFile() {
         return (
                 <div>
-                    <section className="hero is-primary">
+                    <section className="hero test-passed">
                         <div className="hero-body">
                             <h1 className="title">Index</h1>
                         </div>
                     </section>
                     <section className="section container">
-                        <MultiPageIndex indices={this.state.indices}/>
+                        <Indices indices={this.state.indices}/>
                     </section>
                 </div>
         )
@@ -88,29 +85,29 @@ export default class App extends Component {
         const data = this.state.data;
         return (
                 <div>
-                    <section className={"hero " + App.testStateFor(data.state)}>
+                    <section className={"hero " + App.stateClassFor(data.state)}>
                         <div className="hero-body">
                             <h1 className="title">{data.displayName}</h1>
                             <h2 className="subtitle">{data.notes}</h2>
                         </div>
                         {/*<div className="hero-foot">*/}
-                            {/*<div className="container">*/}
-                                {/*<nav className="navbar">*/}
-                                    {/*<div className="navbar-menu">*/}
-                                        {/*<div className="navbar-end">*/}
-                                            {/*<div className="navbar-item is-size-4 has-text-weight-bold">Index</div>*/}
-                                            {/*<div className="navbar-item has-dropdown is-size-4 has-text-weight-bold">*/}
-                                                {/*<a className="navbar-link">*/}
-                                                    {/*Docs*/}
-                                                {/*</a>*/}
-                                            {/*</div>*/}
-                                            {/*<div className="navbar-item">*/}
-                                                {/*<input className="input" type="text" placeholder="Search"/>*/}
-                                            {/*</div>*/}
-                                        {/*</div>*/}
-                                    {/*</div>*/}
-                                {/*</nav>*/}
-                            {/*</div>*/}
+                        {/*<div className="container">*/}
+                        {/*<nav className="navbar">*/}
+                        {/*<div className="navbar-menu">*/}
+                        {/*<div className="navbar-end">*/}
+                        {/*<div className="navbar-item is-size-4 has-text-weight-bold">Index</div>*/}
+                        {/*<div className="navbar-item has-dropdown is-size-4 has-text-weight-bold">*/}
+                        {/*<a className="navbar-link">*/}
+                        {/*Docs*/}
+                        {/*</a>*/}
+                        {/*</div>*/}
+                        {/*<div className="navbar-item">*/}
+                        {/*<input className="input" type="text" placeholder="Search"/>*/}
+                        {/*</div>*/}
+                        {/*</div>*/}
+                        {/*</div>*/}
+                        {/*</nav>*/}
+                        {/*</div>*/}
                         {/*</div>*/}
                     </section>
                     <section className="section">

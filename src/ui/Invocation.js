@@ -91,7 +91,7 @@ export class Invocation extends Component {
     buttonFor(name, text) {
         let invocationElement = this.state.invocation[name];
         if (invocationElement && invocationElement.length > 0) {
-            return <button className={this.classForButton(name, App.testStateFor(this.state.invocation.state))} onClick={() => this.selectTab(name)}>{text}</button>;
+            return <button className={this.classForButton(name, App.stateClassFor(this.state.invocation.state))} onClick={() => this.selectTab(name)}>{text}</button>;
         }
     }
 
@@ -113,7 +113,7 @@ export class Invocation extends Component {
     }
 
     render() {
-        let testStateClass = App.testStateFor(this.state.invocation.state);
+        let testStateClass = App.stateClassFor(this.state.invocation.state);
 
         return (
                 <div className={"message " + testStateClass}>

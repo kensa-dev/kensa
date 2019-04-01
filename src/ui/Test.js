@@ -8,7 +8,7 @@ class Test extends Component {
         const disabled = this.props.test.state === 'Disabled';
         if (disabled) {
             return (
-                    <div className={"message " + App.testStateFor(test.state)}>
+                    <div className={"message " + App.stateClassFor(test.state)}>
                         <div className="message-header">{test.displayName}</div>
                         <div className="message-body">
                             Test was not executed.
@@ -17,7 +17,7 @@ class Test extends Component {
             );
         } else {
             return (
-                    <div className={"message " + App.testStateFor(test.state)}>
+                    <div className={"message " + App.stateClassFor(test.state)}>
                         <div className="message-header"><p>{test.displayName}</p><div className="is-size-7">{test.notes}</div></div>
                         <div className="message-body">
                             {test.invocations.map((invocation, index) => <Invocation key={index} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}

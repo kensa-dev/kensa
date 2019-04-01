@@ -53,7 +53,14 @@ public final class JsonTransforms {
                                 .add("id", id)
                                 .add("testClass", container.testClass().getName())
                                 .add("displayName", container.displayName())
-                                .add("state", container.state().description());
+                                .add("state", container.state().description())
+                                .add("tests", asJsonArray(
+                                        container.invocationData(),
+                                        invocationData -> Json.object()
+                                                              .add("testMethod", invocationData.testMethod().getName())
+                                                              .add("displayName", invocationData.displayName())
+                                                              .add("state", invocationData.state().description())
+                                ));
     }
 
     public static Function<JsonValue, String> toJsonString() {
