@@ -47,16 +47,16 @@ public final class DurationFormatter {
         return duration.getSeconds() / 86400;
     }
 
-    private static void append(StringBuilder sb, long value, String singlular) {
-        append(sb, value, singlular, "s");
+    private static void append(StringBuilder sb, long value, String singular) {
+        append(sb, value, singular, "s");
     }
 
-    private static void append(StringBuilder sb, long value, String singlular, String pluralSuffix) {
+    private static void append(StringBuilder sb, long value, String singular, String pluralSuffix) {
         if(value > 0) {
             if(sb.length() > 0) {
                 sb.append(" ");
             }
-            sb.append(value).append(" ").append(singlular).append(value == 1 ? "" : pluralSuffix);
+            sb.append(value).append(" ").append(singular).append(value == 1 ? "" : pluralSuffix);
         }
     }
 }
