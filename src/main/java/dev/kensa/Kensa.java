@@ -16,6 +16,7 @@ import java.util.List;
 public final class Kensa {
 
     private static final String KENSA_OUTPUT_ROOT = "kensa.output.root";
+    private static final String KENSA_OUTPUT_DIR = "kensa-output";
     private static final Kensa KENSA = new Kensa();
 
     public static Kensa configure() {
@@ -31,8 +32,15 @@ public final class Kensa {
     private Kensa() {
     }
 
+    public Kensa withOutputDir(String dir) {
+        return withOutputDir(Paths.get(dir));
+    }
+    
     public Kensa withOutputDir(Path dir) {
-        configuration.outputDir = dir;
+        if(!dir.isAbsolute()) {
+            throw new IllegalArgumentException("OutputDir must be absolute.");
+        }
+        configuration.outputDir = dir.endsWith(KENSA_OUTPUT_DIR) ? dir : dir.resolve(KENSA_OUTPUT_DIR);
 
         return this;
     }
@@ -58,7 +66,7 @@ public final class Kensa {
         private OutputStyle outputStyle;
 
         private Configuration() {
-            this.outputDir = Paths.get(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), "kensa-output");
+            this.outputDir = Paths.get(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR);
             this.renderers = new Renderers();
             this.umlDirectives = new ArrayList<>();
             this.outputStyle = OutputStyle.MultiFile;
