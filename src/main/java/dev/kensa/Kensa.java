@@ -8,6 +8,8 @@ import dev.kensa.render.Renderer;
 import dev.kensa.render.Renderers;
 import dev.kensa.render.diagram.directive.UmlDirective;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -32,12 +34,27 @@ public final class Kensa {
     private Kensa() {
     }
 
+
+    public Kensa withIssueTrackerUrl(String url) {
+        try {
+            return withIssueTrackerUrl(new URL(url));
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid Issue Tracker URL specified.", e);
+        }
+    }
+
+    public Kensa withIssueTrackerUrl(URL url) {
+        configuration.issueTrackerUrl = url;
+
+        return this;
+    }
+
     public Kensa withOutputDir(String dir) {
         return withOutputDir(Paths.get(dir));
     }
-    
+
     public Kensa withOutputDir(Path dir) {
-        if(!dir.isAbsolute()) {
+        if (!dir.isAbsolute()) {
             throw new IllegalArgumentException("OutputDir must be absolute.");
         }
         configuration.outputDir = dir.endsWith(KENSA_OUTPUT_DIR) ? dir : dir.resolve(KENSA_OUTPUT_DIR);
@@ -64,6 +81,7 @@ public final class Kensa {
         private Renderers renderers;
         private List<UmlDirective> umlDirectives;
         private OutputStyle outputStyle;
+        private URL issueTrackerUrl;
 
         private Configuration() {
             this.outputDir = Paths.get(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR);
@@ -94,7 +112,7 @@ public final class Kensa {
         }
 
         public Template createTemplate(Path path, Template.Mode mode) {
-            return new Template(outputDir.resolve(path), mode, pebbleEngine);
+            return new Template(outputDir.resolve(path), mode, issueTrackerUrl, pebbleEngine);
         }
     }
 }
