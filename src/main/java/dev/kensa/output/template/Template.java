@@ -7,6 +7,7 @@ import dev.kensa.context.TestContainer;
 import dev.kensa.render.Renderers;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,15 +31,17 @@ public class Template {
 
     private final List<Index> indices = new ArrayList<>();
     private final Mode mode;
+    private final URL issueTrackerUrl;
     private final PebbleTemplate template;
     private final List<JsonScript> scripts = new ArrayList<>();
     private final Path outputPath;
 
     private int indexCounter = 1;
 
-    public Template(Path outputPath, Mode mode, PebbleEngine pebbleEngine) {
+    public Template(Path outputPath, Mode mode, URL issueTrackerUrl, PebbleEngine pebbleEngine) {
         this.mode = mode;
         this.outputPath = outputPath;
+        this.issueTrackerUrl = issueTrackerUrl;
         this.template = pebbleEngine.getTemplate("pebble-index.html");
     }
 
@@ -55,6 +58,7 @@ public class Template {
         context.put("scripts", scripts);
         context.put("indices", indices);
         context.put("mode", mode.name());
+        context.put("issueTrackerUrl", issueTrackerUrl == null ? "" : issueTrackerUrl.toString());
         write(context);
         this.scripts.clear();
         indices.clear();

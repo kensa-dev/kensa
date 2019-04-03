@@ -63,7 +63,7 @@ module.exports = {
                     "{% endif %}\n" +
                     "{% if indices is not empty %}\n" +
                     "<script id=\"indices\" type=\"application/json\">" +
-                    "{\"mode\": \"{{ mode }}\", \"indices\":[{% for index in indices %}{{ index.content }}{{ loop.last ? \"\" : \",\" }}{% endfor %}]}" +
+                    "{\"mode\": \"{{ mode }}\", \"issueTrackerUrl\": \"{{ issueTrackerUrl }}\", \"indices\":[{% for index in indices %}{{ index.content }}{{ loop.last ? \"\" : \",\" }}{% endfor %}]}" +
                     "</script>\n" +
                     "{% endif %}\n"
         })
