@@ -5,13 +5,14 @@ import App from "./App";
 class Test extends Component {
 
     renderInformation(issue, notes, state) {
-        let issueContent = issue ? this.renderIssues(issue, state) : null;
+        let issueContent = issue.length > 0 ? this.renderIssues(issue, state) : null;
+        let notesContent = notes ? <div>{notes}</div> : null;
 
-        if (issue || notes) {
+        if (issue.length > 0 || notes) {
             return (
                     <div className="message-body">
                         {issueContent}
-                        <div>{notes}</div>
+                        {notesContent}
                     </div>
             )
         }
@@ -20,12 +21,12 @@ class Test extends Component {
     }
 
     renderIssues(issues, state) {
-        let stateClass = App.darkerStateClassFor(state);
+        let stateClass = App.stateClassFor(state);
 
         return <div className="tags">
             {
                 issues.map(issue => {
-                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-medium " + stateClass}>{issue}</a>
+                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small " + stateClass}>{issue}</a>
                 })
             }
         </div>;

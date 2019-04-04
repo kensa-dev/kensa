@@ -23,10 +23,6 @@ export default class App extends Component {
         return "test-" + state.toLowerCase();
     }
 
-    static darkerStateClassFor(state) {
-        return "test-" + state.toLowerCase() + "-darker";
-    }
-
     static selectModeFrom(json) {
         return Mode[json.mode];
     }
