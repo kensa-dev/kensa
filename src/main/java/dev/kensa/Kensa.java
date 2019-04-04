@@ -1,7 +1,5 @@
 package dev.kensa;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import dev.kensa.output.OutputStyle;
 import dev.kensa.output.template.Template;
 import dev.kensa.render.Renderer;
@@ -75,8 +73,6 @@ public final class Kensa {
     }
 
     public class Configuration {
-        private final PebbleEngine pebbleEngine;
-
         private Path outputDir;
         private Renderers renderers;
         private List<UmlDirective> umlDirectives;
@@ -88,7 +84,6 @@ public final class Kensa {
             this.renderers = new Renderers();
             this.umlDirectives = new ArrayList<>();
             this.outputStyle = OutputStyle.MultiFile;
-            this.pebbleEngine = new PebbleEngine.Builder().autoEscaping(false).loader(new ClasspathLoader()).build();
         }
 
         public Path outputDir() {
@@ -108,11 +103,7 @@ public final class Kensa {
         }
 
         public Template createTemplate(String path, Template.Mode mode) {
-            return createTemplate(outputDir.resolve(path), mode);
-        }
-
-        public Template createTemplate(Path path, Template.Mode mode) {
-            return new Template(outputDir.resolve(path), mode, issueTrackerUrl, pebbleEngine);
+            return new Template(outputDir.resolve(outputDir.resolve(path)), mode, issueTrackerUrl);
         }
     }
 }

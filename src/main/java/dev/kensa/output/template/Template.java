@@ -1,6 +1,8 @@
 package dev.kensa.output.template;
 
+import com.eclipsesource.json.Json;
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import dev.kensa.KensaException;
 import dev.kensa.context.TestContainer;
@@ -29,20 +31,20 @@ public class Template {
         Site
     }
 
+    private static final PebbleEngine pebbleEngine = new PebbleEngine.Builder().autoEscaping(false).loader(new ClasspathLoader()).build();
+
     private final List<Index> indices = new ArrayList<>();
-    private final Mode mode;
-    private final URL issueTrackerUrl;
     private final PebbleTemplate template;
     private final List<JsonScript> scripts = new ArrayList<>();
     private final Path outputPath;
 
     private int indexCounter = 1;
 
-    public Template(Path outputPath, Mode mode, URL issueTrackerUrl, PebbleEngine pebbleEngine) {
-        this.mode = mode;
+    public Template(Path outputPath, Mode mode, URL issueTrackerUrl) {
         this.outputPath = outputPath;
-        this.issueTrackerUrl = issueTrackerUrl;
         this.template = pebbleEngine.getTemplate("pebble-index.html");
+
+        scripts.add(configurationJson(mode, issueTrackerUrl));
     }
 
     public void addIndex(TestContainer container, BiFunction<TestContainer, Integer, Index> factory) {
@@ -57,8 +59,6 @@ public class Template {
         Map<String, Object> context = new HashMap<>();
         context.put("scripts", scripts);
         context.put("indices", indices);
-        context.put("mode", mode.name());
-        context.put("issueTrackerUrl", issueTrackerUrl == null ? "" : issueTrackerUrl.toString());
         write(context);
         this.scripts.clear();
         indices.clear();
@@ -70,6 +70,18 @@ public class Template {
         } catch (IOException e) {
             throw new KensaException("Unable to write template", e);
         }
+    }
+
+    private JsonScript configurationJson(Mode mode, URL issueTrackerUrl) {
+        return new JsonScript(
+                "config",
+                toJsonString()
+                        .apply(
+                                Json.object()
+                                    .add("mode", mode.name())
+                                    .add("issueTrackerUrl", issueTrackerUrl == null ? "" : issueTrackerUrl.toString())
+                        )
+        );
     }
 
     public static BiFunction<TestContainer, Integer, Index> asIndex() {

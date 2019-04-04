@@ -25,24 +25,15 @@ export default class App extends Component {
     }
 
     static selectModeFrom(json) {
-        if (json.mode === Mode.SingleFile) {
-            return Mode.SingleFile;
-        } else {
-            return Mode.MultiFile;
-        }
+        return Mode[json.mode];
     }
 
     componentDidMount() {
-        let mode = Mode.TestFile;
-
-        let indexNode = document.querySelector("script[id='indices']");
-        let indexJson;
+        let configNode = document.querySelector("script[id='config']");
+        let configJson = JSON.parse(configNode.textContent);
+        let mode = App.selectModeFrom(configJson);
         let indices = null;
         let data = null;
-        if (indexNode) {
-            indexJson = JSON.parse(indexNode.textContent);
-            mode = App.selectModeFrom(indexJson);
-        }
 
         switch (mode) {
             case Mode.TestFile:
@@ -51,6 +42,8 @@ export default class App extends Component {
             case Mode.SingleFile:
             case Mode.MultiFile:
             case Mode.Site:
+                let indexNode = document.querySelector("script[id='indices']");
+                let indexJson = JSON.parse(indexNode.textContent);
                 indices = indexJson.indices;
         }
 
