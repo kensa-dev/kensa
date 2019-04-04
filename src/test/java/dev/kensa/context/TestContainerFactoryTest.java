@@ -40,7 +40,7 @@ class TestContainerFactoryTest {
         doReturn(testClass).when(extensionContext).getRequiredTestClass();
 
         TestContainer result = factory.createFor(extensionContext);
-        assertThat(result.invocationData().collect(toList())).extracting("testMethod").isEqualTo(expected);
+        assertThat(result.invocationData().collect(toList())).extracting("testMethod").containsAll(expected);
     }
 
     private static class TestClass {
