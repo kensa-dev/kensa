@@ -17,3 +17,7 @@ $modal-background-background-color: rgba(0, 0, 0, 0.15);
 @import "~bulma/sass/grid/tiles";
 @import "~bulma/sass/layout/hero";
 @import "~bulma/sass/layout/section";
+
+$success-darker: darken($success, 5%);
+$warning-darker: darken($warning, 5%);
+$danger-darker: darken($danger, 5%);

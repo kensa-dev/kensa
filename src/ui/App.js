@@ -11,17 +11,20 @@ const Mode = {
 };
 
 export default class App extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            data: null,
-            indices: null,
             isLoaded: false
         };
     }
 
     static stateClassFor(state) {
         return "test-" + state.toLowerCase();
+    }
+
+    static darkerStateClassFor(state) {
+        return "test-" + state.toLowerCase() + "-darker";
     }
 
     static selectModeFrom(json) {
@@ -32,6 +35,7 @@ export default class App extends Component {
         let configNode = document.querySelector("script[id='config']");
         let configJson = JSON.parse(configNode.textContent);
         let mode = App.selectModeFrom(configJson);
+
         let indices = null;
         let data = null;
 
@@ -47,7 +51,9 @@ export default class App extends Component {
                 indices = indexJson.indices;
         }
 
+        let issueTrackerUrl = configJson["issueTrackerUrl"];
         this.setState({
+            issueTrackerUrl: issueTrackerUrl == null ? "#" : issueTrackerUrl,
             mode: mode,
             data: data,
             indices: indices,
@@ -68,7 +74,7 @@ export default class App extends Component {
                         </div>
                     </section>
                     <section className="section container">
-                        <Indices indices={this.state.indices}/>
+                        <Indices issueTrackerUrl={this.state.issueTrackerUrl} indices={this.state.indices}/>
                     </section>
                 </div>
         )
@@ -81,7 +87,6 @@ export default class App extends Component {
                     <section className={"hero " + App.stateClassFor(data.state)}>
                         <div className="hero-body">
                             <h1 className="title">{data.displayName}</h1>
-                            <h2 className="subtitle">{data.notes}</h2>
                         </div>
                         {/*<div className="hero-foot">*/}
                         {/*<div className="container">*/}
@@ -104,7 +109,7 @@ export default class App extends Component {
                         {/*</div>*/}
                     </section>
                     <section className="section">
-                        <TestWrapper tests={data.tests}/>
+                        <TestWrapper issueTrackerUrl={this.state.issueTrackerUrl} tests={data.tests}/>
                     </section>
                 </div>
         );

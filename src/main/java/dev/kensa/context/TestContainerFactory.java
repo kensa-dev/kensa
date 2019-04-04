@@ -1,52 +1,77 @@
 package dev.kensa.context;
 
+import dev.kensa.Issue;
+import dev.kensa.Notes;
 import dev.kensa.state.TestInvocationData;
 import dev.kensa.state.TestState;
+import dev.kensa.util.ReflectionUtil;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.platform.commons.util.ReflectionUtils;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import static java.util.Collections.synchronizedMap;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotatedMethods;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
+import static dev.kensa.util.ReflectionUtil.getAnnotation;
 
 public class TestContainerFactory {
 
     public TestContainer createFor(ExtensionContext context) {
         Class<?> testClass = context.getRequiredTestClass();
 
-        Map<Method, TestInvocationData> invocationData = Stream.concat(
-                findAnnotatedMethods(testClass, Test.class, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN).stream(),
-                findAnnotatedMethods(testClass, ParameterizedTest.class, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN).stream()
-        )
-                                                               .map(method -> new TestInvocationData(method, deriveDisplayNameFor(method), initialStateFor(method)))
-                                                               .collect(
-                                                            () -> synchronizedMap(new LinkedHashMap<>()),
-                                                            (m, i) -> m.put(i.testMethod(), i),
-                                                            Map::putAll
-                                                    );
-
-        return new TestContainer(testClass, context.getDisplayName(), invocationData);
+        return new TestContainer(
+                testClass,
+                context.getDisplayName(),
+                invocationDataFor(testClass),
+                notesFor(testClass),
+                issueFor(testClass)
+        );
     }
 
-    private TestState initialStateFor(Method method) {
-        return findAnnotation(method, Disabled.class)
+    private Map<Method, TestInvocationData> invocationDataFor(Class<?> testClass) {
+        return ReflectionUtil.testMethodsOf(testClass)
+                             .map(this::createInvocationData)
+                             .collect(
+                                     LinkedHashMap::new,
+                                     (m, i) -> m.put(i.testMethod(), i),
+                                     Map::putAll
+                             );
+    }
+
+    private TestInvocationData createInvocationData(Method method) {
+        return new TestInvocationData(
+                method,
+                deriveDisplayNameFor(method),
+                notesFor(method),
+                issueFor(method),
+                initialStateFor(method)
+        );
+    }
+
+    private TestState initialStateFor(Method element) {
+        return getAnnotation(element, Disabled.class)
                 .map(a -> TestState.Disabled)
                 .orElse(TestState.NotExecuted);
     }
 
-    private String deriveDisplayNameFor(Method method) {
-        return findAnnotation(method, DisplayName.class)
+    private String deriveDisplayNameFor(Method element) {
+        return getAnnotation(element, DisplayName.class)
                 .map(DisplayName::value)
                 // TODO: build a sentence from the method name
-                .orElse(method.getName());
+                .orElse(element.getName());
+    }
+
+    private String notesFor(AnnotatedElement element) {
+        return getAnnotation(element, Notes.class)
+                .map(Notes::value)
+                .orElse(null);
+    }
+
+    private String issueFor(AnnotatedElement element) {
+        return getAnnotation(element, Issue.class)
+                .map(Issue::value)
+                .orElse(null);
     }
 }

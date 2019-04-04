@@ -43,7 +43,9 @@ public final class TestContainerBuilder {
         return new TestContainer(
                 testClass,
                 displayName,
-                invocationMap
+                invocationMap,
+                null,
+                null
         );
     }
 }

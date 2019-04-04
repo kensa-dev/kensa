@@ -15,11 +15,21 @@ public class TestContainer {
     private final Class<?> testClass;
     private final String displayName;
     private final Map<Method, TestInvocationData> invocationData;
+    private final String notes;
+    private final String issue;
 
-    public TestContainer(Class<?> testClass, String displayName, Map<Method, TestInvocationData> invocationData) {
+    public TestContainer(
+            Class<?> testClass,
+            String displayName,
+            Map<Method, TestInvocationData> invocationData,
+            String notes,
+            String issue
+    ) {
         this.testClass = testClass;
         this.displayName = displayName;
         this.invocationData = invocationData;
+        this.notes = notes;
+        this.issue = issue;
     }
 
     public Class<?> testClass() {
@@ -48,5 +58,13 @@ public class TestContainer {
 
     public <T> T transform(Function<TestContainer, T> transformer) {
         return transformer.apply(this);
+    }
+
+    public String notes() {
+        return notes;
+    }
+
+    public String issue() {
+        return issue;
     }
 }

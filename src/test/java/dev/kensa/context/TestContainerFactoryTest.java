@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -25,21 +26,21 @@ class TestContainerFactoryTest {
     }
 
     @Test
-    void createsTestContainerWithPredictableIterationOrderOfInvocationData() {
+    void createsTestContainerWithPredictableIterationOrderOfInvocationData() throws Exception {
         Class<?> testClass = TestClass.class;
-        List<String> expected = List.of(
-                "test1",
-                "test2",
-                "test4",
-                "test5",
-                "parameterizedTest1",
-                "parameterizedTest2"
+        List<Method> expected = List.of(
+                TestClass.class.getDeclaredMethod("test1"),
+                TestClass.class.getDeclaredMethod("test2"),
+                TestClass.class.getDeclaredMethod("test3", String.class),
+                TestClass.class.getDeclaredMethod("test4"),
+                TestClass.class.getDeclaredMethod("test5", String.class),
+                TestClass.class.getDeclaredMethod("test6")
         );
 
         doReturn(testClass).when(extensionContext).getRequiredTestClass();
 
         TestContainer result = factory.createFor(extensionContext);
-        assertThat(result.invocationData().collect(toList())).extracting("displayName").isEqualTo(expected);
+        assertThat(result.invocationData().collect(toList())).extracting("testMethod").isEqualTo(expected);
     }
 
     private static class TestClass {
@@ -52,18 +53,19 @@ class TestContainerFactoryTest {
         }
 
         @ParameterizedTest
-        void parameterizedTest1(String foo) {
+        void test3(String foo) {
         }
+
         @Test
         void test4() {
         }
 
         @ParameterizedTest
-        void parameterizedTest2(String foo) {
+        void test5(String foo) {
         }
 
         @Test
-        void test5() {
+        void test6() {
         }
     }
 }

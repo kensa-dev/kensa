@@ -1,5 +1,9 @@
 @import "bulma-custom";
 
+.link {
+  cursor: pointer;
+}
+
 .token-keyword {
   text-transform: capitalize;
   font-weight: bold;
@@ -19,12 +23,27 @@
   @extend .is-warning;
 }
 
+.test-disabled-darker {
+  @extend .test-disabled;
+  background-color: $warning-darker !important;
+}
+
 .test-failed {
   @extend .is-danger
 }
 
+.test-failed-darker {
+  @extend .test-failed;
+  background-color: $danger-darker !important;
+}
+
 .test-passed {
   @extend .is-success
+}
+
+.test-passed-darker {
+  @extend .test-passed;
+  background-color: $success-darker !important;
 }
 
 .kensa-highlight {
