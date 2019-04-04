@@ -10,16 +10,16 @@ public class TestInvocationData {
     private final Method testMethod;
     private final String displayName;
     private final String notes;
-    private final String issue;
+    private final List<String> issues;
     private final TestState initialState;
     private final List<TestInvocation> invocations = new ArrayList<>();
 
-    public TestInvocationData(Method testMethod, String displayName, String notes, String issue, TestState initialState) {
+    public TestInvocationData(Method testMethod, String displayName, String notes, List<String> issues, TestState initialState) {
         this.testMethod = testMethod;
         this.displayName = displayName;
         this.initialState = initialState;
         this.notes = notes;
-        this.issue = issue;
+        this.issues = issues;
     }
 
     public Method testMethod() {
@@ -34,8 +34,8 @@ public class TestInvocationData {
         return notes;
     }
 
-    public String issue() {
-        return issue;
+    public Stream<String> issues() {
+        return issues.stream();
     }
 
     public void add(TestInvocation invocation) {

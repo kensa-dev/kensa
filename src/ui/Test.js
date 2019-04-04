@@ -24,7 +24,7 @@ class Test extends Component {
 
         return <div className="tags">
             {
-                issues.split("|").map(issue => {
+                issues.map(issue => {
                     return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-medium " + stateClass}>{issue}</a>
                 })
             }

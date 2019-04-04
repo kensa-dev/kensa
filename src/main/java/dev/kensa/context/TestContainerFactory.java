@@ -11,10 +11,13 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static dev.kensa.util.ReflectionUtil.getAnnotation;
+import static java.util.Collections.emptyList;
 
 public class TestContainerFactory {
 
@@ -26,7 +29,7 @@ public class TestContainerFactory {
                 context.getDisplayName(),
                 invocationDataFor(testClass),
                 notesFor(testClass),
-                issueFor(testClass)
+                issuesFor(testClass)
         );
     }
 
@@ -45,7 +48,7 @@ public class TestContainerFactory {
                 method,
                 deriveDisplayNameFor(method),
                 notesFor(method),
-                issueFor(method),
+                issuesFor(method),
                 initialStateFor(method)
         );
     }
@@ -69,9 +72,10 @@ public class TestContainerFactory {
                 .orElse(null);
     }
 
-    private String issueFor(AnnotatedElement element) {
+    private List<String> issuesFor(AnnotatedElement element) {
         return getAnnotation(element, Issue.class)
                 .map(Issue::value)
-                .orElse(null);
+                .map(Arrays::asList)
+                .orElse(emptyList());
     }
 }

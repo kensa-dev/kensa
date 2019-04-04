@@ -1,6 +1,5 @@
 package dev.kensa.util;
 
-import dev.kensa.Issue;
 import dev.kensa.Notes;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,18 +18,16 @@ class ReflectionUtilTest {
 
     @Test
     void canGetAnAnnotationFromAClassElement() {
-        Optional<Issue> result = getAnnotation(Superclass.class, Issue.class);
+        Optional<Notes> result = getAnnotation(Superclass.class, Notes.class);
 
-        assertThat(result).isNotEmpty();
-        assertThat(result.get().value()).isEqualTo("KEN-1234");
+        assertThat(result.map(Notes::value)).hasValue("Some notes");
     }
 
     @Test
     void canGetAnAnnotationFromAMethodElement() throws Exception {
         Optional<Notes> result = getAnnotation(Superclass.class.getDeclaredMethod("test1"), Notes.class);
 
-        assertThat(result).isNotEmpty();
-        assertThat(result.get().value()).isEqualTo("Some notes");
+        assertThat(result.map(Notes::value)).hasValue("Some notes");
     }
 
     @Test
@@ -82,7 +79,7 @@ class ReflectionUtilTest {
     }
 
     @Disabled
-    @Issue("KEN-1234")
+    @Notes("Some notes")
     static class Superclass {
 
         @Test

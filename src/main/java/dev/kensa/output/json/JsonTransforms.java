@@ -26,14 +26,14 @@ public final class JsonTransforms {
                     .add("displayName", container.displayName())
                     .add("state", container.state().description())
                     .add("notes", container.notes())
-                    .add("issue", container.issue())
+                    .add("issue", asJsonArray(container.issues()))
                     .add("tests", asJsonArray(
                             container.invocationData(),
                             invocationData -> Json.object()
                                                   .add("testMethod", invocationData.testMethod().getName())
                                                   .add("displayName", invocationData.displayName())
                                                   .add("notes", invocationData.notes())
-                                                  .add("issue", invocationData.issue())
+                                                  .add("issue", asJsonArray(invocationData.issues()))
                                                   .add("state", invocationData.state().description())
                                                   .add("invocations", asJsonArray(
                                                           invocationData.invocations(),

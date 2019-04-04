@@ -4,6 +4,7 @@ import dev.kensa.state.TestInvocationData;
 import dev.kensa.state.TestState;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -16,20 +17,20 @@ public class TestContainer {
     private final String displayName;
     private final Map<Method, TestInvocationData> invocationData;
     private final String notes;
-    private final String issue;
+    private final List<String> issues;
 
     public TestContainer(
             Class<?> testClass,
             String displayName,
             Map<Method, TestInvocationData> invocationData,
             String notes,
-            String issue
+            List<String> issues
     ) {
         this.testClass = testClass;
         this.displayName = displayName;
         this.invocationData = invocationData;
         this.notes = notes;
-        this.issue = issue;
+        this.issues = issues;
     }
 
     public Class<?> testClass() {
@@ -64,7 +65,7 @@ public class TestContainer {
         return notes;
     }
 
-    public String issue() {
-        return issue;
+    public Stream<String> issues() {
+        return issues.stream();
     }
 }
