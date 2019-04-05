@@ -4,8 +4,8 @@ import App from "./App";
 
 class Test extends Component {
 
-    renderInformation(issue, notes, state) {
-        let issueContent = issue.length > 0 ? this.renderIssues(issue, state) : null;
+    renderInformation(issue, notes) {
+        let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
         let notesContent = notes ? <div>{notes}</div> : null;
 
         if (issue.length > 0 || notes) {
@@ -20,13 +20,11 @@ class Test extends Component {
         return null;
     }
 
-    renderIssues(issues, state) {
-        let stateClass = App.stateClassFor(state);
-
+    renderIssues(issues) {
         return <div className="tags">
             {
                 issues.map(issue => {
-                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small " + stateClass}>{issue}</a>
+                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
                 })
             }
         </div>;
@@ -61,7 +59,7 @@ class Test extends Component {
                             {test.displayName}
                         </div>
                         <div className="message-body">
-                            {this.renderInformation(test.issue, test.notes, state)}
+                            {this.renderInformation(test.issue, test.notes)}
                             {test.invocations.map((invocation, index) => <Invocation key={index} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
                         </div>
                     </div>
