@@ -1,10 +1,13 @@
 package dev.kensa.util;
 
+import dev.kensa.KensaException;
+import dev.kensa.function.Unchecked;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -23,8 +26,55 @@ public final class ReflectionUtil {
         return methodsAnnotatedWithAny(target, Test.class, ParameterizedTest.class);
     }
 
+    public static <T> T fieldValue(Object target, String name, Class<T> type) {
+        return findField(target.getClass(), name)
+                .map(Unchecked.function(field -> {
+                    field.setAccessible(true);
+                    return field.get(target);
+                }))
+                .map(type::cast)
+                .orElse(null);
+    }
+
+    public static <T> T invokeMethod(Object target, String name, Class<T> requiredType) {
+        try {
+            return requiredType.cast(findMethod(target.getClass(), name).invoke(target));
+        } catch (Exception e) {
+            throw new KensaException(String.format("Unable to invoke method [%s] on class [%s]", name, name), e);
+        }
+    }
+
+    private static Method findMethod(Class<?> target, String name) {
+        try {
+            Method method = target.getDeclaredMethod(name);
+            method.setAccessible(true);
+            return method;
+        } catch (NoSuchMethodException e) {
+            Class<?> superclass = target.getSuperclass();
+            if (superclass != Object.class) {
+                return findMethod(superclass, name);
+            }
+
+            throw new KensaException(String.format("Unable to find method [%s] on class [%s]", name, target.getName()), e);
+        }
+    }
+
+    private static Optional<Field> findField(Class<?> target, String name) {
+        if (target == null || target == Object.class) {
+            return Optional.empty();
+        }
+
+        for (Field field : target.getDeclaredFields()) {
+            if (field.getName().equals(name)) {
+                return Optional.of(field);
+            }
+        }
+
+        return findField(target.getSuperclass(), name);
+    }
+
     @SafeVarargs
-    public static Stream<Method> methodsAnnotatedWithAny(Class<?> target, Class<? extends Annotation>... annotations) {
+    private static Stream<Method> methodsAnnotatedWithAny(Class<?> target, Class<? extends Annotation>... annotations) {
         return findAnnotatedMethods(target, new LinkedHashSet<>(), annotations).stream();
     }
 

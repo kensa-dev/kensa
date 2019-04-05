@@ -15,14 +15,14 @@ import dev.kensa.state.TestInvocationData;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.function.Function;
 
 import static dev.kensa.context.TestContextHolder.bindTestContextToThread;
 import static dev.kensa.context.TestContextHolder.clearTestContextFromThread;
+import static dev.kensa.util.ReflectionUtil.fieldValue;
+import static dev.kensa.util.ReflectionUtil.invokeMethod;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.stream.Collectors.toList;
 
@@ -69,9 +69,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
         bindTestContextToThread(testContext);
 
         // Workaround for JUnit5 argument access
-        TestMethodTestDescriptor testDescriptor = getTestDescriptor(context);
-        Object[] arguments = getArguments(testDescriptor);
-        processTestMethodArguments(context, arguments);
+        processTestMethodArguments(context, argumentsFrom(context));
     }
 
     @Override
@@ -115,42 +113,13 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
         store.put(TEST_ARGUMENTS_KEY, arguments);
     }
 
-    private Object[] getArguments(TestMethodTestDescriptor testDescriptor) {
+    private Object[] argumentsFrom(ExtensionContext context) {
         try {
-            TestTemplateInvocationContext invocationContext = fieldValue(testDescriptor, "invocationContext");
-            return fieldValue(invocationContext, "arguments");
+            TestMethodTestDescriptor testDescriptor = invokeMethod(context, "getTestDescriptor", TestMethodTestDescriptor.class);
+            TestTemplateInvocationContext invocationContext = fieldValue(testDescriptor, "invocationContext", TestTemplateInvocationContext.class);
+            return fieldValue(invocationContext, "arguments", Object[].class);
         } catch (Exception e) {
             return new Object[0];
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T fieldValue(Object target, String name) throws NoSuchFieldException, IllegalAccessException {
-        Field invocationContextField = target.getClass().getDeclaredField(name);
-        invocationContextField.setAccessible(true);
-        return (T) invocationContextField.get(target);
-    }
-
-    private TestMethodTestDescriptor getTestDescriptor(ExtensionContext context) {
-        try {
-            Method m = findMethod(context.getClass(), "getTestDescriptor");
-            return (TestMethodTestDescriptor) m.invoke(context);
-        } catch (Exception e) {
-            throw new KensaException("Unable to find/call method [getTestDescriptor]", e);
-        }
-    }
-
-    private Method findMethod(Class<?> target, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
-        try {
-            Method method = target.getDeclaredMethod(name, parameterTypes);
-            method.setAccessible(true);
-            return method;
-        } catch (NoSuchMethodException e) {
-            Class<?> superclass = target.getSuperclass();
-            if (superclass != Object.class) {
-                return findMethod(superclass, name, parameterTypes);
-            }
-            throw e;
         }
     }
 

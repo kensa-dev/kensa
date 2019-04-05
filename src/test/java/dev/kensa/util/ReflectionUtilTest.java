@@ -17,6 +17,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReflectionUtilTest {
 
     @Test
+    void canGetAPrivateFieldValue() {
+        String privateValue = "A Value";
+        SomeClass someClass = new SomeClass(privateValue);
+
+        assertThat(ReflectionUtil.fieldValue(someClass, "someField", String.class)).isEqualTo(privateValue);
+    }
+
+    @Test
+    void canInvokeAMethodAndGetReturnedValue() {
+        String privateValue = "A Value";
+        SomeClass someClass = new SomeClass(privateValue);
+
+        assertThat(ReflectionUtil.invokeMethod(someClass, "getSomeField", String.class)).isEqualTo(privateValue);
+    }
+
+    @Test
     void canGetAnAnnotationFromAClassElement() {
         Optional<Notes> result = getAnnotation(Superclass.class, Notes.class);
 
@@ -76,6 +92,16 @@ class ReflectionUtilTest {
 
     static class NotAnnotated {
         void foo() {}
+    }
+
+    static class SomeClass {
+        private final String someField;
+
+        SomeClass(String someField) {this.someField = someField;}
+
+        private String getSomeField() {
+            return someField;
+        }
     }
 
     @Disabled
