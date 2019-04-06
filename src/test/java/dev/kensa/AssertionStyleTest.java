@@ -2,7 +2,6 @@ package dev.kensa;
 
 import dev.kensa.sentence.Dictionary;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,6 +14,7 @@ import static org.hamcrest.CoreMatchers.is;
 class AssertionStyleTest implements KensaTest {
 
     private final String actionName = "ACTION1";
+    @Highlight
     private final String theExpectedResult = "Performed: ACTION1";
     private final ActionPerformer performer = new ActionPerformer();
 
