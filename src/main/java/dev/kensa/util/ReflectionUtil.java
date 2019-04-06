@@ -51,7 +51,7 @@ public final class ReflectionUtil {
                 for (Field field : declaredFields) {
                     field.setAccessible(true);
                     NameValuePair nameValuePair = new NameValuePair(field.getName(), field.get(target));
-                    values.put(nameValuePair.name(), nameValuePair);
+                    values.putIfAbsent(nameValuePair.name(), nameValuePair);
                 }
                 aClass = aClass.getSuperclass();
             }
