@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Invocation} from "./Invocation";
 import App from "./App";
+import ScrollableAnchor from "react-scrollable-anchor";
 
 class Test extends Component {
 
@@ -43,26 +44,31 @@ class Test extends Component {
     render() {
         const test = this.props.test;
         const state = test.state;
+        console.log(test.testMethod)
         if (state === 'Disabled') {
             return (
-                    <div className={"message " + App.stateClassFor(state)}>
-                        <div className="message-header">{test.displayName}</div>
-                        <div className="message-body">
-                            Test was not executed.
+                    <ScrollableAnchor id={test.testMethod}>
+                        <div className={"message " + App.stateClassFor(state)}>
+                            <div className="message-header">{test.displayName}</div>
+                            <div className="message-body">
+                                Test was not executed.
+                            </div>
                         </div>
-                    </div>
+                    </ScrollableAnchor>
             );
         } else {
             return (
-                    <div className={"message " + App.stateClassFor(state)}>
-                        <div className="message-header">
-                            {test.displayName}
+                    <ScrollableAnchor id={test.testMethod}>
+                        <div className={"message " + App.stateClassFor(state)}>
+                            <div className="message-header">
+                                {test.displayName}
+                            </div>
+                            <div className="message-body">
+                                {this.renderInformation(test.issue, test.notes)}
+                                {test.invocations.map((invocation, index) => <Invocation key={index} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
+                            </div>
                         </div>
-                        <div className="message-body">
-                            {this.renderInformation(test.issue, test.notes)}
-                            {test.invocations.map((invocation, index) => <Invocation key={index} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
-                        </div>
-                    </div>
+                    </ScrollableAnchor>
             );
         }
     }

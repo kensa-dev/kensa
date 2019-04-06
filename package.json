@@ -34,10 +34,11 @@
     "webpack-visualizer-plugin": "^0.1.11"
   },
   "dependencies": {
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
     "bulma": "^0.7.4",
     "highlight.js": "^9.14.2",
-    "react-lowlight": "^2.0.0"
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-lowlight": "^2.0.0",
+    "react-scrollable-anchor": "^0.6.1"
   }
 }
