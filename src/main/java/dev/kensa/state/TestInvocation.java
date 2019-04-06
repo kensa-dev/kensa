@@ -1,5 +1,6 @@
 package dev.kensa.state;
 
+import dev.kensa.parse.ParsedTest;
 import dev.kensa.render.diagram.SequenceDiagram;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.Sentences;
@@ -7,6 +8,7 @@ import dev.kensa.util.KensaMap;
 import dev.kensa.util.NameValuePair;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -14,7 +16,7 @@ import java.util.stream.Stream;
 public class TestInvocation {
     private final Duration elapsed;
     private final Sentences sentences;
-    private final List<NameValuePair> parameters;
+    private final Collection<NameValuePair> parameters;
     private final TestState state;
     private final Throwable executionException;
     private final Givens givens;
@@ -25,16 +27,17 @@ public class TestInvocation {
 
     public TestInvocation(
             Duration elapsed,
-            Sentences sentences,
-            List<NameValuePair> parameters,
+            ParsedTest parsedTest,
             Givens givens,
             CapturedInteractions interactions,
-            List<String> highlightValues, List<String> acronyms, Throwable executionException,
+            List<String> highlightValues,
+            List<String> acronyms,
+            Throwable executionException,
             SequenceDiagram sequenceDiagram
     ) {
         this.elapsed = elapsed;
-        this.sentences = sentences;
-        this.parameters = parameters;
+        this.sentences = parsedTest.sentences();
+        this.parameters = parsedTest.parameters();
         this.givens = givens;
         this.interactions = interactions;
         this.executionException = executionException;
@@ -48,7 +51,7 @@ public class TestInvocation {
         return elapsed;
     }
 
-    public List<NameValuePair> parameters() {
+    public Collection<NameValuePair> parameters() {
         return parameters;
     }
 

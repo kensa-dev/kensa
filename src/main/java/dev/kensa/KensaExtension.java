@@ -4,8 +4,8 @@ import dev.kensa.context.TestContainer;
 import dev.kensa.context.TestContainerFactory;
 import dev.kensa.context.TestContext;
 import dev.kensa.output.ResultWriter;
-import dev.kensa.parse.MethodParser;
-import dev.kensa.parse.MethodParserFactory;
+import dev.kensa.parse.ParsedTest;
+import dev.kensa.parse.TestParser;
 import dev.kensa.render.diagram.SequenceDiagramFactory;
 import dev.kensa.sentence.Dictionary;
 import dev.kensa.state.CapturedInteractions;
@@ -31,9 +31,8 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
     private static final ExtensionContext.Namespace KENSA = ExtensionContext.Namespace.create(new Object());
     private static final String TEST_START_TIME_KEY = "StartTime";
     private static final String TEST_CONTAINER_KEY = "TestContainer";
-    private static final String TEST_ARGUMENTS_KEY = "TestArguments";
     private static final String TEST_CONTEXT_KEY = "TestContext";
-    private static final String TEST_PARSER_FACTORY_KEY = "TestParserFactory";
+    private static final String TEST_PARSER_KEY = "TestParser";
     private static final String TEST_GIVENS_KEY = "TestGivens";
     private static final String TEST_INTERACTIONS_KEY = "TestInteractions";
     private static final String KENSA_EXECUTION_CONTEXT_KEY = "KensaExecutionContext";
@@ -65,7 +64,6 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
         store.put(TEST_GIVENS_KEY, givens);
         store.put(TEST_INTERACTIONS_KEY, interactions);
         store.put(TEST_CONTEXT_KEY, testContext);
-        store.put(TEST_PARSER_FACTORY_KEY, new MethodParserFactory(context.getRequiredTestMethod()));
         bindTestContextToThread(testContext);
 
         // Workaround for JUnit5 argument access
@@ -81,17 +79,15 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
             Long startTime = store.get(TEST_START_TIME_KEY, Long.class);
 
             TestContainer testContainer = store.get(TEST_CONTAINER_KEY, TestContainer.class);
-            MethodParserFactory methodParserFactory = store.get(TEST_PARSER_FACTORY_KEY, MethodParserFactory.class);
-            Object[] arguments = store.get(TEST_ARGUMENTS_KEY, Object[].class);
             TestInvocationData invocationData = testContainer.invocationDataFor(context.getRequiredTestMethod());
-            MethodParser parser = methodParserFactory.createFor(arguments);
             CapturedInteractions interactions = store.get(TEST_INTERACTIONS_KEY, CapturedInteractions.class);
+            TestParser testParser = store.get(TEST_PARSER_KEY, TestParser.class);
+            ParsedTest parsedTest = testParser.parse();
 
             invocationData.add(
                     new TestInvocation(
                             Duration.of(endTime - startTime, MILLIS),
-                            parser.sentences(),
-                            parser.parameters(),
+                            parsedTest,
                             store.get(TEST_GIVENS_KEY, Givens.class),
                             interactions,
                             new ArrayList<>(),
@@ -110,7 +106,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
     @SuppressWarnings("WeakerAccess")
     public void processTestMethodArguments(ExtensionContext context, Object[] arguments) {
         ExtensionContext.Store store = context.getStore(KENSA);
-        store.put(TEST_ARGUMENTS_KEY, arguments);
+        store.put(TEST_PARSER_KEY, new TestParser(context.getRequiredTestInstance(), context.getRequiredTestMethod(), arguments));
     }
 
     private Object[] argumentsFrom(ExtensionContext context) {

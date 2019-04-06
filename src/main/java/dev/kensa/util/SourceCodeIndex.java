@@ -39,7 +39,7 @@ public class SourceCodeIndex {
         private final PathMatcher pathMatcher;
         private Path result;
 
-        public Walker(String name) {
+        Walker(String name) {
             pathMatcher = FileSystems.getDefault().getPathMatcher(String.format("glob:**/%s.java", name.replaceAll("\\.", "/")));
         }
 
@@ -67,7 +67,7 @@ public class SourceCodeIndex {
             return FileVisitResult.CONTINUE;
         }
 
-        public Path result() {
+        Path result() {
             return result;
         }
     }

@@ -1,9 +1,7 @@
 package dev.kensa.parse;
 
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -15,45 +13,32 @@ import dev.kensa.sentence.Sentences;
 import dev.kensa.util.NameValuePair;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static dev.kensa.parse.SentenceCollector.asSentences;
-import static java.util.stream.Collectors.toList;
 
-public class MethodParser {
+class MethodParser {
 
-    private final List<NameValuePair> parameters;
     private final MethodDeclaration methodDeclaration;
+    private final Function<String, Optional<NameValuePair>> identifierProvider;
 
-    MethodParser(MethodDeclaration methodDeclaration, Object[] parameterValues) {
+    MethodParser(
+            MethodDeclaration methodDeclaration,
+            Function<String, Optional<NameValuePair>> identifierProvider
+    ) {
         this.methodDeclaration = methodDeclaration;
-        this.parameters = parameterDescriptorsFrom(methodDeclaration.getParameters(), parameterValues);
+        this.identifierProvider = identifierProvider;
     }
 
-    public Sentences sentences() {
+    Sentences sentences() {
         return methodDeclaration.getBody()
-                         .map(BlockStmt::getStatements)
-                         .map(Collection::stream)
-                         .orElse(Stream.empty())
-                         .map(this::toSentence)
-                         .collect(asSentences());
-    }
-
-    public List<NameValuePair> parameters() {
-        return parameters;
-    }
-
-    private List<NameValuePair> parameterDescriptorsFrom(NodeList<Parameter> parameters, Object[] parameterValues) {
-        AtomicInteger index = new AtomicInteger();
-        return parameters.stream()
-                         .map(parameter -> {
-                             String name = parameter.getNameAsString();
-                             Object value = parameterValues[index.getAndIncrement()];
-                             return new NameValuePair(name, value);
-                         })
-                         .collect(toList());
+                                .map(BlockStmt::getStatements)
+                                .map(Collection::stream)
+                                .orElse(Stream.empty())
+                                .map(this::toSentence)
+                                .collect(asSentences());
     }
 
     private Sentence toSentence(Statement statement) {
@@ -68,7 +53,7 @@ public class MethodParser {
     private SentenceBuilder buildSentenceFrom(Node node, SentenceBuilder builder) {
         if (node instanceof NameExpr) {
             String identifier = ((NameExpr) node).getName().getIdentifier();
-            return builder.appendParameter(replaceWithParameter(identifier));
+            return builder.appendParameter(replaceWithRealValue(identifier));
         }
 
         if (node instanceof SimpleName) {
@@ -85,11 +70,10 @@ public class MethodParser {
         return builder;
     }
 
-    private String replaceWithParameter(String identifier) {
-        return parameters.stream()
-                         .filter(pd -> pd.name().equals(identifier))
-                         .map(pd -> pd.value().toString())
-                         .findFirst()
-                         .orElse(identifier);
+    private String replaceWithRealValue(String identifier) {
+        return identifierProvider.apply(identifier)
+                                 .map(NameValuePair::value)
+                                 .map(Object::toString)
+                                 .orElse(identifier);
     }
 }

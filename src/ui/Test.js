@@ -44,7 +44,6 @@ class Test extends Component {
     render() {
         const test = this.props.test;
         const state = test.state;
-        console.log(test.testMethod)
         if (state === 'Disabled') {
             return (
                     <ScrollableAnchor id={test.testMethod}>
