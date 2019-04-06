@@ -20,8 +20,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-import static dev.kensa.context.TestContextHolder.bindTestContextToThread;
-import static dev.kensa.context.TestContextHolder.clearTestContextFromThread;
+import static dev.kensa.context.TestContextHolder.bindToThread;
+import static dev.kensa.context.TestContextHolder.clearFromThread;
 import static dev.kensa.util.ReflectionUtil.fieldValue;
 import static dev.kensa.util.ReflectionUtil.invokeMethod;
 import static java.time.temporal.ChronoUnit.MILLIS;
@@ -66,7 +66,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
         store.put(TEST_GIVENS_KEY, givens);
         store.put(TEST_INTERACTIONS_KEY, interactions);
         store.put(TEST_CONTEXT_KEY, testContext);
-        bindTestContextToThread(testContext);
+        bindToThread(testContext);
 
         // Workaround for JUnit5 argument access
         processTestMethodArguments(context, argumentsFrom(context));
@@ -99,7 +99,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
                     )
             );
         } finally {
-            clearTestContextFromThread();
+            clearFromThread();
         }
     }
 

@@ -4,7 +4,7 @@ public final class TestContextHolder {
 
     private static final ThreadLocal<TestContext> holder = new ThreadLocal<>();
 
-    public static void bindTestContextToThread(TestContext testContext) {
+    public static void bindToThread(TestContext testContext) {
         holder.set(testContext);
     }
 
@@ -12,7 +12,7 @@ public final class TestContextHolder {
         return holder.get();
     }
 
-    public static void clearTestContextFromThread() {
+    public static void clearFromThread() {
         holder.remove();
     }
 }
