@@ -60,7 +60,7 @@ class ReflectionUtilTest {
 
         List<Method> result = testMethodsOf(Superclass.class).collect(toList());
 
-        assertThat(result).containsExactlyElementsOf(expected);
+        assertThat(result).containsAll(expected);
     }
 
     @Test
@@ -75,7 +75,7 @@ class ReflectionUtilTest {
 
         List<Method> result = testMethodsOf(Subclass.class).collect(toList());
 
-        assertThat(result).containsExactlyElementsOf(expected);
+        assertThat(result).containsAll(expected);
     }
 
     @Test
@@ -87,7 +87,7 @@ class ReflectionUtilTest {
 
         List<Method> result = testMethodsOf(TestImpl.class).collect(toList());
 
-        assertThat(result).containsExactlyElementsOf(expected);
+        assertThat(result).containsAll(expected);
     }
 
     static class NotAnnotated {
