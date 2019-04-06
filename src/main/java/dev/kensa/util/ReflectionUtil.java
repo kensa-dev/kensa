@@ -9,10 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -41,6 +38,27 @@ public final class ReflectionUtil {
             return requiredType.cast(findMethod(target.getClass(), name).invoke(target));
         } catch (Exception e) {
             throw new KensaException(String.format("Unable to invoke method [%s] on class [%s]", name, name), e);
+        }
+    }
+
+    public static Map<String, NameValuePair> fieldValuesOf(Object target) {
+        try {
+            Map<String, NameValuePair> values = new HashMap<>();
+            Class<?> aClass = target.getClass();
+
+            while (aClass != Object.class) {
+                Field[] declaredFields = aClass.getDeclaredFields();
+                for (Field field : declaredFields) {
+                    field.setAccessible(true);
+                    NameValuePair nameValuePair = new NameValuePair(field.getName(), field.get(target));
+                    values.put(nameValuePair.name(), nameValuePair);
+                }
+                aClass = aClass.getSuperclass();
+            }
+
+            return values;
+        } catch (IllegalAccessException e) {
+            throw new KensaException(String.format("Unable to get field values of class [%s]", target.getClass().getName()), e);
         }
     }
 

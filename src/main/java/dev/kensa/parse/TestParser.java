@@ -5,12 +5,12 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import dev.kensa.KensaException;
 import dev.kensa.util.NameValuePair;
+import dev.kensa.util.ReflectionUtil;
 import dev.kensa.util.SourceCodeIndex;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,7 +31,7 @@ public class TestParser {
         ParameterParser parameterParser = new ParameterParser(declaration);
         Map<String, NameValuePair> parameters = parameterParser.parameters(arguments);
 
-        Map<String, NameValuePair> fieldValues = new HashMap<>();
+        Map<String, NameValuePair> fieldValues = fieldValues();
         fieldValues.putAll(parameters);
 
         MethodParser methodParser = new MethodParser(declaration, s -> Optional.ofNullable(fieldValues.get(s)));
@@ -40,6 +40,10 @@ public class TestParser {
             parameters.values(),
             methodParser.sentences()
         );
+    }
+
+    private Map<String, NameValuePair> fieldValues() {
+        return ReflectionUtil.fieldValuesOf(testInstance);
     }
 
     private MethodDeclaration methodDeclarationFrom(Method method) {
