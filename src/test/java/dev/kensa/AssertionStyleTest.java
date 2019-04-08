@@ -24,7 +24,6 @@ class AssertionStyleTest implements KensaTest {
     }
 
     @Test
-    @Disabled
     void canUseAssertJStyle() {
         given(someActionNameIsAddedToGivens());
 
