@@ -1,6 +1,8 @@
 package dev.kensa.util;
 
+import dev.kensa.Highlight;
 import dev.kensa.KensaException;
+import dev.kensa.SentenceValue;
 import dev.kensa.function.Unchecked;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,25 +43,23 @@ public final class ReflectionUtil {
         }
     }
 
-    public static Map<String, NameValuePair> fieldValuesOf(Object target) {
-        try {
-            Map<String, NameValuePair> values = new HashMap<>();
-            Class<?> aClass = target.getClass();
+    public static Map<String, NameValuePair> interestingFieldValuesOf(Object target) {
+        Map<String, NameValuePair> values = new HashMap<>();
+        Class<?> aClass = target.getClass();
 
-            while (aClass != Object.class) {
-                Field[] declaredFields = aClass.getDeclaredFields();
-                for (Field field : declaredFields) {
-                    field.setAccessible(true);
-                    NameValuePair nameValuePair = new NameValuePair(field.getName(), field.get(target));
-                    values.putIfAbsent(nameValuePair.name(), nameValuePair);
-                }
-                aClass = aClass.getSuperclass();
-            }
-
-            return values;
-        } catch (IllegalAccessException e) {
-            throw new KensaException(String.format("Unable to get field values of class [%s]", target.getClass().getName()), e);
+        while (aClass != Object.class) {
+            Field[] declaredFields = aClass.getDeclaredFields();
+            Arrays.stream(declaredFields)
+                  .filter(field -> field.isAnnotationPresent(Highlight.class) || field.isAnnotationPresent(SentenceValue.class))
+                  .forEach(Unchecked.consumer(field -> {
+                      field.setAccessible(true);
+                      NameValuePair nameValuePair = new NameValuePair(field.getName(), field.get(target));
+                      values.putIfAbsent(nameValuePair.name(), nameValuePair);
+                  }));
+            aClass = aClass.getSuperclass();
         }
+
+        return values;
     }
 
     private static Method findMethod(Class<?> target, String name) {

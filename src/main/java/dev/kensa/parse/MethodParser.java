@@ -53,7 +53,7 @@ class MethodParser {
     private SentenceBuilder buildSentenceFrom(Node node, SentenceBuilder builder) {
         if (node instanceof NameExpr) {
             String identifier = ((NameExpr) node).getName().getIdentifier();
-            return builder.appendParameter(replaceWithRealValue(identifier));
+            return builder.appendParameter(replaceWithRealValueOf(identifier));
         }
 
         if (node instanceof SimpleName) {
@@ -70,7 +70,7 @@ class MethodParser {
         return builder;
     }
 
-    private String replaceWithRealValue(String identifier) {
+    private String replaceWithRealValueOf(String identifier) {
         return identifierProvider.apply(identifier)
                                  .map(NameValuePair::value)
                                  .map(Object::toString)

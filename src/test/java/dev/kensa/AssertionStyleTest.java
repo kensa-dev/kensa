@@ -14,8 +14,10 @@ import static org.hamcrest.CoreMatchers.is;
 class AssertionStyleTest implements KensaTest {
 
     private final String actionName = "ACTION1";
-    @Highlight
+
+    @SentenceValue
     private final String theExpectedResult = "Performed: ACTION1";
+
     private final ActionPerformer performer = new ActionPerformer();
 
     @BeforeEach
@@ -43,7 +45,7 @@ class AssertionStyleTest implements KensaTest {
 
     @ParameterizedTest
     @MethodSource("parameterProvider")
-    void parameterizedTest(String actionName, String theExpectedResult) {
+    void parameterizedTest(@Highlight String actionName, String theExpectedResult) {
         given(somethingIsDoneWith(actionName));
 
         when(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions());

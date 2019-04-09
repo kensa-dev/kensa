@@ -27,7 +27,7 @@ public class TestParser {
         ParameterParser parameterParser = new ParameterParser(declaration);
         Map<String, NameValuePair> parameters = parameterParser.parameters(arguments);
 
-        Map<String, NameValuePair> fieldValues = ReflectionUtil.fieldValuesOf(testInstance);
+        Map<String, NameValuePair> fieldValues = ReflectionUtil.interestingFieldValuesOf(testInstance);
         fieldValues.putAll(parameters);
 
         MethodParser methodParser = new MethodParser(declaration, s -> Optional.ofNullable(fieldValues.get(s)));
