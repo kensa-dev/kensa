@@ -19,6 +19,12 @@ public class SentenceBuilder {
         return this;
     }
 
+    public SentenceBuilder appendLiteral(String value) {
+        tokens.add(new SentenceToken(Token.Type.Literal, value));
+
+        return this;
+    }
+
     public SentenceBuilder append(String value) {
         scanner.scan(value).stream()
                .forEach(index -> {

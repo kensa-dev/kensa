@@ -22,8 +22,8 @@ class SentenceTest {
 
     @Test
     void squashesTokensContainingWordsAndOtherTypes() {
-        List<SentenceToken> expected = List.of(parameterOf("P1"), wordOf("Word1 Word2"), keywordOf("K1"), acronymOf("FOO"), keywordOf("K2"), wordOf("Word3 Word4"), acronymOf("BOO"));
-        Sentence sentence = new Sentence(List.of(parameterOf("P1"), wordOf("Word1"), wordOf("Word2"), keywordOf("K1"), acronymOf("FOO"), keywordOf("K2"), wordOf("Word3"), wordOf("Word4"), acronymOf("BOO")));
+        List<SentenceToken> expected = List.of(parameterOf("P1"), wordOf("Word1 Word2"), literalOf("L1"), keywordOf("K1"), acronymOf("FOO"), keywordOf("K2"), wordOf("Word3 Word4"), acronymOf("BOO"));
+        Sentence sentence = new Sentence(List.of(parameterOf("P1"), wordOf("Word1"), wordOf("Word2"), literalOf("L1"), keywordOf("K1"), acronymOf("FOO"), keywordOf("K2"), wordOf("Word3"), wordOf("Word4"), acronymOf("BOO")));
 
         List<SentenceToken> squashed = sentence.squashedTokens().collect(Collectors.toList());
 
@@ -32,6 +32,10 @@ class SentenceTest {
 
     private SentenceToken wordOf(String word) {
         return tokenOf(Word, word);
+    }
+
+    private SentenceToken literalOf(String word) {
+        return tokenOf(Literal, word);
     }
 
     private SentenceToken acronymOf(String acronym) {

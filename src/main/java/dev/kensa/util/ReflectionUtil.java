@@ -96,8 +96,7 @@ public final class ReflectionUtil {
         return findAnnotatedMethods(target, new LinkedHashSet<>(), annotations).stream();
     }
 
-    @SafeVarargs
-    private static Set<Method> findAnnotatedMethods(Class<?> target, Set<Method> methods, Class<? extends Annotation>... annotations) {
+    private static Set<Method> findAnnotatedMethods(Class<?> target, Set<Method> methods, Class<? extends Annotation>[] annotations) {
         Arrays.stream(target.getInterfaces())
               .forEach(i -> findAnnotatedMethods(i, methods, annotations));
 
@@ -113,8 +112,7 @@ public final class ReflectionUtil {
         return methods;
     }
 
-    @SafeVarargs
-    private static Predicate<Method> isAnnotatedWith(Class<? extends Annotation>... annotations) {
+    private static Predicate<Method> isAnnotatedWith(Class<? extends Annotation>[] annotations) {
         return m -> Arrays.stream(annotations).anyMatch(m::isAnnotationPresent);
     }
 

@@ -61,7 +61,7 @@ class MethodParser {
         }
 
         if (node instanceof StringLiteralExpr) {
-            return builder.append(((StringLiteralExpr) node).asString());
+            return builder.appendLiteral(((StringLiteralExpr) node).getValue());
         }
 
         node.getChildNodes()

@@ -28,6 +28,7 @@ public class Sentence {
                 case Acronym:
                 case Keyword:
                 case Parameter:
+                case Literal:
                     if (currentTokenType == Word) {
                         squashed.add(new SentenceToken(currentTokenType, currentValue));
                         currentValue = "";
@@ -46,7 +47,7 @@ public class Sentence {
             currentTokenType = token.type();
         }
 
-        if(currentTokenType == Word) {
+        if (currentTokenType == Word) {
             squashed.add(new SentenceToken(currentTokenType, currentValue));
         }
 

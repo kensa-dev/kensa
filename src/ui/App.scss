@@ -13,6 +13,18 @@
   font-weight: bold;
 }
 
+.token-literal {
+  font-weight: bold;
+}
+
+.token-literal:before {
+  content: open-quote;
+}
+
+.token-literal:after {
+  content: close-quote;
+  }
+
 // This class uses underscores because it is created inside PlantUML
 // where dashes are special
 .sequence_diagram_clickable {
