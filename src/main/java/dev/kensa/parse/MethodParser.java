@@ -44,30 +44,58 @@ class MethodParser {
     private Sentence toSentence(Statement statement) {
         return statement.getChildNodes()
                         .stream()
-                        .map(node -> buildSentenceFrom(node, new SentenceBuilder()))
+                        .map(this::toSentence)
                         .map(SentenceBuilder::build)
                         .findFirst()
                         .orElseThrow(() -> new IllegalStateException(String.format("Unable to construct sentence from statement [%s]", statement.toString())));
     }
 
-    private SentenceBuilder buildSentenceFrom(Node node, SentenceBuilder builder) {
+    private SentenceBuilder toSentence(Node node) {
+        SentenceBuilder builder = new SentenceBuilder();
+
+        int startLine = startLineOf(node);
+
+        append(node, startLine, builder);
+
+        return builder;
+    }
+
+    private int append(Node node, int lastLineNumber, SentenceBuilder builder) {
+        int startLine = startLineOf(node);
+
+        if (startLine > lastLineNumber) {
+            lastLineNumber = startLine;
+            builder.appendNewLine();
+        }
+
         if (node instanceof NameExpr) {
             String identifier = ((NameExpr) node).getName().getIdentifier();
-            return builder.appendParameter(replaceWithRealValueOf(identifier));
+            builder.appendParameter(replaceWithRealValueOf(identifier));
+            return lastLineNumber;
         }
 
         if (node instanceof SimpleName) {
-            return builder.append(((SimpleName) node).getIdentifier());
+            String identifier = ((SimpleName) node).getIdentifier();
+            builder.append(identifier);
+            return lastLineNumber;
         }
 
         if (node instanceof StringLiteralExpr) {
-            return builder.appendLiteral(((StringLiteralExpr) node).getValue());
+            builder.appendLiteral(((StringLiteralExpr) node).getValue());
+            return lastLineNumber;
         }
 
-        node.getChildNodes()
-            .forEach(n -> buildSentenceFrom(n, builder));
+        for (Node n : node.getChildNodes()) {
+            lastLineNumber = append(n, lastLineNumber, builder);
+        }
 
-        return builder;
+        return lastLineNumber;
+    }
+
+    private int startLineOf(Node node) {
+        return node.getRange()
+                .map(range -> range.begin.line)
+                .orElse(0);
     }
 
     private String replaceWithRealValueOf(String identifier) {

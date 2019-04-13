@@ -13,19 +13,15 @@ public class SentenceBuilder {
 
     public SentenceBuilder() {scanner = new TokenScanner();}
 
-    public SentenceBuilder appendParameter(String value) {
+    public void appendParameter(String value) {
         tokens.add(new SentenceToken(Token.Type.Parameter, value));
-
-        return this;
     }
 
-    public SentenceBuilder appendLiteral(String value) {
+    public void appendLiteral(String value) {
         tokens.add(new SentenceToken(Token.Type.Literal, value));
-
-        return this;
     }
 
-    public SentenceBuilder append(String value) {
+    public void append(String value) {
         scanner.scan(value).stream()
                .forEach(index -> {
                    String rawToken = value.substring(index.start(), index.end());
@@ -33,23 +29,25 @@ public class SentenceBuilder {
 
                    tokens.add(new SentenceToken(index.type(), tokenValue));
                });
+    }
 
-        return this;
+    public void appendNewLine() {
+        tokens.add(new SentenceToken(Token.Type.NewLine, ""));
+    }
+
+    public Sentence build() {
+        return new Sentence(tokens);
     }
 
     private String tokenValueFor(Index index, String rawToken) {
         String tokenValue = rawToken;
         if (index.type() == Token.Type.Word) {
-            if(tokens.size() == 0) {
-                 tokenValue = Character.toUpperCase(rawToken.charAt(0)) + rawToken.substring(1);
+            if (tokens.size() == 0) {
+                tokenValue = Character.toUpperCase(rawToken.charAt(0)) + rawToken.substring(1);
             } else {
-                 tokenValue = Character.toLowerCase(rawToken.charAt(0)) + rawToken.substring(1);
+                tokenValue = Character.toLowerCase(rawToken.charAt(0)) + rawToken.substring(1);
             }
         }
         return tokenValue;
-    }
-
-    public Sentence build() {
-        return new Sentence(tokens);
     }
 }

@@ -8,6 +8,7 @@ public interface Token {
         Acronym,
         Keyword,
         Literal,
+        NewLine,
         Parameter,
         Word
     }

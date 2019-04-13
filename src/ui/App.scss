@@ -17,6 +17,15 @@
   font-weight: bold;
 }
 
+.token-newline:before {
+  display: block;
+  content: "\A";
+}
+
+.token-newline:after {
+  content: "\2003";
+}
+
 .token-literal:before {
   content: open-quote;
 }

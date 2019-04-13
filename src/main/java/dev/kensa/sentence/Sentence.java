@@ -29,6 +29,7 @@ public class Sentence {
                 case Keyword:
                 case Parameter:
                 case Literal:
+                case NewLine:
                     if (currentTokenType == Word) {
                         squashed.add(new SentenceToken(currentTokenType, currentValue));
                         currentValue = "";
