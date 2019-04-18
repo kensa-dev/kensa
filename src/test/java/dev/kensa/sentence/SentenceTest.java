@@ -22,12 +22,12 @@ class SentenceTest {
     @Test
     void squashesTokensContainingWordsAndOtherTypes() {
         List<SentenceToken> expected = List.of(
-                SentenceTokens.aParameterOf("P1"), SentenceTokens.aWordOf("Word1 Word2"), SentenceTokens.aStringLiteralOf("L1"), SentenceTokens.aLiteralOf("null"), SentenceTokens.aKeywordOf("K1"), SentenceTokens
+                SentenceTokens.anIdentifierOf("P1"), SentenceTokens.aWordOf("Word1 Word2"), SentenceTokens.aStringLiteralOf("L1"), SentenceTokens.aLiteralOf("null"), SentenceTokens.aKeywordOf("K1"), SentenceTokens
                         .aNewline(), SentenceTokens.anAcronymOf("FOO"), SentenceTokens.aKeywordOf("K2"), SentenceTokens.aWordOf("Word3 Word4"),
                 SentenceTokens.anAcronymOf("BOO"), SentenceTokens.aLiteralOf("true")
         );
         Sentence sentence = new Sentence(
-                List.of(SentenceTokens.aParameterOf("P1"), SentenceTokens.aWordOf("Word1"), SentenceTokens.aWordOf("Word2"), SentenceTokens.aStringLiteralOf("L1"), SentenceTokens.aLiteralOf("null"), SentenceTokens
+                List.of(SentenceTokens.anIdentifierOf("P1"), SentenceTokens.aWordOf("Word1"), SentenceTokens.aWordOf("Word2"), SentenceTokens.aStringLiteralOf("L1"), SentenceTokens.aLiteralOf("null"), SentenceTokens
                                 .aKeywordOf("K1"), SentenceTokens.aNewline(), SentenceTokens.anAcronymOf("FOO"), SentenceTokens.aKeywordOf("K2"), SentenceTokens.aWordOf("Word3"),
                         SentenceTokens.aWordOf("Word4"), SentenceTokens.anAcronymOf("BOO"), SentenceTokens.aLiteralOf("true")
                 ));

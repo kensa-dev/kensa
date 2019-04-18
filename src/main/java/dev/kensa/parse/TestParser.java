@@ -1,6 +1,7 @@
 package dev.kensa.parse;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import dev.kensa.render.Renderers;
 import dev.kensa.util.NameValuePair;
 import dev.kensa.util.ReflectionUtil;
 
@@ -13,12 +14,14 @@ public class TestParser {
     private final Object testInstance;
     private final Method method;
     private final Object[] arguments;
+    private final Renderers renderers;
     private final MethodDeclarationProvider methodDeclarationProvider;
 
-    public TestParser(Object testInstance, Method method, Object[] arguments, MethodDeclarationProvider methodDeclarationProvider) {
+    public TestParser(Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider) {
         this.testInstance = testInstance;
         this.method = method;
         this.arguments = arguments;
+        this.renderers = renderers;
         this.methodDeclarationProvider = methodDeclarationProvider;
     }
 
@@ -30,7 +33,7 @@ public class TestParser {
         Map<String, NameValuePair> fieldValues = ReflectionUtil.interestingFieldValuesOf(testInstance);
         fieldValues.putAll(parameters);
 
-        MethodParser methodParser = new MethodParser(declaration, s -> Optional.ofNullable(fieldValues.get(s)));
+        MethodParser methodParser = new MethodParser(declaration, renderers, s -> Optional.ofNullable(fieldValues.get(s)));
 
         return new ParsedTest(
                 parameters.values(),

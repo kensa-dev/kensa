@@ -28,7 +28,7 @@ public final class SentenceTokens {
         return aTokenOf(Keyword, acronym);
     }
 
-    public static SentenceToken aParameterOf(String acronym) {
+    public static SentenceToken anIdentifierOf(String acronym) {
         return aTokenOf(Identifier, acronym);
     }
 

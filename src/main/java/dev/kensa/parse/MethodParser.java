@@ -7,6 +7,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import dev.kensa.render.Renderers;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.SentenceBuilder;
 import dev.kensa.sentence.Sentences;
@@ -22,10 +23,12 @@ import static dev.kensa.parse.SentenceCollector.asSentences;
 class MethodParser {
 
     private final MethodDeclaration methodDeclaration;
+    private final Renderers renderers;
     private final Function<String, Optional<NameValuePair>> identifierProvider;
 
-    MethodParser(MethodDeclaration methodDeclaration, Function<String, Optional<NameValuePair>> identifierProvider) {
+    MethodParser(MethodDeclaration methodDeclaration, Renderers renderers, Function<String, Optional<NameValuePair>> identifierProvider) {
         this.methodDeclaration = methodDeclaration;
+        this.renderers = renderers;
         this.identifierProvider = identifierProvider;
     }
 
@@ -106,7 +109,7 @@ class MethodParser {
     private String replaceWithRealValueOf(String identifier) {
         return identifierProvider.apply(identifier)
                                  .map(NameValuePair::value)
-                                 .map(Object::toString)
+                                 .map(renderers::render)
                                  .orElse(identifier);
     }
 }

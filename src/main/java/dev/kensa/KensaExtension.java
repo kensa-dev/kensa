@@ -108,7 +108,13 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
     @SuppressWarnings("WeakerAccess")
     public void processTestMethodArguments(ExtensionContext context, Object[] arguments) {
         ExtensionContext.Store store = context.getStore(KENSA);
-        store.put(TEST_PARSER_KEY, new TestParser(context.getRequiredTestInstance(), context.getRequiredTestMethod(), arguments, METHOD_DECLARATION_PROVIDER));
+        store.put(TEST_PARSER_KEY, new TestParser(
+                context.getRequiredTestInstance(),
+                context.getRequiredTestMethod(),
+                arguments,
+                Kensa.configuration().renderers(),
+                METHOD_DECLARATION_PROVIDER
+        ));
     }
 
     private Object[] argumentsFrom(ExtensionContext context) {

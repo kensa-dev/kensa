@@ -31,7 +31,7 @@ class SentenceBuilderTest {
                         aLiteralOf("literal1"),
                         aStringLiteralOf("stringLiteral1"),
                         aNewline(),
-                        aParameterOf("parameter1")
+                        anIdentifierOf("parameter1")
                 );
     }
 }
