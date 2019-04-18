@@ -7,9 +7,10 @@ public interface Token {
     enum Type {
         Acronym,
         Keyword,
+        StringLiteral,
         Literal,
         NewLine,
-        Parameter,
+        Identifier,
         Word
     }
 }

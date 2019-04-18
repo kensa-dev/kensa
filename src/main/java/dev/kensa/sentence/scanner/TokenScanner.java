@@ -9,15 +9,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dev.kensa.sentence.Token.Type.*;
-import static java.util.stream.Collectors.joining;
 
 public class TokenScanner {
 
     public Indices scan(String string) {
         Indices indices = new Indices();
 
-        scanFor(keywordPattern(), string, indices, Keyword);
-        scanFor(acronymPattern(), string, indices, Acronym);
+        scanFor(Keyword, Dictionary.keywordPattern(), string, indices);
+        scanFor(Acronym, Dictionary.acronymPattern(), string, indices);
         scanForWords(string, indices);
 
         return indices;
@@ -51,26 +50,12 @@ public class TokenScanner {
         }
     }
 
-    private String acronymPattern() {
-        return Dictionary.acronyms().sorted((a1, a2) -> Integer.compare(a2.length(), a1.length())) // ** Important: Longest first
-                         .collect(joining("|"));
-    }
-
-    private String keywordPattern() {
-        return Dictionary.keywords().sorted((a1, a2) -> Integer.compare(a2.length(), a1.length())) // ** Important: Longest first
-                         .collect(joining("|", "^(", ")"));
-    }
-
-    private void scanFor(String patternString, String string, Indices indices, Token.Type type) {
-        if (patternString.length() > 0) {
-            Pattern pattern = Pattern.compile(patternString);
-
-            Matcher matcher = pattern.matcher(string);
-            int start = 0;
-            while (matcher.find(start)) {
-                start = matcher.end();
-                indices.put(type, matcher.start(), matcher.end());
-            }
+    private void scanFor(Token.Type type, Pattern pattern, String string, Indices indices) {
+        Matcher matcher = pattern.matcher(string);
+        int start = 0;
+        while (matcher.find(start)) {
+            start = matcher.end();
+            indices.put(type, matcher.start(), matcher.end());
         }
     }
 }

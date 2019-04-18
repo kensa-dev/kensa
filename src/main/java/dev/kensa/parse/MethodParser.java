@@ -2,9 +2,9 @@ package dev.kensa.parse;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.LiteralExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import dev.kensa.sentence.Sentence;
@@ -24,10 +24,7 @@ class MethodParser {
     private final MethodDeclaration methodDeclaration;
     private final Function<String, Optional<NameValuePair>> identifierProvider;
 
-    MethodParser(
-            MethodDeclaration methodDeclaration,
-            Function<String, Optional<NameValuePair>> identifierProvider
-    ) {
+    MethodParser(MethodDeclaration methodDeclaration, Function<String, Optional<NameValuePair>> identifierProvider) {
         this.methodDeclaration = methodDeclaration;
         this.identifierProvider = identifierProvider;
     }
@@ -42,17 +39,17 @@ class MethodParser {
     }
 
     private Sentence toSentence(Statement statement) {
+        SentenceBuilder builder = new SentenceBuilder();
+
         return statement.getChildNodes()
                         .stream()
-                        .map(this::toSentence)
+                        .map(node -> toSentence(builder, node))
                         .map(SentenceBuilder::build)
                         .findFirst()
                         .orElseThrow(() -> new IllegalStateException(String.format("Unable to construct sentence from statement [%s]", statement.toString())));
     }
 
-    private SentenceBuilder toSentence(Node node) {
-        SentenceBuilder builder = new SentenceBuilder();
-
+    private SentenceBuilder toSentence(SentenceBuilder builder, Node node) {
         int startLine = startLineOf(node);
 
         append(node, startLine, builder);
@@ -70,7 +67,7 @@ class MethodParser {
 
         if (node instanceof NameExpr) {
             String identifier = ((NameExpr) node).getName().getIdentifier();
-            builder.appendParameter(replaceWithRealValueOf(identifier));
+            builder.appendIdentifier(replaceWithRealValueOf(identifier));
             return lastLineNumber;
         }
 
@@ -80,8 +77,16 @@ class MethodParser {
             return lastLineNumber;
         }
 
-        if (node instanceof StringLiteralExpr) {
-            builder.appendLiteral(((StringLiteralExpr) node).getValue());
+        if (node instanceof LiteralExpr) {
+            LiteralExpr le = (LiteralExpr) node;
+
+            le.ifLongLiteralExpr(e -> builder.appendLiteral(e.getValue()));
+            le.ifDoubleLiteralExpr(e -> builder.appendLiteral(e.getValue()));
+            le.ifIntegerLiteralExpr(e -> builder.appendLiteral(e.getValue()));
+            le.ifBooleanLiteralExpr(e -> builder.appendLiteral(String.valueOf(e.getValue())));
+            le.ifNullLiteralExpr(e -> builder.appendLiteral("null"));
+            le.ifStringLiteralExpr(e -> builder.appendStringLiteral(e.getValue()));
+
             return lastLineNumber;
         }
 
@@ -94,8 +99,8 @@ class MethodParser {
 
     private int startLineOf(Node node) {
         return node.getRange()
-                .map(range -> range.begin.line)
-                .orElse(0);
+                   .map(range -> range.begin.line)
+                   .orElse(0);
     }
 
     private String replaceWithRealValueOf(String identifier) {

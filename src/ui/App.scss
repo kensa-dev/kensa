@@ -5,11 +5,14 @@
 }
 
 .token-keyword {
-  text-transform: capitalize;
   font-weight: bold;
 }
 
-.token-parameter {
+.token-identifier {
+  font-weight: bold;
+}
+
+.token-stringliteral {
   font-weight: bold;
 }
 
@@ -26,11 +29,11 @@
   content: "\2003";
 }
 
-.token-literal:before {
+.token-stringliteral:before {
   content: open-quote;
 }
 
-.token-literal:after {
+.token-stringliteral:after {
   content: close-quote;
   }
 
