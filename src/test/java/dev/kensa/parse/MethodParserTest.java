@@ -1,9 +1,11 @@
 package dev.kensa.parse;
 
 import dev.kensa.render.Renderers;
+import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.Sentences;
 import dev.kensa.util.NameValuePair;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,6 +19,34 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MethodParserTest {
+
+    @AfterEach
+    void tearDown() {
+        Dictionary.clearAcronyms();
+    }
+
+    @Test
+    void canParseMethodWithAcronymsInStatement() {
+        Dictionary.putAcronym("KCI");
+
+        String code = "class T {\n" +
+                "   void testMethod() {\n" +
+                "      given(aKCIOf(\"On\"));\n" +
+                "   }\n" +
+                "}\n";
+
+
+        List<Sentence> sentences = parseToSentences(code);
+
+        assertThat(sentences).hasSize(1);
+        assertThat(sentences.get(0).stream()).containsExactly(
+                aKeywordOf("Given"),
+                aWordOf("a"),
+                anAcronymOf("KCI"),
+                aWordOf("of"),
+                aStringLiteralOf("On")
+        );
+    }
 
     @Test
     void canParseSimpleSingleLineStatementsWithStringLiterals() {

@@ -67,7 +67,7 @@ public class SentenceBuilder {
             if (tokens.size() == 0) {
                 tokenValue = Character.toUpperCase(rawToken.charAt(0)) + rawToken.substring(1);
             }
-        } else {
+        } else if(index.type() == Word){
             tokenValue = Character.toLowerCase(rawToken.charAt(0)) + rawToken.substring(1);
         }
         return tokenValue;

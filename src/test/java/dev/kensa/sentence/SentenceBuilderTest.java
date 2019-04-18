@@ -1,5 +1,6 @@
 package dev.kensa.sentence;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,9 +16,16 @@ class SentenceBuilderTest {
         builder = new SentenceBuilder();
     }
 
+    @AfterEach
+    void tearDown() {
+        Dictionary.clearAcronyms();
+    }
+
     @Test
     void canConstructASentenceFromVariousValueTypes() {
-        builder.append("givenFooBar")
+        Dictionary.putAcronym("FOO");
+
+        builder.append("givenFOOBar")
                .appendLiteral("literal1")
                .appendStringLiteral("stringLiteral1")
                .appendNewLine()
@@ -26,7 +34,7 @@ class SentenceBuilderTest {
         assertThat(builder.build().stream())
                 .containsExactly(
                         aKeywordOf("Given"),
-                        aWordOf("foo"),
+                        anAcronymOf("FOO"),
                         aWordOf("bar"),
                         aLiteralOf("literal1"),
                         aStringLiteralOf("stringLiteral1"),

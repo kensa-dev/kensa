@@ -27,7 +27,7 @@ public class TokenScanner {
 
         int lastIndexEnd = 0;
         for (Index thisIndex : indices) {
-            if (lastIndexEnd < thisIndex.start() - 1) {
+            if (lastIndexEnd < thisIndex.start()) {
                 splitIntoWords(wordList, string.substring(lastIndexEnd, thisIndex.start()), lastIndexEnd);
             }
 

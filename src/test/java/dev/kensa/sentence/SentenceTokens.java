@@ -20,7 +20,7 @@ public final class SentenceTokens {
         return aTokenOf(StringLiteral, word);
     }
 
-    static SentenceToken anAcronymOf(String acronym) {
+    public static SentenceToken anAcronymOf(String acronym) {
         return aTokenOf(Acronym, acronym);
     }
 

@@ -57,6 +57,18 @@ class TokenScannerTest {
         assertThat(transformed(indices, string)).isEqualTo(expected);
     }
 
+    // Kensa#6
+    @Test
+    void scansStringWithSingleCharacterFollowedByAcronym() {
+        Dictionary.putAcronyms("FTTC");
+        List<String> expected = List.of("a", "FTTC", "And", "This", "And", "That");
+        var string = String.join("", expected);
+
+        Indices indices = tokenScanner.scan(string);
+
+        assertThat(transformed(indices, string)).isEqualTo(expected);
+    }
+
     @Test
     void scansStringWithSingleAcronymAtStart() {
         Dictionary.putAcronyms("FTTC", "TT", "BT", "FTTP");
