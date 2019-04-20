@@ -6,8 +6,7 @@ import dev.kensa.util.NameValuePair;
 import dev.kensa.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
 public class TestParser {
 
@@ -27,17 +26,17 @@ public class TestParser {
 
     public ParsedTest parse() {
         MethodDeclaration declaration = methodDeclarationProvider.methodDeclarationFrom(method);
-        ParameterParser parameterParser = new ParameterParser(declaration);
-        Map<String, NameValuePair> parameters = parameterParser.parameters(arguments);
+        ParameterCollector parameterCollector = new ParameterCollector(declaration);
+        Set<NameValuePair> parameters = parameterCollector.collect(arguments);
 
-        Map<String, NameValuePair> fieldValues = ReflectionUtil.interestingFieldValuesOf(testInstance);
-        fieldValues.putAll(parameters);
+        CachingScenarioMethodAccessor scenarioAccessor = ReflectionUtil.scenarioAccessorFor(testInstance);
+        CachingFieldAccessor fieldAccessor = ReflectionUtil.interestingFieldsOf(testInstance);
+        ParameterAccessor parameterAccessor = new ParameterAccessor(parameters);
 
-        MethodParser methodParser = new MethodParser(declaration, renderers, s -> Optional.ofNullable(fieldValues.get(s)));
+        ValueAccessors valueAccessors = new ValueAccessors(renderers, scenarioAccessor, fieldAccessor, parameterAccessor);
 
-        return new ParsedTest(
-                parameters.values(),
-                methodParser.sentences()
-        );
+        MethodParser methodParser = new MethodParser(declaration, valueAccessors);
+
+        return new ParsedTest(parameters, methodParser.sentences());
     }
 }

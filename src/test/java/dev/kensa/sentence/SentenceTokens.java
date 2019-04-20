@@ -8,7 +8,7 @@ public final class SentenceTokens {
         return aTokenOf(Word, word);
     }
 
-    static SentenceToken aLiteralOf(String word) {
+    public static SentenceToken aLiteralOf(String word) {
         return aTokenOf(Literal, word);
     }
 
