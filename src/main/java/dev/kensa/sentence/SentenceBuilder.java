@@ -13,7 +13,12 @@ public class SentenceBuilder {
     private final List<SentenceToken> tokens = new ArrayList<>();
     private final TokenScanner scanner;
 
-    public SentenceBuilder() {scanner = new TokenScanner();}
+    private int lastLineNumber;
+
+    public SentenceBuilder(int startLine) {
+        lastLineNumber = startLine;
+        scanner = new TokenScanner();
+    }
 
     public SentenceBuilder appendIdentifier(String value) {
         append(value, Identifier);
@@ -35,12 +40,6 @@ public class SentenceBuilder {
         return this;
     }
 
-    public SentenceBuilder appendNewLine() {
-        append("", NewLine);
-
-        return this;
-    }
-
     public SentenceBuilder append(String value) {
         scanner.scan(value).stream()
                .forEach(index -> {
@@ -53,6 +52,15 @@ public class SentenceBuilder {
         return this;
     }
 
+    public SentenceBuilder markLineNumber(int thisLineNumber) {
+        if (thisLineNumber > lastLineNumber) {
+            lastLineNumber = thisLineNumber;
+            appendNewLine();
+        }
+
+        return this;
+    }
+
     public Sentence build() {
         return new Sentence(tokens);
     }
@@ -61,13 +69,17 @@ public class SentenceBuilder {
         tokens.add(new SentenceToken(literal, value));
     }
 
+    private void appendNewLine() {
+        append("", NewLine);
+    }
+
     private String tokenValueFor(Index index, String rawToken) {
         String tokenValue = rawToken;
         if (index.type() == Keyword) {
             if (tokens.size() == 0) {
                 tokenValue = Character.toUpperCase(rawToken.charAt(0)) + rawToken.substring(1);
             }
-        } else if(index.type() == Word){
+        } else if (index.type() == Word) {
             tokenValue = Character.toLowerCase(rawToken.charAt(0)) + rawToken.substring(1);
         }
         return tokenValue;

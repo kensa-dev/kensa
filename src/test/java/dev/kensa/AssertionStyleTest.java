@@ -23,6 +23,7 @@ class AssertionStyleTest implements KensaTest {
     @BeforeEach
     void setUp() {
         Dictionary.putAcronyms("ACTION1");
+        Dictionary.putKeywords("that");
     }
 
     @Test
@@ -40,7 +41,7 @@ class AssertionStyleTest implements KensaTest {
 
         when(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions());
 
-        then(theResultStoredInCapturedInteractions(), is(theExpectedResult));
+        then(theResultStoredInCapturedInteractions());
     }
 
     @ParameterizedTest

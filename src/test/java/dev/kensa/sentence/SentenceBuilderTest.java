@@ -13,7 +13,7 @@ class SentenceBuilderTest {
 
     @BeforeEach
     void setUp() {
-        builder = new SentenceBuilder();
+        builder = new SentenceBuilder(1);
     }
 
     @AfterEach
@@ -27,8 +27,8 @@ class SentenceBuilderTest {
 
         builder.append("givenFOOBar")
                .appendLiteral("literal1")
+               .markLineNumber(2)
                .appendStringLiteral("stringLiteral1")
-               .appendNewLine()
                .appendIdentifier("parameter1");
 
         assertThat(builder.build().stream())
@@ -37,8 +37,8 @@ class SentenceBuilderTest {
                         anAcronymOf("FOO"),
                         aWordOf("bar"),
                         aLiteralOf("literal1"),
-                        aStringLiteralOf("stringLiteral1"),
                         aNewline(),
+                        aStringLiteralOf("stringLiteral1"),
                         anIdentifierOf("parameter1")
                 );
     }

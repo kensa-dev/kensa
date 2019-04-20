@@ -42,42 +42,33 @@ class MethodParser {
     }
 
     private Sentence toSentence(Statement statement) {
-        SentenceBuilder builder = new SentenceBuilder();
-
         return statement.getChildNodes()
                         .stream()
-                        .map(node -> toSentence(builder, node))
+                        .map(this::toSentence)
                         .map(SentenceBuilder::build)
                         .findFirst()
                         .orElseThrow(() -> new IllegalStateException(String.format("Unable to construct sentence from statement [%s]", statement.toString())));
     }
 
-    private SentenceBuilder toSentence(SentenceBuilder builder, Node node) {
-        int startLine = startLineOf(node);
+    private SentenceBuilder toSentence(Node node) {
+        SentenceBuilder builder = new SentenceBuilder(startLineOf(node));
 
-        append(node, startLine, builder);
+        append(node, builder);
 
         return builder;
     }
 
-    private int append(Node node, int lastLineNumber, SentenceBuilder builder) {
-        int startLine = startLineOf(node);
-
-        if (startLine > lastLineNumber) {
-            lastLineNumber = startLine;
-            builder.appendNewLine();
-        }
+    private void append(Node node, SentenceBuilder builder) {
+        builder.markLineNumber(startLineOf(node));
 
         if (node instanceof NameExpr) {
             String identifier = ((NameExpr) node).getName().getIdentifier();
             builder.appendIdentifier(replaceWithRealValueOf(identifier));
-            return lastLineNumber;
         }
 
         if (node instanceof SimpleName) {
             String identifier = ((SimpleName) node).getIdentifier();
             builder.append(identifier);
-            return lastLineNumber;
         }
 
         if (node instanceof LiteralExpr) {
@@ -89,15 +80,11 @@ class MethodParser {
             le.ifBooleanLiteralExpr(e -> builder.appendLiteral(String.valueOf(e.getValue())));
             le.ifNullLiteralExpr(e -> builder.appendLiteral("null"));
             le.ifStringLiteralExpr(e -> builder.appendStringLiteral(e.getValue()));
-
-            return lastLineNumber;
         }
 
         for (Node n : node.getChildNodes()) {
-            lastLineNumber = append(n, lastLineNumber, builder);
+            append(n, builder);
         }
-
-        return lastLineNumber;
     }
 
     private int startLineOf(Node node) {
