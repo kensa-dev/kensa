@@ -1,4 +1,4 @@
-package dev.kensa.fixtures;
+package dev.kensa.fixture;
 
 import dev.kensa.context.TestContainer;
 import dev.kensa.state.TestInvocationData;
