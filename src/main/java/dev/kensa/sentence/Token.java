@@ -5,9 +5,12 @@ public interface Token {
     String asString();
 
     enum Type {
-        Keyword,
         Acronym,
-        Parameter,
+        Keyword,
+        StringLiteral,
+        Literal,
+        NewLine,
+        Identifier,
         Word
     }
 }

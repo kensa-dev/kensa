@@ -78,20 +78,20 @@ tasks.wrapper {
 }
 
 dependencies {
-    api("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
-    api("org.junit.jupiter:junit-jupiter-engine:${Versions.junitJupiter}")
     api("org.junit.jupiter:junit-jupiter-params:${Versions.junitJupiter}")
     api("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")
     api("org.assertj:assertj-core:${Versions.assertJ}")
     api("org.hamcrest:hamcrest-core:${Versions.hamcrest}")
-    api("com.eclipsesource.minimal-json:minimal-json:${Versions.minimalJson}")
 
+    implementation("org.junit.jupiter:junit-jupiter-engine:${Versions.junitJupiter}")
+    implementation("com.eclipsesource.minimal-json:minimal-json:${Versions.minimalJson}")
     implementation("com.github.javaparser:javaparser-core:${Versions.javaParser}")
     implementation("net.sourceforge.plantuml:plantuml:${Versions.plantUml}")
     implementation("io.pebbletemplates:pebble:${Versions.pebble}")
 
-    testCompile("org.mockito:mockito-core:${Versions.mockito}")
+    testCompile("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
     testCompile("org.junit.platform:junit-platform-testkit:${Versions.junitPlatform}")
+    testCompile("org.mockito:mockito-core:${Versions.mockito}")
 }
 
 publishing {

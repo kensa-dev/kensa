@@ -16,14 +16,12 @@ class RenderersTest {
 
     @Test
     void handlesNull() {
-        assertThat(renderers.rendererFor((Class<?>) null)).isNotNull();
+        assertThat(renderers.render(null)).isEqualTo("NULL");
     }
 
     @Test
     void defaultsToObjectRendererIfNoSpecificRendererExists() {
-        Renderer<Integer> renderer = renderers.rendererFor(Integer.class);
-
-        assertThat(renderer.render(100)).isEqualTo("100");
+        assertThat(renderers.render(100)).isEqualTo("100");
     }
 
     @Test
@@ -31,22 +29,22 @@ class RenderersTest {
         renderers.add(Integer.class, value -> "<" + value + ">");
         renderers.add(Boolean.class, value -> "<<" + value + ">>");
 
-        assertThat(renderers.rendererFor(Integer.class).render(100)).isEqualTo("<100>");
-        assertThat(renderers.rendererFor(Boolean.class).render(true)).isEqualTo("<<true>>");
+        assertThat(renderers.render(100)).isEqualTo("<100>");
+        assertThat(renderers.render(true)).isEqualTo("<<true>>");
     }
 
     @Test
     void canFindRendererSpecifiedByInterface() {
         renderers.add(MyInterface.class, value -> "<" + value.toString() + ">");
 
-        assertThat(renderers.rendererFor(MyClass.class).render(new MyClass("foo"))).isEqualTo("<foo>");
+        assertThat(renderers.render(new MyClass("foo"))).isEqualTo("<foo>");
     }
 
     @Test
     void canFindRendererSpecifiedBySuperclass() {
         renderers.add(MySuperclass.class, value -> "<" + value.toString() + ">");
 
-        assertThat(renderers.rendererFor(MyClass.class).render(new MyClass("boo"))).isEqualTo("<boo>");
+        assertThat(renderers.render(new MyClass("boo"))).isEqualTo("<boo>");
     }
 
     @Test
@@ -55,7 +53,7 @@ class RenderersTest {
         renderers.add(MyClass.class, value -> "<<<" + value.toString() + ">>>");
         renderers.add(MyInterface.class, value -> "<<" + value.toString() + ">>");
 
-        assertThat(renderers.rendererFor(MyClass.class).render(new MyClass("boo"))).isEqualTo("<<<boo>>>");
+        assertThat(renderers.render(new MyClass("boo"))).isEqualTo("<<<boo>>>");
 
     }
 

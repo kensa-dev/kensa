@@ -1,7 +1,5 @@
 package dev.kensa.render;
 
-import dev.kensa.util.KensaMap;
-
 import java.util.Comparator;
 import java.util.Map;
 import java.util.SortedMap;
@@ -16,22 +14,20 @@ public final class Renderers {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Renderer<T> rendererFor(Class<T> klass) {
+    public String render(Object value) {
+        if(value == null) {
+            return "NULL";
+        }
+        return rendererFor(value.getClass()).render(value);
+    }
+
+    private Renderer rendererFor(Class klass) {
         return renderers.entrySet()
                         .stream()
                         .filter(entry -> entry.getKey().isAssignableFrom(klass))
                         .map(Map.Entry::getValue)
-                        .map(renderer -> (Renderer<T>) renderer)
                         .findFirst()
-                        .orElse(objectRenderer());
-    }
-
-    public Renderer<?> rendererFor(KensaMap.Entry entry) {
-        return rendererFor(entry.value().getClass());
-    }
-
-    private <T> Renderer<T> objectRenderer() {
-        return value -> value == null ? "NULL" : value.toString();
+                        .orElse(Object::toString);
     }
 
     private static class SubclassFirstComparator implements Comparator<Class<?>> {

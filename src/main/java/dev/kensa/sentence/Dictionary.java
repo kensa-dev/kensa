@@ -1,26 +1,31 @@
 package dev.kensa.sentence;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static java.lang.Integer.compare;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
 
 public final class Dictionary {
 
+    private static final Pattern NO_MATCH_PATTERN = Pattern.compile(".^");
     private static final List<String> ONE_LETTER_WORDS = asList("A", "a", "I");
-    private static final List<String> ACRONYMS = new ArrayList<>();
-    private static final List<String> KEYWORDS = asList("given", "when", "then", "and");
+    private static final Set<String> ACRONYMS = new LinkedHashSet<>();
+    private static final Set<String> KEYWORDS = new LinkedHashSet<>(asList("given", "when", "then", "and", "with", "that"));
 
     public static void putAcronym(String value) {
-        if(value.length() < 2) {
+        if (value == null || value.length() < 2) {
             throw new IllegalArgumentException(String.format("Acronyms must be at least 2 characters. [%s]", value));
         }
         ACRONYMS.add(value);
     }
 
     public static void putKeyword(String value) {
-        if(value.length() < 2) {
+        if (value == null || value.length() < 2) {
             throw new IllegalArgumentException(String.format("Keywords must be at least 2 characters. [%s]", value));
         }
         KEYWORDS.add(value);
@@ -52,5 +57,16 @@ public final class Dictionary {
 
     public static Stream<String> keywords() {
         return KEYWORDS.stream();
+    }
+
+    public static Pattern acronymPattern() {
+        return ACRONYMS.isEmpty() ? NO_MATCH_PATTERN :
+                Pattern.compile(acronyms().sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
+                                          .collect(joining("|")));
+    }
+
+    public static Pattern keywordPattern() {
+        return Pattern.compile(keywords().sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
+                                         .collect(joining("|", "^(", ")")));
     }
 }

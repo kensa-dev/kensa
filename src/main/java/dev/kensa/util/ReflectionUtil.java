@@ -2,8 +2,11 @@ package dev.kensa.util;
 
 import dev.kensa.Highlight;
 import dev.kensa.KensaException;
+import dev.kensa.Scenario;
 import dev.kensa.SentenceValue;
 import dev.kensa.function.Unchecked;
+import dev.kensa.parse.CachingFieldAccessor;
+import dev.kensa.parse.CachingScenarioMethodAccessor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -36,30 +39,42 @@ public final class ReflectionUtil {
     }
 
     public static <T> T invokeMethod(Object target, String name, Class<T> requiredType) {
+        Objects.requireNonNull(target);
         try {
             return requiredType.cast(findMethod(target.getClass(), name).invoke(target));
         } catch (Exception e) {
-            throw new KensaException(String.format("Unable to invoke method [%s] on class [%s]", name, name), e);
+            throw new KensaException(String.format("Unable to invoke method [%s] on class [%s]", name, target.getClass().getName()), e);
         }
     }
 
-    public static Map<String, NameValuePair> interestingFieldValuesOf(Object target) {
-        Map<String, NameValuePair> values = new HashMap<>();
+    public static CachingFieldAccessor interestingFieldsOf(Object target) {
+        Set<String> fieldNames = new HashSet<>();
         Class<?> aClass = target.getClass();
 
         while (aClass != Object.class) {
             Field[] declaredFields = aClass.getDeclaredFields();
             Arrays.stream(declaredFields)
                   .filter(field -> field.isAnnotationPresent(Highlight.class) || field.isAnnotationPresent(SentenceValue.class))
-                  .forEach(Unchecked.consumer(field -> {
-                      field.setAccessible(true);
-                      NameValuePair nameValuePair = new NameValuePair(field.getName(), field.get(target));
-                      values.putIfAbsent(nameValuePair.name(), nameValuePair);
-                  }));
+                  .forEach(field -> fieldNames.add(field.getName()));
             aClass = aClass.getSuperclass();
         }
 
-        return values;
+        return new CachingFieldAccessor(target, fieldNames);
+    }
+
+    public static CachingScenarioMethodAccessor scenarioAccessorFor(Object target) {
+        Set<String> fieldNames = new HashSet<>();
+        Class<?> aClass = target.getClass();
+
+        while (aClass != Object.class) {
+            Field[] declaredFields = aClass.getDeclaredFields();
+            Arrays.stream(declaredFields)
+                  .filter(field -> field.isAnnotationPresent(Scenario.class))
+                  .forEach(field -> fieldNames.add(field.getName()));
+            aClass = aClass.getSuperclass();
+        }
+
+        return new CachingScenarioMethodAccessor(target, fieldNames);
     }
 
     private static Method findMethod(Class<?> target, String name) {
@@ -96,8 +111,7 @@ public final class ReflectionUtil {
         return findAnnotatedMethods(target, new LinkedHashSet<>(), annotations).stream();
     }
 
-    @SafeVarargs
-    private static Set<Method> findAnnotatedMethods(Class<?> target, Set<Method> methods, Class<? extends Annotation>... annotations) {
+    private static Set<Method> findAnnotatedMethods(Class<?> target, Set<Method> methods, Class<? extends Annotation>[] annotations) {
         Arrays.stream(target.getInterfaces())
               .forEach(i -> findAnnotatedMethods(i, methods, annotations));
 
@@ -113,8 +127,7 @@ public final class ReflectionUtil {
         return methods;
     }
 
-    @SafeVarargs
-    private static Predicate<Method> isAnnotatedWith(Class<? extends Annotation>... annotations) {
+    private static Predicate<Method> isAnnotatedWith(Class<? extends Annotation>[] annotations) {
         return m -> Arrays.stream(annotations).anyMatch(m::isAnnotationPresent);
     }
 
