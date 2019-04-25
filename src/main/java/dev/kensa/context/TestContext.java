@@ -2,6 +2,7 @@ package dev.kensa.context;
 
 import dev.kensa.ActionUnderTest;
 import dev.kensa.GivensBuilder;
+import dev.kensa.GivensWithInteractionsBuilder;
 import dev.kensa.StateExtractor;
 import dev.kensa.state.CapturedInteractions;
 import dev.kensa.state.Givens;
@@ -20,8 +21,12 @@ public class TestContext {
         this.interactions = interactions;
     }
 
-    public void given(GivensBuilder builder) {
+    public void given(GivensWithInteractionsBuilder builder) {
         builder.build(givens, interactions);
+    }
+
+    public void given(GivensBuilder builder) {
+        builder.build(givens);
     }
 
     public void when(ActionUnderTest action) {
