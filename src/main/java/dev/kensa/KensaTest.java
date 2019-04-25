@@ -17,6 +17,14 @@ public interface KensaTest {
         given(builder);
     }
 
+    default void given(GivensWithInteractionsBuilder builder) {
+        testContext().given(builder);
+    }
+
+    default void and(GivensWithInteractionsBuilder builder) {
+        given(builder);
+    }
+
     default void when(ActionUnderTest action) {
         testContext().when(action);
     }
