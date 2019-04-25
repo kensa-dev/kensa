@@ -16,18 +16,18 @@ public class Attributes implements Iterable<NameValuePair> {
         return EMPTY_ATTRIBUTES;
     }
 
-    public static Attributes of(String name, String value) {
+    public static Attributes of(String name, Object value) {
         return of(new NameValuePair(name, value));
     }
 
-    public static Attributes of(String name1, String value1, String name2, String value2) {
+    public static Attributes of(String name1, Object value1, String name2, Object value2) {
         return of(
                 new NameValuePair(name1, value1),
                 new NameValuePair(name2, value2)
         );
     }
 
-    public static Attributes of(String name1, String value1, String name2, String value2, String name3, String value3) {
+    public static Attributes of(String name1, Object value1, String name2, Object value2, String name3, Object value3) {
         return of(
                 new NameValuePair(name1, value1),
                 new NameValuePair(name2, value2),

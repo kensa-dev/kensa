@@ -13,6 +13,7 @@ import dev.kensa.util.NameValuePair;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -95,16 +96,33 @@ public final class JsonTransforms {
                      );
     }
 
-    @SuppressWarnings("unchecked")
     private static Function<KensaMap.Entry, JsonValue> entryAsJson(Renderers renderers) {
         return entry -> Json.object()
                             .add("name", entry.key())
-                            .add("value", renderers.render(entry.value()))
+                            .add("value", renderers.renderValueOnly(entry.value()))
+                            .add("renderables", asJsonArray(renderers.renderAll(entry.value()), entriesAsJson()))
                             .add("attributes", asJsonArray(entry.attributes(), nvpAsJson()));
     }
 
+    private static Function<Map.Entry<String, Object>, JsonValue> entriesAsJson() {
+        return entry -> {
+            JsonObject object = Json.object().add("name", entry.getKey());
+
+            if(entry.getValue() instanceof Map) {
+                Map map = (Map) entry.getValue();
+                object.add("value", asJsonArray(map.entrySet().stream(), entriesAsJson()));
+            } else {
+                object.add("value", entry.getValue().toString());
+            }
+
+            return object;
+        };
+    }
+
     private static Function<NameValuePair, JsonObject> nvpAsJson() {
-        return (nvp) -> Json.object().add("name", nvp.name()).add("value", nvp.value().toString());
+        return (nvp) -> Json.object()
+                            .add("name", nvp.name())
+                            .add("value", nvp.value().toString());
     }
 
     private static JsonObject executionExceptionFrom(TestInvocation invocation) {

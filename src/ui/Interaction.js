@@ -4,6 +4,7 @@ import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
 import {highlightJson, highlightXml} from "./Highlighting";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Lowlight from 'react-lowlight';
+import {NameValuePairsTable} from "./NameValuePairsTable";
 
 export class CapturedInteractions extends Component {
     render() {
@@ -21,6 +22,37 @@ export class CapturedInteractions extends Component {
     }
 }
 
+export class Renderable extends Component {
+    render() {
+        const renderable = this.props.renderable;
+        return (
+                <div className="box renderable">
+                    <div className="subtitle is-5">{renderable['name']}</div>
+                    <NameValuePairsTable nameValuePairs={renderable['value']}/>
+                </div>
+        )
+    }
+}
+
+export class Renderables extends Component {
+    render() {
+        const renderables = this.props.renderables;
+
+        return (
+                <div>
+                    {
+                        renderables.map((renderable) => {
+                                    if (renderable['name'] !== 'value') {
+                                        return <Renderable renderable={renderable}/>
+                                    }
+                                }
+                        )
+                    }
+                </div>
+        )
+    }
+}
+
 export class Interaction extends Component {
     constructor(props) {
         super(props);
@@ -32,8 +64,11 @@ export class Interaction extends Component {
         });
         let language = languageElement ? languageElement['value'] : 'plainText';
 
+        let renderables = capturedInteraction['renderables'];
+
         this.state = {
             capturedInteraction: capturedInteraction,
+            renderables: renderables,
             highlightRegexp: highlightRegexp,
             language: language,
             isCollapsed: true
@@ -41,7 +76,7 @@ export class Interaction extends Component {
 
         this.toggle = this.toggle.bind(this);
 
-        this.lowlightRef = React.createRef();
+        this.interactionRef = React.createRef();
     }
 
     toggle() {
@@ -69,7 +104,7 @@ export class Interaction extends Component {
     componentDidMount() {
         let highlightRegexp = this.state.highlightRegexp;
         if (highlightRegexp) {
-            let codeNode = this.lowlightRef.current.children[0].firstChild;
+            let codeNode = this.interactionRef.current.children[0].firstChild;
             if (this.state.language === 'xml') {
                 highlightXml(codeNode, highlightRegexp);
             } else if (this.state.language === 'json') {
@@ -88,8 +123,11 @@ export class Interaction extends Component {
                             <FontAwesomeIcon icon={this.icon()}/>
                         </a>
                     </header>
-                    <div ref={this.lowlightRef} className={this.contentClass()}>
-                        <Lowlight language={this.state.language} value={capturedInteraction.value}/>
+                    <div ref={this.interactionRef} className={this.contentClass()}>
+                        <Renderables renderables={this.state.renderables}/>
+                        <div className="box">
+                            <Lowlight language={this.state.language} value={capturedInteraction['value']}/>
+                        </div>
                     </div>
                 </div>
         )

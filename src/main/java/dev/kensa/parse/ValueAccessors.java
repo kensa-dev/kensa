@@ -22,12 +22,12 @@ public class ValueAccessors {
 
     Optional<String> realValueOf(String scenarioName, String methodName) {
         return scenarioAccessor.valueOf(scenarioName, methodName)
-                               .map(renderers::render);
+                               .map(renderers::renderValueOnly);
     }
 
     Optional<String> realValueOf(String identifier) {
         return parameterOrFieldValue(identifier)
-                .map(renderers::render);
+                .map(renderers::renderValueOnly);
     }
 
     private Optional<Object> parameterOrFieldValue(String identifier) {

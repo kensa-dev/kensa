@@ -16,12 +16,12 @@ class RenderersTest {
 
     @Test
     void handlesNull() {
-        assertThat(renderers.render(null)).isEqualTo("NULL");
+        assertThat(renderers.renderValueOnly(null)).isEqualTo("NULL");
     }
 
     @Test
     void defaultsToObjectRendererIfNoSpecificRendererExists() {
-        assertThat(renderers.render(100)).isEqualTo("100");
+        assertThat(renderers.renderValueOnly(100)).isEqualTo("100");
     }
 
     @Test
@@ -29,22 +29,22 @@ class RenderersTest {
         renderers.add(Integer.class, value -> "<" + value + ">");
         renderers.add(Boolean.class, value -> "<<" + value + ">>");
 
-        assertThat(renderers.render(100)).isEqualTo("<100>");
-        assertThat(renderers.render(true)).isEqualTo("<<true>>");
+        assertThat(renderers.renderValueOnly(100)).isEqualTo("<100>");
+        assertThat(renderers.renderValueOnly(true)).isEqualTo("<<true>>");
     }
 
     @Test
     void canFindRendererSpecifiedByInterface() {
         renderers.add(MyInterface.class, value -> "<" + value.toString() + ">");
 
-        assertThat(renderers.render(new MyClass("foo"))).isEqualTo("<foo>");
+        assertThat(renderers.renderValueOnly(new MyClass("foo"))).isEqualTo("<foo>");
     }
 
     @Test
     void canFindRendererSpecifiedBySuperclass() {
         renderers.add(MySuperclass.class, value -> "<" + value.toString() + ">");
 
-        assertThat(renderers.render(new MyClass("boo"))).isEqualTo("<boo>");
+        assertThat(renderers.renderValueOnly(new MyClass("boo"))).isEqualTo("<boo>");
     }
 
     @Test
@@ -53,7 +53,7 @@ class RenderersTest {
         renderers.add(MyClass.class, value -> "<<<" + value.toString() + ">>>");
         renderers.add(MyInterface.class, value -> "<<" + value.toString() + ">>");
 
-        assertThat(renderers.render(new MyClass("boo"))).isEqualTo("<<<boo>>>");
+        assertThat(renderers.renderValueOnly(new MyClass("boo"))).isEqualTo("<<<boo>>>");
 
     }
 

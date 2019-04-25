@@ -1,33 +1,63 @@
 package dev.kensa.render;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Stream;
 
 public final class Renderers {
 
-    private final SortedMap<Class<?>, Renderer<?>> renderers = new TreeMap<>(new SubclassFirstComparator());
+    private final SortedMap<Class<?>, Renderer<Object>> renderers = new TreeMap<>(new SubclassFirstComparator());
 
     public <T> void add(Class<T> klass, Renderer<? extends T> renderer) {
-        renderers.put(klass, renderer);
+        renderers.put(klass, (Renderer<Object>) renderer);
     }
 
-    @SuppressWarnings("unchecked")
-    public String render(Object value) {
-        if(value == null) {
+    public String renderValueOnly(Object value) {
+        if (value == null) {
             return "NULL";
         }
-        return rendererFor(value.getClass()).render(value);
+
+        return render(value);
     }
 
-    private Renderer rendererFor(Class klass) {
+    public Stream<Map.Entry<String, Object>> renderAll(Object value) {
+        Map<String, Object> renderedItems = new LinkedHashMap<>();
+
+        if (value == null) {
+            renderedItems.put("value", "NULL");
+        } else {
+            Renderer<Object> renderer = rendererFor(value.getClass())
+                    .map(r -> {
+                        for (RenderableAttribute renderableAttribute : r.renderableAttributes()) {
+                            Object attr = renderableAttribute.renderableFrom(value);
+                            if (attr instanceof Map) {
+                                renderedItems.put(renderableAttribute.name(), attr);
+                            } else {
+                                renderedItems.put(renderableAttribute.name(), render(attr));
+                            }
+                        }
+
+                        return r;
+                    })
+                    .orElseGet(() -> Object::toString);
+
+            renderedItems.put("value", renderer.render(value));
+        }
+
+        return renderedItems.entrySet().stream();
+    }
+
+    private String render(Object value) {
+        return rendererFor(value.getClass())
+                .map(r -> r.render(value))
+                .orElse(value.toString());
+    }
+
+    private Optional<Renderer<Object>> rendererFor(Class klass) {
         return renderers.entrySet()
                         .stream()
                         .filter(entry -> entry.getKey().isAssignableFrom(klass))
                         .map(Map.Entry::getValue)
-                        .findFirst()
-                        .orElse(Object::toString);
+                        .findFirst();
     }
 
     private static class SubclassFirstComparator implements Comparator<Class<?>> {
