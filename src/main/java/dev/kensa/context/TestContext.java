@@ -21,7 +21,7 @@ public class TestContext {
     }
 
     public void given(GivensBuilder builder) {
-        builder.build(givens);
+        builder.build(givens, interactions);
     }
 
     public void when(ActionUnderTest action) {
