@@ -1,6 +1,6 @@
 package dev.kensa.parse;
 
-import dev.kensa.util.NameValuePair;
+import dev.kensa.util.NamedValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +17,11 @@ class ParameterAccessorTest {
     @BeforeEach
     void setUp() {
         accessor = new ParameterAccessor(Set.of(
-                new NameValuePair("n1", "v1"),
-                new NameValuePair("n2", "v2"),
-                new NameValuePair("n3", "v3"),
-                new NameValuePair("n4", "v4"),
-                new NameValuePair("n5", null)
+                new NamedValue("n1", "v1"),
+                new NamedValue("n2", "v2"),
+                new NamedValue("n3", "v3"),
+                new NamedValue("n4", "v4"),
+                new NamedValue("n5", null)
         ));
     }
 

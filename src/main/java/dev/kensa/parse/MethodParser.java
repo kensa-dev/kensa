@@ -13,6 +13,7 @@ import dev.kensa.sentence.SentenceBuilder;
 import dev.kensa.sentence.Sentences;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static dev.kensa.parse.SentenceCollector.asSentences;
@@ -21,10 +22,12 @@ class MethodParser {
 
     private final MethodDeclaration methodDeclaration;
     private final ValueAccessors valueAccessors;
+    private final Set<String> highlightedValues;
 
-    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors) {
+    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues) {
         this.methodDeclaration = methodDeclaration;
         this.valueAccessors = valueAccessors;
+        this.highlightedValues = highlightedValues;
     }
 
     Sentences sentences() {
@@ -46,7 +49,7 @@ class MethodParser {
     }
 
     private SentenceBuilder toSentence(Node node) {
-        SentenceBuilder builder = new SentenceBuilder(startLineOf(node));
+        SentenceBuilder builder = new SentenceBuilder(startLineOf(node), highlightedValues);
 
         append(node, builder);
 

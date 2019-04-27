@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.function.Function;
 
 import static dev.kensa.context.TestContextHolder.bindToThread;
@@ -92,7 +91,6 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
                             parsedTest,
                             store.get(TEST_GIVENS_KEY, Givens.class),
                             interactions,
-                            new ArrayList<>(),
                             Dictionary.acronyms().collect(toList()),
                             context.getExecutionException().orElse(null),
                             sequenceDiagramFactory.create(interactions)

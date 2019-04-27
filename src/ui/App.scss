@@ -8,8 +8,19 @@
   font-weight: bold;
 }
 
+.token-highlightedword {
+  background-color: yellow;
+  color: $grey-dark
+}
+
 .token-identifier {
   font-weight: bold;
+}
+
+.token-highlightedidentifier {
+  font-weight: bold;
+  background-color: yellow;
+  color: $grey-dark
 }
 
 .token-stringliteral {

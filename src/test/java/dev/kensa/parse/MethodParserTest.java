@@ -4,7 +4,7 @@ import dev.kensa.render.Renderers;
 import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.Sentences;
-import dev.kensa.util.NameValuePair;
+import dev.kensa.util.NamedValue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +16,7 @@ import java.util.Set;
 
 import static com.github.javaparser.JavaParser.parse;
 import static dev.kensa.sentence.SentenceTokens.*;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -177,9 +178,9 @@ class MethodParserTest {
         when(fieldAccessor.valueOf(any(String.class))).then(invocation -> Optional.ofNullable(fieldMap.get(invocation.<String>getArgument(0))));
 
         ParameterAccessor parameterAccessor = new ParameterAccessor(Set.of(
-                new NameValuePair("p1", parameterValue1),
-                new NameValuePair("p2", parameterValue2),
-                new NameValuePair("p3", renderedParameter)
+                new NamedValue("p1", parameterValue1),
+                new NamedValue("p2", parameterValue2),
+                new NamedValue("p3", renderedParameter)
         ));
 
         List<Sentence> sentences = parseToSentences(code, fieldAccessor, parameterAccessor);
@@ -251,7 +252,7 @@ class MethodParserTest {
 
         return parse(code).getClassByName("T")
                           .map(cd -> cd.getMethodsByName("testMethod").get(0))
-                          .map(md -> new MethodParser(md, valueAccessors))
+                          .map(md -> new MethodParser(md, valueAccessors, emptySet()))
                           .map(MethodParser::sentences)
                           .map(Sentences::stream)
                           .map(s -> s.collect(toList()))

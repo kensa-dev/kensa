@@ -6,11 +6,13 @@ public interface Token {
 
     enum Type {
         Acronym,
+        HighlightedWord,
+        HighlightedIdentifier,
+        Identifier,
         Keyword,
-        StringLiteral,
         Literal,
         NewLine,
-        Identifier,
+        StringLiteral,
         Word
     }
 }

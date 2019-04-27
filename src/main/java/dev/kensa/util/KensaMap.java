@@ -40,6 +40,12 @@ public class KensaMap<M extends KensaMap<M>> {
         values.forEach(this::put);
     }
 
+    public void putNameValuePairs(Collection<NamedValue> pairs) {
+        Objects.requireNonNull(pairs);
+
+        pairs.forEach(nv -> this.put(nv.name(), nv.value()));
+    }
+
     public <T> T get(String key, Class<T> clazz) {
         Entry entry = values.get(key);
         if (entry == null) {
@@ -102,7 +108,7 @@ public class KensaMap<M extends KensaMap<M>> {
             return value;
         }
 
-        public Stream<NameValuePair> attributes() {
+        public Stream<NamedValue> attributes() {
             return attributes.stream();
         }
     }

@@ -1,10 +1,10 @@
 package dev.kensa.util;
 
-public class NameValuePair {
+public class NamedValue {
     private final String name;
     private final Object value;
 
-    public NameValuePair(String name, Object value) {
+    public NamedValue(String name, Object value) {
         this.name = name;
         this.value = value;
     }

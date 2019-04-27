@@ -25,10 +25,12 @@ export class CapturedInteractions extends Component {
 export class Renderable extends Component {
     render() {
         const renderable = this.props.renderable;
+        const highlights = this.props.highlights;
+
         return (
                 <div className="box renderable">
                     <div className="subtitle is-5">{renderable['name']}</div>
-                    <NameValuePairsTable nameValuePairs={renderable['value']}/>
+                    <NameValuePairsTable highlights={highlights} nameValuePairs={renderable['value']}/>
                 </div>
         )
     }
@@ -37,13 +39,14 @@ export class Renderable extends Component {
 export class Renderables extends Component {
     render() {
         const renderables = this.props.renderables;
+        const highlights = this.props.highlights;
 
         return (
                 <div>
                     {
                         renderables.map((renderable) => {
                                     if (renderable['name'] !== 'value') {
-                                        return <Renderable renderable={renderable}/>
+                                        return <Renderable highlights={highlights} renderable={renderable}/>
                                     }
                                 }
                         )
@@ -104,7 +107,7 @@ export class Interaction extends Component {
     componentDidMount() {
         let highlightRegexp = this.state.highlightRegexp;
         if (highlightRegexp) {
-            let codeNode = this.interactionRef.current.children[0].firstChild;
+            let codeNode = this.interactionRef.current.children[0].firstChild
             if (this.state.language === 'xml') {
                 highlightXml(codeNode, highlightRegexp);
             } else if (this.state.language === 'json') {
@@ -123,9 +126,9 @@ export class Interaction extends Component {
                             <FontAwesomeIcon icon={this.icon()}/>
                         </a>
                     </header>
-                    <div ref={this.interactionRef} className={this.contentClass()}>
-                        <Renderables renderables={this.state.renderables}/>
-                        <div className="box">
+                    <div className={this.contentClass()}>
+                        <Renderables highlights={this.props.highlights} renderables={this.state.renderables}/>
+                        <div ref={this.interactionRef} className="box">
                             <Lowlight language={this.state.language} value={capturedInteraction['value']}/>
                         </div>
                     </div>

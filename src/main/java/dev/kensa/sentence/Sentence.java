@@ -31,6 +31,8 @@ public class Sentence {
                 case StringLiteral:
                 case Literal:
                 case NewLine:
+                case HighlightedWord:
+                case HighlightedIdentifier:
                     if (currentTokenType == Word) {
                         squashed.add(new SentenceToken(currentTokenType, currentValue));
                         currentValue = "";

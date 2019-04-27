@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -17,7 +18,7 @@ class TokenScannerTest {
 
     @BeforeEach
     void setUp() {
-        tokenScanner = new TokenScanner();
+        tokenScanner = new TokenScanner(Collections.emptySet());
     }
 
     @AfterEach

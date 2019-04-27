@@ -55,11 +55,11 @@ class AssertionStyleTest implements KensaTest {
     }
 
     private GivensBuilder somethingIsDoneWith(String actionName) {
-        return givens -> givens.put("actionName", actionName);
+        return (givens) -> givens.put("actionName", actionName);
     }
 
     private GivensBuilder someActionNameIsAddedToGivens() {
-        return givens -> givens.put("actionName", actionName);
+        return (givens) -> givens.put("actionName", actionName);
     }
 
     private ActionUnderTest theActionIsPerformedAndTheResultIsAddedToCapturedInteractions() {

@@ -7,6 +7,7 @@ import dev.kensa.SentenceValue;
 import dev.kensa.function.Unchecked;
 import dev.kensa.parse.CachingFieldAccessor;
 import dev.kensa.parse.CachingScenarioMethodAccessor;
+import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -16,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public final class ReflectionUtil {
@@ -32,7 +34,13 @@ public final class ReflectionUtil {
         return findField(target.getClass(), name)
                 .map(Unchecked.function(field -> {
                     field.setAccessible(true);
-                    return field.get(target);
+                    Object returnValue = field.get(target);
+
+                    if (returnValue instanceof Supplier) {
+                        returnValue = ((Supplier) returnValue).get();
+                    }
+
+                    return returnValue;
                 }))
                 .map(type::cast)
                 .orElse(null);
@@ -75,6 +83,24 @@ public final class ReflectionUtil {
         }
 
         return new CachingScenarioMethodAccessor(target, fieldNames);
+    }
+
+    public static Set<NamedValue> highlightedFieldsOf(Object target) {
+        Set<NamedValue> highlightedFields = new HashSet<>();
+        Class<?> aClass = target.getClass();
+
+        while (aClass != Object.class) {
+            Field[] declaredFields = aClass.getDeclaredFields();
+            Arrays.stream(declaredFields)
+                  .filter(field -> field.isAnnotationPresent(Highlight.class))
+                  .forEach(field -> {
+                      Highlight highlight = field.getAnnotation(Highlight.class);
+
+                      highlightedFields.add(new NamedValue(Strings.isNullOrEmpty(highlight.value()) ? field.getName() : highlight.value(), field.getName()));
+                  });
+            aClass = aClass.getSuperclass();
+        }
+        return highlightedFields;
     }
 
     private static Method findMethod(Class<?> target, String name) {

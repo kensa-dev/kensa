@@ -4,6 +4,10 @@ import static dev.kensa.sentence.Token.Type.*;
 
 public final class SentenceTokens {
 
+    public static SentenceToken aHighlightedWordOf(String word) {
+        return aTokenOf(HighlightedWord, word);
+    }
+
     public static SentenceToken aWordOf(String word) {
         return aTokenOf(Word, word);
     }

@@ -5,6 +5,7 @@ import dev.kensa.sentence.scanner.TokenScanner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static dev.kensa.sentence.Token.Type.*;
 
@@ -12,16 +13,22 @@ public class SentenceBuilder {
 
     private final List<SentenceToken> tokens = new ArrayList<>();
     private final TokenScanner scanner;
+    private final Set<String> highlightedValues;
 
     private int lastLineNumber;
 
-    public SentenceBuilder(int startLine) {
+    public SentenceBuilder(int startLine, Set<String> highlightedValues) {
         lastLineNumber = startLine;
-        scanner = new TokenScanner();
+        scanner = new TokenScanner(highlightedValues);
+        this.highlightedValues = highlightedValues;
     }
 
     public SentenceBuilder appendIdentifier(String value) {
-        append(value, Identifier);
+        if (highlightedValues.contains(value)) {
+            append(value, HighlightedIdentifier);
+        } else {
+            append(value, Identifier);
+        }
 
         return this;
     }

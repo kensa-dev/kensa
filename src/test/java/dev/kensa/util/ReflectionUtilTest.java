@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static dev.kensa.util.ReflectionUtil.getAnnotation;
 import static dev.kensa.util.ReflectionUtil.testMethodsOf;
@@ -22,6 +23,14 @@ class ReflectionUtilTest {
         SomeClass someClass = new SomeClass(privateValue);
 
         assertThat(ReflectionUtil.fieldValue(someClass, "someField", String.class)).isEqualTo(privateValue);
+    }
+
+    @Test
+    void canGetValueOfFieldViaSupplierWhenFieldTypeIsSupplier() {
+        String privateValue = "A Value";
+        SomeClass someClass = new SomeClass(privateValue);
+
+        assertThat(ReflectionUtil.fieldValue(someClass, "valueSupplier", String.class)).isEqualTo(privateValue);
     }
 
     @Test
@@ -96,6 +105,7 @@ class ReflectionUtilTest {
 
     static class SomeClass {
         private final String someField;
+        private final Supplier<String> valueSupplier = this::getSomeField;
 
         SomeClass(String someField) {this.someField = someField;}
 

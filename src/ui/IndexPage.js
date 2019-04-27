@@ -39,7 +39,6 @@ class Entry extends Component {
     load(anchor) {
         let url = "./" + this.state.entry.testClass + ".html";
         if (anchor) {
-            console.log(anchor);
             url += "#" + anchor;
         }
         window.location = url;

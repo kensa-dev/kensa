@@ -8,7 +8,7 @@ import dev.kensa.sentence.Sentence;
 import dev.kensa.state.TestInvocation;
 import dev.kensa.util.DurationFormatter;
 import dev.kensa.util.KensaMap;
-import dev.kensa.util.NameValuePair;
+import dev.kensa.util.NamedValue;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,10 +39,10 @@ public final class JsonTransforms {
                                                           invocationData.invocations(),
                                                           invocation -> Json.object()
                                                                             .add("elapsedTime", DurationFormatter.format(invocation.elapsed()))
-                                                                            .add("highlights", asJsonArray(invocation.highlights()))
+                                                                            .add("highlights", asJsonArray(invocation.highlightedFields(), nvpValueAsJson(renderers)))
                                                                             .add("acronyms", asJsonArray(invocation.acronyms()))
                                                                             .add("sentences", asJsonArray(invocation.sentences(), sentenceAsJson()))
-                                                                            .add("parameters", asJsonArray(invocation.parameters().stream(), nvpAsJson()))
+                                                                            .add("parameters", asJsonArray(invocation.parameters().stream(), nvpAsJson(renderers)))
                                                                             .add("givens", asJsonArray(invocation.givens(), entryAsJson(renderers)))
                                                                             .add("capturedInteractions", asJsonArray(invocation.interactions(), entryAsJson(renderers)))
                                                                             .add("sequenceDiagram", invocation.sequenceDiagram().toString())
@@ -101,14 +101,14 @@ public final class JsonTransforms {
                             .add("name", entry.key())
                             .add("value", renderers.renderValueOnly(entry.value()))
                             .add("renderables", asJsonArray(renderers.renderAll(entry.value()), entriesAsJson()))
-                            .add("attributes", asJsonArray(entry.attributes(), nvpAsJson()));
+                            .add("attributes", asJsonArray(entry.attributes(), nvpAsJson(renderers)));
     }
 
     private static Function<Map.Entry<String, Object>, JsonValue> entriesAsJson() {
         return entry -> {
             JsonObject object = Json.object().add("name", entry.getKey());
 
-            if(entry.getValue() instanceof Map) {
+            if (entry.getValue() instanceof Map) {
                 Map map = (Map) entry.getValue();
                 object.add("value", asJsonArray(map.entrySet().stream(), entriesAsJson()));
             } else {
@@ -119,10 +119,14 @@ public final class JsonTransforms {
         };
     }
 
-    private static Function<NameValuePair, JsonObject> nvpAsJson() {
-        return (nvp) -> Json.object()
-                            .add("name", nvp.name())
-                            .add("value", nvp.value().toString());
+    private static Function<NamedValue, JsonValue> nvpValueAsJson(Renderers renderers) {
+        return nv -> Json.value(renderers.renderValueOnly(nv.value()));
+    }
+
+    private static Function<NamedValue, JsonObject> nvpAsJson(Renderers renderers) {
+        return nv -> Json.object()
+                          .add("name", nv.name())
+                          .add("value", renderers.renderValueOnly(nv.value()));
     }
 
     private static JsonObject executionExceptionFrom(TestInvocation invocation) {

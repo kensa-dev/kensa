@@ -114,6 +114,7 @@ export class Invocation extends Component {
 
     render() {
         let testStateClass = App.stateClassFor(this.state.invocation.state);
+        let highlights=this.state.invocation.highlights;
 
         return (
                 <div className={"message " + testStateClass}>
@@ -125,10 +126,10 @@ export class Invocation extends Component {
                             {this.buttonFor('capturedInteractions', 'Captured Interactions')}
                             {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
                         </div>
-                        {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NameValuePairsTable nameValuePairs={this.state.invocation.givens}/></div>)}
-                        {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NameValuePairsTable nameValuePairs={this.state.invocation.parameters}/></div>)}
+                        {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NameValuePairsTable highlights={highlights} nameValuePairs={this.state.invocation.givens}/></div>)}
+                        {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NameValuePairsTable highlights={highlights} nameValuePairs={this.state.invocation.parameters}/></div>)}
                         {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
-                                capturedInteractions={this.state.invocation.capturedInteractions} highlights={this.state.invocation.highlights}/></div>)}
+                                capturedInteractions={this.state.invocation.capturedInteractions} highlights={highlights}/></div>)}
                         {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={this.state.invocation.sequenceDiagram} capturedInteractions={this.state.invocation.capturedInteractions} highlights={this.state.invocation.highlights}/>
                         </div>)}
                     </div>
