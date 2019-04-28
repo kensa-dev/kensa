@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.Set;
 
 import static dev.kensa.sentence.SentenceTokens.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +15,7 @@ class SentenceBuilderTest {
 
     @BeforeEach
     void setUp() {
-        builder = new SentenceBuilder(1, Collections.emptySet());
+        builder = new SentenceBuilder(1, Set.of("highlighted"));
     }
 
     @AfterEach
@@ -31,7 +31,8 @@ class SentenceBuilderTest {
                .appendLiteral("literal1")
                .markLineNumber(2)
                .appendStringLiteral("stringLiteral1")
-               .appendIdentifier("parameter1");
+               .appendIdentifier("parameter1")
+               .appendIdentifier("highlighted");
 
         assertThat(builder.build().stream())
                 .containsExactly(
@@ -41,7 +42,8 @@ class SentenceBuilderTest {
                         aLiteralOf("literal1"),
                         aNewline(),
                         aStringLiteralOf("stringLiteral1"),
-                        anIdentifierOf("parameter1")
+                        anIdentifierOf("parameter1"),
+                        aHighlightedIdentifierOf("highlighted")
                 );
     }
 }
