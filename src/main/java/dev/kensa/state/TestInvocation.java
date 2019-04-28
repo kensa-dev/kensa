@@ -45,7 +45,7 @@ public class TestInvocation {
         this.acronyms = acronyms;
         this.sequenceDiagram = sequenceDiagram;
 
-        this.givens.putNameValuePairs(highlightedFields);
+        this.givens.putNamedValues(highlightedFields);
     }
 
     public Duration elapsed() {
