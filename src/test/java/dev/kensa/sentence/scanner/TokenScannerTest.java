@@ -6,9 +6,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import static dev.kensa.sentence.Token.Type.HighlightedWord;
+import static dev.kensa.sentence.Token.Type.Word;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +20,7 @@ class TokenScannerTest {
 
     @BeforeEach
     void setUp() {
-        tokenScanner = new TokenScanner(Collections.emptySet());
+        tokenScanner = new TokenScanner(Set.of("Important", "Priority"));
     }
 
     @AfterEach
@@ -134,6 +136,18 @@ class TokenScannerTest {
         Indices indices = tokenScanner.scan(string);
 
         assertThat(transformed(indices, string)).isEqualTo(expected);
+    }
+
+    @Test
+    void scansStringWithHighlightedWords() {
+        List<String> expected = List.of("An", "Important", "Priority", "Thing");
+
+        var string = String.join("", expected);
+
+        Indices indices = tokenScanner.scan(string);
+
+        assertThat(transformed(indices, string)).isEqualTo(expected);
+        assertThat(indices.stream()).extracting(Index::type).containsExactly(Word, HighlightedWord, HighlightedWord, Word);
     }
 
     private List<String> transformed(Indices indices, String string) {
