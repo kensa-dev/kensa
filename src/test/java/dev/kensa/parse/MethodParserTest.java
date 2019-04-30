@@ -40,7 +40,6 @@ class MethodParserTest {
                 "   }\n" +
                 "}\n";
 
-
         List<Sentence> sentences = parseToSentences(code);
 
         assertThat(sentences).hasSize(1);
@@ -167,8 +166,7 @@ class MethodParserTest {
         Integer renderedField = 555;
 
         Map<String, ? extends Serializable> fieldMap = Map.of("f1", fieldValue,
-                                                              "f2", renderedField
-        );
+                                                              "f2", renderedField);
 
         String parameterValue1 = "parameterValue1";
         String parameterValue2 = "parameterValue2";
@@ -232,19 +230,62 @@ class MethodParserTest {
         );
     }
 
+    @Test
+    void canParseStatementAndHighlightResolvedValues() {
+        String code = "class T {\n" +
+                "   private String f1;" +
+                "   void testMethod() {\n" +
+                "      given(somethingHasBeenDoneWith(f1));\n" +
+                "      when(somethingFooBooHoo());\n" +
+                "   }\n" +
+                "}\n";
+
+        String fieldValue = "BlahBlah";
+
+        Map<String, ? extends Serializable> fieldMap = Map.of("f1", fieldValue);
+        CachingFieldAccessor fieldAccessor = mock(CachingFieldAccessor.class);
+        when(fieldAccessor.valueOf(any(String.class))).then(invocation -> Optional.ofNullable(fieldMap.get(invocation.<String>getArgument(0))));
+
+        List<Sentence> sentences = parseToSentences(code, fieldAccessor, Set.of(fieldValue, "Foo"));
+
+        assertThat(sentences).hasSize(2);
+        assertThat(sentences.get(0).stream()).containsExactly(
+                aKeywordOf("Given"),
+                aWordOf("something"),
+                aWordOf("has"),
+                aWordOf("been"),
+                aWordOf("done"),
+                aWordOf("with"),
+                aHighlightedIdentifierOf("BlahBlah")
+        );
+        assertThat(sentences.get(1).stream()).containsExactly(
+                aKeywordOf("When"),
+                aWordOf("something"),
+                aHighlightedWordOf("Foo"),
+                aWordOf("boo"),
+                aWordOf("hoo")
+        );
+    }
+
     private List<Sentence> parseToSentences(String code) {
-        return parseToSentences(code, null, null, null);
+        return parseToSentences(code, null, null, new ParameterAccessor(emptySet()), emptySet());
+    }
+
+    private List<Sentence> parseToSentences(String code, CachingFieldAccessor fieldAccessor, Set<String> highlightedValues) {
+        return parseToSentences(code, null, fieldAccessor, new ParameterAccessor(emptySet()), highlightedValues);
     }
 
     private List<Sentence> parseToSentences(String code, CachingScenarioMethodAccessor scenarioAccessor) {
-        return parseToSentences(code, scenarioAccessor, null, null);
+        return parseToSentences(code, scenarioAccessor, null, new ParameterAccessor(emptySet()), emptySet());
     }
 
     private List<Sentence> parseToSentences(String code, CachingFieldAccessor fieldAccessor, ParameterAccessor parameterAccessor) {
-        return parseToSentences(code, null, fieldAccessor, parameterAccessor);
+        return parseToSentences(code, null, fieldAccessor, parameterAccessor, emptySet());
     }
 
-    private List<Sentence> parseToSentences(String code, CachingScenarioMethodAccessor scenarioAccessor, CachingFieldAccessor fieldAccessor, ParameterAccessor parameterAccessor) {
+    private List<Sentence> parseToSentences(
+            String code, CachingScenarioMethodAccessor scenarioAccessor, CachingFieldAccessor fieldAccessor, ParameterAccessor parameterAccessor, Set<String> highlightedValues
+    ) {
         Renderers renderers = new Renderers();
         renderers.add(Integer.class, value -> String.format("<<%d>>", value));
 
@@ -252,7 +293,7 @@ class MethodParserTest {
 
         return parse(code).getClassByName("T")
                           .map(cd -> cd.getMethodsByName("testMethod").get(0))
-                          .map(md -> new MethodParser(md, valueAccessors, emptySet()))
+                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues))
                           .map(MethodParser::sentences)
                           .map(Sentences::stream)
                           .map(s -> s.collect(toList()))

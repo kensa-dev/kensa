@@ -40,10 +40,10 @@ public class KensaMap<M extends KensaMap<M>> {
         values.forEach(this::put);
     }
 
-    public void putNameValuePairs(Collection<NamedValue> pairs) {
-        Objects.requireNonNull(pairs);
+    public void putNamedValues(Collection<NamedValue> values) {
+        Objects.requireNonNull(values);
 
-        pairs.forEach(nv -> this.put(nv.name(), nv.value()));
+        values.forEach(nv -> this.put(nv.name(), nv.value()));
     }
 
     public <T> T get(String key, Class<T> clazz) {

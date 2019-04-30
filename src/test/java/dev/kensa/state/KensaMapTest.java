@@ -2,6 +2,7 @@ package dev.kensa.state;
 
 import dev.kensa.util.Attributes;
 import dev.kensa.util.KensaMap;
+import dev.kensa.util.NamedValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -46,8 +47,8 @@ class KensaMapTest {
     @MethodSource("mapInstances")
     <M extends KensaMap<M>> void canPutMultipleObjectsWithDefaultKey_SinglePut(M map) {
         var values = IntStream.range(0, 5)
-                .mapToObj(value -> new Object())
-                .collect(toList());
+                              .mapToObj(value -> new Object())
+                              .collect(toList());
 
         values.forEach(map::put);
 
@@ -61,8 +62,8 @@ class KensaMapTest {
     @MethodSource("mapInstances")
     <M extends KensaMap<M>> void canPutMultipleObjectsWithDefaultKey_MultiPut(M map) {
         var values = IntStream.range(0, 5)
-                .mapToObj(value -> new Object())
-                .collect(toList());
+                              .mapToObj(value -> new Object())
+                              .collect(toList());
 
         map.putAll(values);
 
@@ -76,14 +77,28 @@ class KensaMapTest {
     @MethodSource("mapInstances")
     <M extends KensaMap<M>> void iteratesInInsertionOrder(M map) {
         var values = IntStream.range(0, 10)
-                .mapToObj(String::valueOf)
-                .collect(toList());
+                              .mapToObj(String::valueOf)
+                              .collect(toList());
 
         map.putAll(values);
 
         var result = map.entrySet().stream().map(KensaMap.Entry::value).collect(toList());
 
         assertThat(result).isEqualTo(values);
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapInstances")
+    <M extends KensaMap<M>> void canPutCollectionOfNamedValues(M map) {
+        var values = IntStream.range(0, 10)
+                              .mapToObj(value -> new NamedValue(String.valueOf(value), "VALUE:" + value))
+                              .collect(toList());
+
+        map.putNamedValues(values);
+
+        for (var index = 0; index < values.size(); index++) {
+            assertThat(map.get(String.valueOf(index), String.class)).isEqualTo(values.get(index).value());
+        }
     }
 
     private static Stream<? extends KensaMap<?>> mapInstances() {

@@ -36,6 +36,10 @@ public final class SentenceTokens {
         return aTokenOf(Identifier, acronym);
     }
 
+    public static SentenceToken aHighlightedIdentifierOf(String acronym) {
+        return aTokenOf(HighlightedIdentifier, acronym);
+    }
+
     private static SentenceToken aTokenOf(Token.Type type, String value) {
         return new SentenceToken(type, value);
     }
