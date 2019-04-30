@@ -2,8 +2,45 @@ import React, {Component} from "react";
 import {Invocation} from "./Invocation";
 import App from "./App";
 import ScrollableAnchor from "react-scrollable-anchor";
+import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
+import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 class Test extends Component {
+
+    constructor(props) {
+        super(props);
+
+        let state = this.props.test.state;
+        this.state = {
+            isCollapsed: state !== 'Failed' && state !== 'Disabled'
+        };
+
+        this.toggle = this.toggle.bind(this);
+
+    }
+
+    toggle() {
+        this.setState(prevState => ({
+            isCollapsed: !prevState.isCollapsed
+        }));
+    }
+
+    icon() {
+        if (this.state.isCollapsed) {
+            return faAngleDown;
+        }
+
+        return faAngleUp;
+    }
+
+    contentClass() {
+        if (this.state.isCollapsed) {
+            return "message-body is-hidden"
+        }
+
+        return "message-body";
+    }
 
     renderInformation(issue, notes) {
         let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
@@ -59,10 +96,11 @@ class Test extends Component {
             return (
                     <ScrollableAnchor id={test.testMethod}>
                         <div className={"message " + App.stateClassFor(state)}>
-                            <div className="message-header">
+                            <div onClick={this.toggle} className="message-header">
                                 {test.displayName}
+                                <a><FontAwesomeIcon icon={this.icon()}/></a>
                             </div>
-                            <div className="message-body">
+                            <div className={this.contentClass()}>
                                 {this.renderInformation(test.issue, test.notes)}
                                 {test.invocations.map((invocation, index) => <Invocation key={index} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
                             </div>
