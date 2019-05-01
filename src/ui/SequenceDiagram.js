@@ -100,10 +100,10 @@ export class SequenceDiagram extends Component {
     }
 
     findInteractionFor(target) {
-        let interactionName = target.getAttribute("sequence_diagram_interaction_name").replace(/_/g, " ");
+        let interactionId = target.getAttribute("sequence_diagram_interaction_id");
 
         return this.props.capturedInteractions.find(interaction => {
-            return interaction.name === interactionName;
+            return interaction.id === interactionId;
         });
     }
 

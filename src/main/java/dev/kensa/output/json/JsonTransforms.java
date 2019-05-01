@@ -98,6 +98,7 @@ public final class JsonTransforms {
 
     private static Function<KensaMap.Entry, JsonValue> entryAsJson(Renderers renderers) {
         return entry -> Json.object()
+                            .add("id", String.valueOf(entry.key().hashCode()))
                             .add("name", entry.key())
                             .add("value", renderers.renderValueOnly(entry.value()))
                             .add("renderables", asJsonArray(renderers.renderAll(entry.value()), entriesAsJson()))
@@ -125,8 +126,8 @@ public final class JsonTransforms {
 
     private static Function<NamedValue, JsonObject> nvpAsJson(Renderers renderers) {
         return nv -> Json.object()
-                          .add("name", nv.name())
-                          .add("value", renderers.renderValueOnly(nv.value()));
+                         .add("name", nv.name())
+                         .add("value", renderers.renderValueOnly(nv.value()));
     }
 
     private static JsonObject executionExceptionFrom(TestInvocation invocation) {

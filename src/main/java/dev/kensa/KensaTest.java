@@ -9,6 +9,10 @@ import static dev.kensa.context.TestContextHolder.testContext;
 @ExtendWith(KensaExtension.class)
 public interface KensaTest {
 
+    default void disableInteractionTestGroup() {
+        testContext().disableInteractionTestGroup();
+    }
+
     default void given(GivensBuilder builder) {
         testContext().given(builder);
     }

@@ -61,7 +61,6 @@ class CapturedInteractionsTest {
         interactions.capture(from(NightKing).to(Daenerys).with("Here's that zombie dragon you ordered!", "Snarky comment"));
         interactions.capture(from(NightKing).to(Daenerys).with("Here's that zombie dragon you ordered!", "Snarky comment"));
 
-
         assertThat(interactions.containsKey("Snarky comment from NightKing to Daenerys")).isTrue();
         assertThat(interactions.containsKey("Snarky comment 1 from NightKing to Daenerys")).isTrue();
         assertThat(interactions.containsKey("Snarky comment 2 from NightKing to Daenerys")).isTrue();
@@ -83,6 +82,37 @@ class CapturedInteractionsTest {
         assertThat(interactions.containsKey("(Temporary) Defiant statement from Jon to Daenerys")).isTrue();
         assertThat(interactions.containsKey("(Temporary) Defiant statement 1 from Jon to Daenerys")).isTrue();
         assertThat(interactions.containsKey("(Temporary) Defiant statement 2 from Jon to Daenerys")).isTrue();
+    }
+
+    @Test
+    void canSetAndUnsetUnderTest() {
+        interactions.setUnderTest(true);
+        interactions.capture(from(Jon).to(Daenerys).with("I will not bend the knee", "Defiant statement"));
+
+        assertThat(interactions.containsKey("(Test) Defiant statement from Jon to Daenerys")).isTrue();
+
+        interactions.setUnderTest(false);
+        interactions.capture(from(NightKing).to(Daenerys).with("Here's that zombie dragon you ordered!", "Snarky comment"));
+
+        assertThat(interactions.containsKey("Snarky comment from NightKing to Daenerys")).isTrue();
+    }
+
+    @Test
+    void explicitlySetGroupOverridesUnderTestTestGroup() {
+        interactions.setUnderTest(true);
+        interactions.capture(from(Jon).to(Daenerys).group("Override").with("I will not bend the knee", "Defiant statement"));
+
+        assertThat(interactions.containsKey("(Override) Defiant statement from Jon to Daenerys")).isTrue();
+    }
+
+    @Test
+    void canDisableUnderTest() {
+        interactions.disableUnderTest();
+
+        interactions.setUnderTest(true);
+        interactions.capture(from(Jon).to(Daenerys).with("I will not bend the knee", "Defiant statement"));
+
+        assertThat(interactions.containsKey("Defiant statement from Jon to Daenerys")).isTrue();
     }
 
     private List<String> keysIn(CapturedInteractions interactions) {

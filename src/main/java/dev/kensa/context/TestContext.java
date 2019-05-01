@@ -30,14 +30,41 @@ public class TestContext {
     }
 
     public void when(ActionUnderTest action) {
-        action.execute(givens, interactions);
+        try {
+            interactions.setUnderTest(true);
+            action.execute(givens, interactions);
+        } finally {
+            interactions.setUnderTest(false);
+        }
     }
 
     public <T> ObjectAssert<T> then(StateExtractor<T> extractor) {
-        return Assertions.assertThat(extractor.execute(interactions));
+        try {
+            interactions.setUnderTest(true);
+            return Assertions.assertThat(extractor.execute(interactions));
+        } finally {
+            interactions.setUnderTest(false);
+        }
     }
 
     public <T> void then(StateExtractor<T> extractor, Matcher<? super T> matcher) {
-        MatcherAssert.assertThat(extractor.execute(interactions), matcher);
+        try {
+            interactions.setUnderTest(true);
+            MatcherAssert.assertThat(extractor.execute(interactions), matcher);
+        } finally {
+            interactions.setUnderTest(false);
+        }
+    }
+
+    public void disableInteractionTestGroup() {
+        interactions.disableUnderTest();
+    }
+
+    public Givens givens() {
+        return givens;
+    }
+
+    public CapturedInteractions interactions() {
+        return interactions;
     }
 }

@@ -26,15 +26,13 @@ import static dev.kensa.util.ReflectionUtil.invokeMethod;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.stream.Collectors.toList;
 
-public class KensaExtension implements Extension, BeforeAllCallback, AfterTestExecutionCallback, BeforeTestExecutionCallback {
+public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
     private static final ExtensionContext.Namespace KENSA = ExtensionContext.Namespace.create(new Object());
     private static final String TEST_START_TIME_KEY = "StartTime";
     private static final String TEST_CONTAINER_KEY = "TestContainer";
     private static final String TEST_CONTEXT_KEY = "TestContext";
     private static final String TEST_PARSER_KEY = "TestParser";
-    private static final String TEST_GIVENS_KEY = "TestGivens";
-    private static final String TEST_INTERACTIONS_KEY = "TestInteractions";
     private static final String KENSA_EXECUTION_CONTEXT_KEY = "KensaExecutionContext";
 
     private static final Function<String, KensaExecutionContext> EXECUTION_CONTEXT_FACTORY =
@@ -56,16 +54,19 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
     }
 
     @Override
-    public void beforeTestExecution(ExtensionContext context) {
+    public void beforeEach(ExtensionContext context) {
         ExtensionContext.Store store = context.getStore(KENSA);
-        store.put(TEST_START_TIME_KEY, System.currentTimeMillis());
         Givens givens = new Givens();
         CapturedInteractions interactions = new CapturedInteractions();
         TestContext testContext = new TestContext(givens, interactions);
-        store.put(TEST_GIVENS_KEY, givens);
-        store.put(TEST_INTERACTIONS_KEY, interactions);
         store.put(TEST_CONTEXT_KEY, testContext);
         bindToThread(testContext);
+    }
+
+    @Override
+    public void beforeTestExecution(ExtensionContext context) {
+        ExtensionContext.Store store = context.getStore(KENSA);
+        store.put(TEST_START_TIME_KEY, System.currentTimeMillis());
 
         // Workaround for JUnit5 argument access
         processTestMethodArguments(context, argumentsFrom(context));
@@ -79,9 +80,10 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
             ExtensionContext.Store store = context.getStore(KENSA);
             Long startTime = store.get(TEST_START_TIME_KEY, Long.class);
 
+            TestContext testContext = store.get(TEST_CONTEXT_KEY, TestContext.class);
             TestContainer testContainer = store.get(TEST_CONTAINER_KEY, TestContainer.class);
             TestInvocationData invocationData = testContainer.invocationDataFor(context.getRequiredTestMethod());
-            CapturedInteractions interactions = store.get(TEST_INTERACTIONS_KEY, CapturedInteractions.class);
+            CapturedInteractions interactions = testContext.interactions();
             TestParser testParser = store.get(TEST_PARSER_KEY, TestParser.class);
             ParsedTest parsedTest = testParser.parse();
 
@@ -89,7 +91,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, AfterTestEx
                     new TestInvocation(
                             Duration.of(endTime - startTime, MILLIS),
                             parsedTest,
-                            store.get(TEST_GIVENS_KEY, Givens.class),
+                            testContext.givens(),
                             interactions,
                             Dictionary.acronyms().collect(toList()),
                             context.getExecutionException().orElse(null),

@@ -6,17 +6,17 @@ public final class CapturedInteractionBuilder {
 
     private static final String BASIC_TEMPLATE = "%s from %s to %s";
     private static final String TEMPLATE_WITH_SEQUENCE_NUMBER = "%s %s from %s to %s";
-    private Attributes attributes = Attributes.of();
 
     public static CapturedInteractionBuilder from(Party party) {
         return new CapturedInteractionBuilder(party);
     }
 
-    private final Party fromParty;
+    private Attributes attributes = Attributes.of();
     private Party toParty;
     private String group;
     private Object content;
     private String contentDescriptor;
+    private final Party fromParty;
 
     private CapturedInteractionBuilder(Party party) {
         fromParty = party;
@@ -31,6 +31,14 @@ public final class CapturedInteractionBuilder {
 
     public CapturedInteractionBuilder group(String group) {
         this.group = group;
+
+        return this;
+    }
+
+    public CapturedInteractionBuilder underTest(boolean isUnderTest) {
+        if (group == null & isUnderTest) {
+            group = "Test";
+        }
 
         return this;
     }
