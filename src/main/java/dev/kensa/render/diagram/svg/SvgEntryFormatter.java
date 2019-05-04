@@ -21,7 +21,7 @@ public class SvgEntryFormatter implements Function<KensaMap.Entry, String> {
             String interactionName = matcher.group(1).trim();
             String from = matcher.group(2).trim();
             String to = matcher.group(3).trim();
-            return String.format("%s ->> %s:<text class=sequence_diagram_clickable sequence_diagram_interaction_id=%s>%s</text>", from, to, interactionId, interactionName);
+            return String.format("%s ->> %s:<text class=sequence_diagram_clickable sequence_diagram_interaction_id=\"%s\">%s</text>", from, to, interactionId, interactionName);
         } else {
             return String.valueOf(entry.value()).trim();
         }
