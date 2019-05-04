@@ -9,17 +9,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dev.kensa.sentence.Token.Type.*;
-import static java.lang.Integer.compare;
-import static java.util.stream.Collectors.joining;
 
 public class TokenScanner {
-    private static final Pattern NO_MATCH_PATTERN = Pattern.compile(".^");
-    private final Pattern highlightPattern;
+    private final Set<String> highlightedValues;
 
     public TokenScanner(Set<String> highlightedValues) {
-        highlightPattern = highlightedValues.isEmpty() ? NO_MATCH_PATTERN :
-                Pattern.compile(highlightedValues.stream().sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
-                                                 .collect(joining("|")));
+        this.highlightedValues = highlightedValues;
     }
 
     public Indices scan(String string) {
@@ -27,7 +22,6 @@ public class TokenScanner {
 
         scanFor(Keyword, Dictionary.keywordPattern(), string, indices);
         scanFor(Acronym, Dictionary.acronymPattern(), string, indices);
-        scanFor(HighlightedWord, highlightPattern, string, indices);
         scanForWords(string, indices);
 
         return indices;
@@ -56,9 +50,13 @@ public class TokenScanner {
         int segmentOffset = 0;
         String[] splitWords = segment.split("(?=\\p{Lu})");
         for (String word : splitWords) {
-            words.add(new Index(Word, offset + segmentOffset, offset + segmentOffset + word.length()));
+            words.add(new Index(typeOf(word), offset + segmentOffset, offset + segmentOffset + word.length()));
             segmentOffset += word.length();
         }
+    }
+
+    private Token.Type typeOf(String word) {
+        return highlightedValues.contains(word) ? HighlightedWord : Word;
     }
 
     private void scanFor(Token.Type type, Pattern pattern, String string, Indices indices) {

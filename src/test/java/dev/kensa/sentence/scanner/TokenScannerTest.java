@@ -20,7 +20,7 @@ class TokenScannerTest {
 
     @BeforeEach
     void setUp() {
-        tokenScanner = new TokenScanner(Set.of("Important", "Priority"));
+        tokenScanner = new TokenScanner(Set.of("Important", "Priority", "No"));
     }
 
     @AfterEach
@@ -140,14 +140,14 @@ class TokenScannerTest {
 
     @Test
     void scansStringWithHighlightedWords() {
-        List<String> expected = List.of("An", "Important", "Priority", "Thing");
+        List<String> expected = List.of("An", "Important", "Priority", "Thing", "Notification");
 
         var string = String.join("", expected);
 
         Indices indices = tokenScanner.scan(string);
 
         assertThat(transformed(indices, string)).isEqualTo(expected);
-        assertThat(indices.stream()).extracting(Index::type).containsExactly(Word, HighlightedWord, HighlightedWord, Word);
+        assertThat(indices.stream()).extracting(Index::type).containsExactly(Word, HighlightedWord, HighlightedWord, Word, Word);
     }
 
     private List<String> transformed(Indices indices, String string) {
