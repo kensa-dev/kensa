@@ -4,7 +4,7 @@ import dev.kensa.Issue;
 import dev.kensa.Notes;
 import dev.kensa.state.TestInvocationData;
 import dev.kensa.state.TestState;
-import dev.kensa.util.ReflectionUtil;
+import dev.kensa.util.Reflect;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dev.kensa.util.ReflectionUtil.getAnnotation;
+import static dev.kensa.util.Reflect.getAnnotation;
 import static java.util.Collections.emptyList;
 
 public class TestContainerFactory {
@@ -34,9 +34,9 @@ public class TestContainerFactory {
     }
 
     private Map<Method, TestInvocationData> invocationDataFor(Class<?> testClass) {
-        return ReflectionUtil.testMethodsOf(testClass)
-                             .map(this::createInvocationData)
-                             .collect(
+        return Reflect.testMethodsOf(testClass)
+                      .map(this::createInvocationData)
+                      .collect(
                                      LinkedHashMap::new,
                                      (m, i) -> m.put(i.testMethod(), i),
                                      Map::putAll

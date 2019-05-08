@@ -21,8 +21,8 @@ import java.util.function.Function;
 
 import static dev.kensa.context.TestContextHolder.bindToThread;
 import static dev.kensa.context.TestContextHolder.clearFromThread;
-import static dev.kensa.util.ReflectionUtil.fieldValue;
-import static dev.kensa.util.ReflectionUtil.invokeMethod;
+import static dev.kensa.util.Reflect.fieldValue;
+import static dev.kensa.util.Reflect.invokeMethod;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.stream.Collectors.toList;
 

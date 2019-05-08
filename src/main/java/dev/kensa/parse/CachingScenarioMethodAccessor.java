@@ -1,6 +1,6 @@
 package dev.kensa.parse;
 
-import dev.kensa.util.ReflectionUtil;
+import dev.kensa.util.Reflect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class CachingScenarioMethodAccessor {
                                         if (existing == null) {
                                             Object value = scenarioInstanceWithName(scenarioName);
                                             if (value != null && value != NullValue) {
-                                                value = ReflectionUtil.invokeMethod(value, mn, Object.class);
+                                                value = Reflect.invokeMethod(value, mn, Object.class);
                                             }
                                             return value == null ? NullValue : value;
                                         }
@@ -51,7 +51,7 @@ public class CachingScenarioMethodAccessor {
     private Object scenarioInstanceWithName(String scenarioName) {
         return scenarioCache.compute(scenarioName, (name, existing) -> {
             if (existing == NotCached) {
-                Object value = ReflectionUtil.fieldValue(testInstance, name, Object.class);
+                Object value = Reflect.fieldValue(testInstance, name, Object.class);
                 return value == null ? NullValue : value;
             }
 

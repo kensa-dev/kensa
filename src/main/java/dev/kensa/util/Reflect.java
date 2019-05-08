@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public final class ReflectionUtil {
+public final class Reflect {
 
     public static <A extends Annotation> Optional<A> getAnnotation(AnnotatedElement element, Class<A> annotation) {
         return Optional.ofNullable(element.getAnnotation(annotation));
@@ -157,6 +157,6 @@ public final class ReflectionUtil {
         return m -> Arrays.stream(annotations).anyMatch(m::isAnnotationPresent);
     }
 
-    private ReflectionUtil() {
+    private Reflect() {
     }
 }

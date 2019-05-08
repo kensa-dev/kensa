@@ -3,7 +3,7 @@ package dev.kensa.parse;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import dev.kensa.render.Renderers;
 import dev.kensa.util.NamedValue;
-import dev.kensa.util.ReflectionUtil;
+import dev.kensa.util.Reflect;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -31,8 +31,8 @@ public class TestParser {
         ParameterCollector parameterCollector = new ParameterCollector(declaration);
         Set<NamedValue> parameters = parameterCollector.collect(arguments);
 
-        CachingScenarioMethodAccessor scenarioAccessor = ReflectionUtil.scenarioAccessorFor(testInstance);
-        CachingFieldAccessor fieldAccessor = ReflectionUtil.interestingFieldsOf(testInstance);
+        CachingScenarioMethodAccessor scenarioAccessor = Reflect.scenarioAccessorFor(testInstance);
+        CachingFieldAccessor fieldAccessor = Reflect.interestingFieldsOf(testInstance);
         ParameterAccessor parameterAccessor = new ParameterAccessor(parameters);
 
         Set<NamedValue> highlightedNamedValues = highlightedValuesOf(testInstance);
@@ -49,10 +49,10 @@ public class TestParser {
     }
 
     private Set<NamedValue> highlightedValuesOf(Object testInstance) {
-        return ReflectionUtil.highlightedFieldsOf(testInstance)
-                             .stream()
-                             .map(nv -> new NamedValue(nv.name(), ReflectionUtil.fieldValue(testInstance, nv.value().toString(), Object.class))
+        return Reflect.highlightedFieldsOf(testInstance)
+                      .stream()
+                      .map(nv -> new NamedValue(nv.name(), Reflect.fieldValue(testInstance, nv.value().toString(), Object.class))
                              )
-                             .collect(toSet());
+                      .collect(toSet());
     }
 }

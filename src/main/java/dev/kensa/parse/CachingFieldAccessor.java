@@ -1,6 +1,6 @@
 package dev.kensa.parse;
 
-import dev.kensa.util.ReflectionUtil;
+import dev.kensa.util.Reflect;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class CachingFieldAccessor {
         return Optional.ofNullable(
                 cachedValues.compute(fieldName, (fn, existing) -> {
                     if (existing == NotCached) {
-                        return ReflectionUtil.fieldValue(testInstance, fieldName, Object.class);
+                        return Reflect.fieldValue(testInstance, fieldName, Object.class);
                     }
                     return existing;
                 })
