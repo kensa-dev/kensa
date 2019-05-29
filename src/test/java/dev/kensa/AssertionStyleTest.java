@@ -1,6 +1,6 @@
 package dev.kensa;
 
-import dev.kensa.sentence.Dictionary;
+import dev.kensa.sentence.Acronym;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +22,9 @@ class AssertionStyleTest implements KensaTest {
 
     @BeforeEach
     void setUp() {
-        Dictionary.putAcronyms("ACTION1");
-        Dictionary.putKeywords("that");
+        Kensa.configure()
+             .withAcronyms(Acronym.of("ACTION1", ""))
+             .withKeywords("that");
     }
 
     @Test

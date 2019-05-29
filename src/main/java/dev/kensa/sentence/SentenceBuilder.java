@@ -6,6 +6,7 @@ import dev.kensa.sentence.scanner.TokenScanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static dev.kensa.sentence.Token.Type.*;
 
@@ -17,9 +18,9 @@ public class SentenceBuilder {
 
     private int lastLineNumber;
 
-    public SentenceBuilder(int startLine, Set<String> highlightedValues) {
+    public SentenceBuilder(int startLine, Set<String> highlightedValues, Pattern keywordPattern, Pattern acronymPattern) {
         lastLineNumber = startLine;
-        scanner = new TokenScanner(highlightedValues);
+        scanner = new TokenScanner(highlightedValues, keywordPattern, acronymPattern);
         this.highlightedValues = highlightedValues;
     }
 

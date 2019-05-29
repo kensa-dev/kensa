@@ -1,4 +1,9 @@
+import org.gradle.api.JavaVersion
+
 object Versions {
+
+    val mainJavaVersion = JavaVersion.VERSION_1_8
+    val testJavaVersion = JavaVersion.VERSION_11
 
     // Wrapper
     const val gradleWrapper = "5.3.1"

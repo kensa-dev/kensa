@@ -4,6 +4,7 @@ import com.eclipsesource.json.*;
 import dev.kensa.KensaException;
 import dev.kensa.context.TestContainer;
 import dev.kensa.render.Renderers;
+import dev.kensa.sentence.Acronym;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.state.TestInvocation;
 import dev.kensa.util.DurationFormatter;
@@ -40,7 +41,7 @@ public final class JsonTransforms {
                                                           invocation -> Json.object()
                                                                             .add("elapsedTime", DurationFormatter.format(invocation.elapsed()))
                                                                             .add("highlights", asJsonArray(invocation.highlightedFields(), nvpValueAsJson(renderers)))
-                                                                            .add("acronyms", asJsonArray(invocation.acronyms()))
+                                                                            .add("acronyms", asJsonArray(invocation.acronyms(), acronymAsJson()))
                                                                             .add("sentences", asJsonArray(invocation.sentences(), sentenceAsJson()))
                                                                             .add("parameters", asJsonArray(invocation.parameters().stream(), nvpAsJson(renderers)))
                                                                             .add("givens", asJsonArray(invocation.givens(), entryAsJson(renderers)))
@@ -94,6 +95,12 @@ public final class JsonTransforms {
                              JsonArray::add,
                              (first, second) -> second.forEach(first::add)
                      );
+    }
+
+    private static Function<Acronym, JsonValue> acronymAsJson() {
+        return acronym -> Json.object()
+                              .add("acronym", acronym.acronym())
+                              .add("meaning", acronym.meaning());
     }
 
     private static Function<KensaMap.Entry, JsonValue> entryAsJson(Renderers renderers) {

@@ -7,6 +7,7 @@ import dev.kensa.util.Reflect;
 
 import java.lang.reflect.Method;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -17,13 +18,20 @@ public class TestParser {
     private final Object[] arguments;
     private final Renderers renderers;
     private final MethodDeclarationProvider methodDeclarationProvider;
+    private final Pattern keywordPattern;
+    private final Pattern acronymPattern;
 
-    public TestParser(Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider) {
+    public TestParser(
+            Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider, Pattern keywordPattern,
+            Pattern acronymPattern
+    ) {
         this.testInstance = testInstance;
         this.method = method;
         this.arguments = arguments;
         this.renderers = renderers;
         this.methodDeclarationProvider = methodDeclarationProvider;
+        this.keywordPattern = keywordPattern;
+        this.acronymPattern = acronymPattern;
     }
 
     public ParsedTest parse() {
@@ -43,7 +51,7 @@ public class TestParser {
                                                               .map(nv -> renderers.renderValueOnly(nv.value()))
                                                               .collect(toSet());
 
-        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues);
+        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues, keywordPattern, acronymPattern);
 
         return new ParsedTest(parameters, methodParser.sentences(), highlightedNamedValues);
     }

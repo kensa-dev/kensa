@@ -5,6 +5,8 @@ import dev.kensa.output.template.Template;
 import dev.kensa.render.Renderer;
 import dev.kensa.render.Renderers;
 import dev.kensa.render.diagram.directive.UmlDirective;
+import dev.kensa.sentence.Acronym;
+import dev.kensa.sentence.Dictionary;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,10 +19,10 @@ public final class Kensa {
 
     private static final String KENSA_OUTPUT_ROOT = "kensa.output.root";
     private static final String KENSA_OUTPUT_DIR = "kensa-output";
-    private static final Kensa KENSA = new Kensa();
+    private static Kensa KENSA = new Kensa();
 
     public static Kensa configure() {
-        return KENSA;
+        return KENSA = new Kensa();
     }
 
     static Configuration configuration() {
@@ -31,7 +33,6 @@ public final class Kensa {
 
     private Kensa() {
     }
-
 
     public Kensa withIssueTrackerUrl(String url) {
         try {
@@ -72,7 +73,19 @@ public final class Kensa {
         return this;
     }
 
+    public Kensa withAcronyms(Acronym... acronyms) {
+        configuration.dictionary.putAcronyms(acronyms);
+        return this;
+    }
+
+    public Kensa withKeywords(String... keywords) {
+        configuration.dictionary.putKeywords(keywords);
+
+        return this;
+    }
+
     public class Configuration {
+        private final Dictionary dictionary;
         private Path outputDir;
         private Renderers renderers;
         private List<UmlDirective> umlDirectives;
@@ -84,6 +97,11 @@ public final class Kensa {
             this.renderers = new Renderers();
             this.umlDirectives = new ArrayList<>();
             this.outputStyle = OutputStyle.MultiFile;
+            this.dictionary = new Dictionary();
+        }
+
+        public Dictionary dictionary() {
+            return dictionary;
         }
 
         public Path outputDir() {
@@ -103,7 +121,7 @@ public final class Kensa {
         }
 
         public Template createTemplate(String path, Template.Mode mode) {
-            return new Template(outputDir.resolve(outputDir.resolve(path)), mode, issueTrackerUrl);
+            return new Template(outputDir.resolve(path), mode, issueTrackerUrl);
         }
     }
 }

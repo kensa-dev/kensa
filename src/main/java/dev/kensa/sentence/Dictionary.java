@@ -1,7 +1,7 @@
 package dev.kensa.sentence;
 
 import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -13,60 +13,55 @@ import static java.util.stream.Collectors.joining;
 public final class Dictionary {
 
     private static final Pattern NO_MATCH_PATTERN = Pattern.compile(".^");
-    private static final List<String> ONE_LETTER_WORDS = asList("A", "a", "I");
-    private static final Set<String> ACRONYMS = new LinkedHashSet<>();
-    private static final Set<String> KEYWORDS = new LinkedHashSet<>(asList("given", "when", "then", "and", "with", "that"));
 
-    public static void putAcronym(String value) {
-        if (value == null || value.length() < 2) {
-            throw new IllegalArgumentException(String.format("Acronyms must be at least 2 characters. [%s]", value));
-        }
-        ACRONYMS.add(value);
+    private final Set<Acronym> acronyms = new LinkedHashSet<>();
+    private final Set<String> keywords = new LinkedHashSet<>(asList("given", "when", "then", "and", "with", "that"));
+
+    public void putAcronyms(Acronym... acronyms) {
+        Objects.requireNonNull(acronyms);
+
+        this.acronyms.addAll(asList(acronyms));
     }
 
-    public static void putKeyword(String value) {
+    public void putKeyword(String value) {
         if (value == null || value.length() < 2) {
             throw new IllegalArgumentException(String.format("Keywords must be at least 2 characters. [%s]", value));
         }
-        KEYWORDS.add(value);
+        keywords.add(value);
     }
 
-    public static void clearAcronyms() {
-        ACRONYMS.clear();
+    public void clearAcronyms() {
+        acronyms.clear();
     }
 
-    public static void putAcronyms(String... values) {
-        asList(values).forEach(Dictionary::putAcronym);
+    public void putKeywords(String... values) {
+        asList(values).forEach(this::putKeyword);
     }
 
-    public static void putKeywords(String... values) {
-        asList(values).forEach(Dictionary::putKeyword);
+    public Set<Acronym> acronyms() {
+        return acronyms;
     }
 
-    public static boolean isAcronym(String value) {
-        return ACRONYMS.contains(value);
+    public Stream<String> keywords() {
+        return keywords.stream();
     }
 
-    public static boolean isKeyword(String value) {
-        return KEYWORDS.contains(value);
+    public Pattern acronymPattern() {
+        return acronyms.isEmpty() ? NO_MATCH_PATTERN :
+                Pattern.compile(
+                        acronyms
+                                .stream()
+                                .map(Acronym::acronym)
+                                .sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
+                                .collect(joining("|"))
+                );
     }
 
-    public static Stream<String> acronyms() {
-        return ACRONYMS.stream();
-    }
-
-    public static Stream<String> keywords() {
-        return KEYWORDS.stream();
-    }
-
-    public static Pattern acronymPattern() {
-        return ACRONYMS.isEmpty() ? NO_MATCH_PATTERN :
-                Pattern.compile(acronyms().sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
-                                          .collect(joining("|")));
-    }
-
-    public static Pattern keywordPattern() {
-        return Pattern.compile(keywords().sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
-                                         .collect(joining("|", "^(", ")")));
+    public Pattern keywordPattern() {
+        return Pattern.compile(
+                keywords()
+                        .sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
+                        .collect(joining("|", "^(", ")"))
+        );
     }
 }

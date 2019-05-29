@@ -1,11 +1,13 @@
 package dev.kensa.parse;
 
 import dev.kensa.render.Renderers;
+import dev.kensa.sentence.Acronym;
 import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.Sentences;
 import dev.kensa.util.NamedValue;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
@@ -25,14 +27,21 @@ import static org.mockito.Mockito.when;
 
 class MethodParserTest {
 
+    private Dictionary dictionary;
+
+    @BeforeEach
+    void setUp() {
+        dictionary = new Dictionary();
+    }
+
     @AfterEach
     void tearDown() {
-        Dictionary.clearAcronyms();
+        dictionary.clearAcronyms();
     }
 
     @Test
     void canParseMethodWithAcronymsInStatement() {
-        Dictionary.putAcronym("KCI");
+        dictionary.putAcronyms(Acronym.of("KCI", "Keep Customer Informed"));
 
         String code = "class T {\n" +
                 "   void testMethod() {\n" +
@@ -293,7 +302,7 @@ class MethodParserTest {
 
         return parse(code).getClassByName("T")
                           .map(cd -> cd.getMethodsByName("testMethod").get(0))
-                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues))
+                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues, dictionary.keywordPattern(), dictionary.acronymPattern()))
                           .map(MethodParser::sentences)
                           .map(Sentences::stream)
                           .map(s -> s.collect(toList()))

@@ -1,6 +1,5 @@
 package dev.kensa.sentence;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,17 +14,14 @@ class SentenceBuilderTest {
 
     @BeforeEach
     void setUp() {
-        builder = new SentenceBuilder(1, Set.of("highlighted"));
-    }
+        Dictionary dictionary = new Dictionary();
+        dictionary.putAcronyms(Acronym.of("FOO", ""));
 
-    @AfterEach
-    void tearDown() {
-        Dictionary.clearAcronyms();
+        builder = new SentenceBuilder(1, Set.of("highlighted"), dictionary.keywordPattern(), dictionary.acronymPattern());
     }
 
     @Test
     void canConstructASentenceFromVariousValueTypes() {
-        Dictionary.putAcronym("FOO");
 
         builder.append("givenFOOBar")
                .appendLiteral("literal1")
