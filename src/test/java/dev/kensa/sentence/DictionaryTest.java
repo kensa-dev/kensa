@@ -96,7 +96,7 @@ class DictionaryTest {
 
     @Test
     void throwsOnAttemptToAddEmptyOrNullAcronym() {
-        assertThatThrownBy(() -> dictionary.putAcronyms(null))
+        assertThatThrownBy(() -> dictionary.putAcronyms((Acronym[]) null))
                 .isInstanceOf(NullPointerException.class);
     }
 }

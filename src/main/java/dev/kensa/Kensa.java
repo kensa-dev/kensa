@@ -19,10 +19,10 @@ public final class Kensa {
 
     private static final String KENSA_OUTPUT_ROOT = "kensa.output.root";
     private static final String KENSA_OUTPUT_DIR = "kensa-output";
-    private static final Kensa KENSA = new Kensa();
+    private static Kensa KENSA = new Kensa();
 
     public static Kensa configure() {
-        return KENSA;
+        return KENSA = new Kensa();
     }
 
     static Configuration configuration() {
@@ -121,7 +121,7 @@ public final class Kensa {
         }
 
         public Template createTemplate(String path, Template.Mode mode) {
-            return new Template(outputDir.resolve(outputDir.resolve(path)), mode, issueTrackerUrl);
+            return new Template(outputDir.resolve(path), mode, issueTrackerUrl);
         }
     }
 }

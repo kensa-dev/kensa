@@ -8,13 +8,13 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.SentenceBuilder;
 import dev.kensa.sentence.Sentences;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static dev.kensa.parse.SentenceCollector.asSentences;
@@ -24,13 +24,15 @@ class MethodParser {
     private final MethodDeclaration methodDeclaration;
     private final ValueAccessors valueAccessors;
     private final Set<String> highlightedValues;
-    private final Dictionary dictionary;
+    private final Pattern keywordPattern;
+    private final Pattern acronymPattern;
 
-    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues, Dictionary dictionary) {
+    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues, Pattern keywordPattern, Pattern acronymPattern) {
         this.methodDeclaration = methodDeclaration;
         this.valueAccessors = valueAccessors;
         this.highlightedValues = highlightedValues;
-        this.dictionary = dictionary;
+        this.keywordPattern = keywordPattern;
+        this.acronymPattern = acronymPattern;
     }
 
     Sentences sentences() {
@@ -52,7 +54,7 @@ class MethodParser {
     }
 
     private SentenceBuilder toSentence(Node node) {
-        SentenceBuilder builder = new SentenceBuilder(startLineOf(node), highlightedValues, dictionary);
+        SentenceBuilder builder = new SentenceBuilder(startLineOf(node), highlightedValues, keywordPattern, acronymPattern);
 
         append(node, builder);
 

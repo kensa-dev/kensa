@@ -2,12 +2,12 @@ package dev.kensa.parse;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import dev.kensa.render.Renderers;
-import dev.kensa.sentence.Dictionary;
 import dev.kensa.util.NamedValue;
 import dev.kensa.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -18,15 +18,20 @@ public class TestParser {
     private final Object[] arguments;
     private final Renderers renderers;
     private final MethodDeclarationProvider methodDeclarationProvider;
-    private final Dictionary dictionary;
+    private final Pattern keywordPattern;
+    private final Pattern acronymPattern;
 
-    public TestParser(Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider, Dictionary dictionary) {
+    public TestParser(
+            Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider, Pattern keywordPattern,
+            Pattern acronymPattern
+    ) {
         this.testInstance = testInstance;
         this.method = method;
         this.arguments = arguments;
         this.renderers = renderers;
         this.methodDeclarationProvider = methodDeclarationProvider;
-        this.dictionary = dictionary;
+        this.keywordPattern = keywordPattern;
+        this.acronymPattern = acronymPattern;
     }
 
     public ParsedTest parse() {
@@ -46,7 +51,7 @@ public class TestParser {
                                                               .map(nv -> renderers.renderValueOnly(nv.value()))
                                                               .collect(toSet());
 
-        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues, dictionary);
+        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues, keywordPattern, acronymPattern);
 
         return new ParsedTest(parameters, methodParser.sentences(), highlightedNamedValues);
     }

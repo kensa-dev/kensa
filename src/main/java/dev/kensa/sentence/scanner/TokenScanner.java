@@ -1,6 +1,5 @@
 package dev.kensa.sentence.scanner;
 
-import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Token;
 
 import java.util.HashSet;
@@ -13,18 +12,20 @@ import static dev.kensa.sentence.Token.Type.*;
 public class TokenScanner {
 
     private final Set<String> highlightedValues;
-    private final Dictionary dictionary;
+    private final Pattern keywordPattern;
+    private final Pattern acronymPattern;
 
-    public TokenScanner(Set<String> highlightedValues, Dictionary dictionary) {
+    public TokenScanner(Set<String> highlightedValues, Pattern keywordPattern, Pattern acronymPattern) {
         this.highlightedValues = highlightedValues;
-        this.dictionary = dictionary;
+        this.keywordPattern = keywordPattern;
+        this.acronymPattern = acronymPattern;
     }
 
     public Indices scan(String string) {
         Indices indices = new Indices();
 
-        scanFor(Keyword, dictionary.keywordPattern(), string, indices);
-        scanFor(Acronym, dictionary.acronymPattern(), string, indices);
+        scanFor(Keyword, keywordPattern, string, indices);
+        scanFor(Acronym, acronymPattern, string, indices);
         scanForWords(string, indices);
 
         return indices;

@@ -302,7 +302,7 @@ class MethodParserTest {
 
         return parse(code).getClassByName("T")
                           .map(cd -> cd.getMethodsByName("testMethod").get(0))
-                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues, dictionary))
+                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues, dictionary.keywordPattern(), dictionary.acronymPattern()))
                           .map(MethodParser::sentences)
                           .map(Sentences::stream)
                           .map(s -> s.collect(toList()))

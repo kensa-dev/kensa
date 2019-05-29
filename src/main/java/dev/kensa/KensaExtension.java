@@ -7,6 +7,7 @@ import dev.kensa.output.ResultWriter;
 import dev.kensa.parse.MethodDeclarationProvider;
 import dev.kensa.parse.ParsedTest;
 import dev.kensa.parse.TestParser;
+import dev.kensa.parse.TestParserFactory;
 import dev.kensa.render.diagram.SequenceDiagramFactory;
 import dev.kensa.state.CapturedInteractions;
 import dev.kensa.state.Givens;
@@ -35,10 +36,10 @@ public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachC
 
     private static final Function<String, KensaExecutionContext> EXECUTION_CONTEXT_FACTORY =
             key -> new KensaExecutionContext(new ResultWriter(Kensa.configuration()));
-    private static final MethodDeclarationProvider METHOD_DECLARATION_PROVIDER = new MethodDeclarationProvider();
 
     private final TestContainerFactory testContainerFactory = new TestContainerFactory();
     private final SequenceDiagramFactory sequenceDiagramFactory = new SequenceDiagramFactory(Kensa.configuration().umlDirectives());
+    private final TestParserFactory testParserFactory = new TestParserFactory(Kensa.configuration(), new MethodDeclarationProvider());
 
     @Override
     public void beforeAll(ExtensionContext context) {
@@ -106,14 +107,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachC
     @SuppressWarnings("WeakerAccess")
     public void processTestMethodArguments(ExtensionContext context, Object[] arguments) {
         ExtensionContext.Store store = context.getStore(KENSA);
-        store.put(TEST_PARSER_KEY, new TestParser(
-                context.getRequiredTestInstance(),
-                context.getRequiredTestMethod(),
-                arguments,
-                Kensa.configuration().renderers(),
-                METHOD_DECLARATION_PROVIDER,
-                Kensa.configuration().dictionary()
-        ));
+        store.put(TEST_PARSER_KEY, testParserFactory.create(context.getRequiredTestInstance(), context.getRequiredTestMethod(), arguments));
     }
 
     private Object[] argumentsFrom(ExtensionContext context) {

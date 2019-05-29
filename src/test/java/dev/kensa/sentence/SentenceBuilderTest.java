@@ -11,17 +11,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SentenceBuilderTest {
 
     private SentenceBuilder builder;
-    private Dictionary dictionary;
 
     @BeforeEach
     void setUp() {
-        dictionary = new Dictionary();
-        builder = new SentenceBuilder(1, Set.of("highlighted"), dictionary);
+        Dictionary dictionary = new Dictionary();
+        dictionary.putAcronyms(Acronym.of("FOO", ""));
+
+        builder = new SentenceBuilder(1, Set.of("highlighted"), dictionary.keywordPattern(), dictionary.acronymPattern());
     }
 
     @Test
     void canConstructASentenceFromVariousValueTypes() {
-        dictionary.putAcronyms(Acronym.of("FOO", ""));
 
         builder.append("givenFOOBar")
                .appendLiteral("literal1")
