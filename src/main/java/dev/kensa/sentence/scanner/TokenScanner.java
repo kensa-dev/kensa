@@ -11,17 +11,20 @@ import java.util.regex.Pattern;
 import static dev.kensa.sentence.Token.Type.*;
 
 public class TokenScanner {
-    private final Set<String> highlightedValues;
 
-    public TokenScanner(Set<String> highlightedValues) {
+    private final Set<String> highlightedValues;
+    private final Dictionary dictionary;
+
+    public TokenScanner(Set<String> highlightedValues, Dictionary dictionary) {
         this.highlightedValues = highlightedValues;
+        this.dictionary = dictionary;
     }
 
     public Indices scan(String string) {
         Indices indices = new Indices();
 
-        scanFor(Keyword, Dictionary.keywordPattern(), string, indices);
-        scanFor(Acronym, Dictionary.acronymPattern(), string, indices);
+        scanFor(Keyword, dictionary.keywordPattern(), string, indices);
+        scanFor(Acronym, dictionary.acronymPattern(), string, indices);
         scanForWords(string, indices);
 
         return indices;

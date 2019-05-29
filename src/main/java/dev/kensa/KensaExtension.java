@@ -8,7 +8,6 @@ import dev.kensa.parse.MethodDeclarationProvider;
 import dev.kensa.parse.ParsedTest;
 import dev.kensa.parse.TestParser;
 import dev.kensa.render.diagram.SequenceDiagramFactory;
-import dev.kensa.sentence.Dictionary;
 import dev.kensa.state.CapturedInteractions;
 import dev.kensa.state.Givens;
 import dev.kensa.state.TestInvocation;
@@ -24,7 +23,6 @@ import static dev.kensa.context.TestContextHolder.clearFromThread;
 import static dev.kensa.util.ReflectionUtil.fieldValue;
 import static dev.kensa.util.ReflectionUtil.invokeMethod;
 import static java.time.temporal.ChronoUnit.MILLIS;
-import static java.util.stream.Collectors.toList;
 
 public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
@@ -93,7 +91,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachC
                             parsedTest,
                             testContext.givens(),
                             interactions,
-                            Dictionary.acronyms().collect(toList()),
+                            Kensa.configuration().dictionary().acronyms(),
                             context.getExecutionException().orElse(null),
                             sequenceDiagramFactory.create(interactions)
                     )
@@ -113,7 +111,8 @@ public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachC
                 context.getRequiredTestMethod(),
                 arguments,
                 Kensa.configuration().renderers(),
-                METHOD_DECLARATION_PROVIDER
+                METHOD_DECLARATION_PROVIDER,
+                Kensa.configuration().dictionary()
         ));
     }
 

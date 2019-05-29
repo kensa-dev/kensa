@@ -1,6 +1,5 @@
 package dev.kensa.sentence;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,20 +11,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SentenceBuilderTest {
 
     private SentenceBuilder builder;
+    private Dictionary dictionary;
 
     @BeforeEach
     void setUp() {
-        builder = new SentenceBuilder(1, Set.of("highlighted"));
-    }
-
-    @AfterEach
-    void tearDown() {
-        Dictionary.clearAcronyms();
+        dictionary = new Dictionary();
+        builder = new SentenceBuilder(1, Set.of("highlighted"), dictionary);
     }
 
     @Test
     void canConstructASentenceFromVariousValueTypes() {
-        Dictionary.putAcronym("FOO");
+        dictionary.putAcronyms(Acronym.of("FOO", ""));
 
         builder.append("givenFOOBar")
                .appendLiteral("literal1")

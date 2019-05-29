@@ -1,12 +1,14 @@
 package dev.kensa.sentence;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -14,55 +16,67 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class DictionaryTest {
 
+    private Dictionary dictionary;
+
+    @BeforeEach
+    void setUp() {
+        dictionary = new Dictionary();
+    }
+
     @AfterEach
     void tearDown() {
-        Dictionary.clearAcronyms();
+        dictionary.clearAcronyms();
     }
 
     @Test
-    void canPutAcronyms() {
-        Dictionary.putAcronym("foo");
-        Dictionary.putAcronyms("boo", "moo");
+    void canStreamExistingAcronyms() {
+        Acronym[] acronyms = {
+                Acronym.of("foo", "means foo"),
+                Acronym.of("boo", "means boo"),
+                Acronym.of("moo", "means moo")
+        };
 
-        assertThat(Dictionary.acronyms()).containsAll(List.of("foo", "boo", "moo"));
+        dictionary.putAcronyms(acronyms);
+
+        assertThat(dictionary.acronyms()).containsAll(asList(acronyms));
     }
 
     @Test
     void canPutKeywords() {
-        Dictionary.putKeyword("foo");
-        Dictionary.putKeywords("boo", "moo");
+        dictionary.putKeyword("foo");
+        dictionary.putKeywords("boo", "moo");
 
-        assertThat(Dictionary.keywords()).containsAll(List.of("foo", "boo", "moo"));
+        assertThat(dictionary.keywords()).containsAll(List.of("foo", "boo", "moo"));
     }
 
     @Test
     void canClearAcronyms() {
-        Dictionary.putAcronym("foo");
+        dictionary.putAcronyms(Acronym.of("foo", "foo"));
 
-        Dictionary.clearAcronyms();
+        dictionary.clearAcronyms();
 
-        assertThat(Dictionary.acronyms()).isEmpty();
+        assertThat(dictionary.acronyms()).isEmpty();
     }
 
     @Test
     void returnsNoMatchPatternWhenNoAcronyms() {
-        assertThat(Dictionary.acronymPattern().pattern()).isEqualTo(".^");
+        assertThat(dictionary.acronymPattern().pattern()).isEqualTo(".^");
     }
 
     @Test
     void returnsCorrectAcronymPattern() {
-        Dictionary.putAcronym("foo");
-        assertThat(Dictionary.acronymPattern().pattern()).isEqualTo("foo");
+        dictionary.putAcronyms(Acronym.of("foo", "foo"));
+        assertThat(dictionary.acronymPattern().pattern()).isEqualTo("foo");
 
-        Dictionary.putAcronym("boo");
-        assertThat(Dictionary.acronymPattern().pattern()).isEqualTo("foo|boo");
+        dictionary.putAcronyms(Acronym.of("boo", "boo"));
+        assertThat(dictionary.acronymPattern().pattern()).isEqualTo("foo|boo");
     }
 
     @Test
     void returnsCorrectKeywordPattern() {
-        Dictionary.putKeyword("foo");
+        dictionary.putKeyword("foo");
 
-        String pattern = Dictionary.keywordPattern().pattern();
+        String pattern = dictionary.keywordPattern().pattern();
         assertSoftly(softly -> {
             softly.assertThat(pattern).startsWith("^(");
             softly.assertThat(pattern).endsWith(")");
@@ -73,20 +87,16 @@ class DictionaryTest {
     @ParameterizedTest
     @NullAndEmptySource
     void throwsOnAttemptToAddEmptyOrNullKeyword(String keyword) {
-        assertThatThrownBy(() -> Dictionary.putKeyword(keyword))
+        assertThatThrownBy(() -> dictionary.putKeyword(keyword))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> Dictionary.putKeywords("foo", keyword))
+        assertThatThrownBy(() -> dictionary.putKeywords("foo", keyword))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    void throwsOnAttemptToAddEmptyOrNullAcronym(String keyword) {
-        assertThatThrownBy(() -> Dictionary.putAcronym(keyword))
-                .isInstanceOf(IllegalArgumentException.class);
-
-        assertThatThrownBy(() -> Dictionary.putAcronyms("foo", keyword))
-                .isInstanceOf(IllegalArgumentException.class);
+    @Test
+    void throwsOnAttemptToAddEmptyOrNullAcronym() {
+        assertThatThrownBy(() -> dictionary.putAcronyms(null))
+                .isInstanceOf(NullPointerException.class);
     }
 }

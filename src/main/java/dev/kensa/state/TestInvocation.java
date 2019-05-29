@@ -2,6 +2,7 @@ package dev.kensa.state;
 
 import dev.kensa.parse.ParsedTest;
 import dev.kensa.render.diagram.SequenceDiagram;
+import dev.kensa.sentence.Acronym;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.Sentences;
 import dev.kensa.util.KensaMap;
@@ -9,8 +10,8 @@ import dev.kensa.util.NamedValue;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class TestInvocation {
@@ -22,7 +23,7 @@ public class TestInvocation {
     private final Throwable executionException;
     private final Givens givens;
     private final CapturedInteractions interactions;
-    private final List<String> acronyms;
+    private final Set<Acronym> acronyms;
     private final SequenceDiagram sequenceDiagram;
 
     public TestInvocation(
@@ -30,7 +31,7 @@ public class TestInvocation {
             ParsedTest parsedTest,
             Givens givens,
             CapturedInteractions interactions,
-            List<String> acronyms,
+            Set<Acronym> acronyms,
             Throwable executionException,
             SequenceDiagram sequenceDiagram
     ) {
@@ -80,7 +81,7 @@ public class TestInvocation {
         return Optional.ofNullable(executionException);
     }
 
-    public Stream<String> acronyms() {
+    public Stream<Acronym> acronyms() {
         return acronyms.stream();
     }
 

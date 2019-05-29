@@ -8,6 +8,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.SentenceBuilder;
 import dev.kensa.sentence.Sentences;
@@ -23,11 +24,13 @@ class MethodParser {
     private final MethodDeclaration methodDeclaration;
     private final ValueAccessors valueAccessors;
     private final Set<String> highlightedValues;
+    private final Dictionary dictionary;
 
-    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues) {
+    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues, Dictionary dictionary) {
         this.methodDeclaration = methodDeclaration;
         this.valueAccessors = valueAccessors;
         this.highlightedValues = highlightedValues;
+        this.dictionary = dictionary;
     }
 
     Sentences sentences() {
@@ -49,7 +52,7 @@ class MethodParser {
     }
 
     private SentenceBuilder toSentence(Node node) {
-        SentenceBuilder builder = new SentenceBuilder(startLineOf(node), highlightedValues);
+        SentenceBuilder builder = new SentenceBuilder(startLineOf(node), highlightedValues, dictionary);
 
         append(node, builder);
 

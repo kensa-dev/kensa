@@ -2,6 +2,7 @@ package dev.kensa.parse;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import dev.kensa.render.Renderers;
+import dev.kensa.sentence.Dictionary;
 import dev.kensa.util.NamedValue;
 import dev.kensa.util.ReflectionUtil;
 
@@ -17,13 +18,15 @@ public class TestParser {
     private final Object[] arguments;
     private final Renderers renderers;
     private final MethodDeclarationProvider methodDeclarationProvider;
+    private final Dictionary dictionary;
 
-    public TestParser(Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider) {
+    public TestParser(Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider, Dictionary dictionary) {
         this.testInstance = testInstance;
         this.method = method;
         this.arguments = arguments;
         this.renderers = renderers;
         this.methodDeclarationProvider = methodDeclarationProvider;
+        this.dictionary = dictionary;
     }
 
     public ParsedTest parse() {
@@ -43,7 +46,7 @@ public class TestParser {
                                                               .map(nv -> renderers.renderValueOnly(nv.value()))
                                                               .collect(toSet());
 
-        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues);
+        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues, dictionary);
 
         return new ParsedTest(parameters, methodParser.sentences(), highlightedNamedValues);
     }

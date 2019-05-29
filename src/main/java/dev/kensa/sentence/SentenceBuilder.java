@@ -17,9 +17,9 @@ public class SentenceBuilder {
 
     private int lastLineNumber;
 
-    public SentenceBuilder(int startLine, Set<String> highlightedValues) {
+    public SentenceBuilder(int startLine, Set<String> highlightedValues, Dictionary dictionary) {
         lastLineNumber = startLine;
-        scanner = new TokenScanner(highlightedValues);
+        scanner = new TokenScanner(highlightedValues, dictionary);
         this.highlightedValues = highlightedValues;
     }
 

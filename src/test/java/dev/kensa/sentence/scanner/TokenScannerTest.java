@@ -2,13 +2,13 @@ package dev.kensa.sentence.scanner;
 
 import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Token;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 
+import static dev.kensa.sentence.Acronym.of;
 import static dev.kensa.sentence.Token.Type.HighlightedWord;
 import static dev.kensa.sentence.Token.Type.Word;
 import static java.util.stream.Collectors.toList;
@@ -17,15 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TokenScannerTest {
 
     private TokenScanner tokenScanner;
+    private Dictionary dictionary;
 
     @BeforeEach
     void setUp() {
-        tokenScanner = new TokenScanner(Set.of("Important", "Priority", "No"));
-    }
-
-    @AfterEach
-    void tearDown() {
-        Dictionary.clearAcronyms();
+        dictionary = new Dictionary();
+        tokenScanner = new TokenScanner(Set.of("Important", "Priority", "No"), dictionary);
     }
 
     @Test
@@ -51,7 +48,13 @@ class TokenScannerTest {
 
     @Test
     void scansStringWithSingleAcronymInMiddle() {
-        Dictionary.putAcronyms("FTTC", "TT", "BT", "FTTP");
+        dictionary.putAcronyms(
+                of("FTTC", ""),
+                of("TT", ""),
+                of("BT", ""),
+                of("FTTP", "")
+        );
+
         List<String> expected = List.of("given", "FTTC", "And", "This", "And", "That");
         var string = String.join("", expected);
 
@@ -63,7 +66,7 @@ class TokenScannerTest {
     // Kensa#6
     @Test
     void scansStringWithSingleCharacterFollowedByAcronym() {
-        Dictionary.putAcronyms("FTTC");
+        dictionary.putAcronyms(of("FTTC", ""));
         List<String> expected = List.of("a", "FTTC", "And", "This", "And", "That");
         var string = String.join("", expected);
 
@@ -74,7 +77,13 @@ class TokenScannerTest {
 
     @Test
     void scansStringWithSingleAcronymAtStart() {
-        Dictionary.putAcronyms("FTTC", "TT", "BT", "FTTP");
+        dictionary.putAcronyms(
+                of("FTTC", ""),
+                of("TT", ""),
+                of("BT", ""),
+                of("FTTP", "")
+        );
+
         List<String> expected = List.of("FTTC", "given", "And", "This", "And", "That");
         var string = String.join("", expected);
 
@@ -85,7 +94,13 @@ class TokenScannerTest {
 
     @Test
     void scansStringWithSingleAcronymAtEnd() {
-        Dictionary.putAcronyms("FTTC", "TT", "BT", "FTTP");
+        dictionary.putAcronyms(
+                of("FTTC", ""),
+                of("TT", ""),
+                of("BT", ""),
+                of("FTTP", "")
+        );
+
         List<String> expected = List.of("given", "And", "This", "And", "That", "FTTC");
         var string = String.join("", expected);
 
@@ -96,7 +111,13 @@ class TokenScannerTest {
 
     @Test
     void scansStringWithMultipleAcronyms() {
-        Dictionary.putAcronyms("FTTC", "TT", "BT", "FTTP");
+        dictionary.putAcronyms(
+                of("FTTC", ""),
+                of("TT", ""),
+                of("BT", ""),
+                of("FTTP", "")
+        );
+
         List<String> expected = List.of("BT", "given", "And", "FTTP", "This", "And", "That", "FTTC");
         var string = String.join("", expected);
 
@@ -107,7 +128,13 @@ class TokenScannerTest {
 
     @Test
     void choosesLongestMatchingAcronym() {
-        Dictionary.putAcronyms("FTTC", "FT", "BT", "FTTP");
+        dictionary.putAcronyms(
+                of("FTTC", ""),
+                of("FT", ""),
+                of("BT", ""),
+                of("FTTP", "")
+        );
+
         List<String> expected = List.of("BT", "given", "FT", "And", "FTTP", "FTTP", "This", "And", "That", "FTTC");
         var string = String.join("", expected);
 
@@ -118,7 +145,13 @@ class TokenScannerTest {
 
     @Test
     void scansStringWithMultipleRepeatingAcronyms() {
-        Dictionary.putAcronyms("FTTC", "TT", "BT", "FTTP");
+        dictionary.putAcronyms(
+                of("FTTC", ""),
+                of("TT", ""),
+                of("BT", ""),
+                of("FTTP", "")
+        );
+
         List<String> expected = List.of("BT", "given", "BT", "And", "FTTP", "FTTP", "This", "And", "That", "FTTC");
         var string = String.join("", expected);
 
@@ -129,7 +162,13 @@ class TokenScannerTest {
 
     @Test
     void scansStringWithRepeatingAcronyms() {
-        Dictionary.putAcronyms("FTTC", "TT", "BT", "FTTP");
+        dictionary.putAcronyms(
+                of("FTTC", ""),
+                of("TT", ""),
+                of("BT", ""),
+                of("FTTP", "")
+        );
+
         List<String> expected = List.of("BT", "BT");
         var string = String.join("", expected);
 
