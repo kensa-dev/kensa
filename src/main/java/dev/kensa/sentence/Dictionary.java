@@ -1,5 +1,6 @@
 package dev.kensa.sentence;
 
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -51,7 +52,7 @@ public final class Dictionary {
                 Pattern.compile(
                         acronyms.stream()
                                 .map(Acronym::acronym)
-                                .sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
+                                .sorted(longestFirst())
                                 .collect(joining("|"))
                 );
     }
@@ -60,8 +61,12 @@ public final class Dictionary {
         Set<String> keywords = new LinkedHashSet<>(this.keywords);
         return Pattern.compile(
                 keywords.stream()
-                        .sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
+                        .sorted(longestFirst())
                         .collect(joining("|", "^(", ")"))
         );
+    }
+
+    private Comparator<String> longestFirst() {
+        return (a1, a2) -> compare(a2.length(), a1.length());
     }
 }
