@@ -6,20 +6,21 @@ import dev.kensa.util.IoUtil;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ResultWriter {
 
-    private final Kensa.Configuration configuration;
-    private final Path outputDir;
-    private final OutputStyle outputStyle;
+    private final Supplier<Kensa.Configuration> configurationSupplier;
 
-    public ResultWriter(Kensa.Configuration configuration) {
-        this.configuration = configuration;
-        this.outputDir = configuration.outputDir();
-        this.outputStyle = configuration.outputStyle();
+    public ResultWriter(Supplier<Kensa.Configuration> configurationSupplier) {
+        this.configurationSupplier = configurationSupplier;
     }
 
     public void write(List<TestContainer> containers) {
+        Kensa.Configuration configuration = configurationSupplier.get();
+        Path outputDir = configuration.outputDir();
+        OutputStyle outputStyle = configuration.outputStyle();
+
         IoUtil.recreate(outputDir);
 
         outputStyle.write(containers, configuration);

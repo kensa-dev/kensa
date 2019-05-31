@@ -1,34 +1,29 @@
 package dev.kensa.parse;
 
 import dev.kensa.Kensa;
-import dev.kensa.render.Renderers;
+import dev.kensa.state.TestInvocationContext;
 
-import java.lang.reflect.Method;
-import java.util.regex.Pattern;
+import java.util.function.Supplier;
 
 public class TestParserFactory {
 
     private final MethodDeclarationProvider methodDeclarationProvider;
-    private final Pattern acronymPattern;
-    private final Pattern keywordPattern;
-    private final Renderers renderers;
+    private final Supplier<Kensa.Configuration> configurationSupplier;
 
-    public TestParserFactory(Kensa.Configuration configuration, MethodDeclarationProvider methodDeclarationProvider) {
-        this.acronymPattern = configuration.dictionary().acronymPattern();
-        this.keywordPattern = configuration.dictionary().keywordPattern();
-        this.renderers = configuration.renderers();
+    public TestParserFactory(Supplier<Kensa.Configuration> configurationSupplier, MethodDeclarationProvider methodDeclarationProvider) {
+        this.configurationSupplier = configurationSupplier;
         this.methodDeclarationProvider = methodDeclarationProvider;
     }
 
-    public TestParser create(Object testInstance, Method testMethod, Object[] arguments) {
+    public TestParser create(TestInvocationContext context) {
+        Kensa.Configuration configuration = configurationSupplier.get();
+
         return new TestParser(
-                testInstance,
-                testMethod,
-                arguments,
-                renderers,
+                context,
+                configuration.renderers(),
                 methodDeclarationProvider,
-                keywordPattern,
-                acronymPattern
+                configuration.dictionary().keywordPattern(),
+                configuration.dictionary().acronymPattern()
         );
     }
 }

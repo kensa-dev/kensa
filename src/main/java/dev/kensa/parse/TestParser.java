@@ -2,6 +2,7 @@ package dev.kensa.parse;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import dev.kensa.render.Renderers;
+import dev.kensa.state.TestInvocationContext;
 import dev.kensa.util.NamedValue;
 import dev.kensa.util.Reflect;
 
@@ -22,12 +23,13 @@ public class TestParser {
     private final Pattern acronymPattern;
 
     public TestParser(
-            Object testInstance, Method method, Object[] arguments, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider, Pattern keywordPattern,
+            TestInvocationContext context, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider,
+            Pattern keywordPattern,
             Pattern acronymPattern
     ) {
-        this.testInstance = testInstance;
-        this.method = method;
-        this.arguments = arguments;
+        this.testInstance = context.testInstance();
+        this.method = context.testMethod();
+        this.arguments = context.testParameters();
         this.renderers = renderers;
         this.methodDeclarationProvider = methodDeclarationProvider;
         this.keywordPattern = keywordPattern;
