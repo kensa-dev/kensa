@@ -4,7 +4,6 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static java.lang.Integer.compare;
 import static java.util.Arrays.asList;
@@ -42,15 +41,15 @@ public final class Dictionary {
         return acronyms;
     }
 
-    public Stream<String> keywords() {
-        return keywords.stream();
+    public Set<String> keywords() {
+        return keywords;
     }
 
     public Pattern acronymPattern() {
+        Set<Acronym> acronyms = new LinkedHashSet<>(this.acronyms);
         return acronyms.isEmpty() ? NO_MATCH_PATTERN :
                 Pattern.compile(
-                        acronyms
-                                .stream()
+                        acronyms.stream()
                                 .map(Acronym::acronym)
                                 .sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
                                 .collect(joining("|"))
@@ -58,8 +57,9 @@ public final class Dictionary {
     }
 
     public Pattern keywordPattern() {
+        Set<String> keywords = new LinkedHashSet<>(this.keywords);
         return Pattern.compile(
-                keywords()
+                keywords.stream()
                         .sorted((a1, a2) -> compare(a2.length(), a1.length())) // ** Important: Longest first
                         .collect(joining("|", "^(", ")"))
         );
