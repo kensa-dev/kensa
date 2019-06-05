@@ -46,7 +46,7 @@
 
 .token-stringliteral:after {
   content: close-quote;
-  }
+}
 
 // This class uses underscores because it is created inside PlantUML
 // where dashes are special
@@ -120,3 +120,5 @@
 .captured-interaction .card-content .lowlight {
   //background-color: #2b2b2b;
 }
+
+

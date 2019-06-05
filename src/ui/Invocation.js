@@ -113,30 +113,31 @@ export class Invocation extends Component {
     }
 
     render() {
-        let testStateClass = App.stateClassFor(this.state.invocation.state);
-        let highlights=this.state.invocation.highlights;
+        let invocation = this.state.invocation;
+        let testStateClass = App.stateClassFor(invocation.state);
+        let highlights=invocation.highlights;
 
         return (
                 <div className={"message " + testStateClass}>
                     <div className="message-body">
-                        <span className={"tag is-pulled-right " + testStateClass}>Executed in: {this.state.invocation.elapsedTime}</span>
+                        <span className={"tag is-pulled-right " + testStateClass}>Executed in: {invocation.elapsedTime}</span>
                         <div className="buttons has-addons">
                             {this.buttonFor('givens', 'Givens')}
                             {this.buttonFor('parameters', 'Parameters')}
                             {this.buttonFor('capturedInteractions', 'Captured Interactions')}
                             {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
                         </div>
-                        {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NameValuePairsTable highlights={highlights} nameValuePairs={this.state.invocation.givens}/></div>)}
-                        {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NameValuePairsTable highlights={highlights} nameValuePairs={this.state.invocation.parameters}/></div>)}
+                        {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NameValuePairsTable highlights={highlights} nameValuePairs={invocation.givens}/></div>)}
+                        {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NameValuePairsTable highlights={highlights} nameValuePairs={invocation.parameters}/></div>)}
                         {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
-                                capturedInteractions={this.state.invocation.capturedInteractions} highlights={highlights}/></div>)}
-                        {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={this.state.invocation.sequenceDiagram} capturedInteractions={this.state.invocation.capturedInteractions} highlights={this.state.invocation.highlights}/>
+                            capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
+                        {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram} capturedInteractions={invocation.capturedInteractions} highlights={invocation.highlights}/>
                         </div>)}
                     </div>
                     <div className="message-body has-text-black">
-                        {this.state.invocation.sentences.map((sentence, index) => <Sentence key={index} sentence={sentence}/>)}
+                        {invocation.sentences.map((sentence, index) => <Sentence key={index} sentence={sentence} acronyms={invocation.acronyms}/>)}
                     </div>
-                    {this.exceptionBlock(this.state.invocation.executionException)}
+                    {this.exceptionBlock(invocation.executionException)}
                 </div>
         );
     }
