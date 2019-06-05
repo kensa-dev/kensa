@@ -12,15 +12,28 @@ export class Sentence extends Component {
 
     acronymExpansionFor(token) {
         if (token.type === 'Acronym') {
-            // TODO :: fix find() only resolving first test
-            let acro = this.state.acronyms.find((entry) => {
-                return entry.acronym === token.value;
-            });
-            if (acro)
-                return acro.meaning;
-            return "";
+            return this.state.acronyms[token.value];
         }
     }
+
+    // TODO :: decide which version to go for. The below works with array object and the above with JSON array like:
+    /*
+    "acronyms": {
+        "FTTP": "Fibre To The Premises",
+        "KCI": "Keep Customer Informed",
+        "ONT": "Optical Network Termination"
+    },
+     */
+    // acronymExpansionFor(token) {
+    //     if (token.type === 'Acronym') {
+    //         let acro = this.state.acronyms.find((entry) => {
+    //             return entry.acronym === token.value;
+    //         });
+    //         if (acro)
+    //             return acro.meaning;
+    //         return "";
+    //     }
+    // }
 
 
     classFor(token) {
