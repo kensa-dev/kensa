@@ -4,7 +4,7 @@ import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
 import {highlightJson, highlightXml} from "./Highlighting";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Lowlight from 'react-lowlight';
-import {NameValuePairsTable} from "./NameValuePairsTable";
+import {NamedValueTable} from "./NamedValueTable";
 
 export class CapturedInteractions extends Component {
     render() {
@@ -30,7 +30,7 @@ export class Renderable extends Component {
         return (
                 <div className="box renderable">
                     <div className="subtitle is-5">{renderable['name']}</div>
-                    <NameValuePairsTable highlights={highlights} nameValuePairs={renderable['value']}/>
+                    <NamedValueTable highlights={highlights} namedValues={renderable['value']}/>
                 </div>
         )
     }

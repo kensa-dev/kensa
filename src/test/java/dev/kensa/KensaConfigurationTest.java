@@ -27,13 +27,13 @@ class KensaConfigurationTest {
     void canSetKensaOutputDir() {
         Kensa.configure().withOutputDir("/foo/kensa-output");
 
-        assertThat(Kensa.configuration().outputDir()).isEqualTo(Paths.get("/foo/kensa-output"));
+        assertThat(Kensa.configuration().get().outputDir()).isEqualTo(Paths.get("/foo/kensa-output"));
     }
 
     @Test
     void appendsKensaOutputDirWithDirectoryWhenMissing() {
         Kensa.configure().withOutputDir("/foo");
 
-        assertThat(Kensa.configuration().outputDir()).isEqualTo(Paths.get("/foo/kensa-output"));
+        assertThat(Kensa.configuration().get().outputDir()).isEqualTo(Paths.get("/foo/kensa-output"));
     }
 }

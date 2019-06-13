@@ -4,15 +4,7 @@ import dev.kensa.context.TestContainer;
 import dev.kensa.context.TestContainerFactory;
 import dev.kensa.context.TestContext;
 import dev.kensa.output.ResultWriter;
-import dev.kensa.parse.MethodDeclarationProvider;
-import dev.kensa.parse.ParsedTest;
-import dev.kensa.parse.TestParser;
-import dev.kensa.parse.TestParserFactory;
-import dev.kensa.render.diagram.SequenceDiagramFactory;
-import dev.kensa.state.CapturedInteractions;
-import dev.kensa.state.Givens;
-import dev.kensa.state.TestInvocation;
-import dev.kensa.state.TestInvocationData;
+import dev.kensa.state.*;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor;
 
@@ -21,8 +13,8 @@ import java.util.function.Function;
 
 import static dev.kensa.context.TestContextHolder.bindToThread;
 import static dev.kensa.context.TestContextHolder.clearFromThread;
-import static dev.kensa.util.ReflectionUtil.fieldValue;
-import static dev.kensa.util.ReflectionUtil.invokeMethod;
+import static dev.kensa.util.Reflect.fieldValue;
+import static dev.kensa.util.Reflect.invokeMethod;
 import static java.time.temporal.ChronoUnit.MILLIS;
 
 public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
@@ -31,15 +23,14 @@ public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachC
     private static final String TEST_START_TIME_KEY = "StartTime";
     private static final String TEST_CONTAINER_KEY = "TestContainer";
     private static final String TEST_CONTEXT_KEY = "TestContext";
-    private static final String TEST_PARSER_KEY = "TestParser";
+    private static final String TEST_INVOCATION_CONTEXT_KEY = "TestArguments";
     private static final String KENSA_EXECUTION_CONTEXT_KEY = "KensaExecutionContext";
 
     private static final Function<String, KensaExecutionContext> EXECUTION_CONTEXT_FACTORY =
             key -> new KensaExecutionContext(new ResultWriter(Kensa.configuration()));
 
     private final TestContainerFactory testContainerFactory = new TestContainerFactory();
-    private final SequenceDiagramFactory sequenceDiagramFactory = new SequenceDiagramFactory(Kensa.configuration().umlDirectives());
-    private final TestParserFactory testParserFactory = new TestParserFactory(Kensa.configuration(), new MethodDeclarationProvider());
+    private final TestInvocationFactory testInvocationFactory = new TestInvocationFactory(Kensa.configuration());
 
     @Override
     public void beforeAll(ExtensionContext context) {
@@ -82,19 +73,14 @@ public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachC
             TestContext testContext = store.get(TEST_CONTEXT_KEY, TestContext.class);
             TestContainer testContainer = store.get(TEST_CONTAINER_KEY, TestContainer.class);
             TestInvocationData invocationData = testContainer.invocationDataFor(context.getRequiredTestMethod());
-            CapturedInteractions interactions = testContext.interactions();
-            TestParser testParser = store.get(TEST_PARSER_KEY, TestParser.class);
-            ParsedTest parsedTest = testParser.parse();
+            TestInvocationContext testInvocationContext = store.get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext.class);
 
             invocationData.add(
-                    new TestInvocation(
+                    testInvocationFactory.create(
                             Duration.of(endTime - startTime, MILLIS),
-                            parsedTest,
-                            testContext.givens(),
-                            interactions,
-                            Kensa.configuration().dictionary().acronyms(),
-                            context.getExecutionException().orElse(null),
-                            sequenceDiagramFactory.create(interactions)
+                            testContext,
+                            testInvocationContext,
+                            context.getExecutionException().orElse(null)
                     )
             );
         } finally {
@@ -107,7 +93,7 @@ public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachC
     @SuppressWarnings("WeakerAccess")
     public void processTestMethodArguments(ExtensionContext context, Object[] arguments) {
         ExtensionContext.Store store = context.getStore(KENSA);
-        store.put(TEST_PARSER_KEY, testParserFactory.create(context.getRequiredTestInstance(), context.getRequiredTestMethod(), arguments));
+        store.put(TEST_INVOCATION_CONTEXT_KEY, new TestInvocationContext(context.getRequiredTestInstance(), context.getRequiredTestMethod(), arguments));
     }
 
     private Object[] argumentsFrom(ExtensionContext context) {

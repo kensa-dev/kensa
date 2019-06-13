@@ -10,19 +10,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static dev.kensa.util.ReflectionUtil.getAnnotation;
-import static dev.kensa.util.ReflectionUtil.testMethodsOf;
+import static dev.kensa.util.Reflect.getAnnotation;
+import static dev.kensa.util.Reflect.testMethodsOf;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ReflectionUtilTest {
+class ReflectTest {
 
     @Test
     void canGetAPrivateFieldValue() {
         String privateValue = "A Value";
         SomeClass someClass = new SomeClass(privateValue);
 
-        assertThat(ReflectionUtil.fieldValue(someClass, "someField", String.class)).isEqualTo(privateValue);
+        assertThat(Reflect.fieldValue(someClass, "someField", String.class)).isEqualTo(privateValue);
     }
 
     @Test
@@ -30,7 +30,7 @@ class ReflectionUtilTest {
         String privateValue = "A Value";
         SomeClass someClass = new SomeClass(privateValue);
 
-        assertThat(ReflectionUtil.fieldValue(someClass, "valueSupplier", String.class)).isEqualTo(privateValue);
+        assertThat(Reflect.fieldValue(someClass, "valueSupplier", String.class)).isEqualTo(privateValue);
     }
 
     @Test
@@ -38,7 +38,7 @@ class ReflectionUtilTest {
         String privateValue = "A Value";
         SomeClass someClass = new SomeClass(privateValue);
 
-        assertThat(ReflectionUtil.invokeMethod(someClass, "getSomeField", String.class)).isEqualTo(privateValue);
+        assertThat(Reflect.invokeMethod(someClass, "getSomeField", String.class)).isEqualTo(privateValue);
     }
 
     @Test

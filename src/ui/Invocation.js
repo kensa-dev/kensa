@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import App from './App';
 import {Sentence} from "./Sentence";
 import {SequenceDiagram} from "./SequenceDiagram";
-import {NameValuePairsTable} from "./NameValuePairsTable";
+import {NamedValueTable} from "./NamedValueTable";
 import {CapturedInteractions} from "./Interaction";
 
 class ExecutionException extends Component {
@@ -127,8 +127,8 @@ export class Invocation extends Component {
                             {this.buttonFor('capturedInteractions', 'Captured Interactions')}
                             {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
                         </div>
-                        {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NameValuePairsTable highlights={highlights} nameValuePairs={invocation.givens}/></div>)}
-                        {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NameValuePairsTable highlights={highlights} nameValuePairs={invocation.parameters}/></div>)}
+                        {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable highlights={highlights} namedValues={invocation.givens}/></div>)}
+                        {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable highlights={highlights} namedValues={invocation.parameters}/></div>)}
                         {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
                             capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
                         {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram} capturedInteractions={invocation.capturedInteractions} highlights={invocation.highlights}/>

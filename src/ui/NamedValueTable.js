@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 
-export class NameValuePairsTable extends Component {
+export class NamedValueTable extends Component {
     render() {
-        const nameValuePairs = this.props.nameValuePairs;
+        const namedValues = this.props.namedValues;
 
         return (
                 <table className="table is-striped is-fullwidth">
@@ -13,7 +13,7 @@ export class NameValuePairsTable extends Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {nameValuePairs.map((item, index) =>
+                    {namedValues.map((item, index) =>
                             <tr key={index}>
                                 <td>{item.name}</td>
                                 <td>

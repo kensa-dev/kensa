@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class Kensa {
 
@@ -25,8 +26,8 @@ public final class Kensa {
         return KENSA = new Kensa();
     }
 
-    static Configuration configuration() {
-        return KENSA.configuration;
+    public static Supplier<Configuration> configuration() {
+        return () -> KENSA.configuration;
     }
 
     private final Configuration configuration = new Configuration();
@@ -112,7 +113,7 @@ public final class Kensa {
             return renderers;
         }
 
-        List<UmlDirective> umlDirectives() {
+        public List<UmlDirective> umlDirectives() {
             return umlDirectives;
         }
 
