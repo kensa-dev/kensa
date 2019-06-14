@@ -10,16 +10,16 @@ export class Sentence extends Component {
         };
     }
 
-    acronymExpansionFor(token) {
-        if (token.type === "Acronym") {
-            return this.state.acronyms[token.value];
+    acronymExpansionFor(type, value) {
+        if (type === "Acronym") {
+            return this.state.acronyms[value];
         }
     }
 
-    classFor(token) {
-        let c = "token-" + token.type.toLowerCase();
+    classFor(type) {
+        let c = "token-" + type.toLowerCase();
 
-        if (token.type === "Acronym") {
+        if (type === "Acronym") {
             c = "tooltip " + c;
         }
 
@@ -29,11 +29,17 @@ export class Sentence extends Component {
     render() {
         const sentence = this.props.sentence;
         return (
-            <div>
-                {sentence.map((token, index) => <span key={index} className={this.classFor(token)}
-                                                      data-tooltip={this.acronymExpansionFor(token)}>{token.value}</span>)
-                    .reduce((prev, curr) => [prev, " ", curr])}
-            </div>
+                <div>
+                    {
+                        sentence.map((token, index) => {
+                            let type = Object.keys(token)[0];
+                            let value = token[type];
+                            return <span key={index} className={this.classFor(type)}
+                                         data-tooltip={this.acronymExpansionFor(type, value)}>{value}</span>
+                        })
+                                .reduce((prev, curr) => [prev, " ", curr])
+                    }
+                </div>
         );
     }
 }
