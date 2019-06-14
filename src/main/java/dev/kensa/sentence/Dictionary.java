@@ -53,7 +53,8 @@ public final class Dictionary {
                         acronyms.stream()
                                 .map(Acronym::acronym)
                                 .sorted(longestFirst())
-                                .collect(joining("|"))
+                                .collect(joining("|")),
+                        Pattern.CASE_INSENSITIVE
                 );
     }
 

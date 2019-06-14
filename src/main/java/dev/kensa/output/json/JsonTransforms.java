@@ -41,7 +41,7 @@ public final class JsonTransforms {
                                                           invocation -> Json.object()
                                                                             .add("elapsedTime", DurationFormatter.format(invocation.elapsed()))
                                                                             .add("highlights", asJsonArray(invocation.highlightedFields(), nvpValueAsJson(renderers)))
-                                                                            .add("acronyms", asJsonArray(invocation.acronyms(), acronymAsJson()))
+                                                                            .add("acronyms", acronymsAsJson(invocation.acronyms()))
                                                                             .add("sentences", asJsonArray(invocation.sentences(), sentenceAsJson()))
                                                                             .add("parameters", asJsonArray(invocation.parameters().stream(), nvpAsJson(renderers)))
                                                                             .add("givens", asJsonArray(invocation.givens(), entryAsJson(renderers)))
@@ -88,6 +88,15 @@ public final class JsonTransforms {
         return asJsonArray(stream, Json::value);
     }
 
+    private static <T> JsonObject acronymsAsJson(Stream<Acronym> stream) {
+        return stream.collect(
+                Json::object,
+                (members, acronym) -> members.add(acronym.acronym(), acronym.meaning()),
+                (members, members2) -> {
+                }
+        );
+    }
+
     private static <T> JsonArray asJsonArray(Stream<T> stream, Function<T, ? extends JsonValue> transformer) {
         return stream.map(transformer)
                      .collect(
@@ -95,12 +104,6 @@ public final class JsonTransforms {
                              JsonArray::add,
                              (first, second) -> second.forEach(first::add)
                      );
-    }
-
-    private static Function<Acronym, JsonValue> acronymAsJson() {
-        return acronym -> Json.object()
-                              .add("acronym", acronym.acronym())
-                              .add("meaning", acronym.meaning());
     }
 
     private static Function<KensaMap.Entry, JsonValue> entryAsJson(Renderers renderers) {

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static dev.kensa.sentence.Token.Type.Acronym;
 import static dev.kensa.sentence.Token.Type.*;
 
 public class SentenceBuilder {
@@ -83,7 +84,9 @@ public class SentenceBuilder {
 
     private String tokenValueFor(Index index, String rawToken) {
         String tokenValue = rawToken;
-        if (index.type() == Keyword) {
+        if (index.type() == Acronym) {
+            tokenValue = tokenValue.toUpperCase();
+        } else if (index.type() == Keyword) {
             if (tokens.size() == 0) {
                 tokenValue = Character.toUpperCase(rawToken.charAt(0)) + rawToken.substring(1);
             }

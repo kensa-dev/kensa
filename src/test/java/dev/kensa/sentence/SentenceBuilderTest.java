@@ -15,15 +15,14 @@ class SentenceBuilderTest {
     @BeforeEach
     void setUp() {
         Dictionary dictionary = new Dictionary();
-        dictionary.putAcronyms(Acronym.of("FOO", ""));
+        dictionary.putAcronyms(Acronym.of("FOO", ""), Acronym.of("BAR", ""));
 
         builder = new SentenceBuilder(1, Set.of("highlighted"), dictionary.keywordPattern(), dictionary.acronymPattern());
     }
 
     @Test
     void canConstructASentenceFromVariousValueTypes() {
-
-        builder.append("givenFOOBar")
+        builder.append("givenFOOMooBar")
                .appendLiteral("literal1")
                .markLineNumber(2)
                .appendStringLiteral("stringLiteral1")
@@ -34,7 +33,8 @@ class SentenceBuilderTest {
                 .containsExactly(
                         aKeywordOf("Given"),
                         anAcronymOf("FOO"),
-                        aWordOf("bar"),
+                        aWordOf("moo"),
+                        anAcronymOf("BAR"),
                         aLiteralOf("literal1"),
                         aNewline(),
                         aStringLiteralOf("stringLiteral1"),
