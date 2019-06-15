@@ -11,7 +11,7 @@ export class Sentence extends Component {
     }
 
     acronymExpansionFor(type, value) {
-        if (type === "Acronym") {
+        if (type.endsWith("Acronym")) {
             return this.state.acronyms[value];
         }
     }
@@ -19,7 +19,7 @@ export class Sentence extends Component {
     classFor(type) {
         let c = "token-" + type.toLowerCase();
 
-        if (type === "Acronym") {
+        if (type.endsWith("Acronym")) {
             c = "tooltip " + c;
         }
 
