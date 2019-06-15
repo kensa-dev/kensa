@@ -14,7 +14,6 @@ import dev.kensa.sentence.Sentences;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static dev.kensa.parse.SentenceCollector.asSentences;
@@ -24,15 +23,15 @@ class MethodParser {
     private final MethodDeclaration methodDeclaration;
     private final ValueAccessors valueAccessors;
     private final Set<String> highlightedValues;
-    private final Pattern keywordPattern;
-    private final Pattern acronymPattern;
+    private final Set<String> keywords;
+    private final Set<String> acronyms;
 
-    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues, Pattern keywordPattern, Pattern acronymPattern) {
+    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues, Set<String> keywords, Set<String> acronyms) {
         this.methodDeclaration = methodDeclaration;
         this.valueAccessors = valueAccessors;
         this.highlightedValues = highlightedValues;
-        this.keywordPattern = keywordPattern;
-        this.acronymPattern = acronymPattern;
+        this.keywords = keywords;
+        this.acronyms = acronyms;
     }
 
     Sentences sentences() {
@@ -54,7 +53,7 @@ class MethodParser {
     }
 
     private SentenceBuilder toSentence(Node node) {
-        SentenceBuilder builder = new SentenceBuilder(startLineOf(node), highlightedValues, keywordPattern, acronymPattern);
+        SentenceBuilder builder = new SentenceBuilder(startLineOf(node), highlightedValues, keywords, acronyms);
 
         append(node, builder);
 

@@ -1,7 +1,6 @@
 package dev.kensa.sentence;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 public class SentenceToken implements Token {
 
@@ -24,10 +23,6 @@ public class SentenceToken implements Token {
     @Override
     public String asString() {
         return value;
-    }
-
-    public <R> R transformWith(Function<Token, R> transformer) {
-        return transformer.apply(this);
     }
 
     @Override

@@ -1,18 +1,13 @@
 package dev.kensa.sentence;
 
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import static java.lang.Integer.compare;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 public final class Dictionary {
-
-    private static final Pattern NO_MATCH_PATTERN = Pattern.compile(".^");
 
     private final Set<Acronym> acronyms = new LinkedHashSet<>();
     private final Set<String> keywords = new LinkedHashSet<>(asList("given", "when", "then", "and", "with", "that"));
@@ -46,28 +41,7 @@ public final class Dictionary {
         return keywords;
     }
 
-    public Pattern acronymPattern() {
-        Set<Acronym> acronyms = new LinkedHashSet<>(this.acronyms);
-        return acronyms.isEmpty() ? NO_MATCH_PATTERN :
-                Pattern.compile(
-                        acronyms.stream()
-                                .map(Acronym::acronym)
-                                .sorted(longestFirst())
-                                .collect(joining("|")),
-                        Pattern.CASE_INSENSITIVE
-                );
-    }
-
-    public Pattern keywordPattern() {
-        Set<String> keywords = new LinkedHashSet<>(this.keywords);
-        return Pattern.compile(
-                keywords.stream()
-                        .sorted(longestFirst())
-                        .collect(joining("|", "^(", ")"))
-        );
-    }
-
-    private Comparator<String> longestFirst() {
-        return (a1, a2) -> compare(a2.length(), a1.length());
+    public Set<String> acronymStrings() {
+        return acronyms.stream().map(Acronym::acronym).collect(toSet());
     }
 }

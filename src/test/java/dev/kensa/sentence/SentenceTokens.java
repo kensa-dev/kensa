@@ -1,5 +1,6 @@
 package dev.kensa.sentence;
 
+import static dev.kensa.sentence.Token.Type.Acronym;
 import static dev.kensa.sentence.Token.Type.*;
 
 public final class SentenceTokens {
@@ -24,6 +25,10 @@ public final class SentenceTokens {
         return aTokenOf(StringLiteral, word);
     }
 
+    public static SentenceToken aStringLiteralAcronymOf(String word) {
+        return aTokenOf(StringLiteralAcronym, word);
+    }
+
     public static SentenceToken anAcronymOf(String acronym) {
         return aTokenOf(Acronym, acronym);
     }
@@ -36,8 +41,16 @@ public final class SentenceTokens {
         return aTokenOf(Identifier, acronym);
     }
 
+    public static SentenceToken anIdentifierAcronymOf(String acronym) {
+        return aTokenOf(IdentifierAcronym, acronym);
+    }
+
     public static SentenceToken aHighlightedIdentifierOf(String acronym) {
         return aTokenOf(HighlightedIdentifier, acronym);
+    }
+
+    public static SentenceToken aHighlightedAcronymOf(String acronym) {
+        return aTokenOf(HighlightedAcronym, acronym);
     }
 
     private static SentenceToken aTokenOf(Token.Type type, String value) {

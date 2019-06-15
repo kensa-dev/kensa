@@ -11,7 +11,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 
 class DictionaryTest {
@@ -56,32 +55,6 @@ class DictionaryTest {
         dictionary.clearAcronyms();
 
         assertThat(dictionary.acronyms()).isEmpty();
-    }
-
-    @Test
-    void returnsNoMatchPatternWhenNoAcronyms() {
-        assertThat(dictionary.acronymPattern().pattern()).isEqualTo(".^");
-    }
-
-    @Test
-    void returnsCorrectAcronymPattern() {
-        dictionary.putAcronyms(Acronym.of("foo", "foo"));
-        assertThat(dictionary.acronymPattern().pattern()).isEqualTo("foo");
-
-        dictionary.putAcronyms(Acronym.of("boo", "boo"));
-        assertThat(dictionary.acronymPattern().pattern()).isEqualTo("foo|boo");
-    }
-
-    @Test
-    void returnsCorrectKeywordPattern() {
-        dictionary.putKeyword("foo");
-
-        String pattern = dictionary.keywordPattern().pattern();
-        assertSoftly(softly -> {
-            softly.assertThat(pattern).startsWith("^(");
-            softly.assertThat(pattern).endsWith(")");
-            softly.assertThat(pattern).contains("foo");
-        });
     }
 
     @ParameterizedTest

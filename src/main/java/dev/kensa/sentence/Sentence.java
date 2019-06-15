@@ -24,30 +24,19 @@ public class Sentence {
         String currentValue = "";
 
         for (SentenceToken token : tokens) {
-            switch (token.type()) {
-                case Acronym:
-                case Keyword:
-                case Identifier:
-                case StringLiteral:
-                case Literal:
-                case NewLine:
-                case HighlightedWord:
-                case HighlightedIdentifier:
-                    if (currentTokenType == Word) {
-                        squashed.add(new SentenceToken(currentTokenType, currentValue));
-                        currentValue = "";
-                    }
-                    squashed.add(token);
-                    break;
-                case Word:
-                    if (currentTokenType == Word) {
-                        currentValue += " " + token.asString();
-                    } else {
-                        currentValue += token.asString();
-                    }
-                    break;
+            if (token.type() == Word) {
+                if (currentTokenType == Word) {
+                    currentValue += " " + token.asString();
+                } else {
+                    currentValue += token.asString();
+                }
+            } else {
+                if (currentTokenType == Word) {
+                    squashed.add(new SentenceToken(currentTokenType, currentValue));
+                    currentValue = "";
+                }
+                squashed.add(token);
             }
-
             currentTokenType = token.type();
         }
 

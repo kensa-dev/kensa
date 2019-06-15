@@ -4,28 +4,29 @@ import dev.kensa.sentence.Token;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dev.kensa.sentence.Token.Type.*;
 
 public class TokenScanner {
 
-    private final Set<String> highlightedValues;
-    private final Pattern keywordPattern;
-    private final Pattern acronymPattern;
+    private static final Pattern CAMEL_CASE_SPLITTER = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
 
-    public TokenScanner(Set<String> highlightedValues, Pattern keywordPattern, Pattern acronymPattern) {
+    private final Set<String> highlightedValues;
+    private final Set<String> keywords;
+    private final Set<String> acronyms;
+
+    public TokenScanner(Set<String> highlightedValues, Set<String> keywords, Set<String> acronyms) {
         this.highlightedValues = highlightedValues;
-        this.keywordPattern = keywordPattern;
-        this.acronymPattern = acronymPattern;
+        this.keywords = keywords;
+        this.acronyms = acronyms;
     }
 
     public Indices scan(String string) {
         Indices indices = new Indices();
 
-        scanFor(Keyword, keywordPattern, string, indices);
-        scanFor(Acronym, acronymPattern, string, indices);
+        scanForKeywords(string, indices);
+        scanForAcronyms(string, indices);
         scanForWords(string, indices);
 
         return indices;
@@ -52,8 +53,7 @@ public class TokenScanner {
 
     private void splitIntoWords(Set<Index> words, String segment, int offset) {
         int segmentOffset = 0;
-        String[] splitWords = segment.split("(?=\\p{Lu})");
-        for (String word : splitWords) {
+        for (String word : camelCaseSplit(segment)) {
             words.add(new Index(typeOf(word), offset + segmentOffset, offset + segmentOffset + word.length()));
             segmentOffset += word.length();
         }
@@ -63,32 +63,25 @@ public class TokenScanner {
         return highlightedValues.contains(word) ? HighlightedWord : Word;
     }
 
-    private void scanFor(Token.Type type, Pattern pattern, String string, Indices indices) {
-        Matcher matcher = pattern.matcher(string);
-        int start = 0;
-        while (matcher.find(start)) {
-            start = matcher.end();
-            if (validAcronymMatch(matcher.group())) {
-                indices.put(type, matcher.start(), matcher.end());
+    private void scanForAcronyms(String string, Indices indices) {
+        for (String word : camelCaseSplit(string)) {
+            if (acronyms.stream()
+                        .anyMatch(a -> a.equalsIgnoreCase(word))) {
+                indices.put(Acronym, string.indexOf(word), string.indexOf(word) + word.length());
             }
         }
     }
 
-    // Valid if match is all same case or doesn't cross camel case words
-    private boolean validAcronymMatch(String match) {
-        int length = match.length();
-        boolean valid = true;
-        int upperCount = 0;
-
-        for (int i = 0; i < length; i++) {
-            if (Character.isUpperCase(match.codePointAt(i))) {
-                upperCount++;
-                if (i > 0) {
-                    valid = false;
-                }
-            }
+    private void scanForKeywords(String string, Indices indices) {
+        String[] strings = camelCaseSplit(string);
+        String word = strings[0];
+        if (keywords.stream()
+                    .anyMatch(a -> a.equalsIgnoreCase(word))) {
+            indices.put(Keyword, string.indexOf(word), string.indexOf(word) + word.length());
         }
+    }
 
-        return upperCount == length || valid;
+    private String[] camelCaseSplit(String string) {
+        return CAMEL_CASE_SPLITTER.split(string);
     }
 }
