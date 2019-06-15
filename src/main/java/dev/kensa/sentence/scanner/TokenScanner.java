@@ -68,7 +68,27 @@ public class TokenScanner {
         int start = 0;
         while (matcher.find(start)) {
             start = matcher.end();
-            indices.put(type, matcher.start(), matcher.end());
+            if (validAcronymMatch(matcher.group())) {
+                indices.put(type, matcher.start(), matcher.end());
+            }
         }
+    }
+
+    // Valid if match is all same case or doesn't cross camel case words
+    private boolean validAcronymMatch(String match) {
+        int length = match.length();
+        boolean valid = true;
+        int upperCount = 0;
+
+        for (int i = 0; i < length; i++) {
+            if (Character.isUpperCase(match.codePointAt(i))) {
+                upperCount++;
+                if (i > 0) {
+                    valid = false;
+                }
+            }
+        }
+
+        return upperCount == length || valid;
     }
 }
