@@ -27,10 +27,12 @@ export class Renderable extends Component {
         const renderable = this.props.renderable;
         const highlights = this.props.highlights;
 
+        let name = Object.keys(renderable)[0];
+
         return (
                 <div className="box renderable">
-                    <div className="subtitle is-5">{renderable['name']}</div>
-                    <NamedValueTable highlights={highlights} namedValues={renderable['value']}/>
+                    <div className="subtitle is-5">{name}</div>
+                    <NamedValueTable highlights={highlights} namedValues={renderable[name]}/>
                 </div>
         )
     }
@@ -45,9 +47,7 @@ export class Renderables extends Component {
                 <div>
                     {
                         renderables.map((renderable) => {
-                                    if (renderable['name'] !== 'value') {
-                                        return <Renderable highlights={highlights} renderable={renderable}/>
-                                    }
+                                    return <Renderable highlights={highlights} renderable={renderable}/>
                                 }
                         )
                     }
@@ -62,12 +62,10 @@ export class Interaction extends Component {
 
         let capturedInteraction = props.capturedInteraction;
         let highlightRegexp = props.highlights.length > 0 ? new RegExp(`(${props.highlights.join('|')})`) : null;
-        let languageElement = capturedInteraction.attributes.find(element => {
-            return element['name'] === 'language'
-        });
-        let language = languageElement ? languageElement['value'] : 'plainText';
+        let languageAttr = capturedInteraction.attributes.find(attr => attr.hasOwnProperty("language"));
+        let language = languageAttr ? languageAttr["language"] : "plainText";
 
-        let renderables = capturedInteraction['renderables'];
+        let renderables = capturedInteraction["renderables"];
 
         this.state = {
             capturedInteraction: capturedInteraction,
