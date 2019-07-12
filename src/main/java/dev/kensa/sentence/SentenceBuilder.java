@@ -6,7 +6,6 @@ import dev.kensa.sentence.scanner.TokenScanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import static dev.kensa.sentence.Token.Type.*;
 
@@ -15,18 +14,26 @@ public class SentenceBuilder {
     private final List<SentenceToken> tokens = new ArrayList<>();
     private final TokenScanner scanner;
     private final Set<String> highlightedValues;
+    private final Set<String> acronyms;
 
     private int lastLineNumber;
 
-    public SentenceBuilder(int startLine, Set<String> highlightedValues, Pattern keywordPattern, Pattern acronymPattern) {
+    public SentenceBuilder(int startLine, Set<String> highlightedValues, Set<String> keywordPattern, Set<String> acronyms) {
         lastLineNumber = startLine;
-        scanner = new TokenScanner(highlightedValues, keywordPattern, acronymPattern);
+        this.acronyms = acronyms;
+        scanner = new TokenScanner(highlightedValues, keywordPattern, acronyms);
         this.highlightedValues = highlightedValues;
     }
 
     public SentenceBuilder appendIdentifier(String value) {
         if (highlightedValues.contains(value)) {
-            append(value, HighlightedIdentifier);
+            if (isAcronym(value)) {
+                append(value, HighlightedAcronym);
+            } else {
+                append(value, HighlightedIdentifier);
+            }
+        } else if (isAcronym(value)) {
+            append(value, IdentifierAcronym);
         } else {
             append(value, Identifier);
         }
@@ -36,7 +43,11 @@ public class SentenceBuilder {
 
     // A String Literal - any arbitrary string literal found within the source code
     public SentenceBuilder appendStringLiteral(String value) {
-        append(value, StringLiteral);
+        if (isAcronym(value)) {
+            append(value, StringLiteralAcronym);
+        } else {
+            append(value, StringLiteral);
+        }
 
         return this;
     }
@@ -83,7 +94,9 @@ public class SentenceBuilder {
 
     private String tokenValueFor(Index index, String rawToken) {
         String tokenValue = rawToken;
-        if (index.type() == Keyword) {
+        if (index.type().isAcronym()) {
+            tokenValue = tokenValue.toUpperCase();
+        } else if (index.type() == Keyword) {
             if (tokens.size() == 0) {
                 tokenValue = Character.toUpperCase(rawToken.charAt(0)) + rawToken.substring(1);
             }
@@ -91,5 +104,10 @@ public class SentenceBuilder {
             tokenValue = Character.toLowerCase(rawToken.charAt(0)) + rawToken.substring(1);
         }
         return tokenValue;
+    }
+
+    private boolean isAcronym(String value) {
+        return acronyms.stream()
+                       .anyMatch(acronym -> acronym.equals(value));
     }
 }

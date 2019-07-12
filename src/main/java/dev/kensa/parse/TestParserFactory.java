@@ -22,8 +22,8 @@ public class TestParserFactory {
                 context,
                 configuration.renderers(),
                 methodDeclarationProvider,
-                configuration.dictionary().keywordPattern(),
-                configuration.dictionary().acronymPattern()
+                configuration.dictionary().keywords(),
+                configuration.dictionary().acronymStrings()
         );
     }
 }

@@ -14,10 +14,8 @@ class Popup extends Component {
 
     componentDidUpdate() {
         if (this.props.interaction) {
-            let languageElement = this.props.interaction.attributes.find(element => {
-                return element['name'] === 'language'
-            });
-            let language = languageElement ? languageElement['value'] : 'plainText';
+            let languageAttr = this.props.interaction.attributes.find(attr => attr.hasOwnProperty("language"));
+            let language = languageAttr ? languageAttr["language"] : "plainText";
 
             if (this.state.language !== language) {
                 this.setState({language: language})

@@ -17,13 +17,35 @@
   font-weight: bold;
 }
 
+.token-acronym {
+  text-decoration: underline;
+}
+
+.token-identifieracronym {
+  text-decoration: underline;
+  font-weight: bold;
+  color: $grey-dark;
+}
+
 .token-highlightedidentifier {
   font-weight: bold;
   background-color: yellow;
   color: $grey-dark
 }
 
+.token-highlightedacronym {
+  text-decoration: underline;
+  font-weight: bold;
+  background-color: yellow;
+  color: $grey-dark
+}
+
 .token-stringliteral {
+  font-weight: bold;
+}
+
+.token-stringliteralacronym {
+  text-decoration: underline;
   font-weight: bold;
 }
 
@@ -46,7 +68,7 @@
 
 .token-stringliteral:after {
   content: close-quote;
-  }
+}
 
 // This class uses underscores because it is created inside PlantUML
 // where dashes are special
@@ -120,3 +142,5 @@
 .captured-interaction .card-content .lowlight {
   //background-color: #2b2b2b;
 }
+
+

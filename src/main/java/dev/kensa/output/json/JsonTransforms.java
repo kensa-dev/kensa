@@ -14,7 +14,7 @@ import dev.kensa.util.NamedValue;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -41,11 +41,11 @@ public final class JsonTransforms {
                                                           invocation -> Json.object()
                                                                             .add("elapsedTime", DurationFormatter.format(invocation.elapsed()))
                                                                             .add("highlights", asJsonArray(invocation.highlightedFields(), nvpValueAsJson(renderers)))
-                                                                            .add("acronyms", asJsonArray(invocation.acronyms(), acronymAsJson()))
+                                                                            .add("acronyms", acronymsAsJson(invocation.acronyms()))
                                                                             .add("sentences", asJsonArray(invocation.sentences(), sentenceAsJson()))
-                                                                            .add("parameters", asJsonArray(invocation.parameters().stream(), nvpAsJson(renderers)))
-                                                                            .add("givens", asJsonArray(invocation.givens(), entryAsJson(renderers)))
-                                                                            .add("capturedInteractions", asJsonArray(invocation.interactions(), entryAsJson(renderers)))
+                                                                            .add("parameters", asJsonArray(invocation.parameters().stream(), nvAsJson(renderers)))
+                                                                            .add("givens", asJsonArray(invocation.givens(), givensEntryAsJson(renderers)))
+                                                                            .add("capturedInteractions", asJsonArray(invocation.interactions(), interactionEntryAsJson(renderers)))
                                                                             .add("sequenceDiagram", invocation.sequenceDiagram().toString())
                                                                             .add("state", invocation.state().description())
                                                                             .add("executionException", executionExceptionFrom(invocation))
@@ -81,11 +81,20 @@ public final class JsonTransforms {
     }
 
     private static Function<Sentence, JsonValue> sentenceAsJson() {
-        return sentence -> asJsonArray(sentence.squashedTokens(), token -> Json.object().add("type", token.type().name()).add("value", token.asString()));
+        return sentence -> asJsonArray(sentence.squashedTokens(), token -> Json.object().add(token.type().name(), token.asString()));
     }
 
     private static JsonArray asJsonArray(Stream<String> stream) {
         return asJsonArray(stream, Json::value);
+    }
+
+    private static <T> JsonObject acronymsAsJson(Stream<Acronym> stream) {
+        return stream.collect(
+                Json::object,
+                (members, acronym) -> members.add(acronym.acronym(), acronym.meaning()),
+                (members, members2) -> {
+                }
+        );
     }
 
     private static <T> JsonArray asJsonArray(Stream<T> stream, Function<T, ? extends JsonValue> transformer) {
@@ -97,33 +106,28 @@ public final class JsonTransforms {
                      );
     }
 
-    private static Function<Acronym, JsonValue> acronymAsJson() {
-        return acronym -> Json.object()
-                              .add("acronym", acronym.acronym())
-                              .add("meaning", acronym.meaning());
+    private static Function<KensaMap.Entry, JsonValue> givensEntryAsJson(Renderers renderers) {
+        return entry -> Json.object()
+                            .add(entry.key(), renderers.renderValueOnly(entry.value()));
     }
 
-    private static Function<KensaMap.Entry, JsonValue> entryAsJson(Renderers renderers) {
+    private static Function<KensaMap.Entry, JsonValue> interactionEntryAsJson(Renderers renderers) {
         return entry -> Json.object()
                             .add("id", String.valueOf(entry.key().hashCode()))
                             .add("name", entry.key())
                             .add("value", renderers.renderValueOnly(entry.value()))
-                            .add("renderables", asJsonArray(renderers.renderAll(entry.value()), entriesAsJson()))
-                            .add("attributes", asJsonArray(entry.attributes(), nvpAsJson(renderers)));
+                            .add("renderables", asJsonArray(renderers.renderAll(entry.value()), renderablesAsJson()))
+                            .add("attributes", asJsonArray(entry.attributes(), nvAsJson(renderers)));
     }
 
-    private static Function<Map.Entry<String, Object>, JsonValue> entriesAsJson() {
-        return entry -> {
-            JsonObject object = Json.object().add("name", entry.getKey());
-
-            if (entry.getValue() instanceof Map) {
-                Map map = (Map) entry.getValue();
-                object.add("value", asJsonArray(map.entrySet().stream(), entriesAsJson()));
+    private static Function<NamedValue, JsonValue> renderablesAsJson() {
+        return nv -> {
+            if (nv.value() instanceof Set) {
+                Set namedValues = (Set) nv.value();
+                return Json.object().add(nv.name(), asJsonArray(namedValues.stream(), renderablesAsJson()));
             } else {
-                object.add("value", entry.getValue().toString());
+                return Json.object().add(nv.name(), nv.value().toString());
             }
-
-            return object;
         };
     }
 
@@ -131,10 +135,9 @@ public final class JsonTransforms {
         return nv -> Json.value(renderers.renderValueOnly(nv.value()));
     }
 
-    private static Function<NamedValue, JsonObject> nvpAsJson(Renderers renderers) {
+    private static Function<NamedValue, JsonObject> nvAsJson(Renderers renderers) {
         return nv -> Json.object()
-                         .add("name", nv.name())
-                         .add("value", renderers.renderValueOnly(nv.value()));
+                         .add(nv.name(), renderers.renderValueOnly(nv.value()));
     }
 
     private static JsonObject executionExceptionFrom(TestInvocation invocation) {

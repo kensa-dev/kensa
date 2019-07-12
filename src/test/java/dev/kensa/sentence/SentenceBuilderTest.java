@@ -15,16 +15,17 @@ class SentenceBuilderTest {
     @BeforeEach
     void setUp() {
         Dictionary dictionary = new Dictionary();
-        dictionary.putAcronyms(Acronym.of("FOO", ""));
+        dictionary.putAcronyms(simpleAcronymOf("FOO"), simpleAcronymOf("BAR"), simpleAcronymOf("LA1"), simpleAcronymOf("HA1"));
 
-        builder = new SentenceBuilder(1, Set.of("highlighted"), dictionary.keywordPattern(), dictionary.acronymPattern());
+        builder = new SentenceBuilder(1, Set.of("highlighted", "HA1"), dictionary.keywords(), dictionary.acronymStrings());
     }
 
     @Test
     void canConstructASentenceFromVariousValueTypes() {
-
-        builder.append("givenFOOBar")
+        builder.append("givenFOOMooBar")
                .appendLiteral("literal1")
+               .appendStringLiteral("LA1")
+               .appendIdentifier("HA1")
                .markLineNumber(2)
                .appendStringLiteral("stringLiteral1")
                .appendIdentifier("parameter1")
@@ -34,12 +35,19 @@ class SentenceBuilderTest {
                 .containsExactly(
                         aKeywordOf("Given"),
                         anAcronymOf("FOO"),
-                        aWordOf("bar"),
+                        aWordOf("moo"),
+                        anAcronymOf("BAR"),
                         aLiteralOf("literal1"),
+                        aStringLiteralAcronymOf("LA1"),
+                        aHighlightedAcronymOf("HA1"),
                         aNewline(),
                         aStringLiteralOf("stringLiteral1"),
                         anIdentifierOf("parameter1"),
                         aHighlightedIdentifierOf("highlighted")
                 );
+    }
+
+    private Acronym simpleAcronymOf(String acronym) {
+        return Acronym.of(acronym, "");
     }
 }

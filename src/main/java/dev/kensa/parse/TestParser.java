@@ -9,7 +9,6 @@ import dev.kensa.util.Reflect;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -20,21 +19,23 @@ public class TestParser {
     private final Object[] arguments;
     private final Renderers renderers;
     private final MethodDeclarationProvider methodDeclarationProvider;
-    private final Pattern keywordPattern;
-    private final Pattern acronymPattern;
+    private final Set<String> keywords;
+    private final Set<String> acronyms;
 
     public TestParser(
-            TestInvocationContext context, Renderers renderers, MethodDeclarationProvider methodDeclarationProvider,
-            Pattern keywordPattern,
-            Pattern acronymPattern
+            TestInvocationContext context,
+            Renderers renderers,
+            MethodDeclarationProvider methodDeclarationProvider,
+            Set<String> keywords,
+            Set<String> acronyms
     ) {
         this.testInstance = context.testInstance();
         this.method = context.testMethod();
         this.arguments = context.testParameters();
         this.renderers = renderers;
         this.methodDeclarationProvider = methodDeclarationProvider;
-        this.keywordPattern = keywordPattern;
-        this.acronymPattern = acronymPattern;
+        this.keywords = keywords;
+        this.acronyms = acronyms;
     }
 
     public ParsedTest parse() {
@@ -54,7 +55,7 @@ public class TestParser {
                                                               .map(nv -> renderers.renderValueOnly(nv.value()))
                                                               .collect(toSet());
 
-        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues, keywordPattern, acronymPattern);
+        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues, keywords, acronyms);
 
         return new ParsedTest(parameters, methodParser.sentences(), highlightedNamedValues);
     }
@@ -62,8 +63,7 @@ public class TestParser {
     private Set<NamedValue> highlightedValuesOf(Object testInstance) {
         return Reflect.highlightedFieldsOf(testInstance)
                       .stream()
-                      .map(nv -> new NamedValue(nv.name(), Reflect.fieldValue(testInstance, nv.value().toString(), Object.class))
-                             )
+                      .map(nv -> new NamedValue(nv.name(), Reflect.fieldValue(testInstance, nv.value().toString(), Object.class)))
                       .collect(toSet());
     }
 }

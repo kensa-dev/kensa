@@ -175,7 +175,8 @@ class MethodParserTest {
         Integer renderedField = 555;
 
         Map<String, ? extends Serializable> fieldMap = Map.of("f1", fieldValue,
-                                                              "f2", renderedField);
+                                                              "f2", renderedField
+        );
 
         String parameterValue1 = "parameterValue1";
         String parameterValue2 = "parameterValue2";
@@ -302,7 +303,7 @@ class MethodParserTest {
 
         return parse(code).getClassByName("T")
                           .map(cd -> cd.getMethodsByName("testMethod").get(0))
-                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues, dictionary.keywordPattern(), dictionary.acronymPattern()))
+                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues, dictionary.keywords(), dictionary.acronymStrings()))
                           .map(MethodParser::sentences)
                           .map(Sentences::stream)
                           .map(s -> s.collect(toList()))

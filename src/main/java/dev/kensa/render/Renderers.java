@@ -1,7 +1,11 @@
 package dev.kensa.render;
 
+import dev.kensa.util.NamedValue;
+
 import java.util.*;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 public final class Renderers {
 
@@ -19,31 +23,33 @@ public final class Renderers {
         return render(value);
     }
 
-    public Stream<Map.Entry<String, Object>> renderAll(Object value) {
-        Map<String, Object> renderedItems = new LinkedHashMap<>();
+    public Stream<NamedValue> renderAll(Object value) {
+        Set<NamedValue> renderedItems = new LinkedHashSet<>();
 
         if (value == null) {
-            renderedItems.put("value", "NULL");
+            renderedItems.add(new NamedValue("value", "NULL"));
         } else {
-            Renderer<Object> renderer = rendererFor(value.getClass())
+            rendererFor(value.getClass())
                     .map(r -> {
                         for (RenderableAttribute renderableAttribute : r.renderableAttributes()) {
                             Object attr = renderableAttribute.renderableFrom(value);
                             if (attr instanceof Map) {
-                                renderedItems.put(renderableAttribute.name(), attr);
+                                Set<NamedValue> namedValues = ((Map<String, String>) attr).entrySet()
+                                                                                          .stream()
+                                                                                          .map(e -> new NamedValue(e.getKey(), e.getValue()))
+                                                                                          .collect(toSet());
+                                renderedItems.add(new NamedValue(renderableAttribute.name(), namedValues));
                             } else {
-                                renderedItems.put(renderableAttribute.name(), render(attr));
+                                renderedItems.add(new NamedValue(renderableAttribute.name(), render(attr)));
                             }
                         }
 
                         return r;
                     })
                     .orElseGet(() -> Object::toString);
-
-            renderedItems.put("value", renderer.render(value));
         }
 
-        return renderedItems.entrySet().stream();
+        return renderedItems.stream();
     }
 
     private String render(Object value) {
