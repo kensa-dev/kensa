@@ -5,10 +5,9 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import dev.kensa.util.NamedValue;
 
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toSet;
 
 public class ParameterCollector {
 
@@ -18,11 +17,11 @@ public class ParameterCollector {
         this.methodDeclaration = methodDeclaration;
     }
 
-    public Set<NamedValue> collect(Object[] parameterValues) {
+    public List<NamedValue> collect(Object[] parameterValues) {
         NodeList<Parameter> parameters = methodDeclaration.getParameters();
 
         return IntStream.range(0, parameters.size())
                  .mapToObj(index -> new NamedValue(parameters.get(index).getNameAsString(), parameterValues[index]))
-                 .collect(toSet());
+                 .collect(Collectors.toList());
     }
 }

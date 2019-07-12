@@ -67,9 +67,9 @@ class MethodParser {
         if (isNotAScenarioCall(node, builder)) {
             if (node instanceof NameExpr) {
                 String identifier = ((NameExpr) node).getName().getIdentifier();
-                builder.appendIdentifier(valueAccessors.realValueOf(identifier)
-                                                       .orElse(identifier)
-                );
+                valueAccessors.realValueOf(identifier)
+                        .<Runnable>map(v -> () -> builder.appendIdentifier(v))
+                        .orElse(() -> builder.append(identifier)).run();
             } else if (node instanceof SimpleName) {
                 String identifier = ((SimpleName) node).getIdentifier();
                 builder.append(identifier);

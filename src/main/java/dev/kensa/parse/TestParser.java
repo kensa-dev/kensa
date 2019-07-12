@@ -7,6 +7,7 @@ import dev.kensa.util.NamedValue;
 import dev.kensa.util.Reflect;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -39,11 +40,11 @@ public class TestParser {
     public ParsedTest parse() {
         MethodDeclaration declaration = methodDeclarationProvider.methodDeclarationFrom(method);
         ParameterCollector parameterCollector = new ParameterCollector(declaration);
-        Set<NamedValue> parameters = parameterCollector.collect(arguments);
+        List<NamedValue> parameters = parameterCollector.collect(arguments);
 
         CachingScenarioMethodAccessor scenarioAccessor = Reflect.scenarioAccessorFor(testInstance);
         CachingFieldAccessor fieldAccessor = Reflect.interestingFieldsOf(testInstance);
-        ParameterAccessor parameterAccessor = new ParameterAccessor(parameters);
+        ParameterAccessor parameterAccessor = Reflect.interestingParametersOf(method, parameters);
 
         Set<NamedValue> highlightedNamedValues = highlightedValuesOf(testInstance);
 

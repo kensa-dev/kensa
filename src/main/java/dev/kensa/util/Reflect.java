@@ -7,6 +7,7 @@ import dev.kensa.SentenceValue;
 import dev.kensa.function.Unchecked;
 import dev.kensa.parse.CachingFieldAccessor;
 import dev.kensa.parse.CachingScenarioMethodAccessor;
+import dev.kensa.parse.ParameterAccessor;
 import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -53,6 +55,21 @@ public final class Reflect {
         } catch (Exception e) {
             throw new KensaException(String.format("Unable to invoke method [%s] on class [%s]", name, target.getClass().getName()), e);
         }
+    }
+
+    public static ParameterAccessor interestingParametersOf(Method method, List<NamedValue> parameters) {
+        Parameter[] methodParameters = method.getParameters();
+
+        Set<NamedValue> namedValues = new HashSet<>();
+
+        for (int i = 0; i < methodParameters.length; i++) {
+            Parameter parameter = methodParameters[i];
+            if(parameter.isAnnotationPresent(SentenceValue.class)) {
+                namedValues.add(parameters.get(i));
+            }
+        }
+
+        return new ParameterAccessor(namedValues);
     }
 
     public static CachingFieldAccessor interestingFieldsOf(Object target) {

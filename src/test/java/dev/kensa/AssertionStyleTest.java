@@ -47,7 +47,7 @@ class AssertionStyleTest implements KensaTest {
 
     @ParameterizedTest
     @MethodSource("parameterProvider")
-    void parameterizedTest(@Highlight String actionName, String theExpectedResult) {
+    void parameterizedTest(@SentenceValue String actionName, @SentenceValue String theExpectedResult) {
         given(somethingIsDoneWith(actionName));
 
         when(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions());
@@ -74,11 +74,10 @@ class AssertionStyleTest implements KensaTest {
         return capturedInteractions -> capturedInteractions.get("result", String.class);
     }
 
-
     private static Stream<Arguments> parameterProvider() {
         return Stream.of(
-                Arguments.arguments("ACTION1", "Performed: ACTION1"),
-                Arguments.arguments("ACTION2", "Performed: ACTION2")
+                Arguments.arguments("ACTION2", "Performed: ACTION2"),
+                Arguments.arguments("ACTION3", "Performed: ACTION3")
         );
     }
 }
