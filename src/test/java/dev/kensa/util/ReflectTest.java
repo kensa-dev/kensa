@@ -20,25 +20,46 @@ class ReflectTest {
     @Test
     void canGetAPrivateFieldValue() {
         String privateValue = "A Value";
-        SomeClass someClass = new SomeClass(privateValue);
+        SomeClass target = new SomeClass(privateValue);
 
-        assertThat(Reflect.fieldValue(someClass, "someField", String.class)).isEqualTo(privateValue);
+        assertThat(Reflect.fieldValue(target, "someField", String.class)).isEqualTo(privateValue);
     }
 
     @Test
     void canGetValueOfFieldViaSupplierWhenFieldTypeIsSupplier() {
         String privateValue = "A Value";
-        SomeClass someClass = new SomeClass(privateValue);
+        SomeClass target = new SomeClass(privateValue);
 
-        assertThat(Reflect.fieldValue(someClass, "valueSupplier", String.class)).isEqualTo(privateValue);
+        assertThat(Reflect.fieldValue(target, "valueSupplier", String.class)).isEqualTo(privateValue);
     }
 
     @Test
     void canInvokeAMethodAndGetReturnedValue() {
         String privateValue = "A Value";
-        SomeClass someClass = new SomeClass(privateValue);
+        SomeClass target = new SomeClass(privateValue);
 
-        assertThat(Reflect.invokeMethod(someClass, "getSomeField", String.class)).isEqualTo(privateValue);
+        assertThat(Reflect.invokeMethod(target, "getSomeField", String.class)).isEqualTo(privateValue);
+    }
+
+    @Test
+    void canInvokeADefaultMethodOnAnInterface() {
+        SomeClass target = new SomeClass("A Value");
+
+        assertThat(Reflect.invokeMethod(target, "defaultMethod", String.class)).isEqualTo("defaultResult");
+    }
+
+    @Test
+    void canInvokeAnOverriddenDefaultMethod() {
+        SomeClass target = new SomeSubClass();
+
+        assertThat(Reflect.invokeMethod(target, "defaultMethod", String.class)).isEqualTo("overriddenResult");
+    }
+
+    @Test
+    void canFindAndInvokeInInterfaceHierarchy() {
+        SomeOtherSubClass target = new SomeOtherSubClass();
+
+        assertThat(Reflect.invokeMethod(target, "defaultMethod", String.class)).isEqualTo("defaultResult");
     }
 
     @Test
@@ -103,15 +124,39 @@ class ReflectTest {
         void foo() {}
     }
 
-    static class SomeClass {
+    interface SomeInterface {
+        default String defaultMethod() {
+            return "defaultResult";
+        }
+    }
+
+    interface SomeSubInterface extends SomeInterface {
+    }
+
+    static class SomeClass implements SomeInterface {
         private final String someField;
+
         private final Supplier<String> valueSupplier = this::getSomeField;
 
         SomeClass(String someField) {this.someField = someField;}
-
         private String getSomeField() {
             return someField;
         }
+
+    }
+
+    static class SomeSubClass extends SomeClass {
+        public SomeSubClass() {
+            super("foo");
+        }
+
+        @Override
+        public String defaultMethod() {
+            return "overriddenResult";
+        }
+    }
+
+    static class SomeOtherSubClass implements SomeSubInterface {
     }
 
     @Disabled
@@ -142,6 +187,7 @@ class ReflectTest {
     }
 
     interface TestInterface {
+
         @Test
         void test6();
 

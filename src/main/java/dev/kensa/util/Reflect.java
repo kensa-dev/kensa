@@ -127,8 +127,12 @@ public final class Reflect {
             return method;
         } catch (NoSuchMethodException e) {
             Class<?> superclass = target.getSuperclass();
-            if (superclass != Object.class) {
+            if (superclass != null && superclass != Object.class) {
                 return findMethod(superclass, name);
+            }
+
+            for (Class<?> anInterface : target.getInterfaces()) {
+                return findMethod(anInterface, name);
             }
 
             throw new KensaException(String.format("Unable to find method [%s] on class [%s]", name, target.getName()), e);
