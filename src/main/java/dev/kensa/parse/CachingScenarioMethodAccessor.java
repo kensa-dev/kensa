@@ -35,11 +35,11 @@ public class CachingScenarioMethodAccessor {
             cachedValue = valueCache.get(scenarioName)
                                     .compute(methodName, (mn, existing) -> {
                                         if (existing == null) {
-                                            Object value = scenarioInstanceWithName(scenarioName);
-                                            if (value != null && value != NullValue) {
-                                                value = Reflect.invokeMethod(value, mn, Object.class);
+                                            Object target = scenarioInstanceWithName(scenarioName);
+                                            if (target != null && target != NullValue) {
+                                                target = Reflect.invokeMethod(target, mn, Object.class);
                                             }
-                                            return value == null ? NullValue : value;
+                                            return target == null ? NullValue : target;
                                         }
                                         return existing;
                                     });

@@ -50,8 +50,13 @@ public final class Reflect {
 
     public static <T> T invokeMethod(Object target, String name, Class<T> requiredType) {
         Objects.requireNonNull(target);
+
+        Method method = findMethod(target.getClass(), parameterlessMethodNamed(name))
+                .orElseThrow(() -> new KensaException(String.format("Unable to find method [%s] on class [%s]", name, target.getClass().getName())));
+
         try {
-            return requiredType.cast(findMethod(target.getClass(), name).invoke(target));
+            method.setAccessible(true);
+            return requiredType.cast(method.invoke(target));
         } catch (Exception e) {
             throw new KensaException(String.format("Unable to invoke method [%s] on class [%s]", name, target.getClass().getName()), e);
         }
@@ -64,7 +69,7 @@ public final class Reflect {
 
         for (int i = 0; i < methodParameters.length; i++) {
             Parameter parameter = methodParameters[i];
-            if(parameter.isAnnotationPresent(SentenceValue.class)) {
+            if (parameter.isAnnotationPresent(SentenceValue.class)) {
                 namedValues.add(parameters.get(i));
             }
         }
@@ -120,23 +125,27 @@ public final class Reflect {
         return highlightedFields;
     }
 
-    private static Method findMethod(Class<?> target, String name) {
-        try {
-            Method method = target.getDeclaredMethod(name);
-            method.setAccessible(true);
-            return method;
-        } catch (NoSuchMethodException e) {
-            Class<?> superclass = target.getSuperclass();
-            if (superclass != null && superclass != Object.class) {
-                return findMethod(superclass, name);
+    private static Optional<Method> findMethod(Class<?> target, Predicate<Method> matcher) {
+        for (Class<?> clazz = target; clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (matcher.test(method)) {
+                    return Optional.of(method);
+                }
             }
 
-            for (Class<?> anInterface : target.getInterfaces()) {
-                return findMethod(anInterface, name);
+            for (Class<?> iClazz : clazz.getInterfaces()) {
+                Optional<Method> iMethod = findMethod(iClazz, matcher);
+                if (iMethod.isPresent()) {
+                    return iMethod;
+                }
             }
-
-            throw new KensaException(String.format("Unable to find method [%s] on class [%s]", name, target.getName()), e);
         }
+
+        return Optional.empty();
+    }
+
+    private static Predicate<Method> parameterlessMethodNamed(String name) {
+        return method -> method.getName().equals(name) && method.getParameterCount() == 0;
     }
 
     private static Optional<Field> findField(Class<?> target, String name) {
