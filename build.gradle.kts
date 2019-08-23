@@ -29,6 +29,16 @@ tasks {
         dependsOn("npmInstall")
     }
 
+    register<NodeTask>("startUiDevServer") {
+        setScript(project.file("node_modules/.bin/webpack-dev-server"))
+        setArgs(listOf("--mode", "development"))
+        inputs.file("webpack.config.js")
+        inputs.file("package-lock.json")
+        inputs.dir("src/ui")
+        outputs.dir("$buildDir/resources/main")
+        dependsOn("npmInstall")
+    }
+
     processResources {
         dependsOn("webpack")
     }
