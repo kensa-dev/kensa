@@ -9,7 +9,7 @@ import dev.kensa.output.template.Template;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -19,10 +19,10 @@ import static dev.kensa.output.template.Template.asIndex;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
-public class SiteWriter implements BiConsumer<List<TestContainer>, Kensa.Configuration> {
+public class SiteWriter implements BiConsumer<Set<TestContainer>, Kensa.Configuration> {
 
     @Override
-    public void accept(List<TestContainer> containers, Kensa.Configuration configuration) {
+    public void accept(Set<TestContainer> containers, Kensa.Configuration configuration) {
         Template indexTemplate = configuration.createTemplate("index.html", Site);
 
         for (TestContainer container : containers) {

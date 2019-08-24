@@ -5,7 +5,7 @@ import dev.kensa.context.TestContainer;
 import dev.kensa.util.IoUtil;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class ResultWriter {
@@ -16,7 +16,7 @@ public class ResultWriter {
         this.configurationSupplier = configurationSupplier;
     }
 
-    public void write(List<TestContainer> containers) {
+    public void write(Set<TestContainer> containers) {
         Kensa.Configuration configuration = configurationSupplier.get();
         Path outputDir = configuration.outputDir();
         OutputStyle outputStyle = configuration.outputStyle();

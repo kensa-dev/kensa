@@ -1,0 +1,53 @@
+@import "bulma-custom";
+
+.test-failed {
+  color: $danger;
+  background-color: #fff5f6;
+  padding: 3px;
+}
+
+.test-passed {
+  color: $success;
+  background-color: #f6fef9;
+  padding: 3px;
+}
+
+.test-disabled {
+  color: $warning
+}
+
+.index-icon {
+  font-size: 14px;
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+  vertical-align: top;
+  width: 1em;
+  margin-right: .75em;
+  color: inherit;
+}
+
+dl>dt {
+  font-weight: 700;
+}
+
+dd>a {
+  padding-left: 25px
+}
+
+dl {
+  width: 100%;
+  padding-left: 5px;
+}
+
+dt {
+  padding-left: 5px;
+}
+
+dd {
+  padding-left: 10px;
+}
+
+a:hover {
+  text-decoration: underline;
+}

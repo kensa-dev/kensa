@@ -69,7 +69,7 @@ export default class App extends Component {
                             <h1 className="title">Index</h1>
                         </div>
                     </section>
-                    <section className="section container">
+                    <section className="section">
                         <Indices issueTrackerUrl={this.state.issueTrackerUrl} indices={this.state.indices}/>
                     </section>
                 </div>
