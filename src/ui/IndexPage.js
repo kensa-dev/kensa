@@ -53,15 +53,15 @@ class Class extends Component {
     deriveClassFor(cls) {
         if (cls.matched && this.props.parentIsExpanded) {
             if (cls.state === "Passed" || this.props.filterType === "State" && this.props.filterValue === "Passed") {
-                return "test-passed"
+                return "idx-passed"
             }
 
             if (cls.state === "Failed" || this.props.filterType === "State" && this.props.filterValue === "Failed") {
-                return "test-failed"
+                return "idx-failed"
             }
 
             if (cls.state === "Disabled" || this.props.filterType === "State" && this.props.filterValue === "Disabled") {
-                return "test-disabled"
+                return "idx-disabled"
             }
         }
 
@@ -78,7 +78,7 @@ class Class extends Component {
         return (
                 <dl className={this.deriveClassFor(cls)}>
                     <dt>
-                        <a className="index-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></a>
+                        <span className="idx-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></span>
                         <a onClick={() => this.load()}>{cls.name}</a>
                     </dt>
                     {cls.tests.length > 0 &&
@@ -131,15 +131,15 @@ class Package extends Component {
     deriveClassFor(pkg) {
         if (pkg.matched && this.props.parentIsExpanded) {
             if (pkg.state === "Passed" || this.props.filterType === "State" && this.props.filterValue === "Passed") {
-                return "test-passed"
+                return "idx-passed"
             }
 
             if (pkg.state === "Failed" || this.props.filterType === "State" && this.props.filterValue === "Failed") {
-                return "test-failed"
+                return "idx-failed"
             }
 
             if (pkg.state === "Disabled" || this.props.filterType === "State" && this.props.filterValue === "Disabled") {
-                return "test-disabled"
+                return "idx-disabled"
             }
         }
 
@@ -151,7 +151,7 @@ class Package extends Component {
 
         return <dl className={this.deriveClassFor(pkg)}>
             <dt>
-                <a className="index-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></a>
+                <span className="idx-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></span>
                 {pkg.name}
             </dt>
             <dd>

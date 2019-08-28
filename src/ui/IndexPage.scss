@@ -1,22 +1,22 @@
 @import "bulma-custom";
 
-.test-failed {
+.idx-failed {
   color: $danger;
   background-color: #fff5f6;
   padding: 3px;
 }
 
-.test-passed {
+.idx-passed {
   color: $success;
   background-color: #f6fef9;
   padding: 3px;
 }
 
-.test-disabled {
+.idx-disabled {
   color: $warning
 }
 
-.index-icon {
+.idx-icon {
   font-size: 14px;
   height: 1em;
   line-height: 1em;
@@ -31,8 +31,13 @@ dl>dt {
   font-weight: 700;
 }
 
-dd>a {
-  padding-left: 25px
+dt > a {
+  color: inherit
+}
+
+dd > a {
+  padding-left: 25px;
+  color: inherit
 }
 
 dl {
@@ -41,13 +46,14 @@ dl {
 }
 
 dt {
-  padding-left: 5px;
+  //padding-left: 5px;
 }
 
 dd {
-  padding-left: 10px;
+  //padding-left: 10px;
 }
 
 a:hover {
   text-decoration: underline;
+  color: inherit;
 }

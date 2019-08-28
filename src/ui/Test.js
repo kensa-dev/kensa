@@ -11,9 +11,19 @@ class Test extends Component {
     constructor(props) {
         super(props);
 
-        let state = this.props.test.state;
+        let test = this.props.test;
+        let state = test.state;
+        let testMethod = test.testMethod;
+        let isCollapsed = true;
+
+        if (window.location.hash) {
+            isCollapsed = window.location.hash.substring(1) !== testMethod
+        } else {
+            isCollapsed = state !== "Failed" && state !== "Disabled"
+        }
+
         this.state = {
-            isCollapsed: state !== 'Failed' && state !== 'Disabled'
+            isCollapsed: isCollapsed
         };
 
         this.toggle = this.toggle.bind(this);
