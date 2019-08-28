@@ -5,14 +5,16 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 import {faSearch} from "@fortawesome/free-solid-svg-icons/faSearch";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
+const KENSA_FILTER_TYPE_KEY="KensaFilterType";
+const KENSA_FILTER_VALUE_KEY="KensaFilterValue";
+
 class Class extends Component {
 
     constructor(props, context) {
         super(props, context);
 
         this.state = {
-            matched: false,
-            expanded: this.props.expanded
+            expanded: false
         };
 
         this.toggle = this.toggle.bind(this);
@@ -22,46 +24,8 @@ class Class extends Component {
         this.load = this.load.bind(this);
     }
 
-    componentDidMount() {
-        let filterType = this.props.filterType;
-        let filterValue = this.props.filterValue;
-        let cls = this.props.cls;
-
-        this.applyFilter(filterType, filterValue, cls);
-    }
-
     componentDidUpdate(prevProps, prevState, snapshot) {
-        let filterType = this.props.filterType;
-        let filterTypeChanged = this.props.filterType !== prevProps.filterType;
-        let filterValue = this.props.filterValue;
-        let filterValueChanged = this.props.filterValue !== prevProps.filterValue;
-        let cls = this.props.cls;
 
-        if (filterTypeChanged || filterValueChanged) {
-            this.applyFilter(filterType, filterValue, cls)
-        }
-    }
-
-    applyFilter(filterType, filterValue, cls) {
-        if (filterType === "State" && filterValue !== "All") {
-            this.applyStateFilter(filterValue, cls)
-        } else if (filterType === "Name") {
-            this.applyNameFilter(filterValue, cls)
-        }
-    }
-
-    applyStateFilter(filterValue, cls) {
-        let state = cls.container.state;
-        let matched = state === filterValue;
-        this.setState({matched: matched, expanded: false});
-        this.props.filterNotify(cls.name, matched ? 1 : 0);
-    }
-
-    applyNameFilter(filterValue, cls) {
-        let name = cls.name;
-        let matched = name.includes(filterValue);
-        this.setState({matched: matched, expanded: false});
-        this.props.filterNotify(name, matched ? 1 : 0);
     }
 
     icon() {
@@ -86,22 +50,22 @@ class Class extends Component {
         }));
     }
 
-    classFor(state) {
-        if (this.state.matched) {
-            if (state === "Passed" || this.props.filterType === "State" && this.props.filterValue === "Passed") {
-                return "link test-passed"
-            }
-
-            if (state === "Failed" || this.props.filterType === "State" && this.props.filterValue === "Failed") {
-                return "link test-failed"
-            }
-        } else {
-            return "is-hidden"
-        }
-    }
-
     deriveClassFor(cls) {
-        return this.classFor(cls.state)
+        if (cls.matched && this.props.parentIsExpanded) {
+            if (cls.state === "Passed" || this.props.filterType === "State" && this.props.filterValue === "Passed") {
+                return "test-passed"
+            }
+
+            if (cls.state === "Failed" || this.props.filterType === "State" && this.props.filterValue === "Failed") {
+                return "test-failed"
+            }
+
+            if (cls.state === "Disabled" || this.props.filterType === "State" && this.props.filterValue === "Disabled") {
+                return "test-disabled"
+            }
+        }
+
+        return "is-hidden"
     }
 
     isHidden() {
@@ -110,13 +74,12 @@ class Class extends Component {
 
     render() {
         const cls = this.props.cls;
-        const state = cls.state;
 
         return (
                 <dl className={this.deriveClassFor(cls)}>
                     <dt>
                         <a className="index-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></a>
-                        <a className={this.classFor(state)} onClick={this.load}>{cls.name}</a>
+                        <a onClick={() => this.load()}>{cls.name}</a>
                     </dt>
                     {cls.tests.length > 0 &&
                     cls.tests.map((entry) => {
@@ -135,32 +98,24 @@ class Package extends Component {
         super(props, context);
 
         this.state = {
-            expanded: false,
-            matchCount: -1,
-            matchCounts: []
+            expanded: this.props.pkg.expanded
         };
 
         this.toggle = this.toggle.bind(this);
         this.icon = this.icon.bind(this);
-        this.filterNotify = this.filterNotify.bind(this);
         this.deriveClassFor = this.deriveClassFor.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevState.matchCount !== this.state.matchCount) {
-            this.props.filterNotify(this.props.pkg.name, this.state.matchCount)
+        if (this.props.pkg.expanded !== prevState.expanded) {
+            this.setState({
+                expanded: this.props.pkg.expanded
+            })
         }
-
-        // if (filterTypeChanged) {
-        //     this.setState({
-        //         matchCount: -1,
-        //         matchCounts: []
-        //     });
-        // }
     }
 
     icon() {
-        if (this.state.expanded || this.state.matchCount > 0) {
+        if (this.state.expanded) {
             return faMinus;
         }
 
@@ -173,34 +128,19 @@ class Package extends Component {
         }));
     }
 
-    filterNotify(childName, count) {
-        let index = this.state.matchCounts.findIndex(v => v.childName === childName);
-        if (index < 0) {
-            this.state.matchCounts.push({childName: childName, count: count})
-        } else {
-            this.state.matchCounts[index].count = count
-        }
-
-        this.setState(prevState => ({
-            matchCount: prevState.matchCounts
-                    .map(v => v.count)
-                    .reduce((a, v) => a + v)
-        }))
-    }
-
-    classFor(state) {
-        if (state === "Passed" || this.props.filterType === "State" && this.props.filterValue === "Passed") {
-            return "test-passed"
-        }
-
-        if (state === "Failed" || this.props.filterType === "State" && this.props.filterValue === "Failed") {
-            return "test-failed"
-        }
-    }
-
     deriveClassFor(pkg) {
-        if (this.state.matchCount > 0 || this.props.root || this.props.parentIsExpanded) {
-            return this.classFor(pkg.state)
+        if (pkg.matched && this.props.parentIsExpanded) {
+            if (pkg.state === "Passed" || this.props.filterType === "State" && this.props.filterValue === "Passed") {
+                return "test-passed"
+            }
+
+            if (pkg.state === "Failed" || this.props.filterType === "State" && this.props.filterValue === "Failed") {
+                return "test-failed"
+            }
+
+            if (pkg.state === "Disabled" || this.props.filterType === "State" && this.props.filterValue === "Disabled") {
+                return "test-disabled"
+            }
         }
 
         return "is-hidden"
@@ -208,10 +148,9 @@ class Package extends Component {
 
     render() {
         const pkg = this.props.pkg;
-        const state = pkg.state;
 
         return <dl className={this.deriveClassFor(pkg)}>
-            <dt className={this.classFor(state)}>
+            <dt>
                 <a className="index-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></a>
                 {pkg.name}
             </dt>
@@ -221,8 +160,7 @@ class Package extends Component {
                             <Package pkg={pkg}
                                      filterType={this.props.filterType}
                                      filterValue={this.props.filterValue}
-                                     parentIsExpanded={this.state.expanded}
-                                     filterNotify={this.filterNotify}/>
+                                     parentIsExpanded={this.state.expanded}/>
                     )
                 }
                 {
@@ -230,8 +168,7 @@ class Package extends Component {
                             <Class cls={cls}
                                    filterType={this.props.filterType}
                                    filterValue={this.props.filterValue}
-                                   parentIsExpanded={this.state.expanded}
-                                   filterNotify={this.filterNotify}/>
+                                   parentIsExpanded={this.state.expanded}/>
                     )
                 }
             </dd>
@@ -252,18 +189,35 @@ export default class Indices extends Component {
 
         this.state = {
             indices: indices,
-            filterType: "State",
-            filterValue: "All",
+            filterType: localStorage.getItem(KENSA_FILTER_TYPE_KEY) || "State",
+            filterValue: localStorage.getItem(KENSA_FILTER_VALUE_KEY) || "All",
             filterMatched: false
         };
 
         this.onInputChanged = this.onInputChanged.bind(this);
-        this.filterNotify = this.filterNotify.bind(this);
         this.onStateFilterSelect = this.onStateFilterSelect.bind(this);
+        this.stateFilter = this.stateFilter.bind(this);
+        this.nameFilter = this.nameFilter.bind(this);
     }
 
     componentDidMount() {
-        this.filterInput.focus()
+        this.filterInput.focus();
+
+        this.applyFilter()
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        let filterTypeChanged = this.state.filterType !== prevState.filterType;
+        let filterValueChanged = this.state.filterValue !== prevState.filterValue;
+
+        if (filterTypeChanged || filterValueChanged) {
+            this.applyFilter()
+        }
+    }
+
+    updateLocalStorage() {
+        localStorage.setItem(KENSA_FILTER_TYPE_KEY, this.state.filterType);
+        localStorage.setItem(KENSA_FILTER_VALUE_KEY, this.state.filterValue)
     }
 
     onInputChanged(e) {
@@ -272,19 +226,49 @@ export default class Indices extends Component {
             this.setState({
                 filterType: "Name",
                 filterValue: value
-            })
+            }, () => this.updateLocalStorage());
         } else {
             this.setState({
                 filterType: "State",
                 filterValue: "All"
-            })
+            }, () => this.updateLocalStorage());
         }
     }
 
-    filterNotify(childName, count) {
-        this.setState({
-            filterMatched: count > 0
-        })
+    applyFilter() {
+        if (this.state.filterType === "State") {
+            this.setState({filterMatched: this.doApplyFilter(this.state.indices.packages, this.stateFilter)})
+        } else if (this.state.filterType === "Name") {
+            this.setState({filterMatched: this.doApplyFilter(this.state.indices.packages, this.nameFilter)})
+        }
+    }
+
+    stateFilter(cls) {
+        return (this.state.filterType === "State" && this.state.filterValue === "All") || this.state.filterValue === cls.state;
+    }
+
+    nameFilter(cls) {
+        return cls.name.includes(this.state.filterValue);
+    }
+
+    doApplyFilter(packages, filter) {
+        let matched = false;
+
+        packages.forEach((pkg) => {
+            pkg.matched = false;
+            if (pkg.classes) {
+                pkg.classes.forEach((cls) => {
+                    pkg.matched = (cls.matched = filter(cls)) || pkg.matched;
+                })
+            }
+            if (pkg.packages) {
+                pkg.matched = this.doApplyFilter(pkg.packages, filter) || pkg.matched;
+            }
+            matched = matched || pkg.matched;
+            pkg.expanded = pkg.matched
+        });
+
+        return matched;
     }
 
     applyState(pkg, state) {
@@ -310,6 +294,8 @@ export default class Indices extends Component {
                 container: container,
                 state: container.state,
                 name: container.displayName,
+                expanded: false,
+                matched: false,
                 tests: []
             };
             clsArray.push(c);
@@ -331,7 +317,9 @@ export default class Indices extends Component {
             if (!pkg) {
                 pkg = {
                     name: name,
-                    state: container.state
+                    state: container.state,
+                    expanded: false,
+                    matched: false
                 };
                 packages.push(pkg);
             } else {
@@ -371,7 +359,7 @@ export default class Indices extends Component {
             this.setState({
                 filterType: "State",
                 filterValue: e.target.textContent
-            })
+            }, () => {this.updateLocalStorage()});
         }
     }
 
@@ -383,6 +371,7 @@ export default class Indices extends Component {
     render() {
         const filterType = this.state.filterType;
         const filterValue = this.state.filterValue;
+        const inputFilterValue = filterType === "State" ? "" : filterValue;
 
         return (
                 <nav className="panel">
@@ -390,6 +379,7 @@ export default class Indices extends Component {
                         <p className="control has-icons-left">
                             <input ref={(input) => this.filterInput = input}
                                    className="input"
+                                   value={inputFilterValue}
                                    type="text"
                                    placeholder="filter"
                                    onChange={this.onInputChanged}/>
@@ -407,8 +397,7 @@ export default class Indices extends Component {
                                 <Package pkg={pkg}
                                          filterType={filterType}
                                          filterValue={filterValue}
-                                         filterNotify={this.filterNotify}
-                                         root={true}/>
+                                         parentIsExpanded={true}/>
                         )}
                     </div>
                     <div className={this.hideWhenFilterOffOrHasMatch()}>
