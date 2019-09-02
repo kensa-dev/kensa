@@ -1,5 +1,7 @@
 package dev.kensa.sentence;
 
+import java.util.List;
+
 import static dev.kensa.sentence.Token.Type.Acronym;
 import static dev.kensa.sentence.Token.Type.*;
 
@@ -15,6 +17,10 @@ public final class SentenceTokens {
 
     public static SentenceToken aLiteralOf(String word) {
         return aTokenOf(Literal, word);
+    }
+
+    public static SentenceToken anExpandableOf(String value, List<SentenceToken> tokens) {
+        return new SentenceToken(value, tokens);
     }
 
     public static SentenceToken aNewline() {

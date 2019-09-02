@@ -48,17 +48,18 @@ public class SentenceToken implements Token {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof SentenceToken)) {
             return false;
         }
         SentenceToken that = (SentenceToken) o;
         return type == that.type &&
-                value.equals(that.value);
+                value.equals(that.value) &&
+                tokens.equals(that.tokens);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, value);
+        return Objects.hash(type, value, tokens);
     }
 
     @Override
@@ -66,6 +67,7 @@ public class SentenceToken implements Token {
         return "SentenceToken{" +
                 "type=" + type +
                 ", value='" + value + '\'' +
+                ", tokens=" + tokens +
                 '}';
     }
 }

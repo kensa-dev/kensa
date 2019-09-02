@@ -1,5 +1,6 @@
 package dev.kensa.parse;
 
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import dev.kensa.render.Renderers;
 import dev.kensa.sentence.Acronym;
 import dev.kensa.sentence.Dictionary;
@@ -20,6 +21,7 @@ import static com.github.javaparser.JavaParser.parse;
 import static dev.kensa.sentence.SentenceTokens.*;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -37,6 +39,30 @@ class MethodParserTest {
     @AfterEach
     void tearDown() {
         dictionary.clearAcronyms();
+    }
+
+    @Test
+    void canParseMethodWithNestedSentence() {
+        String code = "class T {\n" +
+                "   void testMethod() {\n" +
+                "      then(weCanUseThe(nestedSentence()));\n" +
+                "   }\n" +
+                "   void nestedSentence() {\n" +
+                "      nestedWords();\n" +
+                "   }\n" +
+                "}\n";
+
+        List<Sentence> sentences = parseToSentences(code, "nestedSentence");
+
+        assertThat(sentences).hasSize(1);
+        assertThat(sentences.get(0).stream()).containsExactly(
+                aKeywordOf("Then"),
+                aWordOf("we"),
+                aWordOf("can"),
+                aWordOf("use"),
+                aWordOf("the"),
+                anExpandableOf("nested sentence", List.of(aWordOf("nested words")))
+        );
     }
 
     @Test
@@ -277,36 +303,55 @@ class MethodParserTest {
         );
     }
 
+    private List<Sentence> parseToSentences(String code, String expandableMethodNames) {
+        return parseToSentences(code, null, null, new ParameterAccessor(emptySet()), emptySet(), expandableMethodNames);
+    }
+
     private List<Sentence> parseToSentences(String code) {
-        return parseToSentences(code, null, null, new ParameterAccessor(emptySet()), emptySet());
+        return parseToSentences(code, null, null, new ParameterAccessor(emptySet()), emptySet(), null);
     }
 
     private List<Sentence> parseToSentences(String code, CachingFieldAccessor fieldAccessor, Set<String> highlightedValues) {
-        return parseToSentences(code, null, fieldAccessor, new ParameterAccessor(emptySet()), highlightedValues);
+        return parseToSentences(code, null, fieldAccessor, new ParameterAccessor(emptySet()), highlightedValues, null);
     }
 
     private List<Sentence> parseToSentences(String code, CachingScenarioMethodAccessor scenarioAccessor) {
-        return parseToSentences(code, scenarioAccessor, null, new ParameterAccessor(emptySet()), emptySet());
+        return parseToSentences(code, scenarioAccessor, null, new ParameterAccessor(emptySet()), emptySet(), null);
     }
 
     private List<Sentence> parseToSentences(String code, CachingFieldAccessor fieldAccessor, ParameterAccessor parameterAccessor) {
-        return parseToSentences(code, null, fieldAccessor, parameterAccessor, emptySet());
+        return parseToSentences(code, null, fieldAccessor, parameterAccessor, emptySet(), null);
     }
 
     private List<Sentence> parseToSentences(
-            String code, CachingScenarioMethodAccessor scenarioAccessor, CachingFieldAccessor fieldAccessor, ParameterAccessor parameterAccessor, Set<String> highlightedValues
+            String code,
+            CachingScenarioMethodAccessor scenarioAccessor,
+            CachingFieldAccessor fieldAccessor,
+            ParameterAccessor parameterAccessor,
+            Set<String> highlightedValues,
+            String expandableMethodName
     ) {
         Renderers renderers = new Renderers();
         renderers.add(Integer.class, value -> String.format("<<%d>>", value));
 
         ValueAccessors valueAccessors = new ValueAccessors(renderers, scenarioAccessor, fieldAccessor, parameterAccessor);
-        MethodParser methodParser = new MethodParser(valueAccessors, highlightedValues, emptySet(), emptySet(), null);
 
-        return parse(code).getClassByName("T")
-                          .map(cd -> cd.getMethodsByName("testMethod").get(0))
-                          .map(methodParser::parse)
-                          .map(Sentences::stream)
-                          .map(s -> s.collect(toList()))
-                          .orElseThrow(() -> new RuntimeException("Unable to parse given code"));
+        Optional<ClassOrInterfaceDeclaration> cls = parse(code).getClassByName("T");
+
+        Set<NamedValue> expandableMethods = emptySet();
+        if (expandableMethodName != null) {
+            expandableMethods = cls.map(cd -> cd.getMethodsByName(expandableMethodName))
+                                   .stream()
+                                   .map(md -> new NamedValue(expandableMethodName, md.get(0)))
+                                   .collect(toSet());
+        }
+
+        MethodParser methodParser = new MethodParser(valueAccessors, highlightedValues, dictionary.keywords(), dictionary.acronymStrings(), expandableMethods);
+
+        return cls.map(cd -> cd.getMethodsByName("testMethod").get(0))
+                  .map(methodParser::parse)
+                  .map(Sentences::stream)
+                  .map(s -> s.collect(toList()))
+                  .orElseThrow(() -> new RuntimeException("Unable to parse given code"));
     }
 }

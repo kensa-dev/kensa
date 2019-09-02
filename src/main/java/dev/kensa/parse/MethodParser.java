@@ -32,7 +32,12 @@ class MethodParser {
     private final Set<NamedValue> expandableMethods;
 
 
-    MethodParser(ValueAccessors valueAccessors, Set<String> highlightedValues, Set<String> keywords, Set<String> acronyms, Set<NamedValue> expandableMethods) {
+    MethodParser(ValueAccessors valueAccessors,
+                 Set<String> highlightedValues,
+                 Set<String> keywords,
+                 Set<String> acronyms,
+                 Set<NamedValue> expandableMethods
+    ) {
         this.valueAccessors = valueAccessors;
         this.highlightedValues = highlightedValues;
         this.keywords = keywords;
