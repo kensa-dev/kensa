@@ -10,31 +10,37 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.SentenceBuilder;
+import dev.kensa.sentence.SentenceToken;
 import dev.kensa.sentence.Sentences;
+import dev.kensa.util.NamedValue;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static dev.kensa.parse.SentenceCollector.asSentences;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 class MethodParser {
 
-    private final MethodDeclaration methodDeclaration;
     private final ValueAccessors valueAccessors;
     private final Set<String> highlightedValues;
     private final Set<String> keywords;
     private final Set<String> acronyms;
+    private final Set<NamedValue> expandableMethods;
 
-    MethodParser(MethodDeclaration methodDeclaration, ValueAccessors valueAccessors, Set<String> highlightedValues, Set<String> keywords, Set<String> acronyms) {
-        this.methodDeclaration = methodDeclaration;
+
+    MethodParser(ValueAccessors valueAccessors, Set<String> highlightedValues, Set<String> keywords, Set<String> acronyms, Set<NamedValue> expandableMethods) {
         this.valueAccessors = valueAccessors;
         this.highlightedValues = highlightedValues;
         this.keywords = keywords;
         this.acronyms = acronyms;
+        this.expandableMethods = expandableMethods;
     }
 
-    Sentences sentences() {
+    Sentences parse(MethodDeclaration methodDeclaration) {
         return methodDeclaration.getBody()
                                 .map(BlockStmt::getStatements)
                                 .map(Collection::stream)
@@ -61,14 +67,31 @@ class MethodParser {
     }
 
     private void append(Node node, SentenceBuilder builder) {
-        builder.markLineNumber(startLineOf(node));
+        int thisLineNumber = startLineOf(node);
+        builder.markLineNumber(thisLineNumber);
 
         if (isNotAScenarioCall(node, builder)) {
-            if (node instanceof NameExpr) {
+            if (node instanceof MethodCallExpr) {
+                String methodName = ((MethodCallExpr) node).getNameAsString();
+
+
+                Optional<MethodDeclaration> methodDeclaration = expandableMethod(methodName);
+                if (methodDeclaration.isPresent()) {
+                    Statement statement = methodDeclaration.get().getBody().get().getStatement(0);
+                    Sentence nested = toSentence(statement);
+                    SentenceBuilder placeholderBuilder = new SentenceBuilder(thisLineNumber, highlightedValues, keywords, acronyms);
+                    parseChildrenOf(node, placeholderBuilder);
+                    Sentence placeholderSentence = placeholderBuilder.build();
+
+                    builder.appendExpandable(placeholderSentence.squashedTokens().map(SentenceToken::value).collect(joining(" ")), nested.squashedTokens().collect(toList()));
+                } else {
+                    parseChildrenOf(node, builder);
+                }
+            } else if (node instanceof NameExpr) {
                 String identifier = ((NameExpr) node).getName().getIdentifier();
-                valueAccessors.realValueOf(identifier)
-                        .<Runnable>map(v -> () -> builder.appendIdentifier(v))
-                        .orElse(() -> builder.append(identifier)).run();
+                builder.appendIdentifier(valueAccessors.realValueOf(identifier)
+                                                       .orElse(identifier)
+                );
             } else if (node instanceof SimpleName) {
                 String identifier = ((SimpleName) node).getIdentifier();
                 builder.append(identifier);
@@ -82,11 +105,22 @@ class MethodParser {
                 le.ifNullLiteralExpr(e -> builder.appendLiteral("null"));
                 le.ifStringLiteralExpr(e -> builder.appendStringLiteral(e.getValue()));
             } else {
-                for (Node n : node.getChildNodes()) {
-                    append(n, builder);
-                }
+                parseChildrenOf(node, builder);
             }
         }
+    }
+
+    private void parseChildrenOf(Node parent, SentenceBuilder builder) {
+        for (Node n : parent.getChildNodes()) {
+            append(n, builder);
+        }
+    }
+
+    private Optional<MethodDeclaration> expandableMethod(String methodName) {
+        return expandableMethods.stream()
+                                .filter(nv -> nv.name().equals(methodName))
+                                .map(nv -> (MethodDeclaration) nv.value())
+                                .findAny();
     }
 
     private boolean isNotAScenarioCall(Node node, SentenceBuilder builder) {

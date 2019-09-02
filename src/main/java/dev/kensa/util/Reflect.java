@@ -1,9 +1,6 @@
 package dev.kensa.util;
 
-import dev.kensa.Highlight;
-import dev.kensa.KensaException;
-import dev.kensa.Scenario;
-import dev.kensa.SentenceValue;
+import dev.kensa.*;
 import dev.kensa.function.Unchecked;
 import dev.kensa.parse.CachingFieldAccessor;
 import dev.kensa.parse.CachingScenarioMethodAccessor;
@@ -75,6 +72,21 @@ public final class Reflect {
         }
 
         return new ParameterAccessor(namedValues);
+    }
+
+    public static Set<NamedValue> nestedSentencesOf(Object target) {
+        Set<NamedValue> methods = new HashSet<>();
+        Class<?> aClass = target.getClass();
+
+        while (aClass != Object.class) {
+            Method[] declaredMethods = aClass.getDeclaredMethods();
+            Arrays.stream(declaredMethods)
+                  .filter(method -> method.isAnnotationPresent(NestedSentence.class))
+                  .forEach(method -> methods.add(new NamedValue(method.getName(), method)));
+            aClass = aClass.getSuperclass();
+        }
+
+        return methods;
     }
 
     public static CachingFieldAccessor interestingFieldsOf(Object target) {

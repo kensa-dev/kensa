@@ -1,0 +1,84 @@
+@import "bulma-custom";
+
+.nested-sentence {
+  box-shadow: inset 0 0 2px #000000;
+  padding: 10px 10px 10px 30px;
+  border-radius: 5px;
+}
+
+.token-keyword {
+  font-weight: bold;
+}
+
+.token-highlightedword {
+  background-color: yellow;color: $grey-dark}
+
+.token-identifier {
+  font-weight: bold;
+}
+
+.token-expandable {
+  font-weight: bold;
+}
+
+.token-expandable.expanded::after {
+  content: ':'
+}
+
+.token-expandable:hover {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.token-acronym {
+  text-decoration: underline;
+}
+
+.token-identifieracronym {
+  text-decoration: underline;
+  font-weight: bold;
+  color: $grey-dark;
+}
+
+.token-highlightedidentifier {
+  font-weight: bold;
+  background-color: yellow;
+  color: $grey-dark
+}
+
+.token-highlightedacronym {
+  text-decoration: underline;
+  font-weight: bold;
+  background-color: yellow;
+  color: $grey-dark
+}
+
+.token-stringliteral {
+  font-weight: bold;
+}
+
+.token-stringliteralacronym {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.token-literal {
+  font-weight: bold;
+}
+
+.token-newline:before {
+  display: block;
+  content: "\A";
+}
+
+.token-newline:after {
+  content: "\2003";
+}
+
+.token-stringliteral:before {
+  content: open-quote;
+}
+
+.token-stringliteral:after {
+  content: close-quote;
+}

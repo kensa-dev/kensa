@@ -81,8 +81,20 @@ public final class JsonTransforms {
     }
 
     private static Function<Sentence, JsonValue> sentenceAsJson() {
-        return sentence -> asJsonArray(sentence.squashedTokens(), token -> Json.object().add(token.type().name(), token.asString()));
+        return sentence -> asJsonArray(sentence.squashedTokens(), token -> Json.object()
+                                                                               .add("type", token.type().name())
+                                                                               .add("value", token.value())
+                                                                               .add("tokens", asJsonArray(token.tokens(), sentenceToken -> Json.object()
+                                                                                                                                               .add("type", sentenceToken.type().name())
+                                                                                                                                               .add("value", sentenceToken.value())
+                                                                                    )
+                                                                               )
+        );
     }
+//
+//    private static Function<Sentence, JsonValue> sentenceAsJson() {
+//        return sentence -> asJsonArray(sentence.squashedTokens(), token -> Json.object().add(token.type().name(), token.asString()));
+//    }
 
     private static JsonArray asJsonArray(Stream<String> stream) {
         return asJsonArray(stream, Json::value);

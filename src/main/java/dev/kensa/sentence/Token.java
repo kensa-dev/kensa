@@ -5,11 +5,11 @@ import java.util.Set;
 
 public interface Token {
     Type type();
-
-    String asString();
+    String value();
 
     enum Type {
         Acronym,
+        Expandable,
         HighlightedAcronym,
         HighlightedWord,
         HighlightedIdentifier,

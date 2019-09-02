@@ -26,9 +26,9 @@ public class Sentence {
         for (SentenceToken token : tokens) {
             if (token.type() == Word) {
                 if (currentTokenType == Word) {
-                    currentValue += " " + token.asString();
+                    currentValue += " " + token.value();
                 } else {
-                    currentValue += token.asString();
+                    currentValue += token.value();
                 }
             } else {
                 if (currentTokenType == Word) {

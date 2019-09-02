@@ -41,6 +41,12 @@ public class SentenceBuilder {
         return this;
     }
 
+    public SentenceBuilder appendExpandable(String value, List<SentenceToken> tokens) {
+        this.tokens.add(new SentenceToken(value, tokens));
+
+        return this;
+    }
+
     // A String Literal - any arbitrary string literal found within the source code
     public SentenceBuilder appendStringLiteral(String value) {
         if (isAcronym(value)) {
@@ -84,8 +90,8 @@ public class SentenceBuilder {
         return new Sentence(tokens);
     }
 
-    private void append(String value, Token.Type literal) {
-        tokens.add(new SentenceToken(literal, value));
+    private void append(String value, Token.Type type) {
+        tokens.add(new SentenceToken(type, value));
     }
 
     private void appendNewLine() {

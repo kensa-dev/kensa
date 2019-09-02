@@ -135,7 +135,7 @@ export class Invocation extends Component {
                         </div>)}
                     </div>
                     <div className="message-body has-text-black">
-                        {invocation.sentences.map((sentence, index) => <Sentence key={index} sentence={sentence} acronyms={invocation.acronyms}/>)}
+                        {invocation.sentences.map((sentence, index) => <Sentence key={index} expanded={false} sentence={sentence} acronyms={invocation.acronyms}/>)}
                     </div>
                     {this.exceptionBlock(invocation.executionException)}
                 </div>

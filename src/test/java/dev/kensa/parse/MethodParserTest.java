@@ -300,11 +300,11 @@ class MethodParserTest {
         renderers.add(Integer.class, value -> String.format("<<%d>>", value));
 
         ValueAccessors valueAccessors = new ValueAccessors(renderers, scenarioAccessor, fieldAccessor, parameterAccessor);
+        MethodParser methodParser = new MethodParser(valueAccessors, highlightedValues, emptySet(), emptySet(), null);
 
         return parse(code).getClassByName("T")
                           .map(cd -> cd.getMethodsByName("testMethod").get(0))
-                          .map(md -> new MethodParser(md, valueAccessors, highlightedValues, dictionary.keywords(), dictionary.acronymStrings()))
-                          .map(MethodParser::sentences)
+                          .map(methodParser::parse)
                           .map(Sentences::stream)
                           .map(s -> s.collect(toList()))
                           .orElseThrow(() -> new RuntimeException("Unable to parse given code"));

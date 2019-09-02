@@ -55,9 +55,16 @@ public class TestParser {
                                                               .map(nv -> renderers.renderValueOnly(nv.value()))
                                                               .collect(toSet());
 
-        MethodParser methodParser = new MethodParser(declaration, valueAccessors, highlightedValues, keywords, acronyms);
+        MethodParser methodParser = new MethodParser(valueAccessors, highlightedValues, keywords, acronyms, expandableMethodsOf(testInstance));
 
-        return new ParsedTest(parameters, methodParser.sentences(), highlightedNamedValues);
+        return new ParsedTest(parameters, methodParser.parse(declaration), highlightedNamedValues);
+    }
+
+    private Set<NamedValue> expandableMethodsOf(Object testInstance) {
+        return Reflect.nestedSentencesOf(testInstance)
+                             .stream()
+                             .map(nv -> new NamedValue(nv.name(), methodDeclarationProvider.methodDeclarationFrom((Method) nv.value())))
+                             .collect(toSet());
     }
 
     private Set<NamedValue> highlightedValuesOf(Object testInstance) {
