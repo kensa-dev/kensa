@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
-import {highlightJson, highlightXml} from "./Highlighting";
+import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Lowlight from 'react-lowlight';
 import {NamedValueTable} from "./NamedValueTable";
@@ -110,6 +110,8 @@ export class Interaction extends Component {
                 highlightXml(codeNode, highlightRegexp);
             } else if (this.state.language === 'json') {
                 highlightJson(codeNode, highlightRegexp);
+            } else {
+                highlightPlainText(codeNode, highlightRegexp);
             }
         }
     }
