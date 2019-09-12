@@ -5,6 +5,12 @@ const createSpan = (value) => {
     return span;
 };
 
+const createWrappingSpan = (contentNode) => {
+    let span = document.createElement('span');
+    span.appendChild(contentNode);
+    return span;
+};
+
 const textNodeOf = (value) => {
     return document.createTextNode(value);
 };
@@ -75,6 +81,33 @@ export const highlightJson = (parent, regExp) => {
         if (child.classList) {
             if (child.classList.contains('hljs-string')) {
                 searchAttributeContent(child, regExp);
+            }
+        }
+    });
+};
+
+export const highlightPlainText = (parent, regExp) => {
+    Array.from(parent.childNodes).forEach(child => {
+        if (child) {
+            let parent = child.parentNode;
+            child.remove();
+            let outerSpan = createWrappingSpan(child)
+            parent.appendChild(outerSpan)
+            let restOfLine = child.textContent;
+            let result;
+            let lastChild = outerSpan;
+            // noinspection JSAssignmentUsedAsCondition
+            while (result = regExp.exec(restOfLine)) {
+                let token = result[0];
+                let index = result.index;
+                let textNode = textNodeOf(restOfLine.substr(0, result.index));
+                lastChild.replaceChild(textNode, child);
+                lastChild.appendChild(createSpan(token));
+
+                restOfLine = restOfLine.substr(index + token.length);
+                textNode = textNodeOf(restOfLine);
+                lastChild.appendChild(textNode);
+                child = textNode;
             }
         }
     });
