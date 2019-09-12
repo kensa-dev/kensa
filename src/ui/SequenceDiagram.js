@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import Lowlight from 'react-lowlight';
-import {highlightJson, highlightXml} from "./Highlighting";
+import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 
 class Popup extends Component {
     constructor(props) {
@@ -28,6 +28,8 @@ class Popup extends Component {
                     highlightXml(codeNode, highlightRegexp);
                 } else if (this.state.language === 'json') {
                     highlightJson(codeNode, highlightRegexp);
+                } else {
+                    highlightPlainText(codeNode, highlightRegexp)
                 }
             }
         }
