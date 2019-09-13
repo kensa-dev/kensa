@@ -19,10 +19,13 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 
 public class KensaExtension implements Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
-    private static final ExtensionContext.Namespace KENSA = ExtensionContext.Namespace.create(new Object());
+    @SuppressWarnings({"WeakerAccess", "For Client Access"})
+    public static final ExtensionContext.Namespace KENSA = ExtensionContext.Namespace.create("dev", "kensa");
+    @SuppressWarnings({"WeakerAccess", "For Client Access"})
+    public static final String TEST_CONTEXT_KEY = "TestContext";
+
     private static final String TEST_START_TIME_KEY = "StartTime";
     private static final String TEST_CONTAINER_KEY = "TestContainer";
-    private static final String TEST_CONTEXT_KEY = "TestContext";
     private static final String TEST_INVOCATION_CONTEXT_KEY = "TestArguments";
     private static final String KENSA_EXECUTION_CONTEXT_KEY = "KensaExecutionContext";
 
