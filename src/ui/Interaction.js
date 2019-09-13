@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
-import {highlightJson, highlightXml, highlightPlainText} from "./Highlighting";
+import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Lowlight from 'react-lowlight';
 import {NamedValueTable} from "./NamedValueTable";
