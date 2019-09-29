@@ -5,8 +5,8 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 import {faSearch} from "@fortawesome/free-solid-svg-icons/faSearch";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-const KENSA_FILTER_TYPE_KEY="KensaFilterType";
-const KENSA_FILTER_VALUE_KEY="KensaFilterValue";
+const KENSA_FILTER_TYPE_KEY = "KensaFilterType";
+const KENSA_FILTER_VALUE_KEY = "KensaFilterValue";
 
 class Class extends Component {
 
@@ -248,7 +248,7 @@ export default class Indices extends Component {
     }
 
     nameFilter(cls) {
-        return cls.name.includes(this.state.filterValue);
+        return cls.name.toLowerCase().includes(this.state.filterValue.toLowerCase());
     }
 
     doApplyFilter(packages, filter) {
