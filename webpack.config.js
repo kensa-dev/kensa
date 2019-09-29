@@ -15,7 +15,9 @@ module.exports = {
         path: OUTPUT,
         filename: 'kensa.js'
     },
-    // stats: 'errors-only',
+    devServer: {
+        writeToDisk: true,
+    },
     module: {
         rules: [
             {
@@ -48,6 +50,7 @@ module.exports = {
             chunkFilename: "[id].css"
         }),
         new HtmlWebpackPlugin({
+            favicon: "src/ui/public/favicon.ico",
             template: INDEX,
             filename: "./index.html",
             inlineSource: '.(js|css)$'

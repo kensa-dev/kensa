@@ -26,6 +26,7 @@ public class ResultWriter {
         outputStyle.write(containers, configuration);
 
         IoUtil.copyResource("/kensa.js", outputDir);
+        IoUtil.copyResource("/favicon.ico", outputDir);
 
         System.out.println("\nKensa Output :\n" + outputDir.resolve("index.html"));
     }
