@@ -51,8 +51,7 @@ export class Invocation extends Component {
         this.state = {
             invocation: props.invocation,
             invocationNumber: props.invocationNumber,
-            testMethod: props.testMethod,
-            selectedTab: 'givens'
+            testMethod: props.testMethod
         };
 
         this.selectTab = this.selectTab.bind(this);
@@ -62,9 +61,9 @@ export class Invocation extends Component {
     }
 
     selectTab(tabName) {
-        this.setState({
-            selectedTab: tabName
-        });
+        this.setState(prevState => ({
+            selectedTab: prevState.selectedTab === tabName ? null : tabName
+        }));
     }
 
     isDisabled(buttonName) {
@@ -89,15 +88,13 @@ export class Invocation extends Component {
     }
 
     buttonFor(name, text) {
-        let invocationElement = this.state.invocation[name];
-        if (invocationElement && invocationElement.length > 0) {
+        if (this.hasElements(name)) {
             return <button className={this.classForButton(name, App.stateClassFor(this.state.invocation.state))} onClick={() => this.selectTab(name)}>{text}</button>;
         }
     }
 
     contentFor(name, Component) {
-        let invocationElement = this.state.invocation[name];
-        if (invocationElement && invocationElement.length > 0) {
+        if (this.hasElements(name)) {
             return Component;
         }
     }
@@ -112,30 +109,50 @@ export class Invocation extends Component {
         return null;
     }
 
+    hasElements(name) {
+        let invocationElement = this.state.invocation[name];
+        return invocationElement && invocationElement.length > 0;
+    }
+
+
+    buttons(invocation) {
+        let highlights = invocation.highlights;
+
+        if (this.hasElements('givens') ||
+                this.hasElements('parameters') ||
+                this.hasElements('capturedInteractions') ||
+                this.hasElements('sequenceDiagram')) {
+            return <div className="message-body">
+                <div className="buttons has-addons">
+                    {this.buttonFor('givens', 'Givens')}
+                    {this.buttonFor('parameters', 'Parameters')}
+                    {this.buttonFor('capturedInteractions', 'Captured Interactions')}
+                    {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
+                </div>
+                {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable highlights={highlights} namedValues={invocation.givens}/></div>)}
+                {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable highlights={highlights} namedValues={invocation.parameters}/></div>)}
+                {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
+                        capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
+                {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}
+                                                                                                                                  capturedInteractions={invocation.capturedInteractions}
+                                                                                                                                  highlights={invocation.highlights}/>
+                </div>)}
+            </div>
+        }
+
+        return null;
+    }
+
     render() {
         let invocation = this.state.invocation;
         let testStateClass = App.stateClassFor(invocation.state);
-        let highlights=invocation.highlights;
 
         return (
                 <div className={"message " + testStateClass}>
-                    <div className="message-body">
-                        <span className={"tag is-pulled-right " + testStateClass}>Executed in: {invocation.elapsedTime}</span>
-                        <div className="buttons has-addons">
-                            {this.buttonFor('givens', 'Givens')}
-                            {this.buttonFor('parameters', 'Parameters')}
-                            {this.buttonFor('capturedInteractions', 'Captured Interactions')}
-                            {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
-                        </div>
-                        {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable highlights={highlights} namedValues={invocation.givens}/></div>)}
-                        {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable highlights={highlights} namedValues={invocation.parameters}/></div>)}
-                        {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
-                            capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
-                        {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram} capturedInteractions={invocation.capturedInteractions} highlights={invocation.highlights}/>
-                        </div>)}
-                    </div>
+                    {this.buttons(invocation)}
                     <div className="message-body has-text-black">
                         {invocation.sentences.map((sentence, index) => <Sentence key={index} expanded={false} sentence={sentence} acronyms={invocation.acronyms}/>)}
+                        <span className={"tag is-pulled-right " + testStateClass}>Executed in: {invocation.elapsedTime}</span>
                     </div>
                     {this.exceptionBlock(invocation.executionException)}
                 </div>
