@@ -1,23 +1,28 @@
 package dev.kensa.util;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static dev.kensa.util.Attributes.emptyAttributes;
-import static java.util.Collections.synchronizedMap;
 
 @SuppressWarnings({"unchecked", "WeakerAccess"})
 public class KensaMap<M extends KensaMap<M>> {
 
-    private final Map<String, Entry> values = synchronizedMap(new LinkedHashMap<>());
+    private static final Pattern KEY_PATTERN = Pattern.compile("(?<prefix>.*)(?<key>__(?<prekey>[ ]*)idx(?<postkey>[ ]*)__)(?<suffix>.*)");
+
+    private final Object lock = new Object();
+    private final Map<String, Entry> values = new LinkedHashMap<>();
 
     public M put(Object value) {
         Objects.requireNonNull(value);
 
-        String key = defaultKeyFor(value);
-        values.put(key, new Entry(key, value));
+        return putWithUniqueKey(value.getClass().getSimpleName() + "__idx__", value, emptyAttributes());
+    }
 
-        return self();
+    public M put(String key, Object value) {
+        return this.put(key, value, emptyAttributes());
     }
 
     public M put(String key, Object value, Attributes attributes) {
@@ -25,25 +30,50 @@ public class KensaMap<M extends KensaMap<M>> {
         Objects.requireNonNull(value);
         Objects.requireNonNull(attributes);
 
-        values.put(key, new Entry(key, value, attributes));
+        synchronized (lock) {
+            values.put(key, new Entry(key, value, attributes));
+        }
 
         return self();
     }
 
-    public M put(String key, Object value) {
-        return this.put(key, value, emptyAttributes());
+    public M putWithUniqueKey(String key, Object value, Attributes attributes) {
+        Objects.requireNonNull(value);
+
+        Matcher matcher = KEY_PATTERN.matcher(key);
+        if (matcher.matches()) {
+            synchronized (lock) {
+                String realKey = baseKeyFrom(matcher);
+                if (values.containsKey(realKey)) {
+                    int i = 1;
+                    do {
+                        realKey = indexedKeyFrom(matcher, i++);
+                    } while (values.containsKey(realKey));
+                }
+
+                values.put(realKey, new Entry(realKey, value, attributes));
+
+                return self();
+            }
+        } else {
+            throw new IllegalArgumentException("Must specify __key__ placeholder");
+        }
     }
 
     public <T> void putAll(Collection<T> values) {
         Objects.requireNonNull(values);
 
-        values.forEach(this::put);
+        synchronized (lock) {
+            values.forEach(this::put);
+        }
     }
 
     public void putNamedValues(Collection<NamedValue> values) {
         Objects.requireNonNull(values);
 
-        values.forEach(nv -> this.put(nv.name(), nv.value()));
+        synchronized (lock) {
+            values.forEach(nv -> this.put(nv.name(), nv.value()));
+        }
     }
 
     public <T> T get(String key, Class<T> clazz) {
@@ -66,26 +96,22 @@ public class KensaMap<M extends KensaMap<M>> {
         return new LinkedHashSet<>(values.values());
     }
 
-    private String defaultKeyFor(Object value) {
-        return keyFrom(value.getClass().getSimpleName());
-    }
-
-    private String keyFrom(String value) {
-        int index = 1;
-        String key = value;
-
-        while (values.containsKey(key)) {
-            key = value + " " + index++;
-        }
-
-        return key;
-    }
-
     private M self() {
         return (M) this;
     }
 
+    private String baseKeyFrom(Matcher matcher) {
+        return matcher.group("prefix") + matcher.group("suffix");
+    }
+
+    private String indexedKeyFrom(Matcher matcher, int index) {
+        return matcher.group("prefix") + (matcher.group("prekey") + index +
+                (Strings.isNotBlank(matcher.group("suffix")) ? matcher.group("postkey") : ""))
+                + matcher.group("suffix");
+    }
+
     public static class Entry {
+
         private final String key;
         private final Object value;
         private final Attributes attributes;

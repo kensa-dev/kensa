@@ -6,13 +6,65 @@ import dev.kensa.util.NamedValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static dev.kensa.util.Attributes.emptyAttributes;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class KensaMapTest {
+
+    @ParameterizedTest
+    @MethodSource("mapInstances")
+    <M extends KensaMap<M>> void throwsWhenPutWithUniqueKeyDoesNotContainPlaceholder(M map) {
+        assertThatThrownBy(() -> map.putWithUniqueKey("foo", "foo", emptyAttributes())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapInstances")
+    <M extends KensaMap<M>> void putWithUniqueKeyIsThreadSafe(M map) throws InterruptedException {
+        var threadCount = 15;
+        var executorService = Executors.newFixedThreadPool(threadCount);
+
+        IntStream.range(0, threadCount)
+                 .forEach(value -> executorService.submit(() -> map.putWithUniqueKey("Foo__ idx __", new Object(), emptyAttributes())));
+
+        executorService.shutdown();
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+
+        assertThat(map.entrySet().size()).isEqualTo(threadCount);
+        IntStream.range(0, threadCount)
+                 .forEach(value -> {
+                     var expectedKey = "Foo" + (value == 0 ? "" : " " + value);
+
+                     assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue();
+                 });
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapInstances")
+    <M extends KensaMap<M>> void putWithValueOnlyIsThreadSafe(M map) throws InterruptedException {
+        var threadCount = 15;
+        var executorService = Executors.newFixedThreadPool(threadCount);
+
+        IntStream.range(0, threadCount)
+                 .forEach(value -> executorService.submit(() -> map.put("foo" + value)));
+
+        executorService.shutdown();
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+
+        assertThat(map.entrySet().size()).isEqualTo(threadCount);
+        IntStream.range(0, threadCount)
+                 .forEach(value -> {
+                     var expectedKey = "String" + (value == 0 ? "" : value);
+
+                     assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue();
+                 });
+    }
 
     @ParameterizedTest
     @MethodSource("mapInstances")
@@ -53,7 +105,7 @@ class KensaMapTest {
         values.forEach(map::put);
 
         for (var index = 0; index < values.size(); index++) {
-            var key = index == 0 ? "Object" : "Object " + index;
+            var key = index == 0 ? "Object" : "Object" + index;
             assertThat(map.get(key, Object.class)).isEqualTo(values.get(index));
         }
     }
@@ -68,7 +120,7 @@ class KensaMapTest {
         map.putAll(values);
 
         for (var index = 0; index < values.size(); index++) {
-            var key = index == 0 ? "Object" : "Object " + index;
+            var key = index == 0 ? "Object" : "Object" + index;
             assertThat(map.get(key, Object.class)).isEqualTo(values.get(index));
         }
     }
