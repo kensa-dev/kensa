@@ -29,6 +29,26 @@ class TokenScannerTest {
     }
 
     @Test
+    void splitsInternalNumbersToSeparateTokens() {
+        List<String> expected = List.of("last", "24", "Hours");
+        var string = String.join("", expected);
+
+        Indices indices = tokenScannerWith(emptySet()).scan(string);
+
+        assertThat(transformed(indices, string)).isEqualTo(expected);
+    }
+
+    @Test
+    void splitsTrailingNumbersToSeparateTokens() {
+        List<String> expected = List.of("last", "24");
+        var string = String.join("", expected);
+
+        Indices indices = tokenScannerWith(emptySet()).scan(string);
+
+        assertThat(transformed(indices, string)).isEqualTo(expected);
+    }
+
+    @Test
     void scansSimpleStringWithNoAcronyms() {
         List<String> expected = List.of("given", "This", "And", "That");
         var string = String.join("", expected);
