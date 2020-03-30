@@ -62,6 +62,10 @@ public final class RefinedSugar {
         return t;
     }
 
+    public static <T> T at(T t) {
+        return t;
+    }
+
     private RefinedSugar() {
     }
 }
