@@ -52,16 +52,35 @@ class Test extends Component {
         return "message-body";
     }
 
-    renderInformation(issue, notes) {
+    renderInformation(issue, parameters, notes) {
         let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
+        let parameterContent = parameters.length > 0 ? parameters.map(par => {
+            console.log(par);
+            let key = Object.keys(par)[0];
+            let value = Object.values(par)[0];
+            return (
+                <tr>
+                    <td>{key}</td>
+                    <td>{value}</td>
+                </tr>
+            );
+        }) : null;
+        console.log(parameterContent)
+        let renderedParameters = (
+            <table className="table">
+                <th>Parameters</th>
+                {parameterContent}
+            </table>
+        );
         let notesContent = notes ? <div>{notes}</div> : null;
 
         if (issue.length > 0 || notes) {
             return (
-                    <div className="message-body">
-                        {issueContent}
-                        {notesContent}
-                    </div>
+                <div className="message-body">
+                    {issueContent}
+                    {notesContent}
+                    {renderedParameters}
+                </div>
             )
         }
 
@@ -72,7 +91,8 @@ class Test extends Component {
         return <div className="tags">
             {
                 issues.map(issue => {
-                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
+                    return <a href={this.issueTrackerUrlFor(issue)}
+                              className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
                 })
             }
         </div>;
@@ -93,29 +113,35 @@ class Test extends Component {
         const state = test.state;
         if (state === 'Disabled') {
             return (
-                    <ScrollableAnchor id={test.testMethod}>
-                        <div className={"message " + App.stateClassFor(state)}>
-                            <div className="message-header">{test.displayName}</div>
-                            <div className="message-body">
-                                Test was not executed.
-                            </div>
+                <ScrollableAnchor id={test.testMethod}>
+                    <div className={"message " + App.stateClassFor(state)}>
+                        <div className="message-header">{test.displayName}</div>
+                        <div className="message-body">
+                            Test was not executed.
                         </div>
-                    </ScrollableAnchor>
+                    </div>
+                </ScrollableAnchor>
             );
         } else {
+            let params = test.invocations.flatMap(inv => {
+                return inv.parameters
+            });
             return (
-                    <ScrollableAnchor id={test.testMethod}>
-                        <div className={"message " + App.stateClassFor(state)}>
-                            <div onClick={this.toggle} className="message-header">
-                                {test.displayName}
-                                <a><FontAwesomeIcon icon={this.icon()}/></a>
-                            </div>
-                            <div className={this.contentClass()}>
-                                {this.renderInformation(test.issue, test.notes)}
-                                {test.invocations.map((invocation, index) => <Invocation key={index} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
-                            </div>
+                <ScrollableAnchor id={test.testMethod}>
+                    <div className={"message " + App.stateClassFor(state)}>
+                        <div onClick={this.toggle} className="message-header">
+                            {test.displayName}
+                            <a><FontAwesomeIcon icon={this.icon()}/></a>
                         </div>
-                    </ScrollableAnchor>
+                        <div className={this.contentClass()}>
+                            {this.renderInformation(test.issue, params, test.notes)}
+                            {test.invocations.map((invocation, index) => <Invocation key={index}
+                                                                                     testMethod={test.testMethod}
+                                                                                     invocation={invocation}
+                                                                                     invocationNumber={index}/>)}
+                        </div>
+                    </div>
+                </ScrollableAnchor>
             );
         }
     }
@@ -124,9 +150,9 @@ class Test extends Component {
 export default class TestWrapper extends Component {
     render() {
         return (
-                this.props.tests.map((test, index) =>
-                        <Test issueTrackerUrl={this.props.issueTrackerUrl} key={index} test={test}/>
-                )
+            this.props.tests.map((test, index) =>
+                <Test issueTrackerUrl={this.props.issueTrackerUrl} key={index} test={test}/>
+            )
         );
     }
 }

@@ -11,6 +11,1758 @@
     <title>Kensa Test Results</title>
 </head>
 <body>
+<script id="config" type="application/json">{
+    "mode": "TestFile",
+    "issueTrackerUrl": "https://cbsjira.bskyb.com/browse/"
+}</script>
+<script id="test-result-1" type="application/json">{
+    "testClass": "sonique.bran.provide.cancel.ProvideCancelRejectedTest",
+    "displayName": "Provide Cancel Rejected Test",
+    "state": "Passed",
+    "notes": null,
+    "issue": [],
+    "tests": [
+        {
+            "testMethod": "receiveCancelRejected",
+            "displayName": "Receive Cancel Rejected",
+            "notes": null,
+            "issue": [
+                "SON-1861"
+            ],
+            "state": "Passed",
+            "invocations": [
+                {
+                    "elapsedTime": "1 Sec 75 Ms",
+                    "highlights": [
+                        "a50be0e9-0437-4157-9a19-7649cc00a2c6",
+                        "4600",
+                        "trackingId-ff2faef5-0274-4a90-9625-7b364f48965c",
+                        "HZGHNXUBKOUB",
+                        "ODPQWFYD"
+                    ],
+                    "acronyms": {
+                        "buuk": "Brookfield Utility United Kingdom",
+                        "FTTP": "Fibre To The Premises",
+                        "KCI": "Keep Customer Informed",
+                        "ONT": "Optical Network Termination",
+                        "DLM": "Dynamic Line Management"
+                    },
+                    "sentences": [
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Given",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Acronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Provide",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a consumer order reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "a50be0e9-0437-4157-9a19-7649cc00a2c6",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has progressed to",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Acknowledged",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a cancel at",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "New",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "When",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "buuk",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "sends an order update for cancel rejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an event that has a code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Then",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "netstream",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "receives a notification",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "that",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has a notification type of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "CancelRejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a netstream conversation reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "ODPQWFYD",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a product of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a completion code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message text of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the persisted conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Acknowledged",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the existing cancel conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Rejected",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the inbound response for the",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Conversation",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "is persisted",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the outbound notification is persisted",
+                                "tokens": []
+                            }
+                        ]
+                    ],
+                    "parameters": [
+                        {
+                            "provideConversationState": "Acknowledged"
+                        },
+                        {
+                            "cancelConversationState": "New"
+                        }
+                    ],
+                    "givens": [
+                        {
+                            "Consumer Order Reference": "a50be0e9-0437-4157-9a19-7649cc00a2c6"
+                        },
+                        {
+                            "Cancel Rejected Code": "4600"
+                        },
+                        {
+                            "Tracking Id": "trackingId-ff2faef5-0274-4a90-9625-7b364f48965c"
+                        },
+                        {
+                            "Provider Order Reference": "HZGHNXUBKOUB"
+                        },
+                        {
+                            "Netstream Conversation Reference": "ODPQWFYD"
+                        }
+                    ],
+                    "capturedInteractions": [
+                        {
+                            "id": "1565576609",
+                            "name": "(Test) Order Update [Cancel Rejected] from Buuk to Bran",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<ful:OrderUpdate xmlns:ful=\"urn:com.sky.provider/Fulfilment-v1\" xmlns:sky=\"urn:com.sky.provider/Common-v1\">\n    <sky:Transaction>\n        <sky:Consumer>\n            <sky:ID>Sky</sky:ID>\n            <sky:OrderId>a50be0e9-0437-4157-9a19-7649cc00a2c6</sky:OrderId>\n        </sky:Consumer>\n        <sky:Provider>\n            <sky:ID>BUUK</sky:ID>\n            <sky:OrderId>HZGHNXUBKOUB</sky:OrderId>\n        </sky:Provider>\n    </sky:Transaction>\n    <!--Optional element [Service] not present-->\n    <ful:Dates>\n        <ful:RequestedDeliveryDate>2021-01-03</ful:RequestedDeliveryDate>\n        <!--Optional element [CommittedDeliveryDate] not present-->\n        <!--Optional element [CompletedDateTime] not present-->\n        <!--Optional element [BillingStartDateTime] not present-->\n        <!--Optional element [CompletedDate] not present-->\n    </ful:Dates>\n    <sky:Event>\n        <sky:Code>4600</sky:Code>\n        <sky:Message>Nullam ultricies hendrerit wisi condimentum pharetra</sky:Message>\n    </sky:Event>\n</ful:OrderUpdate>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": []
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "-205319566",
+                            "name": "(Test) Cancel Rejected from Bran to Netstream",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<Notification xmlns=\"urn:com.sky/kiki-notification/4.0\" conversationReference=\"ODPQWFYD\" notificationType=\"CancelRejected\" product=\"FTTP\" version=\"4.0\">\n    <!--Optional element [Dates] not present-->\n    <!--Optional element [LayerTwoSwitchId] not present-->\n    <!--Optional element [ConfirmationRequired] not present-->\n    <!--Optional element [References] not present-->\n    <!--Optional element [Installation] not present-->\n    <!--Optional element [AutoCompLateProvision] not present-->\n    <!--Optional element [AutoCompMissedAppointment] not present-->\n    <!--Optional element [Provisioning] not present-->\n    <!--Optional element [Assessment] not present-->\n    <!--Optional element [AppointmentMissedBy] not present-->\n    <!--Optional element [RetailerPartyId] not present-->\n    <!--Optional element [SellersId] not present-->\n    <ConversationUrl>http://localhost:8797/api/conversation/a50be0e9-0437-4157-9a19-7649cc00a2c6</ConversationUrl>\n    <MessageUrl>http://localhost:8797/api/message/43134a06-6447-440b-8608-6360dd8a7eb4</MessageUrl>\n    <ProviderInformation>\n        <Detail>\n            <CompletionCode>4600</CompletionCode>\n            <MessageText>Nullam ultricies hendrerit wisi condimentum pharetra</MessageText>\n            <!--Optional element [Severity] not present-->\n        </Detail>\n    </ProviderInformation>\n</Notification>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": [
+                                        {
+                                            "X-Source": "Bran"
+                                        },
+                                        {
+                                            "Host": "localhost:9876"
+                                        },
+                                        {
+                                            "Content-Length": "1418"
+                                        },
+                                        {
+                                            "Upgrade": "h2c"
+                                        },
+                                        {
+                                            "Connection": "Upgrade, HTTP2-Settings"
+                                        },
+                                        {
+                                            "TraceyId": "trackingId-ff2faef5-0274-4a90-9625-7b364f48965c"
+                                        },
+                                        {
+                                            "User-Agent": "Java-http-client/11.0.5"
+                                        },
+                                        {
+                                            "HTTP2-Settings": "AAEAAEAAAAIAAAABAAMAAABkAAQBAAAAAAUAAEAA"
+                                        },
+                                        {
+                                            "Content-Type": "application/xml"
+                                        },
+                                        {
+                                            "NetstreamConversationReference": "ODPQWFYD"
+                                        },
+                                        {
+                                            "PayloadVersion": "4.0"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        }
+                    ],
+                    "sequenceDiagram": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" contentScriptType=\"application/ecmascript\" contentStyleType=\"text/css\" height=\"185px\" preserveAspectRatio=\"none\" style=\"width:467px;height:185px;\" version=\"1.1\" viewBox=\"0 0 467 185\" width=\"467px\" zoomAndPan=\"magnify\"><defs><filter height=\"300%\" id=\"fxk8ymy\" width=\"300%\" x=\"-1\" y=\"-1\"><feGaussianBlur result=\"blurOut\" stdDeviation=\"2.0\"/><feColorMatrix in=\"blurOut\" result=\"blurOut2\" type=\"matrix\" values=\"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0\"/><feOffset dx=\"4.0\" dy=\"4.0\" in=\"blurOut2\" result=\"blurOut3\"/><feBlend in=\"SourceGraphic\" in2=\"blurOut3\" mode=\"normal\"/></filter></defs><g><rect fill=\"#FFFFFF\" filter=\"url(#fxk8ymy)\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"50\" x2=\"50\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"277\" x2=\"277\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"403\" x2=\"403\" y1=\"38.2969\" y2=\"147.6953\"/><rect fill=\"#FEFECE\" filter=\"url(#fxk8ymy)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"22.9951\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#fxk8ymy)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"166.6904\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#fxk8ymy)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"22.9951\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#fxk8ymy)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"166.6904\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#fxk8ymy)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"22.9951\">Netstream</text><rect fill=\"#FEFECE\" filter=\"url(#fxk8ymy)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"166.6904\">Netstream</text><rect fill=\"none\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><polygon fill=\"#EEEEEE\" points=\"13,55.2969,89,55.2969,89,62.2969,79,72.2969,13,72.2969,13,55.2969\" style=\"stroke: #000000; stroke-width: 2.0;\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"31\" x=\"28\" y=\"68.3638\">Test</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"89.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"97.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"50\" x2=\"276\" y1=\"93.4297\" y2=\"93.4297\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"1565576609\" textLength=\"203\" x=\"57\" y=\"88.4966\">Order Update [Cancel Rejected]</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"118.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"126.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"277\" x2=\"402\" y1=\"122.5625\" y2=\"122.5625\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"-205319566\" textLength=\"102\" x=\"284\" y=\"117.6294\">Cancel Rejected</text></g></svg>",
+                    "state": "Passed",
+                    "executionException": {}
+                },
+                {
+                    "elapsedTime": "338 Ms",
+                    "highlights": [
+                        "CVWDIIOTIR",
+                        "CMDCBKOGVJY",
+                        "trackingId-fdb92dd0-52ac-4b5d-afcf-63923dea289a",
+                        "4600",
+                        "0fef155f-2463-4731-b388-a6baaba9f823"
+                    ],
+                    "acronyms": {
+                        "buuk": "Brookfield Utility United Kingdom",
+                        "FTTP": "Fibre To The Premises",
+                        "KCI": "Keep Customer Informed",
+                        "ONT": "Optical Network Termination",
+                        "DLM": "Dynamic Line Management"
+                    },
+                    "sentences": [
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Given",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Acronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Provide",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a consumer order reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "0fef155f-2463-4731-b388-a6baaba9f823",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has progressed to",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Acknowledged",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a cancel at",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Acknowledged",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "When",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "buuk",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "sends an order update for cancel rejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an event that has a code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Then",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "netstream",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "receives a notification",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "that",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has a notification type of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "CancelRejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a netstream conversation reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "CVWDIIOTIR",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a product of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a completion code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message text of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the persisted conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Acknowledged",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the existing cancel conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Rejected",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the inbound response for the",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Conversation",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "is persisted",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the outbound notification is persisted",
+                                "tokens": []
+                            }
+                        ]
+                    ],
+                    "parameters": [
+                        {
+                            "provideConversationState": "Acknowledged"
+                        },
+                        {
+                            "cancelConversationState": "Acknowledged"
+                        }
+                    ],
+                    "givens": [
+                        {
+                            "Netstream Conversation Reference": "CVWDIIOTIR"
+                        },
+                        {
+                            "Provider Order Reference": "CMDCBKOGVJY"
+                        },
+                        {
+                            "Tracking Id": "trackingId-fdb92dd0-52ac-4b5d-afcf-63923dea289a"
+                        },
+                        {
+                            "Cancel Rejected Code": "4600"
+                        },
+                        {
+                            "Consumer Order Reference": "0fef155f-2463-4731-b388-a6baaba9f823"
+                        }
+                    ],
+                    "capturedInteractions": [
+                        {
+                            "id": "1565576609",
+                            "name": "(Test) Order Update [Cancel Rejected] from Buuk to Bran",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<ful:OrderUpdate xmlns:ful=\"urn:com.sky.provider/Fulfilment-v1\" xmlns:sky=\"urn:com.sky.provider/Common-v1\">\n    <sky:Transaction>\n        <sky:Consumer>\n            <sky:ID>Sky</sky:ID>\n            <sky:OrderId>0fef155f-2463-4731-b388-a6baaba9f823</sky:OrderId>\n        </sky:Consumer>\n        <sky:Provider>\n            <sky:ID>BUUK</sky:ID>\n            <sky:OrderId>CMDCBKOGVJY</sky:OrderId>\n        </sky:Provider>\n    </sky:Transaction>\n    <!--Optional element [Service] not present-->\n    <ful:Dates>\n        <ful:RequestedDeliveryDate>2020-09-16</ful:RequestedDeliveryDate>\n        <!--Optional element [CommittedDeliveryDate] not present-->\n        <!--Optional element [CompletedDateTime] not present-->\n        <!--Optional element [BillingStartDateTime] not present-->\n        <!--Optional element [CompletedDate] not present-->\n    </ful:Dates>\n    <sky:Event>\n        <sky:Code>4600</sky:Code>\n        <sky:Message>Nullam ultricies hendrerit wisi condimentum pharetra</sky:Message>\n    </sky:Event>\n</ful:OrderUpdate>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": []
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "-205319566",
+                            "name": "(Test) Cancel Rejected from Bran to Netstream",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<Notification xmlns=\"urn:com.sky/kiki-notification/4.0\" conversationReference=\"CVWDIIOTIR\" notificationType=\"CancelRejected\" product=\"FTTP\" version=\"4.0\">\n    <!--Optional element [Dates] not present-->\n    <!--Optional element [LayerTwoSwitchId] not present-->\n    <!--Optional element [ConfirmationRequired] not present-->\n    <!--Optional element [References] not present-->\n    <!--Optional element [Installation] not present-->\n    <!--Optional element [AutoCompLateProvision] not present-->\n    <!--Optional element [AutoCompMissedAppointment] not present-->\n    <!--Optional element [Provisioning] not present-->\n    <!--Optional element [Assessment] not present-->\n    <!--Optional element [AppointmentMissedBy] not present-->\n    <!--Optional element [RetailerPartyId] not present-->\n    <!--Optional element [SellersId] not present-->\n    <ConversationUrl>http://localhost:8797/api/conversation/0fef155f-2463-4731-b388-a6baaba9f823</ConversationUrl>\n    <MessageUrl>http://localhost:8797/api/message/d0bb4cad-6b34-4721-8cc3-95c2f08e0a9f</MessageUrl>\n    <ProviderInformation>\n        <Detail>\n            <CompletionCode>4600</CompletionCode>\n            <MessageText>Nullam ultricies hendrerit wisi condimentum pharetra</MessageText>\n            <!--Optional element [Severity] not present-->\n        </Detail>\n    </ProviderInformation>\n</Notification>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": [
+                                        {
+                                            "X-Source": "Bran"
+                                        },
+                                        {
+                                            "PayloadVersion": "4.0"
+                                        },
+                                        {
+                                            "Host": "localhost:9876"
+                                        },
+                                        {
+                                            "HTTP2-Settings": "AAEAAEAAAAIAAAABAAMAAABkAAQBAAAAAAUAAEAA"
+                                        },
+                                        {
+                                            "Content-Length": "1420"
+                                        },
+                                        {
+                                            "NetstreamConversationReference": "CVWDIIOTIR"
+                                        },
+                                        {
+                                            "User-Agent": "Java-http-client/11.0.5"
+                                        },
+                                        {
+                                            "Upgrade": "h2c"
+                                        },
+                                        {
+                                            "TraceyId": "trackingId-fdb92dd0-52ac-4b5d-afcf-63923dea289a"
+                                        },
+                                        {
+                                            "Content-Type": "application/xml"
+                                        },
+                                        {
+                                            "Connection": "Upgrade, HTTP2-Settings"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        }
+                    ],
+                    "sequenceDiagram": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" contentScriptType=\"application/ecmascript\" contentStyleType=\"text/css\" height=\"185px\" preserveAspectRatio=\"none\" style=\"width:467px;height:185px;\" version=\"1.1\" viewBox=\"0 0 467 185\" width=\"467px\" zoomAndPan=\"magnify\"><defs><filter height=\"300%\" id=\"fqf1lx5\" width=\"300%\" x=\"-1\" y=\"-1\"><feGaussianBlur result=\"blurOut\" stdDeviation=\"2.0\"/><feColorMatrix in=\"blurOut\" result=\"blurOut2\" type=\"matrix\" values=\"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0\"/><feOffset dx=\"4.0\" dy=\"4.0\" in=\"blurOut2\" result=\"blurOut3\"/><feBlend in=\"SourceGraphic\" in2=\"blurOut3\" mode=\"normal\"/></filter></defs><g><rect fill=\"#FFFFFF\" filter=\"url(#fqf1lx5)\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"50\" x2=\"50\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"277\" x2=\"277\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"403\" x2=\"403\" y1=\"38.2969\" y2=\"147.6953\"/><rect fill=\"#FEFECE\" filter=\"url(#fqf1lx5)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"22.9951\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#fqf1lx5)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"166.6904\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#fqf1lx5)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"22.9951\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#fqf1lx5)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"166.6904\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#fqf1lx5)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"22.9951\">Netstream</text><rect fill=\"#FEFECE\" filter=\"url(#fqf1lx5)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"166.6904\">Netstream</text><rect fill=\"none\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><polygon fill=\"#EEEEEE\" points=\"13,55.2969,89,55.2969,89,62.2969,79,72.2969,13,72.2969,13,55.2969\" style=\"stroke: #000000; stroke-width: 2.0;\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"31\" x=\"28\" y=\"68.3638\">Test</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"89.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"97.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"50\" x2=\"276\" y1=\"93.4297\" y2=\"93.4297\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"1565576609\" textLength=\"203\" x=\"57\" y=\"88.4966\">Order Update [Cancel Rejected]</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"118.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"126.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"277\" x2=\"402\" y1=\"122.5625\" y2=\"122.5625\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"-205319566\" textLength=\"102\" x=\"284\" y=\"117.6294\">Cancel Rejected</text></g></svg>",
+                    "state": "Passed",
+                    "executionException": {}
+                },
+                {
+                    "elapsedTime": "138 Ms",
+                    "highlights": [
+                        "4600",
+                        "UORNUERTK",
+                        "trackingId-d29516bd-8c19-4302-bd23-d60260c6b49b",
+                        "DQRYIYTC",
+                        "a95c114c-4a77-4e82-bff3-c1643c3a3055"
+                    ],
+                    "acronyms": {
+                        "buuk": "Brookfield Utility United Kingdom",
+                        "FTTP": "Fibre To The Premises",
+                        "KCI": "Keep Customer Informed",
+                        "ONT": "Optical Network Termination",
+                        "DLM": "Dynamic Line Management"
+                    },
+                    "sentences": [
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Given",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Acronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Provide",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a consumer order reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "a95c114c-4a77-4e82-bff3-c1643c3a3055",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has progressed to",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Committed",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a cancel at",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "New",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "When",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "buuk",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "sends an order update for cancel rejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an event that has a code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Then",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "netstream",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "receives a notification",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "that",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has a notification type of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "CancelRejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a netstream conversation reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "DQRYIYTC",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a product of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a completion code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message text of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the persisted conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Committed",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the existing cancel conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Rejected",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the inbound response for the",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Conversation",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "is persisted",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the outbound notification is persisted",
+                                "tokens": []
+                            }
+                        ]
+                    ],
+                    "parameters": [
+                        {
+                            "provideConversationState": "Committed"
+                        },
+                        {
+                            "cancelConversationState": "New"
+                        }
+                    ],
+                    "givens": [
+                        {
+                            "Cancel Rejected Code": "4600"
+                        },
+                        {
+                            "Provider Order Reference": "UORNUERTK"
+                        },
+                        {
+                            "Tracking Id": "trackingId-d29516bd-8c19-4302-bd23-d60260c6b49b"
+                        },
+                        {
+                            "Netstream Conversation Reference": "DQRYIYTC"
+                        },
+                        {
+                            "Consumer Order Reference": "a95c114c-4a77-4e82-bff3-c1643c3a3055"
+                        }
+                    ],
+                    "capturedInteractions": [
+                        {
+                            "id": "1565576609",
+                            "name": "(Test) Order Update [Cancel Rejected] from Buuk to Bran",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<ful:OrderUpdate xmlns:ful=\"urn:com.sky.provider/Fulfilment-v1\" xmlns:sky=\"urn:com.sky.provider/Common-v1\">\n    <sky:Transaction>\n        <sky:Consumer>\n            <sky:ID>Sky</sky:ID>\n            <sky:OrderId>a95c114c-4a77-4e82-bff3-c1643c3a3055</sky:OrderId>\n        </sky:Consumer>\n        <sky:Provider>\n            <sky:ID>BUUK</sky:ID>\n            <sky:OrderId>UORNUERTK</sky:OrderId>\n        </sky:Provider>\n    </sky:Transaction>\n    <!--Optional element [Service] not present-->\n    <ful:Dates>\n        <ful:RequestedDeliveryDate>2020-12-17</ful:RequestedDeliveryDate>\n        <!--Optional element [CommittedDeliveryDate] not present-->\n        <!--Optional element [CompletedDateTime] not present-->\n        <!--Optional element [BillingStartDateTime] not present-->\n        <!--Optional element [CompletedDate] not present-->\n    </ful:Dates>\n    <sky:Event>\n        <sky:Code>4600</sky:Code>\n        <sky:Message>Nullam ultricies hendrerit wisi condimentum pharetra</sky:Message>\n    </sky:Event>\n</ful:OrderUpdate>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": []
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "-205319566",
+                            "name": "(Test) Cancel Rejected from Bran to Netstream",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<Notification xmlns=\"urn:com.sky/kiki-notification/4.0\" conversationReference=\"DQRYIYTC\" notificationType=\"CancelRejected\" product=\"FTTP\" version=\"4.0\">\n    <!--Optional element [Dates] not present-->\n    <!--Optional element [LayerTwoSwitchId] not present-->\n    <!--Optional element [ConfirmationRequired] not present-->\n    <!--Optional element [References] not present-->\n    <!--Optional element [Installation] not present-->\n    <!--Optional element [AutoCompLateProvision] not present-->\n    <!--Optional element [AutoCompMissedAppointment] not present-->\n    <!--Optional element [Provisioning] not present-->\n    <!--Optional element [Assessment] not present-->\n    <!--Optional element [AppointmentMissedBy] not present-->\n    <!--Optional element [RetailerPartyId] not present-->\n    <!--Optional element [SellersId] not present-->\n    <ConversationUrl>http://localhost:8797/api/conversation/a95c114c-4a77-4e82-bff3-c1643c3a3055</ConversationUrl>\n    <MessageUrl>http://localhost:8797/api/message/9f49dbfe-d584-4500-8120-77574beadd75</MessageUrl>\n    <ProviderInformation>\n        <Detail>\n            <CompletionCode>4600</CompletionCode>\n            <MessageText>Nullam ultricies hendrerit wisi condimentum pharetra</MessageText>\n            <!--Optional element [Severity] not present-->\n        </Detail>\n    </ProviderInformation>\n</Notification>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": [
+                                        {
+                                            "X-Source": "Bran"
+                                        },
+                                        {
+                                            "NetstreamConversationReference": "DQRYIYTC"
+                                        },
+                                        {
+                                            "Content-Length": "1418"
+                                        },
+                                        {
+                                            "Host": "localhost:9876"
+                                        },
+                                        {
+                                            "Upgrade": "h2c"
+                                        },
+                                        {
+                                            "User-Agent": "Java-http-client/11.0.5"
+                                        },
+                                        {
+                                            "HTTP2-Settings": "AAEAAEAAAAIAAAABAAMAAABkAAQBAAAAAAUAAEAA"
+                                        },
+                                        {
+                                            "Content-Type": "application/xml"
+                                        },
+                                        {
+                                            "Connection": "Upgrade, HTTP2-Settings"
+                                        },
+                                        {
+                                            "TraceyId": "trackingId-d29516bd-8c19-4302-bd23-d60260c6b49b"
+                                        },
+                                        {
+                                            "PayloadVersion": "4.0"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        }
+                    ],
+                    "sequenceDiagram": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" contentScriptType=\"application/ecmascript\" contentStyleType=\"text/css\" height=\"185px\" preserveAspectRatio=\"none\" style=\"width:467px;height:185px;\" version=\"1.1\" viewBox=\"0 0 467 185\" width=\"467px\" zoomAndPan=\"magnify\"><defs><filter height=\"300%\" id=\"fgnz84b\" width=\"300%\" x=\"-1\" y=\"-1\"><feGaussianBlur result=\"blurOut\" stdDeviation=\"2.0\"/><feColorMatrix in=\"blurOut\" result=\"blurOut2\" type=\"matrix\" values=\"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0\"/><feOffset dx=\"4.0\" dy=\"4.0\" in=\"blurOut2\" result=\"blurOut3\"/><feBlend in=\"SourceGraphic\" in2=\"blurOut3\" mode=\"normal\"/></filter></defs><g><rect fill=\"#FFFFFF\" filter=\"url(#fgnz84b)\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"50\" x2=\"50\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"277\" x2=\"277\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"403\" x2=\"403\" y1=\"38.2969\" y2=\"147.6953\"/><rect fill=\"#FEFECE\" filter=\"url(#fgnz84b)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"22.9951\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#fgnz84b)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"166.6904\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#fgnz84b)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"22.9951\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#fgnz84b)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"166.6904\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#fgnz84b)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"22.9951\">Netstream</text><rect fill=\"#FEFECE\" filter=\"url(#fgnz84b)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"166.6904\">Netstream</text><rect fill=\"none\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><polygon fill=\"#EEEEEE\" points=\"13,55.2969,89,55.2969,89,62.2969,79,72.2969,13,72.2969,13,55.2969\" style=\"stroke: #000000; stroke-width: 2.0;\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"31\" x=\"28\" y=\"68.3638\">Test</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"89.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"97.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"50\" x2=\"276\" y1=\"93.4297\" y2=\"93.4297\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"1565576609\" textLength=\"203\" x=\"57\" y=\"88.4966\">Order Update [Cancel Rejected]</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"118.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"126.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"277\" x2=\"402\" y1=\"122.5625\" y2=\"122.5625\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"-205319566\" textLength=\"102\" x=\"284\" y=\"117.6294\">Cancel Rejected</text></g></svg>",
+                    "state": "Passed",
+                    "executionException": {}
+                },
+                {
+                    "elapsedTime": "91 Ms",
+                    "highlights": [
+                        "IRUKSZKIZFF",
+                        "4600",
+                        "trackingId-78a6352d-2450-47ba-8936-9dacd4fbd921",
+                        "EFBAHAOYUPT",
+                        "00ba03ab-fc19-4616-997f-703f98257d1e"
+                    ],
+                    "acronyms": {
+                        "buuk": "Brookfield Utility United Kingdom",
+                        "FTTP": "Fibre To The Premises",
+                        "KCI": "Keep Customer Informed",
+                        "ONT": "Optical Network Termination",
+                        "DLM": "Dynamic Line Management"
+                    },
+                    "sentences": [
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Given",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Acronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Provide",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a consumer order reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "00ba03ab-fc19-4616-997f-703f98257d1e",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has progressed to",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Committed",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a cancel at",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Acknowledged",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "When",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "buuk",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "sends an order update for cancel rejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "with",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "an event that has a code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "Then",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "netstream",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "receives a notification",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "that",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "has a notification type of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "CancelRejected",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a netstream conversation reference of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "EFBAHAOYUPT",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a product of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "IdentifierAcronym",
+                                "value": "FTTP",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a completion code of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "HighlightedIdentifier",
+                                "value": "4600",
+                                "tokens": []
+                            },
+                            {
+                                "type": "NewLine",
+                                "value": "",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Keyword",
+                                "value": "and",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "a message text of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Nullam ultricies hendrerit wisi condimentum pharetra",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the persisted conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Committed",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the existing cancel conversation has a state of",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Rejected",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the inbound response for the",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Identifier",
+                                "value": "Conversation",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "is persisted",
+                                "tokens": []
+                            }
+                        ],
+                        [
+                            {
+                                "type": "Keyword",
+                                "value": "And",
+                                "tokens": []
+                            },
+                            {
+                                "type": "Word",
+                                "value": "the outbound notification is persisted",
+                                "tokens": []
+                            }
+                        ]
+                    ],
+                    "parameters": [
+                        {
+                            "provideConversationState": "Committed"
+                        },
+                        {
+                            "cancelConversationState": "Acknowledged"
+                        }
+                    ],
+                    "givens": [
+                        {
+                            "Provider Order Reference": "IRUKSZKIZFF"
+                        },
+                        {
+                            "Cancel Rejected Code": "4600"
+                        },
+                        {
+                            "Tracking Id": "trackingId-78a6352d-2450-47ba-8936-9dacd4fbd921"
+                        },
+                        {
+                            "Netstream Conversation Reference": "EFBAHAOYUPT"
+                        },
+                        {
+                            "Consumer Order Reference": "00ba03ab-fc19-4616-997f-703f98257d1e"
+                        }
+                    ],
+                    "capturedInteractions": [
+                        {
+                            "id": "1565576609",
+                            "name": "(Test) Order Update [Cancel Rejected] from Buuk to Bran",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<ful:OrderUpdate xmlns:ful=\"urn:com.sky.provider/Fulfilment-v1\" xmlns:sky=\"urn:com.sky.provider/Common-v1\">\n    <sky:Transaction>\n        <sky:Consumer>\n            <sky:ID>Sky</sky:ID>\n            <sky:OrderId>00ba03ab-fc19-4616-997f-703f98257d1e</sky:OrderId>\n        </sky:Consumer>\n        <sky:Provider>\n            <sky:ID>BUUK</sky:ID>\n            <sky:OrderId>IRUKSZKIZFF</sky:OrderId>\n        </sky:Provider>\n    </sky:Transaction>\n    <!--Optional element [Service] not present-->\n    <ful:Dates>\n        <ful:RequestedDeliveryDate>2020-11-08</ful:RequestedDeliveryDate>\n        <!--Optional element [CommittedDeliveryDate] not present-->\n        <!--Optional element [CompletedDateTime] not present-->\n        <!--Optional element [BillingStartDateTime] not present-->\n        <!--Optional element [CompletedDate] not present-->\n    </ful:Dates>\n    <sky:Event>\n        <sky:Code>4600</sky:Code>\n        <sky:Message>Nullam ultricies hendrerit wisi condimentum pharetra</sky:Message>\n    </sky:Event>\n</ful:OrderUpdate>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": []
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "-205319566",
+                            "name": "(Test) Cancel Rejected from Bran to Netstream",
+                            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<Notification xmlns=\"urn:com.sky/kiki-notification/4.0\" conversationReference=\"EFBAHAOYUPT\" notificationType=\"CancelRejected\" product=\"FTTP\" version=\"4.0\">\n    <!--Optional element [Dates] not present-->\n    <!--Optional element [LayerTwoSwitchId] not present-->\n    <!--Optional element [ConfirmationRequired] not present-->\n    <!--Optional element [References] not present-->\n    <!--Optional element [Installation] not present-->\n    <!--Optional element [AutoCompLateProvision] not present-->\n    <!--Optional element [AutoCompMissedAppointment] not present-->\n    <!--Optional element [Provisioning] not present-->\n    <!--Optional element [Assessment] not present-->\n    <!--Optional element [AppointmentMissedBy] not present-->\n    <!--Optional element [RetailerPartyId] not present-->\n    <!--Optional element [SellersId] not present-->\n    <ConversationUrl>http://localhost:8797/api/conversation/00ba03ab-fc19-4616-997f-703f98257d1e</ConversationUrl>\n    <MessageUrl>http://localhost:8797/api/message/cb11fed2-47b2-4219-a0c8-cbb79201bc36</MessageUrl>\n    <ProviderInformation>\n        <Detail>\n            <CompletionCode>4600</CompletionCode>\n            <MessageText>Nullam ultricies hendrerit wisi condimentum pharetra</MessageText>\n            <!--Optional element [Severity] not present-->\n        </Detail>\n    </ProviderInformation>\n</Notification>\n",
+                            "renderables": [
+                                {
+                                    "Message Properties": [
+                                        {
+                                            "Connection": "Upgrade, HTTP2-Settings"
+                                        },
+                                        {
+                                            "Content-Type": "application/xml"
+                                        },
+                                        {
+                                            "PayloadVersion": "4.0"
+                                        },
+                                        {
+                                            "HTTP2-Settings": "AAEAAEAAAAIAAAABAAMAAABkAAQBAAAAAAUAAEAA"
+                                        },
+                                        {
+                                            "Upgrade": "h2c"
+                                        },
+                                        {
+                                            "X-Source": "Bran"
+                                        },
+                                        {
+                                            "User-Agent": "Java-http-client/11.0.5"
+                                        },
+                                        {
+                                            "Content-Length": "1421"
+                                        },
+                                        {
+                                            "Host": "localhost:9876"
+                                        },
+                                        {
+                                            "NetstreamConversationReference": "EFBAHAOYUPT"
+                                        },
+                                        {
+                                            "TraceyId": "trackingId-78a6352d-2450-47ba-8936-9dacd4fbd921"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "language": "xml"
+                                }
+                            ]
+                        }
+                    ],
+                    "sequenceDiagram": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" contentScriptType=\"application/ecmascript\" contentStyleType=\"text/css\" height=\"185px\" preserveAspectRatio=\"none\" style=\"width:467px;height:185px;\" version=\"1.1\" viewBox=\"0 0 467 185\" width=\"467px\" zoomAndPan=\"magnify\"><defs><filter height=\"300%\" id=\"f6koowu\" width=\"300%\" x=\"-1\" y=\"-1\"><feGaussianBlur result=\"blurOut\" stdDeviation=\"2.0\"/><feColorMatrix in=\"blurOut\" result=\"blurOut2\" type=\"matrix\" values=\"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0\"/><feOffset dx=\"4.0\" dy=\"4.0\" in=\"blurOut2\" result=\"blurOut3\"/><feBlend in=\"SourceGraphic\" in2=\"blurOut3\" mode=\"normal\"/></filter></defs><g><rect fill=\"#FFFFFF\" filter=\"url(#f6koowu)\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"50\" x2=\"50\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"277\" x2=\"277\" y1=\"38.2969\" y2=\"147.6953\"/><line style=\"stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;\" x1=\"403\" x2=\"403\" y1=\"38.2969\" y2=\"147.6953\"/><rect fill=\"#FEFECE\" filter=\"url(#f6koowu)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"22.9951\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#f6koowu)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"50\" x=\"23\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"36\" x=\"30\" y=\"166.6904\">Buuk</text><rect fill=\"#FEFECE\" filter=\"url(#f6koowu)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"22.9951\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#f6koowu)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"46\" x=\"252\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"32\" x=\"259\" y=\"166.6904\">Bran</text><rect fill=\"#FEFECE\" filter=\"url(#f6koowu)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"3\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"22.9951\">Netstream</text><rect fill=\"#FEFECE\" filter=\"url(#f6koowu)\" height=\"30.2969\" style=\"stroke: #A80036; stroke-width: 1.5;\" width=\"86\" x=\"358\" y=\"146.6953\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"14\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"72\" x=\"365\" y=\"166.6904\">Netstream</text><rect fill=\"none\" height=\"75.3984\" style=\"stroke: #000000; stroke-width: 2.0;\" width=\"445\" x=\"13\" y=\"55.2969\"/><polygon fill=\"#EEEEEE\" points=\"13,55.2969,89,55.2969,89,62.2969,79,72.2969,13,72.2969,13,55.2969\" style=\"stroke: #000000; stroke-width: 2.0;\"/><text fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"31\" x=\"28\" y=\"68.3638\">Test</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"89.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"275\" x2=\"265\" y1=\"93.4297\" y2=\"97.4297\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"50\" x2=\"276\" y1=\"93.4297\" y2=\"93.4297\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"1565576609\" textLength=\"203\" x=\"57\" y=\"88.4966\">Order Update [Cancel Rejected]</text><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"118.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"401\" x2=\"391\" y1=\"122.5625\" y2=\"126.5625\"/><line style=\"stroke: #A80036; stroke-width: 1.0;\" x1=\"277\" x2=\"402\" y1=\"122.5625\" y2=\"122.5625\"/><text class=\"sequence_diagram_clickable\" fill=\"#000000\" font-family=\"sans-serif\" font-size=\"13\" lengthAdjust=\"spacingAndGlyphs\" sequence_diagram_interaction_id=\"-205319566\" textLength=\"102\" x=\"284\" y=\"117.6294\">Cancel Rejected</text></g></svg>",
+                    "state": "Passed",
+                    "executionException": {}
+                }
+            ]
+        }
+    ]
+}</script>
 
 <%= htmlWebpackPlugin.options.pebbleScript %>
 
