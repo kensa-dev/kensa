@@ -91,7 +91,7 @@ export const highlightPlainText = (parent, regExp) => {
         if (child) {
             let parent = child.parentNode;
             child.remove();
-            let outerSpan = createWrappingSpan(child)
+            let outerSpan = createWrappingSpan(child);
             parent.appendChild(outerSpan)
             let restOfLine = child.textContent;
             let result;

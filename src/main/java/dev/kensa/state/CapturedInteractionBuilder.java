@@ -4,8 +4,7 @@ import dev.kensa.util.Attributes;
 
 public final class CapturedInteractionBuilder {
 
-    private static final String BASIC_TEMPLATE = "%s from %s to %s";
-    private static final String TEMPLATE_WITH_SEQUENCE_NUMBER = "%s %s from %s to %s";
+    private static final String TEMPLATE = "%s __idx __from %s to %s";
 
     public static CapturedInteractionBuilder from(Party party) {
         return new CapturedInteractionBuilder(party);
@@ -21,7 +20,6 @@ public final class CapturedInteractionBuilder {
     private CapturedInteractionBuilder(Party party) {
         fromParty = party;
     }
-
 
     public CapturedInteractionBuilder to(Party toParty) {
         this.toParty = toParty;
@@ -59,15 +57,8 @@ public final class CapturedInteractionBuilder {
     void applyTo(CapturedInteractions capturedInteractions) {
         String keyPrefix = group == null ? "" : String.format("(%s) ", group);
 
-        String template = BASIC_TEMPLATE;
-        String key = keyPrefix + String.format(template, contentDescriptor, fromParty.asString(), toParty.asString());
+        String key = keyPrefix + String.format(TEMPLATE, contentDescriptor, fromParty.asString(), toParty.asString());
 
-        int sequence = 1;
-        while (capturedInteractions.containsKey(key)) {
-            template = keyPrefix + TEMPLATE_WITH_SEQUENCE_NUMBER;
-            key = String.format(template, contentDescriptor, sequence++, fromParty.asString(), toParty.asString());
-        }
-
-        capturedInteractions.put(key, content, attributes);
+        capturedInteractions.putWithUniqueKey(key, content, attributes);
     }
 }

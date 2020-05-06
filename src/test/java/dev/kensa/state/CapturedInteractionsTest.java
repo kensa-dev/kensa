@@ -11,6 +11,8 @@ import static dev.kensa.state.CapturedInteractionBuilder.from;
 import static dev.kensa.state.CapturedInteractionsTest.GOTParty.*;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CapturedInteractionsTest {
 
@@ -19,6 +21,14 @@ class CapturedInteractionsTest {
     @BeforeEach
     void setUp() {
         interactions = new CapturedInteractions();
+    }
+
+    @Test
+    void canTestWhetherInteractionsContainsEntriesMatchingPredicate() {
+        interactions.put("Foo", "Moo");
+
+        assertTrue(interactions.containsEntriesMatching(entry -> entry.key().equals("Foo")));
+        assertFalse(interactions.containsEntriesMatching(entry -> entry.key().equals("Moo")));
     }
 
     @Test
@@ -117,9 +127,9 @@ class CapturedInteractionsTest {
 
     private List<String> keysIn(CapturedInteractions interactions) {
         return interactions.entrySet()
-                .stream()
-                .map(KensaMap.Entry::key)
-                .collect(toList());
+                           .stream()
+                           .map(KensaMap.Entry::key)
+                           .collect(toList());
     }
 
     enum GOTParty implements Party {

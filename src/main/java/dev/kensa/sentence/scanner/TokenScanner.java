@@ -10,7 +10,7 @@ import static dev.kensa.sentence.Token.Type.*;
 
 public class TokenScanner {
 
-    private static final Pattern CAMEL_CASE_SPLITTER = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+    private static final Pattern CAMEL_CASE_SPLITTER = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=[a-z])(?=[0-9])|(?<=[0-9])(?=[A-Z])");
 
     private final Set<String> highlightedValues;
     private final Set<String> keywords;

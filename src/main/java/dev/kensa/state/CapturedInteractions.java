@@ -2,6 +2,8 @@ package dev.kensa.state;
 
 import dev.kensa.util.KensaMap;
 
+import java.util.function.Predicate;
+
 public class CapturedInteractions extends KensaMap<CapturedInteractions> {
 
     private boolean isUnderTestEnabled = true;
@@ -21,5 +23,10 @@ public class CapturedInteractions extends KensaMap<CapturedInteractions> {
 
     public void disableUnderTest() {
         this.isUnderTestEnabled = false;
+    }
+
+    public boolean containsEntriesMatching(Predicate<KensaMap.Entry> predicate) {
+        return entrySet().stream()
+                         .anyMatch(predicate);
     }
 }

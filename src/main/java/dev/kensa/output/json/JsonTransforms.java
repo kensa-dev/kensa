@@ -46,7 +46,7 @@ public final class JsonTransforms {
                                                                             .add("parameters", asJsonArray(invocation.parameters().stream(), nvAsJson(renderers)))
                                                                             .add("givens", asJsonArray(invocation.givens(), givensEntryAsJson(renderers)))
                                                                             .add("capturedInteractions", asJsonArray(invocation.interactions(), interactionEntryAsJson(renderers)))
-                                                                            .add("sequenceDiagram", invocation.sequenceDiagram().toString())
+                                                                            .add("sequenceDiagram", invocation.sequenceDiagram() == null ? null : invocation.sequenceDiagram().toString())
                                                                             .add("state", invocation.state().description())
                                                                             .add("executionException", executionExceptionFrom(invocation))
                                                   ))

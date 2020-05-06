@@ -12,7 +12,7 @@ public class Attributes implements Iterable<NamedValue> {
 
     private static final Attributes EMPTY_ATTRIBUTES = new Attributes(emptySet());
 
-    static Attributes emptyAttributes() {
+    public static Attributes emptyAttributes() {
         return EMPTY_ATTRIBUTES;
     }
 

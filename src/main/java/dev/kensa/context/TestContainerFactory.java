@@ -5,6 +5,7 @@ import dev.kensa.Notes;
 import dev.kensa.state.TestInvocationData;
 import dev.kensa.state.TestState;
 import dev.kensa.util.Reflect;
+import dev.kensa.util.Strings;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -26,7 +27,7 @@ public class TestContainerFactory {
 
         return new TestContainer(
                 testClass,
-                context.getDisplayName(),
+                deriveDisplayNameFor(testClass, Strings.unCamel(testClass.getSimpleName())),
                 invocationDataFor(testClass),
                 notesFor(testClass),
                 issuesFor(testClass)
@@ -37,16 +38,16 @@ public class TestContainerFactory {
         return Reflect.testMethodsOf(testClass)
                       .map(this::createInvocationData)
                       .collect(
-                                     LinkedHashMap::new,
-                                     (m, i) -> m.put(i.testMethod(), i),
-                                     Map::putAll
-                             );
+                              LinkedHashMap::new,
+                              (m, i) -> m.put(i.testMethod(), i),
+                              Map::putAll
+                      );
     }
 
     private TestInvocationData createInvocationData(Method method) {
         return new TestInvocationData(
                 method,
-                deriveDisplayNameFor(method),
+                deriveDisplayNameFor(method, Strings.unCamel(method.getName())),
                 notesFor(method),
                 issuesFor(method),
                 initialStateFor(method)
@@ -59,11 +60,10 @@ public class TestContainerFactory {
                 .orElse(TestState.NotExecuted);
     }
 
-    private String deriveDisplayNameFor(Method element) {
+    private String deriveDisplayNameFor(AnnotatedElement element, String defaultName) {
         return getAnnotation(element, DisplayName.class)
                 .map(DisplayName::value)
-                // TODO: build a sentence from the method name
-                .orElse(element.getName());
+                .orElse(defaultName);
     }
 
     private String notesFor(AnnotatedElement element) {
