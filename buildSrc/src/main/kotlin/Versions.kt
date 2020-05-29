@@ -6,13 +6,13 @@ object Versions {
     val testJavaVersion = JavaVersion.VERSION_11
 
     // Wrapper
-    const val gradleWrapper = "5.3.1"
+    const val gradleWrapper = "6.4.1"
 
     // Node
     const val node = "10.6.0"
 
     // Plugins
-    const val moowork = "1.3.1"
+    const val moowork = "2.2.0"
 
     // Dependencies
     const val javaParser = "3.6.22"

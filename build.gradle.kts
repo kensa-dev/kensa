@@ -5,7 +5,7 @@ version = System.getenv("CI_PIPELINE_IID") ?: "DEV-SNAPSHOT"
 
 plugins {
     `kensa-module`
-    id("com.moowork.node") version Versions.moowork
+    id("com.github.node-gradle.node") version Versions.moowork
 }
 
 node {
