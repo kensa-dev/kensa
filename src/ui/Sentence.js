@@ -14,22 +14,28 @@ export class Sentence extends Component {
         this.toggle = this.toggle.bind(this);
     }
 
-    acronymExpansionFor(type, value) {
-        if (type.endsWith("Acronym")) {
+    acronymExpansionFor(types, value) {
+        if (types.includes("Acronym")) {
             return this.props.acronyms[value];
         }
     }
 
-    classFor(type) {
-        let c = "token-" + type.toLowerCase();
+    classesFor(types) {
+        let c = ""
 
-        if (type.endsWith("Acronym")) {
+        types.forEach(type => {
+            if (c.length > 0) c += " "
+            c += "token-" + type.toLowerCase();
+        })
+
+        if (types.includes("Acronym")) {
             c = "tooltip " + c;
         }
 
-        if (type === "Expandable" && this.state.expanded) {
+        if (types.includes("Expandable") && this.state.expanded) {
             c += " expanded"
         }
+
         return c;
     }
 
@@ -45,25 +51,29 @@ export class Sentence extends Component {
 
     sentence(sentence) {
         return sentence.map((token, index) => {
-            let type = token.type;
+            let types = token.types;
             let value = token.value;
 
-            if (token.type === "Expandable") {
+            if (types.includes("Expandable")) {
                 return <>
                         <span key={index}
                               onClick={this.toggle}
-                              className={this.classFor(type)}
-                              data-tooltip={this.acronymExpansionFor(type, value)}>
+                              className={this.classesFor(types)}
+                              data-tooltip={this.acronymExpansionFor(types, value)}>
                     {value}
                 </span>
                     <span className={this.showWhenExpanded()}>
-                        <Sentence nested={true} sentence={token.tokens} acronyms={this.props.acronyms}/>
+                        {
+                            token.tokens.map((tokens) => {
+                                return <Sentence nested={true} sentence={tokens} acronyms={this.props.acronyms}/>
+                            })
+                        }
                     </span>
                 </>
             } else {
                 return <span key={index}
-                             className={this.classFor(type)}
-                             data-tooltip={this.acronymExpansionFor(type, value)}>
+                             className={this.classesFor(types)}
+                             data-tooltip={this.acronymExpansionFor(types, value)}>
                     {value}
                 </span>
 

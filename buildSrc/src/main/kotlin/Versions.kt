@@ -19,9 +19,10 @@ object Versions {
     const val plantUml = "8059"
     const val pebble = "3.0.8"
     const val mockito = "2.24.0"
-    const val junitPlatform = "1.4.1"
-    const val junitJupiter = "5.4.1"
+    const val junitPlatform = "1.6.2"
+    const val junitJupiter = "5.6.2"
     const val assertJ = "3.11.1"
     const val hamcrest = "1.3"
     const val minimalJson = "0.9.5"
+    const val antlr = "4.+"
 }

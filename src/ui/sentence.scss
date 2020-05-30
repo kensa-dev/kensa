@@ -10,8 +10,13 @@
   font-weight: bold;
 }
 
-.token-highlightedword {
-  background-color: yellow;color: $grey-dark}
+.token-word {
+  color: $grey-dark;
+}
+
+.token-highlighted {
+  background-color: yellow;
+}
 
 .token-identifier {
   font-weight: bold;
@@ -34,31 +39,12 @@
   text-decoration: underline;
 }
 
-.token-identifieracronym {
-  text-decoration: underline;
+.token-scenariovalue, .token-fieldvalue, .token-parametervalue {
   font-weight: bold;
-  color: $grey-dark;
-}
-
-.token-highlightedidentifier {
-  font-weight: bold;
-  background-color: yellow;
-  color: $grey-dark
-}
-
-.token-highlightedacronym {
-  text-decoration: underline;
-  font-weight: bold;
-  background-color: yellow;
   color: $grey-dark
 }
 
 .token-stringliteral {
-  font-weight: bold;
-}
-
-.token-stringliteralacronym {
-  text-decoration: underline;
   font-weight: bold;
 }
 

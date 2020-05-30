@@ -1,6 +1,10 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     `java-library`
     `maven-publish`
+    kotlin("jvm")
+    antlr
 }
 
 repositories {
@@ -13,6 +17,11 @@ configurations {
 }
 
 tasks {
+    withType(AntlrTask::class) {
+        outputDirectory = file("$outputDirectory/dev/kensa/parse")
+        arguments = arguments + listOf("-listener", "-no-visitor", "-package", "dev.kensa.parse")
+    }
+
     register<Jar>("sourcesJar") {
         archiveClassifier.set("sources")
         from(sourceSets["main"].allSource)
@@ -39,6 +48,20 @@ tasks {
         sourceCompatibility = Versions.testJavaVersion.majorVersion
         targetCompatibility = Versions.testJavaVersion.majorVersion
     }
+
+    withTypeIfPresent<KotlinCompile>("compileKotlin") {
+        dependsOn("generateGrammarSource")
+        kotlinOptions {
+            jvmTarget = "1.8"
+            freeCompilerArgs += "-Xjvm-default=compatibility"
+        }
+    }
+
+    withTypeIfPresent<KotlinCompile>("compileTestKotlin") {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
 }
 
 artifacts {
@@ -62,6 +85,7 @@ publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             from(components["java"])
+            suppressPomMetadataWarningsFor("apiElements")
 
             artifact(tasks["sourcesJar"])
             artifact(tasks["testsJar"])

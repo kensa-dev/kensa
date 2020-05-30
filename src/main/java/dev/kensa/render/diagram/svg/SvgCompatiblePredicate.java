@@ -21,7 +21,7 @@ public class SvgCompatiblePredicate implements Predicate<KensaMap.Entry> {
 
     @Override
     public boolean test(KensaMap.Entry entry) {
-        return MESSAGE_KEY.matcher(entry.key().toLowerCase()).find()
-                || valuePatterns.stream().anyMatch(p -> p.matcher(String.valueOf(entry.value())).find());
+        return MESSAGE_KEY.matcher(entry.getKey().toLowerCase()).find()
+                || valuePatterns.stream().anyMatch(p -> p.matcher(String.valueOf(entry.getValue())).find());
     }
 }

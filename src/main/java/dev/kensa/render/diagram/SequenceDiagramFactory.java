@@ -8,7 +8,6 @@ import net.sourceforge.plantuml.SourceStringReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static dev.kensa.render.diagram.GroupedMessageCollector.toGroupedMessages;
@@ -18,12 +17,6 @@ import static java.util.stream.Collectors.joining;
 import static net.sourceforge.plantuml.FileFormat.SVG;
 
 public class SequenceDiagramFactory {
-
-    private final Supplier<Kensa.Configuration> configurationSupplier;
-
-    public SequenceDiagramFactory(Supplier<Kensa.Configuration> configurationSupplier) {
-        this.configurationSupplier = configurationSupplier;
-    }
 
     public SequenceDiagram create(CapturedInteractions interactions) {
         return createSvg(
@@ -36,7 +29,7 @@ public class SequenceDiagramFactory {
     }
 
     private Stream<String> participants() {
-        return configurationSupplier.get().umlDirectives().stream().flatMap(uml -> uml.asUml().stream());
+        return Kensa.getConfiguration().getUmlDirectives().stream().flatMap(uml -> uml.asUml().stream());
     }
 
     private static List<String> buildEventsFrom(CapturedInteractions interactions) {

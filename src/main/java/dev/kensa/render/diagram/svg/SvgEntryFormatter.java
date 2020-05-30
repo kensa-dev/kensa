@@ -15,15 +15,15 @@ public class SvgEntryFormatter implements Function<KensaMap.Entry, String> {
 
     @Override
     public String apply(KensaMap.Entry entry) {
-        Matcher matcher = MESSAGE_KEY.matcher(entry.key());
+        Matcher matcher = MESSAGE_KEY.matcher(entry.getKey());
         if (matcher.matches()) {
-            String interactionId = String.valueOf(entry.key().hashCode());
+            String interactionId = String.valueOf(entry.getKey().hashCode());
             String interactionName = matcher.group(1).trim();
             String from = matcher.group(2).trim();
             String to = matcher.group(3).trim();
             return String.format("%s ->> %s:<text class=sequence_diagram_clickable sequence_diagram_interaction_id=\"%s\">%s</text>", from, to, interactionId, interactionName);
         } else {
-            return String.valueOf(entry.value()).trim();
+            return String.valueOf(entry.getValue()).trim();
         }
     }
 }

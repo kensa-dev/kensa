@@ -50,10 +50,15 @@ tasks {
 }
 
 dependencies {
-    api("org.junit.jupiter:junit-jupiter-params:${Versions.junitJupiter}")
-    api("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")
-    api("org.assertj:assertj-core:${Versions.assertJ}")
-    api("org.hamcrest:hamcrest-core:${Versions.hamcrest}")
+    antlr("org.antlr:antlr4:${Versions.antlr}")
+
+    api(kotlin("stdlib-jdk8"))
+    api(kotlin("reflect"))
+
+    implementation("org.junit.jupiter:junit-jupiter-params:${Versions.junitJupiter}")
+    implementation("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")
+    implementation("org.assertj:assertj-core:${Versions.assertJ}")
+    implementation("org.hamcrest:hamcrest-core:${Versions.hamcrest}")
 
     implementation("org.junit.jupiter:junit-jupiter-engine:${Versions.junitJupiter}")
     implementation("com.eclipsesource.minimal-json:minimal-json:${Versions.minimalJson}")
@@ -61,7 +66,7 @@ dependencies {
     implementation("net.sourceforge.plantuml:plantuml:${Versions.plantUml}")
     implementation("io.pebbletemplates:pebble:${Versions.pebble}")
 
-    testCompile("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
-    testCompile("org.junit.platform:junit-platform-testkit:${Versions.junitPlatform}")
-    testCompile("org.mockito:mockito-core:${Versions.mockito}")
+    testImplementation("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
+    testImplementation("org.junit.platform:junit-platform-testkit:${Versions.junitPlatform}")
+    testImplementation("org.mockito:mockito-core:${Versions.mockito}")
 }
