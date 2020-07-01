@@ -53,13 +53,6 @@ class Test extends Component {
     }
 
     renderInformation(testMethod, issue, notes, parameters) {
-        let renderedParameters = (
-            <table className="table">
-                {this.renderParameterNames(parameters)}
-                {this.renderParameterValues(parameters, testMethod)}
-            </table>
-        );
-
         let notesContent = notes ? <div>{notes}</div> : null;
 
         if (issue.length > 0 || notes || parameters.length > 0) {
@@ -67,7 +60,7 @@ class Test extends Component {
                 <div className="message-body">
                     {this.renderIssues(issue)}
                     {notesContent}
-                    {renderedParameters}
+                    {this.renderParametersTable(parameters, testMethod)}
                 </div>
             )
         }
@@ -75,32 +68,38 @@ class Test extends Component {
         return null;
     }
 
+    renderParametersTable(parameters, testMethod) {
+        return parameters.length > 0 ? (
+            <table className="table">
+                {this.renderParameterNames(parameters)}
+                {this.renderParameterValues(parameters, testMethod)}
+            </table>
+        ) : null;
+    }
+
+    renderParameterNames(parameters) {
+        return (
+            <tr>
+                {parameters[0].map(firstParameter => {
+                    return (<th>{Object.keys(firstParameter)[0]}</th>);
+                })}
+            </tr>
+        );
+    }
+
     renderParameterValues(parameters, testMethod) {
-        return parameters.length > 0 ?
-            parameters.map((testParameters, index) => {
-                return (<tr>{
-                    testParameters.map(parameter => {
-                        let value = Object.values(parameter)[0];
-                        let link = "#" + this.parameterisedTestResourceFor(testMethod, index);
-                        return (<td><a href={link}>{value}</a></td>);
-                    })}</tr>);
-            })
-            : null;
+        return parameters.map((testParameters, index) => {
+            return (<tr>{
+                testParameters.map(parameter => {
+                    let value = Object.values(parameter)[0];
+                    let link = "#" + this.parameterisedTestResourceFor(testMethod, index);
+                    return (<td><a href={link}>{value}</a></td>);
+                })}</tr>);
+        });
     }
 
     parameterisedTestResourceFor(testMethod, index) {
         return testMethod + "_" + index;
-    }
-
-    renderParameterNames(parameters) {
-        return parameters.length > 0 ? (
-                <tr>
-                    {parameters[0].map(firstParameter => {
-                        return (<th>{Object.keys(firstParameter)[0]}</th>);
-                    })}
-                </tr>
-            )
-            : null;
     }
 
     renderIssues(issues) {
