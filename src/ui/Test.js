@@ -52,32 +52,20 @@ class Test extends Component {
         return "message-body";
     }
 
-    renderInformation(issue, parameters, notes) {
-        let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
-        let parameterContent = parameters.length > 0 ? parameters.map(par => {
-            console.log(par);
-            let key = Object.keys(par)[0];
-            let value = Object.values(par)[0];
-            return (
-                <tr>
-                    <td>{key}</td>
-                    <td>{value}</td>
-                </tr>
-            );
-        }) : null;
-        console.log(parameterContent)
+    renderInformation(testMethod, issue, notes, parameters) {
         let renderedParameters = (
             <table className="table">
-                <th>Parameters</th>
-                {parameterContent}
+                {this.renderParameterNames(parameters)}
+                {this.renderParameterValues(parameters, testMethod)}
             </table>
         );
+
         let notesContent = notes ? <div>{notes}</div> : null;
 
         if (issue.length > 0 || notes) {
             return (
                 <div className="message-body">
-                    {issueContent}
+                    {this.renderIssues(issue)}
                     {notesContent}
                     {renderedParameters}
                 </div>
@@ -87,15 +75,46 @@ class Test extends Component {
         return null;
     }
 
+    renderParameterValues(parameters, testMethod) {
+        return parameters.length > 0 ?
+            parameters.map((testParameters, index) => {
+                return (<tr>{
+                    testParameters.map(parameter => {
+                        let value = Object.values(parameter)[0];
+                        let link = "#" + this.parameterisedTestResourceFor(testMethod, index);
+                        return (<td><a href={link}>{value}</a></td>);
+                    })}</tr>);
+            })
+            : null;
+    }
+
+    parameterisedTestResourceFor(testMethod, index) {
+        return testMethod + "_" + index;
+    }
+
+    renderParameterNames(parameters) {
+        return parameters.length > 0 ? (
+                <tr>
+                    {parameters[0].map(firstParameter => {
+                        return (<th>{Object.keys(firstParameter)[0]}</th>);
+                    })}
+                </tr>
+            )
+            : null;
+    }
+
     renderIssues(issues) {
-        return <div className="tags">
-            {
-                issues.map(issue => {
-                    return <a href={this.issueTrackerUrlFor(issue)}
-                              className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
-                })
-            }
-        </div>;
+        return issues.length > 0 ? (
+                <div className="tags">
+                    {
+                        issues.map(issue => {
+                            return <a href={this.issueTrackerUrlFor(issue)}
+                                      className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
+                        })
+                    }
+                </div>
+            )
+            : null;
     }
 
     issueTrackerUrlFor(issue) {
@@ -123,7 +142,7 @@ class Test extends Component {
                 </ScrollableAnchor>
             );
         } else {
-            let params = test.invocations.flatMap(inv => {
+            let params = test.invocations.map(inv => {
                 return inv.parameters
             });
             return (
@@ -134,11 +153,13 @@ class Test extends Component {
                             <a><FontAwesomeIcon icon={this.icon()}/></a>
                         </div>
                         <div className={this.contentClass()}>
-                            {this.renderInformation(test.issue, params, test.notes)}
-                            {test.invocations.map((invocation, index) => <Invocation key={index}
-                                                                                     testMethod={test.testMethod}
-                                                                                     invocation={invocation}
-                                                                                     invocationNumber={index}/>)}
+                            {this.renderInformation(test.testMethod, test.issue, test.notes, params)}
+                            {test.invocations.map((invocation, index) => <ScrollableAnchor
+                                id={this.parameterisedTestResourceFor(test.testMethod, index)}>
+                                <Invocation key={index}
+                                            testMethod={test.testMethod}
+                                            invocation={invocation}
+                                            invocationNumber={index}/></ScrollableAnchor>)}
                         </div>
                     </div>
                 </ScrollableAnchor>
