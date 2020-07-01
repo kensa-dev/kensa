@@ -62,7 +62,7 @@ class Test extends Component {
 
         let notesContent = notes ? <div>{notes}</div> : null;
 
-        if (issue.length > 0 || notes) {
+        if (issue.length > 0 || notes || parameters.length > 0) {
             return (
                 <div className="message-body">
                     {this.renderIssues(issue)}
