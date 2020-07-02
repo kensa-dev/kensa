@@ -43,7 +43,7 @@ public final class JsonTransforms {
                                                                             .add("highlights", asJsonArray(invocation.highlightedFields(), nvpValueAsJson(renderers)))
                                                                             .add("acronyms", acronymsAsJson(invocation.acronyms()))
                                                                             .add("sentences", asJsonArray(invocation.sentences(), sentenceAsJson()))
-                                                                            .add("parameters", asJsonArray(invocation.parameters().stream(), nvAsJson(renderers)))
+                                                                            .add("parameters", asJsonArray(invocation.parameters().stream(), parameterAsJson(renderers)))
                                                                             .add("givens", asJsonArray(invocation.givens(), givensEntryAsJson(renderers)))
                                                                             .add("capturedInteractions", asJsonArray(invocation.interactions(), interactionEntryAsJson(renderers)))
                                                                             .add("sequenceDiagram", invocation.sequenceDiagram() == null ? null : invocation.sequenceDiagram().toString())
@@ -141,6 +141,12 @@ public final class JsonTransforms {
                 return Json.object().add(nv.name(), nv.value().toString());
             }
         };
+    }
+
+    private static Function<NamedValue, JsonObject> parameterAsJson(Renderers renderers) {
+        return nv -> Json.object()
+                .add("name", nv.name())
+                .add("value", renderers.renderValueOnly(nv.value()));
     }
 
     private static Function<NamedValue, JsonValue> nvpValueAsJson(Renderers renderers) {

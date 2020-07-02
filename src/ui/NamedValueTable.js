@@ -3,6 +3,8 @@ import React, {Component} from "react";
 export class NamedValueTable extends Component {
     render() {
         const namedValues = this.props.namedValues;
+        const nameFunction = this.props.nameFunction ? this.props.nameFunction : this.nameFrom;
+        const valueFunction = this.props.valueFunction ? this.props.valueFunction : this.valueFrom;
         return (
                 <table className="table is-striped is-fullwidth">
                     <thead>
@@ -14,8 +16,8 @@ export class NamedValueTable extends Component {
                     <tbody>
                     {namedValues
                             .map((item, index) => {
-                                        let name = Object.keys(item)[0];
-                                        let value = item[name];
+                                        let name = nameFunction(item);
+                                        let value = valueFunction(item);
                                         return <tr key={index}>
                                             <td>{name}</td>
                                             <td>
@@ -43,5 +45,13 @@ export class NamedValueTable extends Component {
         }
 
         return c;
+    }
+
+    nameFrom(item) {
+        return Object.keys(item)[0];
+    }
+
+    valueFrom(item) {
+        return Object.values(item)[0];
     }
 }

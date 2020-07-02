@@ -70,7 +70,7 @@ class Test extends Component {
 
     renderParametersTable(parameters, testMethod) {
         return parameters.length > 0 ? (
-            <table className="table">
+            <table className="table is-striped is-narrow">
                 {this.renderParameterNames(parameters)}
                 {this.renderParameterValues(parameters, testMethod)}
             </table>
@@ -81,7 +81,7 @@ class Test extends Component {
         return (
             <tr>
                 {parameters[0].map(firstParameter => {
-                    return (<th>{Object.keys(firstParameter)[0]}</th>);
+                    return (<th>{firstParameter.name}</th>);
                 })}
             </tr>
         );
@@ -91,9 +91,8 @@ class Test extends Component {
         return parameters.map((testParameters, index) => {
             return (<tr>{
                 testParameters.map(parameter => {
-                    let value = Object.values(parameter)[0];
                     let link = "#" + this.parameterisedTestResourceFor(testMethod, index);
-                    return (<td><a href={link}>{value}</a></td>);
+                    return (<td><a href={link}>{parameter.value}</a></td>);
                 })}</tr>);
         });
     }

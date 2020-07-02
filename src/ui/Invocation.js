@@ -130,7 +130,8 @@ export class Invocation extends Component {
                     {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
                 </div>
                 {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable highlights={highlights} namedValues={invocation.givens}/></div>)}
-                {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable highlights={highlights} namedValues={invocation.parameters}/></div>)}
+                {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable highlights={highlights} namedValues={invocation.parameters}
+                                                                                                                        nameFunction={this.parameterNameFrom} valueFunction={this.parameterValueFrom}/></div>)}
                 {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
                         capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
                 {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}
@@ -157,6 +158,14 @@ export class Invocation extends Component {
                     {this.exceptionBlock(invocation.executionException)}
                 </div>
         );
+    }
+
+    parameterNameFrom(item) {
+        return item.name;
+    }
+
+    parameterValueFrom(item) {
+        return item.value;
     }
 }
 
