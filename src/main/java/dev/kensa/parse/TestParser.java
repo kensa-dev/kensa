@@ -3,6 +3,7 @@ package dev.kensa.parse;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import dev.kensa.render.Renderers;
 import dev.kensa.state.TestInvocationContext;
+import dev.kensa.util.DisplayableNamedValue;
 import dev.kensa.util.NamedValue;
 import dev.kensa.util.Reflect;
 
@@ -41,7 +42,7 @@ public class TestParser {
     public ParsedTest parse() {
         MethodDeclaration declaration = methodDeclarationProvider.methodDeclarationFrom(method);
         ParameterCollector parameterCollector = new ParameterCollector(declaration);
-        List<NamedValue> parameters = parameterCollector.collect(arguments);
+        List<DisplayableNamedValue> parameters = parameterCollector.collect(arguments);
 
         CachingScenarioMethodAccessor scenarioAccessor = Reflect.scenarioAccessorFor(testInstance);
         CachingFieldAccessor fieldAccessor = Reflect.interestingFieldsOf(testInstance);

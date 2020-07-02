@@ -3,7 +3,8 @@ package dev.kensa.parse;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import dev.kensa.util.NamedValue;
+import dev.kensa.util.DisplayableNamedValue;
+import dev.kensa.util.Strings;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,11 +18,17 @@ public class ParameterCollector {
         this.methodDeclaration = methodDeclaration;
     }
 
-    public List<NamedValue> collect(Object[] parameterValues) {
+    public List<DisplayableNamedValue> collect(Object[] parameterValues) {
         NodeList<Parameter> parameters = methodDeclaration.getParameters();
 
         return IntStream.range(0, parameters.size())
-                 .mapToObj(index -> new NamedValue(parameters.get(index).getNameAsString(), parameterValues[index]))
+                 .mapToObj(index -> {
+                     final String name = parameters.get(index).getNameAsString();
+                     return new DisplayableNamedValue(
+                             name,
+                             Strings.unCamel(name),
+                             parameterValues[index]);
+                 })
                  .collect(Collectors.toList());
     }
 }

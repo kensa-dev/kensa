@@ -5,6 +5,7 @@ import dev.kensa.render.diagram.SequenceDiagram;
 import dev.kensa.sentence.Acronym;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.Sentences;
+import dev.kensa.util.DisplayableNamedValue;
 import dev.kensa.util.KensaMap;
 import dev.kensa.util.NamedValue;
 
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 public class TestInvocation {
     private final Duration elapsed;
     private final Sentences sentences;
-    private final Collection<NamedValue> parameters;
+    private final Collection<DisplayableNamedValue> parameters;
     private final Collection<NamedValue> highlightedFields;
     private final TestState state;
     private final Throwable executionException;
@@ -57,7 +58,7 @@ public class TestInvocation {
         return sentences.stream();
     }
 
-    public Collection<NamedValue> parameters() {
+    public Collection<DisplayableNamedValue> parameters() {
         return parameters;
     }
 

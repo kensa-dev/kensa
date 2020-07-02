@@ -6,6 +6,7 @@ import dev.kensa.sentence.Acronym;
 import dev.kensa.sentence.Dictionary;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.sentence.Sentences;
+import dev.kensa.util.DisplayableNamedValue;
 import dev.kensa.util.NamedValue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -212,9 +213,9 @@ class MethodParserTest {
         when(fieldAccessor.valueOf(any(String.class))).then(invocation -> Optional.ofNullable(fieldMap.get(invocation.<String>getArgument(0))));
 
         ParameterAccessor parameterAccessor = new ParameterAccessor(Set.of(
-                new NamedValue("p1", parameterValue1),
-                new NamedValue("p2", parameterValue2),
-                new NamedValue("p3", renderedParameter)
+                new DisplayableNamedValue("p1", "p 1", parameterValue1),
+                new DisplayableNamedValue("p2", "p 2", parameterValue2),
+                new DisplayableNamedValue("p3", "p 3", renderedParameter)
         ));
 
         List<Sentence> sentences = parseToSentences(code, fieldAccessor, parameterAccessor);

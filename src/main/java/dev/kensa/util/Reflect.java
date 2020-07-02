@@ -59,10 +59,10 @@ public final class Reflect {
         }
     }
 
-    public static ParameterAccessor interestingParametersOf(Method method, List<NamedValue> parameters) {
+    public static ParameterAccessor interestingParametersOf(Method method, List<DisplayableNamedValue> parameters) {
         Parameter[] methodParameters = method.getParameters();
 
-        Set<NamedValue> namedValues = new HashSet<>();
+        Set<DisplayableNamedValue> namedValues = new HashSet<>();
 
         for (int i = 0; i < methodParameters.length; i++) {
             Parameter parameter = methodParameters[i];

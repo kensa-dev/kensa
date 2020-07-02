@@ -2,7 +2,7 @@ package dev.kensa.parse;
 
 import dev.kensa.KensaException;
 import dev.kensa.render.Renderers;
-import dev.kensa.util.NamedValue;
+import dev.kensa.util.DisplayableNamedValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ class ValueAccessorsTest {
                 new Renderers(),
                 new CachingScenarioMethodAccessor(testInstance, Set.of("scenario1", "scenario2")),
                 new CachingFieldAccessor(testInstance, Set.of("field1", "field2")),
-                new ParameterAccessor(Set.of(new NamedValue("n1", "v1"), new NamedValue("n2", "v2")))
+                new ParameterAccessor(Set.of(new DisplayableNamedValue("n1", "n 1", "v1"), new DisplayableNamedValue("n2", "n 2", "v2")))
         );
     }
 

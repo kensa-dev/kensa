@@ -1,6 +1,6 @@
 package dev.kensa.parse;
 
-import dev.kensa.util.NamedValue;
+import dev.kensa.util.DisplayableNamedValue;
 
 import java.util.Map;
 import java.util.Optional;
@@ -14,8 +14,8 @@ public class ParameterAccessor {
 
     private final Map<String, Object> parameters;
 
-    public ParameterAccessor(Set<NamedValue> parameters) {
-        this.parameters = parameters.stream().collect(toMap(NamedValue::name, nv -> nv.value() == null ? NullValue : nv.value()));
+    public ParameterAccessor(Set<DisplayableNamedValue> parameters) {
+        this.parameters = parameters.stream().collect(toMap(DisplayableNamedValue::name, parameter -> parameter.value() == null ? NullValue : parameter.value()));
     }
 
     Optional<Object> valueOf(String parameterName) {

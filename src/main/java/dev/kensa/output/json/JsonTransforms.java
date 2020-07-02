@@ -7,6 +7,7 @@ import dev.kensa.render.Renderers;
 import dev.kensa.sentence.Acronym;
 import dev.kensa.sentence.Sentence;
 import dev.kensa.state.TestInvocation;
+import dev.kensa.util.DisplayableNamedValue;
 import dev.kensa.util.DurationFormatter;
 import dev.kensa.util.KensaMap;
 import dev.kensa.util.NamedValue;
@@ -143,10 +144,11 @@ public final class JsonTransforms {
         };
     }
 
-    private static Function<NamedValue, JsonObject> parameterAsJson(Renderers renderers) {
-        return nv -> Json.object()
-                .add("name", nv.name())
-                .add("value", renderers.renderValueOnly(nv.value()));
+    private static Function<DisplayableNamedValue, JsonObject> parameterAsJson(Renderers renderers) {
+        return parameter -> Json.object()
+                .add("name", parameter.name())
+                .add("displayName", parameter.displayName())
+                .add("value", renderers.renderValueOnly(parameter.value()));
     }
 
     private static Function<NamedValue, JsonValue> nvpValueAsJson(Renderers renderers) {

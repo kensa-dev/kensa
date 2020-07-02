@@ -79,22 +79,32 @@ class Test extends Component {
 
     renderParameterNames(parameters) {
         return (
+            <thead>
             <tr>
-                {parameters[0].map(firstParameter => {
-                    return (<th>{firstParameter.name}</th>);
-                })}
+                {
+                    parameters[0].map(firstParameter => {
+                        return (<th>{firstParameter.displayName}</th>);
+                    })
+                }
             </tr>
+            </thead>
         );
     }
 
     renderParameterValues(parameters, testMethod) {
-        return parameters.map((testParameters, index) => {
-            return (<tr>{
-                testParameters.map(parameter => {
-                    let link = "#" + this.parameterisedTestResourceFor(testMethod, index);
-                    return (<td><a href={link}>{parameter.value}</a></td>);
-                })}</tr>);
-        });
+        return (
+            <tbody>
+            {
+                parameters.map((testParameters, index) => {
+                    return (<tr>{
+                        testParameters.map(parameter => {
+                            let link = "#" + this.parameterisedTestResourceFor(testMethod, index);
+                            return (<td><a href={link}>{parameter.value}</a></td>);
+                        })}</tr>);
+                })
+            }
+            </tbody>
+        );
     }
 
     parameterisedTestResourceFor(testMethod, index) {
