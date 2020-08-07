@@ -24,5 +24,5 @@ object Versions {
     const val assertJ = "3.11.1"
     const val hamcrest = "1.3"
     const val minimalJson = "0.9.5"
-    const val antlr = "4.+"
+    const val antlr = "4.8-1"
 }
