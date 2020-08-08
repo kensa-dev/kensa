@@ -3,13 +3,12 @@ package dev.kensa.context
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.state.TestState
 import dev.kensa.state.TestState.NotExecuted
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
+import java.lang.reflect.Method
 
 class TestContainer(
-        val testClass: KClass<*>,
+        val testClass: Class<*>,
         val displayName: String,
-        val invocations: Map<KFunction<*>, TestMethodInvocation>,
+        val invocations: Map<Method, TestMethodInvocation>,
         val notes: String?,
         val issues: List<String>
 ) {
@@ -19,7 +18,7 @@ class TestContainer(
                     state.overallStateFrom(invocationData.state)
                 }
 
-    fun testMethodInvocationFor(kFunction: KFunction<*>): TestMethodInvocation = invocations[kFunction] ?: error("No method invocation found for test [${kFunction.name}]")
+    fun testMethodInvocationFor(method: Method): TestMethodInvocation = invocations[method] ?: error("No method invocation found for test [${method.name}]")
 
     fun <T> transform(transformer: (TestContainer) -> T): T = transformer(this)
 }

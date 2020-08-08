@@ -13,7 +13,7 @@ import dev.kensa.sentence.SentenceBuilder
 
 class ParserStateMachine(
         dictionary: Dictionary,
-        private val fields: Map<String, PropertyDescriptor>,
+        private val fields: Map<String, FieldDescriptor>,
         private val parameters: Map<String, ParameterDescriptor> = emptyMap(),
         private val nestedMethods: Map<String, List<Sentence>> = emptyMap()) {
 

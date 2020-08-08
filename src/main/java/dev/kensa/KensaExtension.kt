@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.*
 import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor
 import java.time.Duration
 import java.time.temporal.ChronoUnit.MILLIS
-import kotlin.reflect.jvm.kotlinFunction
 
 class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
     private val testContainerFactory = TestContainerFactory()
@@ -56,7 +55,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeT
                 val startTime = get(TEST_START_TIME_KEY, Long::class.java)
                 val testContext = get(TEST_CONTEXT_KEY, TestContext::class.java)
                 val testContainer = get(TEST_CONTAINER_KEY, TestContainer::class.java)
-                val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod.kotlinFunction!!)
+                val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod!!)
                 val testInvocationContext = get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext::class.java)
                 invocation.add(
                         testInvocationFactory.create(
@@ -83,8 +82,8 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeT
     private fun argumentsFrom(context: ExtensionContext): Array<Any?> {
         return try {
             Reflect.invoke<TestMethodTestDescriptor>("getTestDescriptor", context)?.let { td ->
-                Reflect.propertyValue<TestTemplateInvocationContext>("invocationContext", td)?.let {
-                    Reflect.propertyValue<Array<Any?>>("arguments", it)
+                Reflect.fieldValue<TestTemplateInvocationContext>("invocationContext", td)?.let {
+                    Reflect.fieldValue<Array<Any?>>("arguments", it)
                 }
             } ?: emptyArray()
         } catch (e: Exception) {

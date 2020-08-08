@@ -25,14 +25,14 @@ object JsonTransforms {
     fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue {
         return { container: TestContainer ->
             jsonObject()
-                    .add("testClass", container.testClass.qualifiedName)
+                    .add("testClass", container.testClass.name)
                     .add("displayName", container.displayName)
                     .add("state", container.state.description)
                     .add("notes", container.notes)
                     .add("issue", asJsonArray(container.issues))
                     .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
                         jsonObject()
-                                .add("testMethod", invocation.testFunction.name)
+                                .add("testMethod", invocation.method.name)
                                 .add("displayName", invocation.displayName)
                                 .add("notes", invocation.notes)
                                 .add("issue", asJsonArray(invocation.issues))
@@ -63,12 +63,12 @@ object JsonTransforms {
         return { container: TestContainer ->
             jsonObject()
                     .add("id", id)
-                    .add("testClass", container.testClass.qualifiedName)
+                    .add("testClass", container.testClass.name)
                     .add("displayName", container.displayName)
                     .add("state", container.state.description)
                     .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
                         jsonObject()
-                                .add("testMethod", invocation.testFunction.name)
+                                .add("testMethod", invocation.method.name)
                                 .add("displayName", invocation.displayName)
                                 .add("state", invocation.state.description)
                     })

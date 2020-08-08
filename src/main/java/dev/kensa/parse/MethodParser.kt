@@ -13,8 +13,8 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
     fun parse(method: Method): ParsedMethod =
             parsedMethodCache.getOrPut(method) {
                 val testClass = method.declaringClass.kotlin
-                val properties = propertyCache.getOrPut(testClass) {
-                    preparePropertiesFor(testClass)
+                val properties = fieldCache.getOrPut(testClass) {
+                    prepareFieldsFor(testClass)
                 }
                 val (testMethodDeclarations, _) = declarationCache.getOrPut(testClass) {
                     findMethodDeclarationsIn(testClass).apply {
@@ -58,8 +58,8 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                     }.associateByTo(LinkedHashMap(), ParameterDescriptor::name)
             )
 
-    private fun preparePropertiesFor(clazz: KClass<*>) =
-            Reflect.propertiesOf(clazz)
-                    .map { PropertyDescriptor(it.name, it, Reflect.hasAnnotation<SentenceValue>(it), Reflect.hasAnnotation<Highlight>(it), Reflect.hasAnnotation<Scenario>(it)) }
-                    .associateBy(PropertyDescriptor::name)
+    private fun prepareFieldsFor(clazz: KClass<*>) =
+            Reflect.fieldsOf(clazz.java)
+                    .map { FieldDescriptor(it.name, it, Reflect.hasAnnotation<SentenceValue>(it), Reflect.hasAnnotation<Highlight>(it), Reflect.hasAnnotation<Scenario>(it)) }
+                    .associateBy(FieldDescriptor::name)
 }

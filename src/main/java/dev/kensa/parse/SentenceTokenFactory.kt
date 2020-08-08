@@ -14,7 +14,7 @@ class SentenceTokenFactory(
         private val renderers: Renderers,
         private val scenarioAccessor: CachingScenarioMethodAccessor,
         private val parameters: Map<String, ParameterDescriptor>,
-        private val fields: Map<String, PropertyDescriptor>,
+        private val fields: Map<String, FieldDescriptor>,
         private val highlightedValues: Set<NamedValue>
 ) {
 
@@ -28,7 +28,7 @@ class SentenceTokenFactory(
     }
 
     fun fieldValueTokenFrom(token: SentenceToken) = fields[token.value]?.let { fd ->
-        renderers.renderValueOnly(Reflect.propertyValue<Any>(fd.property, testInstance)).let { value ->
+        renderers.renderValueOnly(Reflect.fieldValue<Any>(fd.field, testInstance)).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(FieldValue)
                 takeIf { fd.isHighlighted }?.add(Highlighted)

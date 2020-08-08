@@ -7,5 +7,5 @@ data class ParsedMethod(
         val parameters: MethodParameters,
         val sentences: List<Sentence>,
         val nestedSentences: Map<String, List<Sentence>>,
-        val fields: Map<String, PropertyDescriptor>
+        val fields: Map<String, FieldDescriptor>
 )

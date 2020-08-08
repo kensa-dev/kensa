@@ -60,8 +60,8 @@ class TestInvocationParser {
                 }
             }
 
-    private fun highlightedFieldValues(fields: Map<String, PropertyDescriptor>, testInstance: Any) = fields.values
+    private fun highlightedFieldValues(fields: Map<String, FieldDescriptor>, testInstance: Any) = fields.values
             .filter { it.isHighlighted }
-            .map { NamedValue(it.name, configuration.renderers.renderValueOnly(Reflect.propertyValue<Any>(it.property, testInstance))) }
+            .map { NamedValue(it.name, configuration.renderers.renderValueOnly(Reflect.fieldValue<Any>(it.field, testInstance))) }
             .toSet()
 }

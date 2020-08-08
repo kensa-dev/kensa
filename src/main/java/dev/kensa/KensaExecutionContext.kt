@@ -18,7 +18,7 @@ class KensaExecutionContext internal constructor(private val resultWriter: Resul
     }
 
     private fun sortedContainers(): Set<TestContainer> {
-        return TreeSet(Comparator.comparing { o: TestContainer -> o.testClass.qualifiedName!! }).apply {
+        return TreeSet(Comparator.comparing { o: TestContainer -> o.testClass.name }).apply {
             this.addAll(containers)
         }
     }
