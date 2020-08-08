@@ -9,7 +9,6 @@ import java.nio.file.attribute.BasicFileAttributes
 object IoUtil {
     private val DELETE_ALL_VISITOR = DeleteAllVisitor()
 
-    @JvmStatic
     fun recreate(path: Path) {
         try {
             if (Files.exists(path)) {
@@ -21,7 +20,6 @@ object IoUtil {
         }
     }
 
-    @JvmStatic
     fun copyResource(url: String, destDir: Path) {
         try {
             val resourceStream = IoUtil::class.java.getResourceAsStream(url) ?: throw KensaException("Did not find resource [$url]")

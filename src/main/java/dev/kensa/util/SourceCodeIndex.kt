@@ -52,9 +52,6 @@ class SourceCodeIndex private constructor() {
     companion object {
         private val INSTANCE = SourceCodeIndex()
 
-        @JvmStatic
-        fun locate(kClass: KClass<*>): Path {
-            return INSTANCE.doLocate(kClass)
-        }
+        fun locate(kClass: KClass<*>): Path = INSTANCE.doLocate(kClass)
     }
 }

@@ -3,7 +3,6 @@ package dev.kensa.util
 object Strings {
     private val CAMEL_SPLIT_REGEX = Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[0-9])")
 
-    @JvmStatic
     fun unCamel(phrase: String): String {
         if (phrase.isBlank()) {
             return phrase
