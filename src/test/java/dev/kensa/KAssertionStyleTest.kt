@@ -16,6 +16,8 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
+@Notes("Class Level Notes")
+@Issue("ISS-007")
 class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     private val actionName = "ACTION1"
 
@@ -37,6 +39,8 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     }
 
     @Test
+    @Notes("Method Notes")
+    @Issue("ISS-007")
     fun canUseAssertJStyle() {
         given(someActionNameIsAddedToGivens())
 

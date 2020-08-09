@@ -76,35 +76,57 @@ export default class App extends Component {
         )
     }
 
+    issueTrackerUrlFor(issue) {
+        let issueTrackerUrl = this.state.issueTrackerUrl;
+
+        if (issueTrackerUrl.endsWith("/")) {
+            return issueTrackerUrl + issue;
+        }
+
+        return issueTrackerUrl + "/" + issue;
+    }
+
+    renderIssues(issues) {
+        return <div className="tags">
+            {
+                issues.map(issue => {
+                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
+                })
+            }
+        </div>;
+    }
+
+    renderInformation(issue, notes, state) {
+        let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
+        let notesContent = notes ? <div>{notes}</div> : null;
+
+        if (issue.length > 0 || notes) {
+            return (
+                    <div className={"message " + App.stateClassFor(state)}>
+                        <div className="message-body">
+                            {issueContent}
+                            {notesContent}
+                        </div>
+                    </div>
+            )
+        }
+
+        return null;
+    }
+
     renderTestFile() {
         const data = this.state.data;
+
+        let info = this.renderInformation(data.issue, data.notes, data.state)
         return (
                 <div>
                     <section className={"hero " + App.stateClassFor(data.state)}>
                         <div className="hero-body">
                             <h1 className="title">{data.displayName}</h1>
                         </div>
-                        {/*<div className="hero-foot">*/}
-                        {/*<div className="container">*/}
-                        {/*<nav className="navbar">*/}
-                        {/*<div className="navbar-menu">*/}
-                        {/*<div className="navbar-end">*/}
-                        {/*<div className="navbar-item is-size-4 has-text-weight-bold">Index</div>*/}
-                        {/*<div className="navbar-item has-dropdown is-size-4 has-text-weight-bold">*/}
-                        {/*<a className="navbar-link">*/}
-                        {/*Docs*/}
-                        {/*</a>*/}
-                        {/*</div>*/}
-                        {/*<div className="navbar-item">*/}
-                        {/*<input className="input" type="text" placeholder="Search"/>*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
-                        {/*</nav>*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
                     </section>
                     <section className="section">
+                        {info}
                         <TestWrapper issueTrackerUrl={this.state.issueTrackerUrl} tests={data.tests}/>
                     </section>
                 </div>
