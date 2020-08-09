@@ -1,6 +1,7 @@
 package dev.kensa
 
 import dev.kensa.Kensa.konfigure
+import dev.kensa.Section.*
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithAssertJ
 import dev.kensa.kotlin.WithHamcrest
@@ -35,6 +36,7 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
             keywords = setOf("that")
             acronyms = setOf(Acronym.of("ACTION1", ""))
             antlrPredicationMode = PredictionMode.LL
+            sectionOrder = listOf(Sentences, Buttons, Exception)
         }
     }
 

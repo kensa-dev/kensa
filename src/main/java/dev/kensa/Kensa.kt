@@ -2,6 +2,7 @@ package dev.kensa
 
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
+import dev.kensa.Section.*
 import dev.kensa.output.OutputStyle
 import dev.kensa.output.template.Template
 import dev.kensa.render.Renderer
@@ -70,6 +71,16 @@ object Kensa {
     fun withKeywords(vararg keywords: String): Kensa = apply {
         configuration.dictionary.putKeywords(*keywords)
     }
+
+    fun withSectionOrder(vararg order: Section): Kensa = apply {
+        configuration.sectionOrder = order.toList()
+    }
+}
+
+enum class Section {
+    Buttons,
+    Exception,
+    Sentences
 }
 
 class Configuration(
@@ -81,13 +92,21 @@ class Configuration(
         var outputStyle: OutputStyle = OutputStyle.MultiFile,
         var issueTrackerUrl: URL = defaultIssueTrackerUrl()) {
 
+    var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
+        set(order) {
+            if (order.size != 3 || order.groupingBy { it }.eachCount().any { it.value > 1 }) {
+                throw IllegalArgumentException("Invalid section order specified")
+            }
+            field = order
+        }
+
     var keywords: Set<String> = emptySet()
         set(value) = dictionary.putKeywords(value)
 
     var acronyms: Set<Acronym> = emptySet()
         set(value) = dictionary.putAcronyms(value)
 
-    fun createTemplate(path: String, mode: Template.Mode): Template = Template(outputDir.resolve(path), mode, issueTrackerUrl)
+    fun createTemplate(path: String, mode: Template.Mode): Template = Template(outputDir.resolve(path), mode, issueTrackerUrl, sectionOrder)
 
     companion object {
         private fun defaultIssueTrackerUrl(): URL = try {

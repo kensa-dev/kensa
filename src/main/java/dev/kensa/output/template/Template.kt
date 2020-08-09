@@ -1,9 +1,11 @@
 package dev.kensa.output.template
 
+import com.eclipsesource.json.Json
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.ClasspathLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import dev.kensa.KensaException
+import dev.kensa.Section
 import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms.rangeTo
 import dev.kensa.output.json.JsonTransforms.toIndexJson
@@ -19,7 +21,7 @@ import java.nio.file.StandardOpenOption.CREATE
 import java.util.*
 import com.eclipsesource.json.Json.`object` as jsonObject
 
-class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL) {
+class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL, sectionOrder: List<Section>) {
     enum class Mode {
         SingleFile, MultiFile, TestFile, Site
     }
@@ -55,13 +57,16 @@ class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL) {
         }
     }
 
-    private fun configurationJson(mode: Mode, issueTrackerUrl: URL): JsonScript {
+    private fun configurationJson(mode: Mode, issueTrackerUrl: URL, sectionOrder: List<Section>): JsonScript {
         return JsonScript(
                 "config",
                 toJsonString()(
                         jsonObject()
                                 .add("mode", mode.name)
                                 .add("issueTrackerUrl", issueTrackerUrl.toString())
+                                .add("sectionOrder", Json.array().apply {
+                                    sectionOrder.forEach { add(it.name) }
+                                })
                 )
         )
     }
@@ -89,6 +94,6 @@ class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL) {
 
     init {
         template = pebbleEngine.getTemplate("pebble-index.html")
-        scripts.add(configurationJson(mode, issueTrackerUrl))
+        scripts.add(configurationJson(mode, issueTrackerUrl, sectionOrder))
     }
 }

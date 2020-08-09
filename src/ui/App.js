@@ -10,6 +10,12 @@ const Mode = {
     Site: 'Site'
 };
 
+export const Section = {
+    Buttons: 'Buttons',
+    Exception: 'Exception',
+    Sentences: 'Sentences'
+}
+
 export default class App extends Component {
 
     constructor(props) {
@@ -23,6 +29,10 @@ export default class App extends Component {
         return "test-" + state.toLowerCase();
     }
 
+    static sectionOrderFrom(json) {
+        return json.sectionOrder.map((value) => Section[value])
+    }
+
     static selectModeFrom(json) {
         return Mode[json.mode];
     }
@@ -31,6 +41,7 @@ export default class App extends Component {
         let configNode = document.querySelector("script[id='config']");
         let configJson = JSON.parse(configNode.textContent);
         let mode = App.selectModeFrom(configJson);
+        let sectionOrder = App.sectionOrderFrom(configJson)
 
         let indices = null;
         let data = null;
@@ -51,6 +62,7 @@ export default class App extends Component {
         this.setState({
             issueTrackerUrl: issueTrackerUrl == null ? "#" : issueTrackerUrl,
             mode: mode,
+            sectionOrder: sectionOrder,
             data: data,
             indices: indices,
             isLoaded: true
@@ -127,7 +139,7 @@ export default class App extends Component {
                     </section>
                     <section className="section">
                         {info}
-                        <TestWrapper issueTrackerUrl={this.state.issueTrackerUrl} tests={data.tests}/>
+                        <TestWrapper issueTrackerUrl={this.state.issueTrackerUrl} sectionOrder={this.state.sectionOrder} tests={data.tests}/>
                     </section>
                 </div>
         );

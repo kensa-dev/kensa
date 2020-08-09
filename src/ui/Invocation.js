@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import App from './App';
+import App, {Section} from './App';
 import {Sentence} from "./Sentence";
 import {SequenceDiagram} from "./SequenceDiagram";
 import {NamedValueTable} from "./NamedValueTable";
@@ -143,18 +143,32 @@ export class Invocation extends Component {
         return null;
     }
 
+    sentences(invocation, testStateClass) {
+        return (
+                <div className="message-body has-text-black">
+                    {invocation.sentences.map((sentence, index) => <Sentence key={index} expanded={false} sentence={sentence} acronyms={invocation.acronyms}/>)}
+                    <span className={"tag is-pulled-right " + testStateClass}>Executed in: {invocation.elapsedTime}</span>
+                </div>
+        )
+    }
+
     render() {
         let invocation = this.state.invocation;
         let testStateClass = App.stateClassFor(invocation.state);
 
         return (
                 <div className={"message " + testStateClass}>
-                    {this.buttons(invocation)}
-                    <div className="message-body has-text-black">
-                        {invocation.sentences.map((sentence, index) => <Sentence key={index} expanded={false} sentence={sentence} acronyms={invocation.acronyms}/>)}
-                        <span className={"tag is-pulled-right " + testStateClass}>Executed in: {invocation.elapsedTime}</span>
-                    </div>
-                    {this.exceptionBlock(invocation.executionException)}
+                    {this.props.sectionOrder.map((section) => {
+                                switch (section) {
+                                    case Section.Buttons:
+                                        return this.buttons(invocation)
+                                    case Section.Exception:
+                                        return this.exceptionBlock(invocation.executionException)
+                                    case Section.Sentences:
+                                        return this.sentences(invocation, testStateClass)
+                                }
+                            }
+                    )}
                 </div>
         );
     }

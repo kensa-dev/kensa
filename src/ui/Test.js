@@ -112,7 +112,7 @@ class Test extends Component {
                             </div>
                             <div className={this.contentClass()}>
                                 {this.renderInformation(test.issue, test.notes)}
-                                {test.invocations.map((invocation, index) => <Invocation key={index} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
+                                {test.invocations.map((invocation, index) => <Invocation key={index} sectionOrder={this.props.sectionOrder} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
                             </div>
                         </div>
                     </ScrollableAnchor>
@@ -125,7 +125,7 @@ export default class TestWrapper extends Component {
     render() {
         return (
                 this.props.tests.map((test, index) =>
-                        <Test issueTrackerUrl={this.props.issueTrackerUrl} key={index} test={test}/>
+                        <Test issueTrackerUrl={this.props.issueTrackerUrl} sectionOrder={this.props.sectionOrder} key={index} test={test}/>
                 )
         );
     }
