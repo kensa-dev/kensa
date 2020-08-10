@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Invocation} from "./Invocation";
-import App from "./App";
+import App, {makeNotes} from "./App";
 import ScrollableAnchor from "react-scrollable-anchor";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
@@ -54,7 +54,7 @@ class Test extends Component {
 
     renderInformation(issue, notes) {
         let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
-        let notesContent = notes ? <div>{notes}</div> : null;
+        let notesContent = notes ? makeNotes(notes) : null;
 
         if (issue.length > 0 || notes) {
             return (
@@ -69,13 +69,15 @@ class Test extends Component {
     }
 
     renderIssues(issues) {
-        return <div className="tags">
-            {
-                issues.map(issue => {
-                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
-                })
-            }
-        </div>;
+        return (
+                <div className="tags">
+                    {
+                        issues.map(issue => {
+                            return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
+                        })
+                    }
+                </div>
+        );
     }
 
     issueTrackerUrlFor(issue) {
@@ -112,7 +114,8 @@ class Test extends Component {
                             </div>
                             <div className={this.contentClass()}>
                                 {this.renderInformation(test.issue, test.notes)}
-                                {test.invocations.map((invocation, index) => <Invocation key={index} sectionOrder={this.props.sectionOrder} testMethod={test.testMethod} invocation={invocation} invocationNumber={index}/>)}
+                                {test.invocations.map((invocation, index) => <Invocation key={index} sectionOrder={this.props.sectionOrder} testMethod={test.testMethod} invocation={invocation}
+                                                                                         invocationNumber={index}/>)}
                             </div>
                         </div>
                     </ScrollableAnchor>

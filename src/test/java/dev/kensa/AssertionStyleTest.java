@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 
+@Notes("Some notes {@link dev.kensa.AssertionStyleTest#canUseAssertJStyle} with text in between " +
+        "{@link dev.kensa.AssertionStyleTest#canUseHamcrestStyle} and some trailing text")
 class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
 
     private final String actionName = "ACTION1";
@@ -35,6 +37,7 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
     }
 
     @Test
+    @Notes("Some notes {@link dev.kensa.AssertionStyleTest#canUseAssertJStyle} and some more")
     void canUseAssertJStyle() {
         given(someActionNameIsAddedToGivens()); // Comment
 
@@ -65,6 +68,7 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
     }
 
     @Test
+    @Notes("No link here")
     void canUseHamcrestStyle() {
         given(someActionNameIsAddedToGivens());
 

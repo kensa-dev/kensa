@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import './App.scss';
 import TestWrapper from "./Test";
 import Indices from "./IndexPage";
@@ -14,6 +14,51 @@ export const Section = {
     Buttons: 'Buttons',
     Exception: 'Exception',
     Sentences: 'Sentences'
+}
+
+function linkFor(match) {
+    let methodLink = ""
+    if (match.length > 2) {
+        methodLink = "#" + match[3]
+    }
+    return (<a href={"./" + match[1] + ".html" + methodLink}>{match[1] + methodLink}</a>)
+}
+
+function parseNotes(matches, notes) {
+    let lastIndex = 0
+    let fragments = matches.map((match) => {
+        let prefix = null
+        if (lastIndex < match.index) {
+            prefix = <span>{notes.substr(lastIndex, match.index - lastIndex)}</span>
+        }
+        lastIndex = match.index + match[0].length
+        return (
+                <Fragment>
+                    {prefix}
+                    {linkFor(match)}
+                </Fragment>
+        )
+    });
+
+    return {fragments: fragments, lastIndex: lastIndex}
+}
+
+function suffix(lastIndex, notes) {
+    if (lastIndex < notes.length) {
+        return <span>{notes.substr(lastIndex, notes.length)}</span>
+    }
+}
+
+export function makeNotes(notes) {
+    const regex = /{\s*@link\s+([a-zA-Z._$]+)(#([a-zA-Z._$]+))?\s*}/g
+    const matches = [...notes.matchAll(regex)]
+    let parsedNotes = parseNotes(matches, notes)
+    return (
+            <Fragment>
+                {parsedNotes.fragments}
+                {suffix(parsedNotes.lastIndex, notes)}
+            </Fragment>
+    )
 }
 
 export default class App extends Component {
@@ -110,7 +155,7 @@ export default class App extends Component {
 
     renderInformation(issue, notes, state) {
         let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
-        let notesContent = notes ? <div>{notes}</div> : null;
+        let notesContent = notes ? makeNotes(notes) : null;
 
         if (issue.length > 0 || notes) {
             return (
