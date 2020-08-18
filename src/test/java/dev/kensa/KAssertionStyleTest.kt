@@ -43,7 +43,7 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     @Test
     @Notes("Method Notes {@link AssertionStyleTest#canUseAssertJStyle}")
     @Issue("ISS-007")
-    fun canUseAssertJStyle() {
+    fun `can Use AssertJStyle`() {
         given(someActionNameIsAddedToGivens())
 
         whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())

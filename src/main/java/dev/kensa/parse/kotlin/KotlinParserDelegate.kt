@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 
 object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationContext> {
 
-    override fun methodNameFrom(dc: KotlinParser.FunctionDeclarationContext): String = dc.simpleIdentifier().text
+    override fun methodNameFrom(dc: KotlinParser.FunctionDeclarationContext): String = dc.simpleIdentifier().text.replace("`", "")
 
     override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Pair<List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>> {
         val testFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
