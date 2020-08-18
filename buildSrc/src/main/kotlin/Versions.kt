@@ -2,6 +2,7 @@ import org.gradle.api.JavaVersion
 
 object Versions {
 
+    val kotlin = "1.4.0"
     val mainJavaVersion = JavaVersion.VERSION_1_8
     val testJavaVersion = JavaVersion.VERSION_11
 

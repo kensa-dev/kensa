@@ -52,8 +52,8 @@ tasks {
 dependencies {
     antlr("org.antlr:antlr4:${Versions.antlr}")
 
-    api(kotlin("stdlib-jdk8"))
-    api(kotlin("reflect"))
+    api(kotlin("stdlib-jdk8", version = Versions.kotlin))
+    api(kotlin("reflect", version = Versions.kotlin))
 
     implementation("org.junit.jupiter:junit-jupiter-params:${Versions.junitJupiter}")
     implementation("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")

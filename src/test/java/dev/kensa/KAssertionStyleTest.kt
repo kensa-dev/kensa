@@ -41,7 +41,7 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     }
 
     @Test
-    @Notes("Method Notes")
+    @Notes("Method Notes {@link AssertionStyleTest#canUseAssertJStyle}")
     @Issue("ISS-007")
     fun canUseAssertJStyle() {
         given(someActionNameIsAddedToGivens())
@@ -63,19 +63,11 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     }
 
     private fun foo(): StateExtractor<Int?> {
-        return object : StateExtractor<Int?> {
-            override fun execute(interactions: CapturedInteractions): Int? {
-                return 666
-            }
-        }
+        return StateExtractor { 666 }
     }
 
     private fun foo1(): StateExtractor<String?> {
-        return object : StateExtractor<String?> {
-            override fun execute(interactions: CapturedInteractions): String {
-                return "777"
-            }
-        }
+        return StateExtractor { "777" }
     }
 
     @Test
