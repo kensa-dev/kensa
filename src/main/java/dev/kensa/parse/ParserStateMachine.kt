@@ -112,6 +112,8 @@ class ParserStateMachine(
             }
             ignoreAll<Event<*>> {
                 add(Matcher.any<TerminalNodeEvent>())
+                add(Matcher.any<EnterStatementEvent>())
+                add(Matcher.any<ExitStatementEvent>())
             }
         }
         state<InScenarioCall> {
