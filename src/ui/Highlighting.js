@@ -79,7 +79,7 @@ export const highlightXml = (parent, regExp) => {
 export const highlightJson = (parent, regExp) => {
     Array.from(parent.childNodes).forEach(child => {
         if (child.classList) {
-            if (child.classList.contains('hljs-string')) {
+            if (child.classList.contains('hljs-string') || child.classList.contains('hljs-number')) {
                 searchAttributeContent(child, regExp);
             }
         }
