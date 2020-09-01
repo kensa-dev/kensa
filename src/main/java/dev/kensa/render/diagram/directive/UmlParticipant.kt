@@ -1,69 +1,49 @@
-package dev.kensa.render.diagram.directive;
+package dev.kensa.render.diagram.directive
 
-import java.util.List;
+import dev.kensa.state.Party
 
-import static java.lang.String.format;
-import static java.util.Collections.singletonList;
+class UmlParticipant private constructor(
+        private val type: String,
+        private val name: String,
+        private val colour: String = "",
+        private val alias: String = ""
+) : UmlDirective {
+    fun withColour(colour: String): UmlParticipant = UmlParticipant(type, name, colour, alias)
 
-public class UmlParticipant implements UmlDirective {
-    public static UmlParticipant participant(String name) {
-        return new UmlParticipant("participant", name);
-    }
+    fun withAlias(alias: String): UmlParticipant = UmlParticipant(type, name, colour, alias)
 
-    public static UmlParticipant actor(String name) {
-        return new UmlParticipant("actor", name);
-    }
+    override fun asUml(): List<String> =
+            listOf("$type $name ${fmtAlias(alias)} $colour".replace("\\s+".toRegex(), " ").trim { it <= ' ' })
 
-    public static UmlParticipant boundary(String name) {
-        return new UmlParticipant("boundary", name);
-    }
+    private fun fmtAlias(alias: String): String = if (alias.isEmpty()) "" else "as \"$alias\""
 
-    public static UmlParticipant control(String name) {
-        return new UmlParticipant("control", name);
-    }
+    companion object {
+        fun participant(name: String): UmlParticipant = UmlParticipant("participant", name)
 
-    public static UmlParticipant entity(String name) {
-        return new UmlParticipant("entity", name);
-    }
+        fun actor(name: String): UmlParticipant = UmlParticipant("actor", name)
 
-    public static UmlParticipant database(String name) {
-        return new UmlParticipant("database", name);
-    }
+        fun boundary(name: String): UmlParticipant = UmlParticipant("boundary", name)
 
-    public static UmlParticipant collections(String name) {
-        return new UmlParticipant("collections", name);
-    }
+        fun control(name: String): UmlParticipant = UmlParticipant("control", name)
 
-    private final String type;
-    private final String name;
-    private final String colour;
-    private final String alias;
+        fun entity(name: String): UmlParticipant = UmlParticipant("entity", name)
 
-    private UmlParticipant(String type, String name) {
-        this(type, name, "", "");
-    }
+        fun database(name: String): UmlParticipant = UmlParticipant("database", name)
 
-    private UmlParticipant(String type, String name, String colour, String alias) {
-        this.type = type;
-        this.name = name;
-        this.colour = colour;
-        this.alias = alias;
-    }
+        fun collections(name: String): UmlParticipant = UmlParticipant("collections", name)
 
-    public UmlParticipant withColour(String colour) {
-        return new UmlParticipant(type, name, colour, alias);
-    }
+        fun participant(party: Party): UmlParticipant = UmlParticipant("participant", party.asString())
 
-    public UmlParticipant withAlias(String alias) {
-        return new UmlParticipant(type, name, colour, alias);
-    }
+        fun actor(party: Party): UmlParticipant = actor(party.asString())
 
-    @Override
-    public List<String> asUml() {
-        return singletonList(format("%s %s %s %s", type, name, fmtAlias(alias), colour).replaceAll("\\s+", " ").trim());
-    }
+        fun boundary(party: Party): UmlParticipant = boundary(party.asString())
 
-    private String fmtAlias(String alias) {
-        return alias.isEmpty() ? "" : "as \"" + alias + "\"";
+        fun control(party: Party): UmlParticipant = control(party.asString())
+
+        fun entity(party: Party): UmlParticipant = entity(party.asString())
+
+        fun database(party: Party): UmlParticipant = database(party.asString())
+
+        fun collections(party: Party): UmlParticipant = collections(party.asString())
     }
 }
