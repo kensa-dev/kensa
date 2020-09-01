@@ -13,7 +13,7 @@ internal class ReflectTest {
     }
 
     @Test
-    internal fun `can get a private field from aSimple java class`() {
+    internal fun `can get a private field from a simple java class`() {
         val privateValue = "A Value"
         val target = SomeJavaSubClass(10, privateValue)
 
@@ -21,7 +21,15 @@ internal class ReflectTest {
     }
 
     @Test
-    internal fun `can get a private field from aSimple kotlin class`() {
+    internal fun `can get a property from a simple kotlin class`() {
+        val value = "A Value"
+        val target = SomeKotlinSubClass(10, value)
+
+        assertThat(Reflect.invoke<String>("aProperty", target)).isEqualTo(value)
+    }
+
+    @Test
+    internal fun `can get a private field from a simple kotlin class`() {
         val privateValue = "A Value"
         val target = SomeKotlinSubClass(10, privateValue)
 
@@ -125,6 +133,6 @@ internal class ReflectTest {
 
     @Test
     internal fun `can get fields of a kotlin class`() {
-        assertThat(Reflect.fieldsOf(SomeKotlinSubClass::class.java)).extracting("name").containsExactly("valueSupplier", "field1", "superField")
+        assertThat(Reflect.fieldsOf(SomeKotlinSubClass::class.java)).extracting("name").containsExactly("valueSupplier", "aProperty", "field1", "superField")
     }
 }

@@ -12,6 +12,10 @@ import java.util.function.Supplier
 import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashSet
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.superclasses
+import kotlin.reflect.jvm.isAccessible
 
 object Reflect {
 
@@ -25,6 +29,29 @@ object Reflect {
 
     // Only need parameterless method invocation
     fun <T> invoke(name: String, target: Any): T? {
+        // Try to find a kotlin property first...
+        return if (isKotlinClass(target::class) && isProperty(name, target::class)) {
+            propertyValue(findProperty(name, target::class)!!, target)
+        } else invokeMethod<T>(name, target)
+    }
+
+    private fun isProperty(name: String, target: KClass<*>): Boolean {
+        return findProperty(name, target) != null
+    }
+
+    private fun findProperty(name: String, kClass: KClass<*>?): KProperty1<out Any?, Any?>? =
+            if (kClass == null || kClass == Any::class) null else {
+                kClass.declaredMemberProperties.singleOrNull { it.name == name }
+                        ?: findProperty(name, kClass.superclasses.singleOrNull { !it.java.isInterface })
+            }
+
+    fun <T> propertyValue(property: KProperty1<out Any?, Any?>, target: Any): T? = property.run {
+        isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        getter.call(target) as T
+    }
+
+    private fun <T> invokeMethod(name: String, target: Any): T? {
         val method = findMethods(target::class.java, LinkedHashSet()) { it.name == name && it.parameters.isEmpty() }
                 .firstOrNull()
                 ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
@@ -46,7 +73,8 @@ object Reflect {
     }
 
     fun <T> fieldValue(name: String, target: Any): T? {
-        val field = findField(name, target::class.java) ?: throw IllegalArgumentException("No field [$name] found in class [${target::class}]")
+        val field = findField(name, target::class.java)
+                ?: throw IllegalArgumentException("No field [$name] found in class [${target::class}]")
 
         return fieldValue(field, target)
     }
