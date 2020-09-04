@@ -88,6 +88,7 @@ class Configuration(
         var outputDir: Path = Paths.get(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR),
         val renderers: Renderers = Renderers(),
         var antlrPredicationMode: PredictionMode = PredictionMode.SLL,
+        var antlrErrorListenerDisabled: Boolean = true,
         var umlDirectives: List<UmlDirective> = ArrayList(),
         var outputStyle: OutputStyle = OutputStyle.MultiFile,
         var issueTrackerUrl: URL = defaultIssueTrackerUrl()) {

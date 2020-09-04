@@ -33,7 +33,7 @@ internal class SentenceBuilderTest {
     @Test
     fun canConstructASentenceFromVariousValueTypes() {
         builder.apply {
-            appendIdentifier(1, "givenFOOMooBar")
+            appendIdentifier(1, "givenFOOMooBarZOO")
             appendStringLiteral(1, "stringLiteral1")
             appendLiteral(1, "10")
             appendScenarioIdentifier(2, "scenario.call")
@@ -47,6 +47,7 @@ internal class SentenceBuilderTest {
                         anAcronymOf("FOO"),
                         aWordOf("moo"),
                         anAcronymOf("BAR"),
+                        aWordOf("ZOO"),
                         aStringLiteralOf("stringLiteral1"),
                         aLiteralOf("10"),
                         aNewline(),

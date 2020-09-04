@@ -80,7 +80,12 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
                 tokenValue = Character.toUpperCase(rawToken[0]).toString() + rawToken.substring(1)
             }
         } else if (index.type === Word) {
-            tokenValue = Character.toLowerCase(rawToken[0]).toString() + rawToken.substring(1)
+            tokenValue = if (tokenValue.matches("^[A-Z]+$".toRegex())) {
+                tokenValue
+            } else {
+                Character.toLowerCase(rawToken[0]).toString() + rawToken.substring(1)
+            }
+
         }
         return tokenValue
     }

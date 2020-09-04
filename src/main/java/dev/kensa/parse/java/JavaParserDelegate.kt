@@ -42,7 +42,7 @@ object JavaParserDelegate : ParserDelegate<Java8Parser.MethodDeclarationContext>
                         Java8Lexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
                 )
         ).apply {
-            //            removeErrorListeners()
+            takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
         }.compilationUnit()
     }

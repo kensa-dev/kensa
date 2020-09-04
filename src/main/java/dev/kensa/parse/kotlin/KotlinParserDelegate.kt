@@ -42,7 +42,7 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
                         KotlinLexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
                 )
         ).apply {
-            //            removeErrorListeners()
+            takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
         }.kotlinFile()
     }
