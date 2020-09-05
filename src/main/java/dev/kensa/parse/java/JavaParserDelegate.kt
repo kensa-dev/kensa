@@ -65,9 +65,9 @@ object JavaParserDelegate : ParserDelegate<Java8Parser.MethodDeclarationContext>
                 } ?: false
             }
 
-    override fun parameterNamesAndTypesFrom(mdc: Java8Parser.MethodDeclarationContext): List<Pair<String, String>> {
+    override fun parameterNamesAndTypesFrom(dc: Java8Parser.MethodDeclarationContext): List<Pair<String, String>> {
         return ArrayList<Pair<String, String>>().apply {
-            mdc.methodHeader().methodDeclarator().formalParameterList()?.let { fpl ->
+            dc.methodHeader().methodDeclarator().formalParameterList()?.let { fpl ->
                 fpl.formalParameters()?.let { fps ->
                     fps.formalParameter()?.forEach { fp ->
                         add(Pair(fp.variableDeclaratorId().text, fp.unannType().text))
