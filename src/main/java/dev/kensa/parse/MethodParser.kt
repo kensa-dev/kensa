@@ -1,9 +1,6 @@
 package dev.kensa.parse
 
-import dev.kensa.Highlight
-import dev.kensa.Kensa
-import dev.kensa.Scenario
-import dev.kensa.SentenceValue
+import dev.kensa.*
 import dev.kensa.util.Reflect
 import org.antlr.v4.runtime.tree.ParseTree
 import java.lang.reflect.Method
@@ -16,39 +13,40 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                 val properties = fieldCache.getOrPut(testClass) {
                     prepareFieldsFor(testClass)
                 }
-                val (testMethodDeclarations, _) = declarationCache.getOrPut(testClass) {
-                    findMethodDeclarationsIn(testClass).apply {
-                        nestedSentenceCache[testClass] = second.map { dc ->
+                val (testMethodDeclarations, nestedSentenceDeclarations) = declarationCache.getOrPut(testClass) { findMethodDeclarationsIn(testClass) }
+                val testMethodDeclaration = testMethodDeclarations.find { dc ->
+                    // Only match on parameter simple type name - saves having to go looking in the imports
+                    methodNameFrom(dc) == method.name && parameterNamesAndTypesFrom(dc).map { it.second } == method.parameterTypes.map { it.simpleName }
+                } ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
+
+                val testMethodParameters = parameterCache.getOrPut(method) { prepareParametersFor(method, parameterNamesAndTypesFrom(testMethodDeclaration)) }
+
+                nestedSentenceCache[testClass] = nestedSentenceDeclarations
+                        .map {
                             Pair(
-                                    methodNameFrom(dc),
-                                    ParserStateMachine(Kensa.configuration.dictionary, properties).run {
-                                        parse(this, dc)
+                                    methodNameFrom(it),
+                                    ParserStateMachine(
+                                            Kensa.configuration.dictionary,
+                                            properties,
+                                            testMethodParameters.descriptors
+                                    ).run {
+                                        parse(this, it)
                                         sentences
                                     }
                             )
                         }.associateBy({ it.first }, { it.second })
-                    }
+
+                val testMethodSentences = ParserStateMachine(
+                        Kensa.configuration.dictionary,
+                        properties,
+                        testMethodParameters.descriptors,
+                        nestedSentenceCache[testClass] ?: emptyMap()
+                ).run {
+                    parse(this, testMethodDeclaration)
+                    sentences
                 }
-                val sentences = testMethodSentenceCache.getOrPut(method) {
-                    testMethodDeclarations
-                            .filter { dc ->
-                                // Only match on parameter simple type name - saves having to go looking in the imports
-                                methodNameFrom(dc) == method.name && parameterNamesAndTypesFrom(dc).map { it.second } == method.parameterTypes.map { it.simpleName }
-                            }
-                            .map { Pair(it, parameterCache.getOrPut(method) { prepareParametersFor(method, parameterNamesAndTypesFrom(it)) }) }
-                            .flatMap { it ->
-                                ParserStateMachine(
-                                        Kensa.configuration.dictionary,
-                                        properties,
-                                        it.second.descriptors,
-                                        nestedSentenceCache[testClass] ?: emptyMap()
-                                ).run {
-                                    parse(this, it.first)
-                                    sentences
-                                }
-                            }
-                }
-                ParsedMethod(method.name, parameterCache[method]!!, sentences, nestedSentenceCache[testClass]!!, properties)
+
+                ParsedMethod(method.name, parameterCache[method]!!, testMethodSentences, nestedSentenceCache[testClass]!!, properties)
             }
 
     private fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
