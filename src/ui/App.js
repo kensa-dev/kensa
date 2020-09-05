@@ -50,7 +50,7 @@ function suffix(lastIndex, notes) {
 }
 
 export function makeNotes(notes) {
-    const regex = /{\s*@link\s+([a-zA-Z._$]+)(#([a-zA-Z._$]+))?\s*}/g
+    const regex = /{\s*@link\s+([a-zA-Z0-9._$]+)(#([a-zA-Z0-9._$]+))?\s*}/g
     const matches = [...notes.matchAll(regex)]
     let parsedNotes = parseNotes(matches, notes)
     return (
