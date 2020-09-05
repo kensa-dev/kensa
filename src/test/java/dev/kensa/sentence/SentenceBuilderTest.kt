@@ -39,6 +39,7 @@ internal class SentenceBuilderTest {
             appendScenarioIdentifier(2, "scenario.call")
             appendFieldIdentifier(2, "fieldName")
             appendParameterIdentifier(2, "parameterName")
+            appendIdentifier(3, "sendsAThing")
         }
 
         assertThat(builder.build().tokens)
@@ -53,7 +54,11 @@ internal class SentenceBuilderTest {
                         aNewline(),
                         aScenarioIdentifierOf("scenario.call"),
                         aFieldIdentifierOf("fieldName"),
-                        aParameterIdentifierOf("parameterName")
+                        aParameterIdentifierOf("parameterName"),
+                        aNewline(),
+                        aWordOf("sends"),
+                        aWordOf("a"),
+                        aWordOf("thing"),
                 )
     }
 
