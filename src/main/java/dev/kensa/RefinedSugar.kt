@@ -23,6 +23,9 @@ object RefinedSugar {
     fun <T> andThe(t: T): T = t
 
     @JvmStatic
+    fun <T> at(t: T): T = t
+
+    @JvmStatic
     fun <T> does(t: T): T = t
 
     @JvmStatic
