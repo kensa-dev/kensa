@@ -22,17 +22,17 @@ export class CapturedInteractions extends Component {
     }
 }
 
-export class Renderable extends Component {
+export class RenderableAttribute extends Component {
     render() {
-        const renderable = this.props.renderable;
+        const attribute = this.props.attribute;
         const highlights = this.props.highlights;
 
-        let name = Object.keys(renderable)[0];
+        let name = Object.keys(attribute)[0];
 
         return (
-                <div className="box renderable">
+                <div className="box renderable-attribute">
                     <div className="subtitle is-5">{name}</div>
-                    <NamedValueTable highlights={highlights} namedValues={renderable[name]}/>
+                    <NamedValueTable highlights={highlights} namedValues={attribute[name]}/>
                 </div>
         )
     }
@@ -40,14 +40,14 @@ export class Renderable extends Component {
 
 export class Renderables extends Component {
     render() {
-        const renderables = this.props.renderables;
+        const renderableAttributes = this.props.renderableAttributes;
         const highlights = this.props.highlights;
 
         return (
                 <div>
                     {
-                        renderables.map((renderable) => {
-                                    return <Renderable highlights={highlights} renderable={renderable}/>
+                        renderableAttributes.map((attribute) => {
+                                    return <RenderableAttribute highlights={highlights} attribute={attribute}/>
                                 }
                         )
                     }
@@ -65,11 +65,11 @@ export class Interaction extends Component {
         let languageAttr = capturedInteraction.attributes.find(attr => attr.hasOwnProperty("language"));
         let language = languageAttr ? languageAttr["language"] : "plainText";
 
-        let renderables = capturedInteraction["renderables"];
+        let renderableAttributes = capturedInteraction["renderableAttributes"];
 
         this.state = {
             capturedInteraction: capturedInteraction,
-            renderables: renderables,
+            renderableAttributes: renderableAttributes,
             highlightRegexp: highlightRegexp,
             language: language,
             isCollapsed: true
@@ -127,7 +127,7 @@ export class Interaction extends Component {
                         </a>
                     </header>
                     <div className={this.contentClass()}>
-                        <Renderables highlights={this.props.highlights} renderables={this.state.renderables}/>
+                        <Renderables highlights={this.props.highlights} renderableAttributes={this.state.renderableAttributes}/>
                         <div ref={this.interactionRef} className="box">
                             <Lowlight language={this.state.language} value={capturedInteraction['value']}/>
                         </div>

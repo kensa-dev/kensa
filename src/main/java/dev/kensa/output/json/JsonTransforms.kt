@@ -131,15 +131,15 @@ object JsonTransforms {
                     .add("id", entry.key.hashCode().toString())
                     .add("name", entry.key)
                     .add("value", renderers.renderValueOnly(entry.value))
-                    .add("renderables", asJsonArray(renderers.renderAll(entry.value), renderablesAsJson()))
+                    .add("renderableAttributes", asJsonArray(renderers.renderAll(entry.value), renderableAttributeAsJson()))
                     .add("attributes", asJsonArray(entry.attributes.attributes, nvAsJson(renderers)))
         }
     }
 
-    private fun renderablesAsJson(): (NamedValue) -> JsonValue {
+    private fun renderableAttributeAsJson(): (NamedValue) -> JsonValue {
         return { nv: NamedValue ->
             when (val value = nv.value) {
-                is Set<*> -> jsonObject().add(nv.name, asJsonArray(value as Set<NamedValue>, renderablesAsJson()))
+                is Set<*> -> jsonObject().add(nv.name, asJsonArray(value as Set<NamedValue>, renderableAttributeAsJson()))
 
                 else -> jsonObject().add(nv.name, nv.value.toString())
             }
