@@ -17,9 +17,10 @@ class Acronym(val acronym: String, val meaning: String) {
     override fun hashCode(): Int = Objects.hash(acronym)
 
     companion object {
+        private const val maxLength = 2
         @JvmStatic
         fun of(acronym: String, meaning: String): Acronym {
-            require((acronym.length > 2)) { "Acronyms must be at least 2 characters. [$acronym]" }
+            require((acronym.length >= maxLength)) { "Acronyms must be at least $maxLength characters. [$acronym]" }
             return Acronym(acronym, meaning)
         }
     }

@@ -32,7 +32,7 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
     @BeforeEach
     void setUp() {
         Kensa.configure()
-             .withAcronyms(Acronym.of("ACTION1", ""))
+             .withAcronyms(Acronym.of("ACTION1", ""), Acronym.of("AB", "A short Acronym"))
              .withKeywords("that");
     }
 
