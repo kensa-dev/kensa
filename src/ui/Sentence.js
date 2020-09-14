@@ -25,7 +25,7 @@ export class Sentence extends Component {
 
         types.forEach(type => {
             if (c.length > 0) c += " "
-            c += "token-" + type.toLowerCase();
+            c += type;
         })
 
         if (types.includes("Acronym")) {

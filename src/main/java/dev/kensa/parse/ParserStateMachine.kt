@@ -15,7 +15,8 @@ class ParserStateMachine(
         dictionary: Dictionary,
         private val fields: Map<String, FieldDescriptor>,
         private val parameters: Map<String, ParameterDescriptor> = emptyMap(),
-        private val nestedMethods: Map<String, List<Sentence>> = emptyMap()) {
+        private val nestedMethods: Map<String, List<Sentence>> = emptyMap(),
+        private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()) {
 
     private val keywords = dictionary.keywords
     private val acronyms = dictionary.acronymStrings
@@ -104,7 +105,7 @@ class ParserStateMachine(
                             currentState
                         }
                         else -> {
-                            sentenceBuilder.appendIdentifier(event.lineNumber, text)
+                            sentenceBuilder.appendIdentifier(event.lineNumber, text, emphasisedMethods[text] ?: EmphasisDescriptor.Default)
                             currentState
                         }
                     }
@@ -141,6 +142,8 @@ class ParserStateMachine(
     }
 
     private fun isNestedMethodCall(value: String) = nestedMethods.containsKey(value)
+
+    private fun isEmphasised(value: String) = emphasisedMethods.containsKey(value)
 
     private fun isScenarioIdentifier(value: String) = fields[value]?.isScenario ?: false
 

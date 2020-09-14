@@ -7,7 +7,7 @@ interface ParserDelegate<DC : ParseTree> {
 
     fun methodNameFrom(dc: DC): String
 
-    fun findMethodDeclarationsIn(testClass: KClass<out Any>): Pair<List<DC>, List<DC>>
+    fun findMethodDeclarationsIn(testClass: KClass<out Any>): Triple<List<DC>, List<DC>, List<DC>>
 
     fun parameterNamesAndTypesFrom(dc: DC): List<Pair<String, String>>
 
@@ -16,5 +16,6 @@ interface ParserDelegate<DC : ParseTree> {
     companion object {
         val testAnnotationNames = listOf("Test", "org.junit.jupiter.api.Test", "ParameterizedTest", "org.junit.jupiter.params.ParameterizedTest")
         val nestedSentenceAnnotationNames = listOf("NestedSentence", "dev.kensa.NestedSentence")
+        val emphasisedMethodAnnotationNames = listOf("Emphasise", "dev.kensa.Emphasise")
     }
 }

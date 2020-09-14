@@ -55,7 +55,7 @@ class TestInvocationParser {
                     token.hasType(FieldValue) -> tokenFactory.fieldValueTokenFrom(token)
                     token.hasType(ParameterValue) -> tokenFactory.parameterValueTokenFrom(token)
                     token.hasType(ScenarioValue) -> tokenFactory.scenarioValueTokenFrom(token)
-                    token.hasType(Expandable) -> SentenceToken(token.value, token.tokenTypes, token.nestedTokens.map { subTokens -> regenerateTokens(subTokens, tokenFactory) })
+                    token.hasType(Expandable) -> SentenceToken(token.value, token.tokenTypes, nestedTokens = token.nestedTokens.map { subTokens -> regenerateTokens(subTokens, tokenFactory) })
                     else -> token
                 }
             }

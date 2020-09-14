@@ -74,6 +74,8 @@ export class Invocation extends Component {
         let c = "button ";
         if (this.state.selectedTab === buttonName) {
             c += "is-selected " + testStateClass;
+        } else if (this.state.selectedTab !== null && this.state.selectedTab !== undefined) {
+            c += " has-selected"
         }
 
         return c;

@@ -13,4 +13,12 @@ object Strings {
             elements.joinToString(" ")
         }
     }
+
+    fun unCamelToSeparated(phrase: String, separator: String = "-"): String? {
+        return if (phrase.isBlank()) {
+            phrase
+        } else {
+            "(?=\\p{Lu})".toRegex().split(phrase.trim()).filterNot { it.isBlank() }.joinToString(separator).toLowerCase()
+        }
+    }
 }

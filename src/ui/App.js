@@ -159,7 +159,7 @@ export default class App extends Component {
 
         if (issue.length > 0 || notes) {
             return (
-                    <div className={"message " + App.stateClassFor(state)}>
+                    <div className="message is-info">
                         <div className="message-body">
                             {issueContent}
                             {notesContent}

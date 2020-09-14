@@ -58,7 +58,7 @@ class Test extends Component {
 
         if (issue.length > 0 || notes) {
             return (
-                    <div className="message-body">
+                    <div className="message-body is-info">
                         {issueContent}
                         {notesContent}
                     </div>

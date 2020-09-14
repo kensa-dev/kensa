@@ -1,13 +1,14 @@
 package dev.kensa
 
+import dev.kensa.Colour.BackgroundDanger
+import dev.kensa.Colour.TextLight
 import dev.kensa.Kensa.konfigure
 import dev.kensa.Section.*
+import dev.kensa.TextStyle.*
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithAssertJ
 import dev.kensa.kotlin.WithHamcrest
 import dev.kensa.sentence.Acronym
-import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.jupiter.api.BeforeEach
@@ -86,37 +87,24 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     }
 
     private fun somethingIsDoneWith(actionName: String): GivensBuilder {
-        return object : GivensBuilder {
-            override fun build(givens: Givens) {
-                givens.put("actionName", actionName)
-            }
-        }
+        return GivensBuilder { givens -> givens.put("actionName", actionName) }
     }
 
     private fun someActionNameIsAddedToGivens(): GivensBuilder {
-        return object : GivensBuilder {
-            override fun build(givens: Givens) {
-                givens.put("actionName", actionName)
-            }
-        }
+        return GivensBuilder { givens -> givens.put("actionName", actionName) }
     }
 
-    private fun theActionIsPerformedAndTheResultIsAddedToCapturedInteractions(): ActionUnderTest {
-        return object : ActionUnderTest {
-            override fun execute(givens: Givens, interactions: CapturedInteractions) {
-                givens.get<String>("actionName")?.let {
-                    interactions.put("result", performer.perform(it))
-                }
+    @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase, TextDecorationUnderline], textColour = TextLight, backgroundColor = BackgroundDanger)
+    fun theActionIsPerformedAndTheResultIsAddedToCapturedInteractions(): ActionUnderTest {
+        return ActionUnderTest { givens, interactions ->
+            givens.get<String>("actionName")?.let {
+                interactions.put("result", performer.perform(it))
             }
         }
     }
 
     private fun theResultStoredInCapturedInteractions(): StateExtractor<String?> {
-        return object : StateExtractor<String?> {
-            override fun execute(interactions: CapturedInteractions): String? {
-                return interactions["result"]
-            }
-        }
+        return StateExtractor { interactions -> interactions["result"] }
     }
 
     companion object {

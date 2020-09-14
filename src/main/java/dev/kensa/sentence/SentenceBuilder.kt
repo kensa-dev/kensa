@@ -1,5 +1,6 @@
 package dev.kensa.sentence
 
+import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.sentence.TokenType.Acronym
 import dev.kensa.sentence.scanner.Index
@@ -15,7 +16,7 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
 
         val scannedPlaceholder = scanner.scan(placeholder).joinToString(separator = " ") { index -> placeholder.substring(index.start, index.end) }
 
-        tokens.add(SentenceToken(scannedPlaceholder, setOf(Expandable), sentences.map { it.tokens }))
+        tokens.add(SentenceToken(scannedPlaceholder, setOf(Expandable), nestedTokens = sentences.map { it.tokens }))
     }
 
     fun appendLiteral(lineNumber: Int, value: String) {
@@ -47,10 +48,10 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
         tokens.add(Token(value, ParameterValue))
     }
 
-    fun appendIdentifier(lineNumber: Int, value: String) {
+    fun appendIdentifier(lineNumber: Int, value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
         markLineNumber(lineNumber)
         scanner.scan(value).forEach { index: Index ->
-            append(tokenValueFor(index, value.substring(index.start, index.end)), index.type)
+            append(tokenValueFor(index, value.substring(index.start, index.end)), index.type, emphasisDescriptor = emphasisDescriptor)
         }
     }
 
@@ -63,8 +64,8 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
         }
     }
 
-    private fun append(value: String, vararg tokenTypes: TokenType) {
-        tokens.add(Token(value, *tokenTypes))
+    private fun append(value: String, vararg tokenTypes: TokenType, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
+        tokens.add(Token(value, *tokenTypes, emphasisDescriptor = emphasisDescriptor))
     }
 
     private fun appendNewLine() {

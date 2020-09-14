@@ -16,9 +16,10 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
 
     override fun methodNameFrom(dc: KotlinParser.FunctionDeclarationContext): String = dc.simpleIdentifier().text.replace("`", "")
 
-    override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Pair<List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>> {
+    override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Triple<List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>> {
         val testFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
         val nestedFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
+        val emphasisedFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
         val cdc = compilationUnitFor(testClass).topLevelObject()
@@ -30,10 +31,11 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
             cmd.declaration()?.functionDeclaration()?.let { fd ->
                 testFunctionDeclarations.takeIf { isAnnotatedAsTest(fd) }?.add(fd)
                 nestedFunctionDeclarations.takeIf { isAnnotatedAsNested(fd) }?.add(fd)
+                emphasisedFunctionDeclarations.takeIf { isAnnotatedAsEmphasised(fd) }?.add(fd)
             }
         }
 
-        return Pair(testFunctionDeclarations, nestedFunctionDeclarations)
+        return Triple(testFunctionDeclarations, nestedFunctionDeclarations, emphasisedFunctionDeclarations)
     }
 
     private fun compilationUnitFor(testClass: KClass<out Any>): KotlinParser.KotlinFileContext {
@@ -59,6 +61,14 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
         return fd.modifiers().annotation().any { ac ->
             ac.singleAnnotation()?.unescapedAnnotation()?.userType()?.text?.let {
                 ParserDelegate.nestedSentenceAnnotationNames.contains(it)
+            } ?: false
+        }
+    }
+
+    private fun isAnnotatedAsEmphasised(fd: KotlinParser.FunctionDeclarationContext): Boolean {
+        return fd.modifiers().annotation().any { ac ->
+            ac.singleAnnotation()?.unescapedAnnotation()?.constructorInvocation()?.userType()?.text?.let {
+                ParserDelegate.emphasisedMethodAnnotationNames.contains(it)
             } ?: false
         }
     }

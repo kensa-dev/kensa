@@ -16,9 +16,10 @@ object JavaParserDelegate : ParserDelegate<Java8Parser.MethodDeclarationContext>
 
     override fun methodNameFrom(dc: Java8Parser.MethodDeclarationContext): String = dc.methodHeader().methodDeclarator().Identifier().text
 
-    override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Pair<List<Java8Parser.MethodDeclarationContext>, List<Java8Parser.MethodDeclarationContext>> {
+    override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Triple<List<Java8Parser.MethodDeclarationContext>, List<Java8Parser.MethodDeclarationContext>, List<Java8Parser.MethodDeclarationContext>> {
         val testMethodDeclarations = ArrayList<Java8Parser.MethodDeclarationContext>()
         val nestedMethodDeclarations = ArrayList<Java8Parser.MethodDeclarationContext>()
+        val emphasisedMethodDeclarations = ArrayList<Java8Parser.MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
         val cdc = compilationUnitFor(testClass).typeDeclaration()
@@ -30,10 +31,11 @@ object JavaParserDelegate : ParserDelegate<Java8Parser.MethodDeclarationContext>
             cbd.classMemberDeclaration().methodDeclaration()?.let { md ->
                 testMethodDeclarations.takeIf { isAnnotatedAsTest(md) }?.add(md)
                 nestedMethodDeclarations.takeIf { isAnnotatedAsNested(md) }?.add(md)
+                emphasisedMethodDeclarations.takeIf { isAnnotatedAsEmphasised(md) }?.add(md)
             }
         }
 
-        return Pair(testMethodDeclarations, nestedMethodDeclarations)
+        return Triple(testMethodDeclarations, nestedMethodDeclarations, emphasisedMethodDeclarations)
     }
 
     private fun compilationUnitFor(testClass: KClass<out Any>): Java8Parser.CompilationUnitContext {
@@ -62,6 +64,13 @@ object JavaParserDelegate : ParserDelegate<Java8Parser.MethodDeclarationContext>
             md.methodModifier().any { mm ->
                 mm.annotation()?.markerAnnotation()?.typeName()?.text?.let {
                     ParserDelegate.nestedSentenceAnnotationNames.contains(it)
+                } ?: false
+            }
+
+    private fun isAnnotatedAsEmphasised(md: Java8Parser.MethodDeclarationContext) =
+            md.methodModifier().any { mm ->
+                mm.annotation()?.normalAnnotation()?.typeName()?.text?.let {
+                    ParserDelegate.emphasisedMethodAnnotationNames.contains(it)
                 } ?: false
             }
 
