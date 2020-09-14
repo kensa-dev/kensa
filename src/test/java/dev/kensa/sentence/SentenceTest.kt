@@ -1,5 +1,7 @@
 package dev.kensa.sentence
 
+import dev.kensa.TextStyle
+import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aLiteralOf
 import dev.kensa.sentence.SentenceTokens.aNewline
@@ -15,13 +17,13 @@ internal class SentenceTest {
 
     @Test
     fun squashesTokensContainingWordsOnly() {
-        val expected: List<SentenceToken> = listOf(aWordOf("Word1 Word2 Word3 Word4"))
+        val expected: List<SentenceToken> = listOf(aWordOf("Word1 Word2 Word3 Word4", EmphasisDescriptor(setOf(TextStyle.Italic))))
         val sentence = Sentence(
                 listOf(
-                        aWordOf("Word1"),
-                        aWordOf("Word2"),
-                        aWordOf("Word3"),
-                        aWordOf("Word4")
+                        aWordOf("Word1",EmphasisDescriptor(setOf(TextStyle.Italic))),
+                        aWordOf("Word2",EmphasisDescriptor(setOf(TextStyle.Italic))),
+                        aWordOf("Word3",EmphasisDescriptor(setOf(TextStyle.Italic))),
+                        aWordOf("Word4",EmphasisDescriptor(setOf(TextStyle.Italic)))
                 )
         )
 
@@ -32,7 +34,7 @@ internal class SentenceTest {
     fun squashesTokensContainingWordsAndOtherTypes() {
         val expected: List<SentenceToken> = listOf(
                 anIdentifierOf("P1"),
-                aWordOf("Word1 Word2"),
+                aWordOf("Word1 Word2", EmphasisDescriptor(setOf(TextStyle.Italic))),
                 aStringLiteralOf("L1"),
                 aLiteralOf("null"),
                 aKeywordOf("K1"),
@@ -47,8 +49,8 @@ internal class SentenceTest {
         val sentence = Sentence(
                 listOf(
                         anIdentifierOf("P1"),
-                        aWordOf("Word1"),
-                        aWordOf("Word2"),
+                        aWordOf("Word1",EmphasisDescriptor(setOf(TextStyle.Italic))),
+                        aWordOf("Word2",EmphasisDescriptor(setOf(TextStyle.Italic))),
                         aStringLiteralOf("L1"),
                         aLiteralOf("null"),
                         aKeywordOf("K1"),

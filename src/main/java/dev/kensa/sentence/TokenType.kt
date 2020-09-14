@@ -1,5 +1,7 @@
 package dev.kensa.sentence
 
+import dev.kensa.util.Strings.unCamelToSeparated
+
 enum class TokenType {
     Acronym,
     Expandable,
@@ -13,4 +15,6 @@ enum class TokenType {
     ScenarioValue,
     StringLiteral,
     Word;
+
+    fun asCss(): String = "token-${unCamelToSeparated(name)}"
 }

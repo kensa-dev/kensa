@@ -1,12 +1,13 @@
 package dev.kensa.util
 
 import dev.kensa.util.Strings.unCamel
+import dev.kensa.util.Strings.unCamelToSeparated
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class StringsTest {
     @Test
-    fun canUnCamel() {
+    internal fun `can un-camel`() {
         assertThat(unCamel("")).isEqualTo("")
         assertThat(unCamel(" ")).isEqualTo(" ")
         assertThat(unCamel("camelCasePhrase")).isEqualTo("Camel Case Phrase")
@@ -23,5 +24,18 @@ internal class StringsTest {
         assertThat(unCamel("FTTCCamelCasePhrase9000")).isEqualTo("FTTC Camel Case Phrase 9000")
         assertThat(unCamel("FTTCCamel9000CasePhrase")).isEqualTo("FTTC Camel 9000 Case Phrase")
         assertThat(unCamel("9000FTTCCamelCasePhrase")).isEqualTo("9000 FTTC Camel Case Phrase")
+    }
+
+    @Test
+    internal fun `can un-camel and separate with separator`() {
+        assertThat(unCamelToSeparated("")).isEqualTo("")
+        assertThat(unCamelToSeparated(" ")).isEqualTo(" ")
+        assertThat(unCamelToSeparated("camelCasePhrase")).isEqualTo("camel-case-phrase")
+        assertThat(unCamelToSeparated(" camelCasePhrase ")).isEqualTo("camel-case-phrase")
+        assertThat(unCamelToSeparated("CamelCasePhrase")).isEqualTo("camel-case-phrase")
+
+        assertThat(unCamelToSeparated("camelCasePhrase", ".")).isEqualTo("camel.case.phrase")
+        assertThat(unCamelToSeparated(" camelCasePhrase ", ".")).isEqualTo("camel.case.phrase")
+        assertThat(unCamelToSeparated("CamelCasePhrase", ".")).isEqualTo("camel.case.phrase")
     }
 }

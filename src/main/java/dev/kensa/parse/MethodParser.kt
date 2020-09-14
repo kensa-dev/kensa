@@ -13,13 +13,18 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                 val properties = fieldCache.getOrPut(testClass) {
                     prepareFieldsFor(testClass)
                 }
-                val (testMethodDeclarations, nestedSentenceDeclarations) = declarationCache.getOrPut(testClass) { findMethodDeclarationsIn(testClass) }
+                val (testMethodDeclarations, nestedSentenceDeclarations, emphasisedMethodDeclarations) =
+                        declarationCache.getOrPut(testClass) { findMethodDeclarationsIn(testClass) }
                 val testMethodDeclaration = testMethodDeclarations.find { dc ->
                     // Only match on parameter simple type name - saves having to go looking in the imports
                     methodNameFrom(dc) == method.name && parameterNamesAndTypesFrom(dc).map { it.second } == method.parameterTypes.map { it.simpleName }
                 } ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
 
                 val testMethodParameters = parameterCache.getOrPut(method) { prepareParametersFor(method, parameterNamesAndTypesFrom(testMethodDeclaration)) }
+
+                val emphasisedMethods: Map<String, EmphasisDescriptor> = emphasisedMethodCache.getOrPut(testClass) {
+                    prepareEmphasisedMethods(testClass, emphasisedMethodDeclarations)
+                }
 
                 nestedSentenceCache[testClass] = nestedSentenceDeclarations
                         .map {
@@ -40,7 +45,8 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                         Kensa.configuration.dictionary,
                         properties,
                         testMethodParameters.descriptors,
-                        nestedSentenceCache[testClass] ?: emptyMap()
+                        nestedSentenceCache[testClass] ?: emptyMap(),
+                        emphasisedMethods
                 ).run {
                     parse(this, testMethodDeclaration)
                     sentences
@@ -48,6 +54,17 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
 
                 ParsedMethod(method.name, parameterCache[method]!!, testMethodSentences, nestedSentenceCache[testClass]!!, properties)
             }
+
+    private fun prepareEmphasisedMethods(testClass: KClass<*>, emphasisedMethodDeclarations: List<DC>): Map<String, EmphasisDescriptor> {
+        return emphasisedMethodDeclarations
+                .map { dc ->
+                    val methodName = methodNameFrom(dc)
+                    Reflect.findAnnotation<Emphasise>(Reflect.findMethod(methodName, testClass))!!.run {
+                        Pair(methodName, EmphasisDescriptor(textStyles.toSet(), textColour, backgroundColor))
+                    }
+                }
+                .associateBy({ it.first }, { it.second })
+    }
 
     private fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
             MethodParameters(

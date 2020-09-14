@@ -68,3 +68,7 @@
 .token-stringliteral:after {
   content: close-quote;
 }
+
+.has-text-decoration-underline {
+  text-decoration: underline;
+}

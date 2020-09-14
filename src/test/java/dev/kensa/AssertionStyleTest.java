@@ -4,7 +4,6 @@ import dev.kensa.java.JavaKensaTest;
 import dev.kensa.java.WithAssertJ;
 import dev.kensa.java.WithHamcrest;
 import dev.kensa.sentence.Acronym;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,6 +12,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static dev.kensa.Colour.BackgroundDanger;
+import static dev.kensa.Colour.TextLight;
+import static dev.kensa.TextStyle.*;
 import static org.hamcrest.CoreMatchers.is;
 
 @Notes("Some notes {@link dev.kensa.AssertionStyleTest#canUseAssertJStyle} with text in between " +
@@ -52,12 +54,10 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
                 .isEqualTo(666);
     }
 
-    @NotNull
     private StateExtractor<Integer> foo() {
         return interactions -> 666;
     }
 
-    @NotNull
     private StateExtractor<String> foo1() {
         return interactions -> "777";
     }
@@ -95,6 +95,7 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
         return (givens) -> givens.put("actionName", actionName);
     }
 
+    @Emphasise(textStyles = {TextWeightBold, Italic, Uppercase}, textColour = TextLight, backgroundColor = BackgroundDanger)
     private ActionUnderTest theActionIsPerformedAndTheResultIsAddedToCapturedInteractions() {
         return (givens, capturedInteractions) -> {
             String actionName = givens.get("actionName");

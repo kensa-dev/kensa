@@ -92,12 +92,12 @@ object JsonTransforms {
         return { sentence: Sentence ->
             asJsonArray(sentence.squashedTokens) { token: SentenceToken ->
                 jsonObject()
-                        .add("types", asJsonArray(token.tokenTypeNames))
+                        .add("types", asJsonArray(token.cssClasses))
                         .add("value", token.value)
                         .add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<SentenceToken> ->
                             asJsonArray(sentenceTokens) { sentenceToken ->
                                 jsonObject()
-                                        .add("types", asJsonArray(sentenceToken.tokenTypeNames))
+                                        .add("types", asJsonArray(sentenceToken.cssClasses))
                                         .add("value", sentenceToken.value)
                             }
                         })

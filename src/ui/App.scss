@@ -77,4 +77,18 @@
   //background-color: #2b2b2b;
 }
 
+.buttons:not(:last-child) {
+  margin-bottom: 0 !important;
+}
 
+.buttons .button.has-selected {
+  margin-bottom: 0.5rem !important;
+}
+
+.buttons .button.is-selected {
+  margin-bottom: 0.5rem !important;
+}
+
+.buttons .button {
+  margin-bottom: 0 !important;
+}

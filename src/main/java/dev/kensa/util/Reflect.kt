@@ -51,6 +51,12 @@ object Reflect {
         getter.call(target) as T
     }
 
+    fun findMethod(name: String, target: KClass<*>): Method {
+        return findMethods(target.java, LinkedHashSet()) { it.name == name }
+                .firstOrNull()
+                ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
+    }
+
     private fun <T> invokeMethod(name: String, target: Any): T? {
         val method = findMethods(target::class.java, LinkedHashSet()) { it.name == name && it.parameters.isEmpty() }
                 .firstOrNull()
