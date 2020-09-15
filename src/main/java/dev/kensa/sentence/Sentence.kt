@@ -11,25 +11,34 @@ class Sentence(val tokens: List<SentenceToken>) {
             var currentTokenTypes: Set<TokenType> = emptySet()
             var currentValue = ""
             var currentEmphasis = EmphasisDescriptor.Default
-            for (token in tokens) {
+
+            fun finishCurrentWord() {
+                if (currentTokenTypes.contains(Word)) {
+                    add(Token(currentValue, currentTokenTypes, emphasis = currentEmphasis))
+                    currentValue = ""
+                    currentEmphasis = EmphasisDescriptor.Default
+                }
+            }
+
+            tokens.forEach { token ->
                 if (token.hasType(Word)) {
-                    currentValue += if (currentTokenTypes.contains(Word) && currentEmphasis == token.emphasis) {
-                        " " + token.value
+                    currentValue = if (currentTokenTypes.contains(Word)) {
+                        if (currentEmphasis == token.emphasis) {
+                            "$currentValue ${token.value}"
+                        } else {
+                            finishCurrentWord()
+                            token.value
+                        }
                     } else {
                         token.value
                     }
                 } else {
-                    if (currentTokenTypes.contains(Word)) {
-                        add(Token(currentValue, currentTokenTypes, emphasis = currentEmphasis))
-                        currentValue = ""
-                    }
+                    finishCurrentWord()
                     add(token)
                 }
                 currentTokenTypes = token.tokenTypes
                 currentEmphasis = token.emphasis
             }
-            if (currentTokenTypes.contains(Word)) {
-                add(Token(currentValue, currentTokenTypes, emphasis = currentEmphasis))
-            }
+            finishCurrentWord()
         }
 }
