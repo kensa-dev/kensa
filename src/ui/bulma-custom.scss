@@ -5,6 +5,7 @@ $modal-content-width: 1200px;
 $success: hsl(141, 78%, 35%);
 $warning: hsl(48, 100%, 54%);
 $danger: hsl(352, 100%, 48%);
+$divider-thickness: .2rem;
 
 @import "~bulma/sass/utilities/all";
 @import "~bulma/sass/base/all";
@@ -27,3 +28,4 @@ $danger: hsl(352, 100%, 48%);
 @import "~bulma/sass/layout/hero";
 @import "~bulma/sass/layout/section";
 @import "~bulma-tooltip/dist/css/bulma-tooltip";
+@import "~bulma-divider/dist/css/bulma-divider";

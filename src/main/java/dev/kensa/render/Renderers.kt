@@ -18,22 +18,22 @@ class Renderers {
 
     fun renderValueOnly(value: Any?): String = render(value)
 
-    fun renderAll(value: Any?): Set<NamedValue> {
-        return LinkedHashSet<NamedValue>().apply {
+    fun renderAll(value: Any?): Set<Pair<Boolean, NamedValue>> {
+        return LinkedHashSet<Pair<Boolean,NamedValue>>().apply {
             value?.let {
                 rendererFor(it::class)?.let { renderer ->
                     if (renderer is RendererWithAttributes<Any>) {
                         for (attribute in renderer.attributes()) {
                             when (val attr = attribute.renderableFrom(it)) {
                                 is Map<*, *> -> {
-                                    add(NamedValue(attribute.name(), attr.entries.map { entry -> NamedValue(entry.key as String, entry.value ?: "NULL") }.toSet()))
+                                    add(Pair(attribute.showOnSequenceDiagram(), NamedValue(attribute.name(), attr.entries.map { entry -> NamedValue(entry.key as String, entry.value ?: "NULL") }.toSet())))
                                 }
-                                else -> add(NamedValue(attribute.name(), render(attr)))
+                                else -> add(Pair(attribute.showOnSequenceDiagram(), NamedValue(attribute.name(), render(attr))))
                             }
                         }
                     }
                 } ?: value.toString()
-            } ?: add(NamedValue("value", "NULL"))
+            } ?: add(Pair(false, NamedValue("value", "NULL")))
         }
     }
 

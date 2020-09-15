@@ -3,6 +3,7 @@ import Lowlight from 'react-lowlight';
 import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {SequenceDiagramRenderableAttributes} from "./SequenceDiagramRenderableAttributes";
 
 class Popup extends Component {
     constructor(props) {
@@ -56,20 +57,22 @@ class Popup extends Component {
     render() {
         if (this.props.interaction) {
             return (
-                    <div className={"modal is-active"}>
-                        <div className="modal-background" onClick={this.props.onHide}/>
-                        <div className="modal-card">
-                            <header className="modal-card-head">
-                                <p className="modal-card-title">{this.props.interaction.name}</p>
-                                <a onClick={this.props.onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
-                            </header>
-                            <section className="modal-card-body">
-                                <div ref={this.setCodeRef.bind(this)}>
-                                    <Lowlight language={this.state.language} value={this.props.interaction.value}/>
-                                </div>
-                            </section>
-                        </div>
+                <div className={"modal is-active"}>
+                    <div className="modal-background" onClick={this.props.onHide}/>
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">{this.props.interaction.name}</p>
+                            <a onClick={this.props.onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
+                        </header>
+                        <section className="modal-card-body">
+                            <SequenceDiagramRenderableAttributes highlights={this.props.highlights}
+                                                                 attributes={this.props.interaction.renderableAttributes}/>
+                            <div ref={this.setCodeRef.bind(this)}>
+                                <Lowlight language={this.state.language} value={this.props.interaction.value}/>
+                            </div>
+                        </section>
                     </div>
+                </div>
             )
         }
         return null;
@@ -95,11 +98,11 @@ export class SequenceDiagram extends Component {
 
     findClickableChildrenOf(parent, clickable) {
         Array.from(parent.childNodes).forEach(child => {
-                    if (child.classList && child.classList.contains('sequence_diagram_clickable')) {
-                        clickable.push(child);
-                    }
-                    this.findClickableChildrenOf(child, clickable);
+                if (child.classList && child.classList.contains('sequence_diagram_clickable')) {
+                    clickable.push(child);
                 }
+                this.findClickableChildrenOf(child, clickable);
+            }
         );
     }
 
@@ -144,17 +147,18 @@ export class SequenceDiagram extends Component {
 
     popup() {
         if (this.state.popupActive) {
-            return <Popup onHide={this.hidePopup} interaction={this.state.interaction} highlights={this.props.highlights}/>
+            return <Popup onHide={this.hidePopup} interaction={this.state.interaction}
+                          highlights={this.props.highlights}/>
         }
     }
 
     render() {
         const sequenceDiagram = this.props.sequenceDiagram;
         return (
-                <div>
-                    <div ref={this.sequenceDiagramRef} dangerouslySetInnerHTML={{__html: sequenceDiagram}}/>
-                    {this.popup()}
-                </div>
+            <div>
+                <div ref={this.sequenceDiagramRef} dangerouslySetInnerHTML={{__html: sequenceDiagram}}/>
+                {this.popup()}
+            </div>
         )
     }
 }

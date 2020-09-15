@@ -60,7 +60,7 @@
 }
 
 .renderable-attribute {
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 
 .captured-interaction {
@@ -85,10 +85,40 @@
   margin-bottom: 0.5rem !important;
 }
 
+.table.is-borderless td, th {
+  border: 0
+}
+
+.table.pairs {
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 21px;
+  font-style: normal;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  color: $grey;
+}
+
 .buttons .button.is-selected {
   margin-bottom: 0.5rem !important;
 }
 
 .buttons .button {
   margin-bottom: 0 !important;
+}
+
+pre.lowlight {
+  padding: 0
+}
+
+.is-divider {
+  margin: 1rem 0 !important;
+}
+
+.pairs .name {
+  font-weight: bold;
+}
+
+.pairs .name::after {
+  content: ':'
 }

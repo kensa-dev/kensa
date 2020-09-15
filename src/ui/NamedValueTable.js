@@ -1,6 +1,16 @@
 import React, {Component} from "react";
+import {highlightPlainText} from "./Highlighting";
 
 export class NamedValueTable extends Component {
+    setCodeRef(wrappingDiv) {
+        if (wrappingDiv) {
+            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${this.props.highlights.join('|')})`) : null;
+            if (highlightRegexp) {
+                highlightPlainText(wrappingDiv, highlightRegexp)
+            }
+        }
+    }
+
     render() {
         const namedValues = this.props.namedValues;
         return (
@@ -19,7 +29,7 @@ export class NamedValueTable extends Component {
                                         return <tr key={index}>
                                             <td>{name}</td>
                                             <td>
-                                                <div className={this.classFor(value)}>{value}</div>
+                                                <div ref={this.setCodeRef.bind(this)}>{value}</div>
                                             </td>
                                         </tr>
                                     }
@@ -27,21 +37,5 @@ export class NamedValueTable extends Component {
                     </tbody>
                 </table>
         );
-    }
-
-    classFor(value) {
-        let highlights = this.props.highlights;
-        let c = "";
-
-        if (highlights) {
-            highlights.forEach(highlight => {
-                        if (highlight === value) {
-                            c = "kensa-highlight";
-                        }
-                    }
-            );
-        }
-
-        return c;
     }
 }

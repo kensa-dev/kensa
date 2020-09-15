@@ -136,12 +136,14 @@ object JsonTransforms {
         }
     }
 
-    private fun renderableAttributeAsJson(): (NamedValue) -> JsonValue {
-        return { nv: NamedValue ->
-            when (val value = nv.value) {
-                is Set<*> -> jsonObject().add(nv.name, asJsonArray(value as Set<NamedValue>, renderableAttributeAsJson()))
+    private fun renderableAttributeAsJson(): (Pair<Boolean, NamedValue>) -> JsonValue {
+        return { pair: Pair<Boolean, NamedValue> ->
+            when (val value = pair.second.value) {
+                is Set<*> -> jsonObject()
+                        .add("showOnSequenceDiagram", pair.first)
+                        .add(pair.second.name, asJsonArray(value as Set<NamedValue>) { nv-> jsonObject().add(nv.name, nv.value.toString()) })
 
-                else -> jsonObject().add(nv.name, nv.value.toString())
+                else -> jsonObject().add(pair.second.name, pair.second.value.toString())
             }
         }
     }

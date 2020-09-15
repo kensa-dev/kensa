@@ -26,8 +26,7 @@ export class RenderableAttribute extends Component {
     render() {
         const attribute = this.props.attribute;
         const highlights = this.props.highlights;
-
-        let name = Object.keys(attribute)[0];
+        let name = Object.keys(attribute)[1];
 
         return (
                 <div className="box renderable-attribute">
@@ -38,15 +37,15 @@ export class RenderableAttribute extends Component {
     }
 }
 
-export class Renderables extends Component {
+export class RenderableAttributes extends Component {
     render() {
-        const renderableAttributes = this.props.renderableAttributes;
+        const attributes = this.props.attributes;
         const highlights = this.props.highlights;
 
         return (
                 <div>
                     {
-                        renderableAttributes.map((attribute) => {
+                        attributes.map((attribute) => {
                                     return <RenderableAttribute highlights={highlights} attribute={attribute}/>
                                 }
                         )
@@ -119,20 +118,21 @@ export class Interaction extends Component {
     render() {
         let capturedInteraction = this.state.capturedInteraction;
         return (
-                <div className="captured-interaction card is-fullwidth">
-                    <header className="card-header" onClick={this.toggle}>
-                        <p className="card-header-title">{capturedInteraction.name}</p>
-                        <a className="card-header-icon">
-                            <FontAwesomeIcon icon={this.icon()}/>
-                        </a>
-                    </header>
-                    <div className={this.contentClass()}>
-                        <Renderables highlights={this.props.highlights} renderableAttributes={this.state.renderableAttributes}/>
-                        <div ref={this.interactionRef} className="box">
-                            <Lowlight language={this.state.language} value={capturedInteraction['value']}/>
-                        </div>
+            <div className="captured-interaction card is-fullwidth">
+                <header className="card-header" onClick={this.toggle}>
+                    <p className="card-header-title">{capturedInteraction.name}</p>
+                    <a className="card-header-icon">
+                        <FontAwesomeIcon icon={this.icon()}/>
+                    </a>
+                </header>
+                <div className={this.contentClass()}>
+                    <RenderableAttributes highlights={this.props.highlights}
+                                          attributes={this.state.renderableAttributes}/>
+                    <div ref={this.interactionRef} className="box">
+                        <Lowlight language={this.state.language} value={capturedInteraction['value']}/>
                     </div>
                 </div>
+            </div>
         )
     }
 }
