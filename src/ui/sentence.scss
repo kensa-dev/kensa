@@ -39,12 +39,12 @@
   text-decoration: underline;
 }
 
-.token-scenariovalue, .token-fieldvalue, .token-parametervalue {
+.token-scenario-value, .token-field-value, .token-parameter-value {
   font-weight: bold;
   color: $grey-dark
 }
 
-.token-stringliteral {
+.token-string-literal {
   font-weight: bold;
 }
 
@@ -52,20 +52,20 @@
   font-weight: bold;
 }
 
-.token-newline:before {
+.token-new-line:before {
   display: block;
   content: "\A";
 }
 
-.token-newline:after {
+.token-new-line:after {
   content: "\2003";
 }
 
-.token-stringliteral:before {
+.token-string-literal:before {
   content: open-quote;
 }
 
-.token-stringliteral:after {
+.token-string-literal:after {
   content: close-quote;
 }
 
