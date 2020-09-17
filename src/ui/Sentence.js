@@ -15,7 +15,7 @@ export class Sentence extends Component {
     }
 
     acronymExpansionFor(types, value) {
-        if (types.includes("Acronym")) {
+        if (types.includes("acronym")) {
             return this.props.acronyms[value];
         }
     }
@@ -28,11 +28,11 @@ export class Sentence extends Component {
             c += type;
         })
 
-        if (types.includes("Acronym")) {
+        if (types.includes("acronym")) {
             c = "tooltip " + c;
         }
 
-        if (types.includes("Expandable") && this.state.expanded) {
+        if (types.includes("expandable") && this.state.expanded) {
             c += " expanded"
         }
 
@@ -54,7 +54,7 @@ export class Sentence extends Component {
             let types = token.types;
             let value = token.value;
 
-            if (types.includes("Expandable")) {
+            if (types.includes("expandable")) {
                 return <>
                         <span key={index}
                               onClick={this.toggle}
@@ -82,7 +82,7 @@ export class Sentence extends Component {
                 .reduce((prev, curr) => [prev, " ", curr])
     }
 
-    foo() {
+    isNested() {
         if (this.props.nested) {
             return "nested-sentence"
         }
@@ -92,7 +92,7 @@ export class Sentence extends Component {
         const sentence = this.props.sentence;
 
         return (
-                <div className={this.foo()}>{this.sentence(sentence)}</div>
+                <div className={this.isNested()}>{this.sentence(sentence)}</div>
         )
     }
 }
