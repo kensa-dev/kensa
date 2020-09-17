@@ -15,7 +15,7 @@ export class Sentence extends Component {
     }
 
     acronymExpansionFor(types, value) {
-        if (types.includes("acronym")) {
+        if (types.includes("token-acronym")) {
             return this.props.acronyms[value];
         }
     }
@@ -28,11 +28,11 @@ export class Sentence extends Component {
             c += type;
         })
 
-        if (types.includes("acronym")) {
+        if (types.includes("token-acronym")) {
             c = "tooltip " + c;
         }
 
-        if (types.includes("expandable") && this.state.expanded) {
+        if (types.includes("token-expandable") && this.state.expanded) {
             c += " expanded"
         }
 
@@ -54,7 +54,7 @@ export class Sentence extends Component {
             let types = token.types;
             let value = token.value;
 
-            if (types.includes("expandable")) {
+            if (types.includes("token-expandable")) {
                 return <>
                         <span key={index}
                               onClick={this.toggle}
