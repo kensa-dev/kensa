@@ -3,7 +3,49 @@ import Lowlight from 'react-lowlight';
 import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {SequenceDiagramRenderableAttributes} from "./SequenceDiagramRenderableAttributes";
+
+class RenderableAttributes extends Component {
+
+    setCodeRef(wrappingDiv) {
+        if (wrappingDiv) {
+            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${this.props.highlights.join('|')})`) : null;
+            if (highlightRegexp) {
+                highlightPlainText(wrappingDiv, highlightRegexp)
+            }
+        }
+    }
+
+    render() {
+        const attributes = this.props.attributes;
+        return (
+            <div>
+                <table className="table pairs is-borderless is-narrow">
+                    <tbody>
+                    {attributes
+                        .map((attribute) => {
+                                if (attribute["showOnSequenceDiagram"]) {
+                                    let attributeName = Object.keys(attribute)[1];
+                                    return attribute[attributeName].map((item, index) => {
+                                        let itemName = Object.keys(item)[0];
+                                        let value = item[itemName];
+                                        return (<tr key={index}>
+                                            <td  className="name">{itemName}</td>
+                                            <td>
+                                                <div ref={this.setCodeRef.bind(this)}>{value}</div>
+                                            </td>
+                                        </tr>);
+                                    })
+
+                                }
+                            }
+                        )}
+                    </tbody>
+                </table>
+                {attributes.length > 0 ? <div className="is-divider"/> : null}
+            </div>
+        );
+    }
+}
 
 class Popup extends Component {
     constructor(props) {
@@ -65,7 +107,7 @@ class Popup extends Component {
                             <a onClick={this.props.onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
                         </header>
                         <section className="modal-card-body">
-                            <SequenceDiagramRenderableAttributes highlights={this.props.highlights}
+                            <RenderableAttributes highlights={this.props.highlights}
                                                                  attributes={this.props.interaction.renderableAttributes}/>
                             <div ref={this.setCodeRef.bind(this)}>
                                 <Lowlight language={this.state.language} value={this.props.interaction.value}/>
