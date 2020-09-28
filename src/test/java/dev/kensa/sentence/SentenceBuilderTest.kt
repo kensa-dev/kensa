@@ -40,6 +40,7 @@ internal class SentenceBuilderTest {
             appendFieldIdentifier(2, "fieldName")
             appendParameterIdentifier(2, "parameterName")
             appendIdentifier(3, "sendsAThing")
+            appendIdentifier(4, "somethingA_CONSTANT_11")
         }
 
         assertThat(builder.build().tokens)
@@ -59,6 +60,9 @@ internal class SentenceBuilderTest {
                         aWordOf("sends"),
                         aWordOf("a"),
                         aWordOf("thing"),
+                        aNewline(),
+                        aWordOf("something"),
+                        aWordOf("A_CONSTANT_11")
                 )
     }
 
