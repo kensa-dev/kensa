@@ -136,6 +136,7 @@ object JsonTransforms {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun renderableAttributeAsJson(): (Pair<Boolean, NamedValue>) -> JsonValue {
         return { pair: Pair<Boolean, NamedValue> ->
             when (val value = pair.second.value) {

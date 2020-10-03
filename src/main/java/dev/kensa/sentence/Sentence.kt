@@ -14,7 +14,7 @@ class Sentence(val tokens: List<SentenceToken>) {
 
             fun finishCurrentWord() {
                 if (currentTokenTypes.contains(Word)) {
-                    add(Token(currentValue, currentTokenTypes, emphasis = currentEmphasis))
+                    add(SentenceToken(currentValue, currentTokenTypes, emphasis = currentEmphasis))
                     currentValue = ""
                     currentEmphasis = EmphasisDescriptor.Default
                 }

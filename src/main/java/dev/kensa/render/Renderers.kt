@@ -12,6 +12,7 @@ class Renderers {
         add(klass.kotlin, renderer)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T : Any> add(klass: KClass<T>, renderer: Renderer<out T>) {
         renderers[klass] = renderer as Renderer<Any>
     }

@@ -35,17 +35,17 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
 
     fun appendScenarioIdentifier(lineNumber: Int, value: String) {
         markLineNumber(lineNumber)
-        tokens.add(Token(value, ScenarioValue))
+        tokens.add(SentenceToken(value, tokenTypes = arrayOf(ScenarioValue)))
     }
 
     fun appendFieldIdentifier(lineNumber: Int, value: String) {
         markLineNumber(lineNumber)
-        tokens.add(Token(value, FieldValue))
+        tokens.add(SentenceToken(value, tokenTypes = arrayOf(FieldValue)))
     }
 
     fun appendParameterIdentifier(lineNumber: Int, value: String) {
         markLineNumber(lineNumber)
-        tokens.add(Token(value, ParameterValue))
+        tokens.add(SentenceToken(value, tokenTypes = arrayOf(ParameterValue)))
     }
 
     fun appendIdentifier(lineNumber: Int, value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
@@ -65,7 +65,7 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
     }
 
     private fun append(value: String, vararg tokenTypes: TokenType, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
-        tokens.add(Token(value, *tokenTypes, emphasisDescriptor = emphasisDescriptor))
+        tokens.add(SentenceToken(value, tokenTypes = tokenTypes, emphasisDescriptor = emphasisDescriptor))
     }
 
     private fun appendNewLine() {

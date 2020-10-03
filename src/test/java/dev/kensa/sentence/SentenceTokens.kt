@@ -6,27 +6,27 @@ import dev.kensa.sentence.TokenType.Acronym
 
 object SentenceTokens {
 
-    fun aWordOf(value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) = Token(value, Word, emphasisDescriptor =emphasisDescriptor)
+    fun aWordOf(value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) = SentenceToken(value, tokenTypes = arrayOf(Word), emphasisDescriptor = emphasisDescriptor)
 
-    fun aLiteralOf(value: String) = Token(value, Literal )
+    fun aLiteralOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(Literal))
 
-    fun anExpandableOf(value: String, tokens: List<List<SentenceToken>>): SentenceToken = Token(value, nestedTokens = tokens, )
+    fun anExpandableOf(value: String, tokens: List<List<SentenceToken>>): SentenceToken = SentenceToken(value, tokenTypes = arrayOf(), nestedTokens = tokens)
 
-    fun aNewline() = Token("", NewLine )
+    fun aNewline() = SentenceToken("", tokenTypes = arrayOf(NewLine))
 
-    fun aStringLiteralOf(value: String) = Token(value, StringLiteral )
+    fun aStringLiteralOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(StringLiteral))
 
-    fun aStringLiteralAcronymOf(value: String) = Token(value, StringLiteral, Acronym )
+    fun aStringLiteralAcronymOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(StringLiteral, Acronym))
 
-    fun anAcronymOf(value: String) = Token(value, Acronym )
+    fun anAcronymOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(Acronym))
 
-    fun aKeywordOf(value: String) = Token(value, Keyword )
+    fun aKeywordOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(Keyword))
 
-    fun anIdentifierOf(value: String) = Token(value, Identifier )
+    fun anIdentifierOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(Identifier))
 
-    fun aScenarioIdentifierOf(value: String) = Token(value, ScenarioValue )
+    fun aScenarioIdentifierOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(ScenarioValue))
 
-    fun aFieldIdentifierOf(value: String) = Token(value, FieldValue )
+    fun aFieldIdentifierOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(FieldValue))
 
-    fun aParameterIdentifierOf(value: String) = Token(value, ParameterValue )
+    fun aParameterIdentifierOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(ParameterValue))
 }

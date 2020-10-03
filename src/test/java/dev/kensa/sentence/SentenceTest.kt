@@ -17,7 +17,7 @@ internal class SentenceTest {
 
     @Test
     internal fun name() {
-        val expected: List<SentenceToken> = listOf(
+        val expected = listOf(
                 aWordOf("Word1 Word2", EmphasisDescriptor.Default),
                 aWordOf("Word3 Word4", EmphasisDescriptor(setOf(Italic)))
         )

@@ -143,8 +143,6 @@ class ParserStateMachine(
 
     private fun isNestedMethodCall(value: String) = nestedMethods.containsKey(value)
 
-    private fun isEmphasised(value: String) = emphasisedMethods.containsKey(value)
-
     private fun isScenarioIdentifier(value: String) = fields[value]?.isScenario ?: false
 
     private fun isFieldIdentifier(value: String) = fields[value]?.run { isSentenceValue || isHighlighted } ?: false
