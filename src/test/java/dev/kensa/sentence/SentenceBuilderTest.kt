@@ -10,6 +10,7 @@ import dev.kensa.sentence.SentenceTokens.aScenarioIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anAcronymOf
+import dev.kensa.sentence.SentenceTokens.anIndent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,14 +34,14 @@ internal class SentenceBuilderTest {
     @Test
     fun canConstructASentenceFromVariousValueTypes() {
         builder.apply {
-            appendIdentifier(1, "givenFOOMooBarZOO")
-            appendStringLiteral(1, "stringLiteral1")
-            appendLiteral(1, "10")
-            appendScenarioIdentifier(2, "scenario.call")
-            appendFieldIdentifier(2, "fieldName")
-            appendParameterIdentifier(2, "parameterName")
-            appendIdentifier(3, "sendsAThing")
-            appendIdentifier(4, "somethingA_CONSTANT_019")
+            appendIdentifier(Pair(1, 0), value = "givenFOOMooBarZOO")
+            appendStringLiteral(Pair(1, 0), "stringLiteral1")
+            appendLiteral(Pair(1, 0), "10")
+            appendScenarioIdentifier(Pair(2, 0), "scenario.call")
+            appendFieldIdentifier(Pair(2, 0), "fieldName")
+            appendParameterIdentifier(Pair(2, 0), "parameterName")
+            appendIdentifier(Pair(3, 25), value = "sendsAThing")
+            appendIdentifier(Pair(4, 0), value = "somethingA_CONSTANT_019")
         }
 
         assertThat(builder.build().tokens)
@@ -57,6 +58,11 @@ internal class SentenceBuilderTest {
                         aFieldIdentifierOf("fieldName"),
                         aParameterIdentifierOf("parameterName"),
                         aNewline(),
+                        anIndent(),
+                        anIndent(),
+                        anIndent(),
+                        anIndent(),
+                        anIndent(),
                         aWordOf("sends"),
                         aWordOf("a"),
                         aWordOf("thing"),

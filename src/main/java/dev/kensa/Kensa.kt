@@ -75,6 +75,10 @@ object Kensa {
     fun withSectionOrder(vararg order: Section): Kensa = apply {
         configuration.sectionOrder = order.toList()
     }
+
+    fun withTabSize(tabSize: Int) : Kensa = apply {
+        configuration.tabSize = tabSize
+    }
 }
 
 enum class Section {
@@ -91,7 +95,8 @@ class Configuration(
         var antlrErrorListenerDisabled: Boolean = true,
         var umlDirectives: List<UmlDirective> = ArrayList(),
         var outputStyle: OutputStyle = OutputStyle.MultiFile,
-        var issueTrackerUrl: URL = defaultIssueTrackerUrl()) {
+        var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
+        var tabSize: Int = 5) {
 
     var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
         set(order) {

@@ -7,12 +7,23 @@ import org.antlr.v4.runtime.tree.TerminalNode
 
 sealed class Event<PT : ParseTree>(val parseTree: PT) {
 
-    val lineNumber: Int
+    val location: Pair<Int, Int>
+        get() = Pair(lineNumber, linePosition)
+
+    private val lineNumber: Int
         get() = when (parseTree) {
             is ParserRuleContext -> parseTree.start.line
             is TerminalNode -> parseTree.symbol.line
 
             else -> throw KensaException("Could not get line number from parse tree of type [${parseTree.javaClass}")
+        }
+
+    private val linePosition: Int
+        get() = when (parseTree) {
+            is ParserRuleContext -> parseTree.start.charPositionInLine
+            is TerminalNode -> parseTree.symbol.charPositionInLine
+
+            else -> throw KensaException("Could not get line position from parse tree of type [${parseTree.javaClass}")
         }
 
     class EnterTestMethod(parseTree: ParseTree) : Event<ParseTree>(parseTree)

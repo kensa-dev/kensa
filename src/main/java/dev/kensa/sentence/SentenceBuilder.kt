@@ -1,5 +1,6 @@
 package dev.kensa.sentence
 
+import dev.kensa.Kensa
 import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.sentence.TokenType.Acronym
@@ -11,21 +12,21 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
     private val tokens: MutableList<SentenceToken> = ArrayList()
     private val scanner: TokenScanner = TokenScanner(keywords, acronyms)
 
-    fun appendNested(lineNumber: Int, placeholder: String, sentences: List<Sentence>) {
-        markLineNumber(lineNumber)
+    fun appendNested(location: Pair<Int, Int>, placeholder: String, sentences: List<Sentence>) {
+        checkLineAndIndent(location)
 
         val scannedPlaceholder = scanner.scan(placeholder).joinToString(separator = " ") { index -> placeholder.substring(index.start, index.end) }
 
         tokens.add(SentenceToken(scannedPlaceholder, setOf(Expandable), nestedTokens = sentences.map { it.tokens }))
     }
 
-    fun appendLiteral(lineNumber: Int, value: String) {
-        markLineNumber(lineNumber)
+    fun appendLiteral(location: Pair<Int, Int>, value: String) {
+        checkLineAndIndent(location)
         append(value, Literal)
     }
 
-    fun appendStringLiteral(lineNumber: Int, value: String) {
-        markLineNumber(lineNumber)
+    fun appendStringLiteral(location: Pair<Int, Int>, value: String) {
+        checkLineAndIndent(location)
         if (isAcronym(value)) {
             append(value, StringLiteral, Acronym)
         } else {
@@ -33,23 +34,23 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
         }
     }
 
-    fun appendScenarioIdentifier(lineNumber: Int, value: String) {
-        markLineNumber(lineNumber)
+    fun appendScenarioIdentifier(location: Pair<Int, Int>, value: String) {
+        checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = arrayOf(ScenarioValue)))
     }
 
-    fun appendFieldIdentifier(lineNumber: Int, value: String) {
-        markLineNumber(lineNumber)
+    fun appendFieldIdentifier(location: Pair<Int, Int>, value: String) {
+        checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = arrayOf(FieldValue)))
     }
 
-    fun appendParameterIdentifier(lineNumber: Int, value: String) {
-        markLineNumber(lineNumber)
+    fun appendParameterIdentifier(location: Pair<Int, Int>, value: String) {
+        checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = arrayOf(ParameterValue)))
     }
 
-    fun appendIdentifier(lineNumber: Int, value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
-        markLineNumber(lineNumber)
+    fun appendIdentifier(location: Pair<Int, Int>, value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
+        checkLineAndIndent(location)
         scanner.scan(value).forEach { index: Index ->
             append(tokenValueFor(index, value.substring(index.start, index.end)), index.type, emphasisDescriptor = emphasisDescriptor)
         }
@@ -57,19 +58,18 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
 
     fun build(): Sentence = Sentence(tokens)
 
-    private fun markLineNumber(thisLineNumber: Int) {
-        if (thisLineNumber > lastLineNumber) {
-            lastLineNumber = thisLineNumber
-            appendNewLine()
+    private fun checkLineAndIndent(location: Pair<Int, Int>) {
+        if (location.first > lastLineNumber) {
+            lastLineNumber = location.first
+            append("", NewLine)
+            repeat(location.second / Kensa.configuration.tabSize) {
+                append("", Indent)
+            }
         }
     }
 
     private fun append(value: String, vararg tokenTypes: TokenType, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
         tokens.add(SentenceToken(value, tokenTypes = tokenTypes, emphasisDescriptor = emphasisDescriptor))
-    }
-
-    private fun appendNewLine() {
-        append("", NewLine)
     }
 
     private fun tokenValueFor(index: Index, rawToken: String): String {

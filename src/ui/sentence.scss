@@ -57,7 +57,15 @@
   content: "\A";
 }
 
-.token-new-line:after {
+//.token-new-line:after {
+//  content: "\2003";
+//}
+
+.token-indent:before {
+  display: block;
+}
+
+.token-indent:after {
   content: "\2003";
 }
 

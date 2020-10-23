@@ -30,8 +30,8 @@ class ParserStateMachine(
     private val sentenceBuilder: SentenceBuilder
         get() = _sentenceBuilder ?: throw IllegalStateException("Expected Sentence Builder to be available - ensure sentence has been started!")
 
-    private fun beginSentence(lineNumber: Int) {
-        _sentenceBuilder = SentenceBuilder(lineNumber, keywords, acronyms)
+    private fun beginSentence(location: Pair<Int, Int>) {
+        _sentenceBuilder = SentenceBuilder(location.first, keywords, acronyms)
     }
 
     private fun finishSentence() {
@@ -51,7 +51,7 @@ class ParserStateMachine(
         state<InTestMethod> {
             on<ExitTestMethod>(transitionTo(End))
             on<EnterStatementEvent> { currentState, event ->
-                beginSentence(event.lineNumber)
+                beginSentence(event.location)
                 InStatement(event.parseTree, currentState)
             }
             ignoreAll<Event<*>> {
@@ -61,7 +61,7 @@ class ParserStateMachine(
         state<InStatement> {
             on<ExitStatementEvent> { _, event ->
                 finishSentence()
-                beginSentence(event.lineNumber)
+                beginSentence(event.location)
                 InTestMethod(event.parseTree)
             }
             on<EnterMethodInvocationEvent> { currentState, event ->
@@ -79,33 +79,33 @@ class ParserStateMachine(
                 currentState.parentState
             }
             on<StringLiteralEvent> { currentState, event ->
-                sentenceBuilder.appendStringLiteral(event.lineNumber, event.value)
+                sentenceBuilder.appendStringLiteral(event.location, event.value)
                 currentState
             }
             on<NumberLiteralEvent> { currentState, event ->
-                sentenceBuilder.appendLiteral(event.lineNumber, event.parseTree.text)
+                sentenceBuilder.appendLiteral(event.location, event.parseTree.text)
                 currentState
             }
             on<IdentifierEvent> { currentState, event ->
                 event.parseTree.run {
                     when {
                         isNestedMethodCall(text) -> {
-                            sentenceBuilder.appendNested(event.lineNumber, text, nestedMethods[text] ?: error("Expected nested method sentences to be present"))
+                            sentenceBuilder.appendNested(event.location, text, nestedMethods[text] ?: error("Expected nested method sentences to be present"))
                             currentState
                         }
                         isScenarioIdentifier(text) -> {
                             InScenarioCall(this, currentState.parentState, text)
                         }
                         isFieldIdentifier(text) -> {
-                            sentenceBuilder.appendFieldIdentifier(event.lineNumber, text)
+                            sentenceBuilder.appendFieldIdentifier(event.location, text)
                             currentState
                         }
                         isParameterIdentifier(text) -> {
-                            sentenceBuilder.appendParameterIdentifier(event.lineNumber, text)
+                            sentenceBuilder.appendParameterIdentifier(event.location, text)
                             currentState
                         }
                         else -> {
-                            sentenceBuilder.appendIdentifier(event.lineNumber, text, emphasisedMethods[text] ?: EmphasisDescriptor.Default)
+                            sentenceBuilder.appendIdentifier(event.location, text, emphasisedMethods[text] ?: EmphasisDescriptor.Default)
                             currentState
                         }
                     }
@@ -122,7 +122,7 @@ class ParserStateMachine(
                 currentState.parentState
             }
             on<IdentifierEvent> { currentState, event ->
-                sentenceBuilder.appendScenarioIdentifier(event.lineNumber, "${currentState.scenarioName}.${event.parseTree.text}")
+                sentenceBuilder.appendScenarioIdentifier(event.location, "${currentState.scenarioName}.${event.parseTree.text}")
                 currentState
             }
             on<StringLiteralEvent> { currentState, _ ->

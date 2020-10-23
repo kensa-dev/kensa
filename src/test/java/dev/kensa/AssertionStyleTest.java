@@ -49,7 +49,8 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
         withAllTheNestedThings();
 
         then(foo1())
-                .isEqualTo("777");
+                .isEqualTo("777")
+                    .hasSameClassAs("888");
         then(foo())
                 .isEqualTo(666);
     }

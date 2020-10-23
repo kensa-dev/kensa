@@ -54,6 +54,7 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
         then(foo()).isEqualTo(scenario.thing())
         then(foo1())
                 .isEqualTo("777")
+                    .hasSameClassAs("888")
         then(foo())
                 .isEqualTo(666)
     }

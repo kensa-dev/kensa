@@ -14,6 +14,8 @@ object SentenceTokens {
 
     fun aNewline() = SentenceToken("", tokenTypes = arrayOf(NewLine))
 
+    fun anIndent() = SentenceToken("", tokenTypes = arrayOf(Indent))
+
     fun aStringLiteralOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(StringLiteral))
 
     fun aStringLiteralAcronymOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(StringLiteral, Acronym))
