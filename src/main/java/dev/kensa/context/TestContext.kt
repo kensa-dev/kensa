@@ -6,6 +6,8 @@ import dev.kensa.GivensWithInteractionsBuilder
 import dev.kensa.StateExtractor
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Givens
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert
 
@@ -29,6 +31,16 @@ class TestContext(val givens: Givens, val interactions: CapturedInteractions) {
 
     fun <A, T> then(extractor: StateExtractor<T>, assertProvider: (T?) -> A): A = try {
         interactions.setUnderTest(true)
+        assertProvider(extractor.execute(interactions))
+    } finally {
+        interactions.setUnderTest(false)
+    }
+
+    fun <A, T> thenEventually(extractor: StateExtractor<T>, assertProvider: (T?) -> A): A = try {
+        interactions.setUnderTest(true)
+        await untilAsserted {
+            assertProvider(extractor.execute(interactions))
+        }
         assertProvider(extractor.execute(interactions))
     } finally {
         interactions.setUnderTest(false)

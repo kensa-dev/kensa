@@ -59,7 +59,7 @@ dependencies {
     implementation("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")
     implementation("org.assertj:assertj-core:${Versions.assertJ}")
     implementation("org.hamcrest:hamcrest-core:${Versions.hamcrest}")
-
+    implementation("org.awaitility:awaitility-kotlin:${Versions.awaitility}")
     implementation("org.junit.jupiter:junit-jupiter-engine:${Versions.junitJupiter}")
     implementation("com.eclipsesource.minimal-json:minimal-json:${Versions.minimalJson}")
     implementation("com.github.javaparser:javaparser-core:${Versions.javaParser}")

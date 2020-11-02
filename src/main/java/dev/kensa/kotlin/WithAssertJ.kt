@@ -12,6 +12,16 @@ import java.time.*
 import java.util.*
 
 interface WithAssertJ {
+    fun <T, A> thenEventually(extractor: StateExtractor<T>, assertProvider: (T?) -> A, block: A.() -> Unit) =
+            testContext().thenEventually(extractor) { actual ->
+                assertProvider(actual).apply(block)
+            }
+
+    fun <T, A> then(extractor: StateExtractor<T>, assertProvider: (T?) -> A, block: A.() -> Unit) =
+            testContext().then(extractor) { actual ->
+                assertProvider(actual).apply(block)
+            }
+
     fun <T> then(extractor: StateExtractor<Optional<T>>): OptionalAssert<T> = testContext().then(extractor) { actual: Optional<T>? -> AssertionsForClassTypes.assertThat(actual) }
 
     fun then(extractor: StateExtractor<OptionalDouble>): OptionalDoubleAssert = testContext().then(extractor) { actual: OptionalDouble? -> AssertionsForClassTypes.assertThat(actual) }
