@@ -4,11 +4,15 @@ import dev.kensa.ActionUnderTest
 import dev.kensa.StateExtractor
 
 object TestContextUtil {
-    fun executeWithContext(action: ActionUnderTest) {
-        TestContextHolder.testContext().apply { action.execute(givens, interactions) }
+    fun withTestContext(block: TestContextRunner.() -> Unit) {
+        TestContextRunner(TestContextHolder.testContext()).apply(block)
+    }
+}
+
+class TestContextRunner(private val testContext: TestContext) {
+    fun execute(action: ActionUnderTest) {
+        with(testContext) { action.execute(givens, interactions) }
     }
 
-    fun executeWithContext(extractor: StateExtractor<*>) {
-        TestContextHolder.testContext().apply { extractor.execute(interactions) }
-    }
+    fun <T> execute(extractor: StateExtractor<T>) = testContext.run { extractor.execute(interactions) }
 }
