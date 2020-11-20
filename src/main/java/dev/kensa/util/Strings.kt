@@ -2,6 +2,7 @@ package dev.kensa.util
 
 object Strings {
     private val CAMEL_SPLIT_REGEX = Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[0-9])")
+    private val UPPER_CASE_LETTER_REGEX = Regex("(?=\\p{Lu})")
 
     fun unCamel(phrase: String): String {
         if (phrase.isBlank()) {
@@ -18,7 +19,7 @@ object Strings {
         return if (phrase.isBlank()) {
             phrase
         } else {
-            "(?=\\p{Lu})".toRegex().split(phrase.trim()).filterNot { it.isBlank() }.joinToString(separator).toLowerCase()
+            UPPER_CASE_LETTER_REGEX.split(phrase.trim()).filterNot { it.isBlank() }.joinToString(separator).toLowerCase()
         }
     }
 }

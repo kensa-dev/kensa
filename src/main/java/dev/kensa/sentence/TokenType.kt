@@ -10,6 +10,7 @@ enum class TokenType {
     Identifier,
     Keyword,
     Literal,
+    MethodValue,
     NewLine,
     Indent,
     ParameterValue,

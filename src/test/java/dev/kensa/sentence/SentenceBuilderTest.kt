@@ -4,6 +4,7 @@ import dev.kensa.sentence.Acronym.Companion.of
 import dev.kensa.sentence.SentenceTokens.aFieldIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aLiteralOf
+import dev.kensa.sentence.SentenceTokens.aMethodIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aScenarioIdentifierOf
@@ -39,6 +40,7 @@ internal class SentenceBuilderTest {
             appendLiteral(Pair(1, 0), "10")
             appendScenarioIdentifier(Pair(2, 0), "scenario.call")
             appendFieldIdentifier(Pair(2, 0), "fieldName")
+            appendMethodIdentifier(Pair(2, 0), "methodName")
             appendParameterIdentifier(Pair(2, 0), "parameterName")
             appendIdentifier(Pair(3, 25), value = "sendsAThing")
             appendIdentifier(Pair(4, 0), value = "somethingA_CONSTANT_019")
@@ -56,6 +58,7 @@ internal class SentenceBuilderTest {
                         aNewline(),
                         aScenarioIdentifierOf("scenario.call"),
                         aFieldIdentifierOf("fieldName"),
+                        aMethodIdentifierOf("methodName"),
                         aParameterIdentifierOf("parameterName"),
                         aNewline(),
                         anIndent(),

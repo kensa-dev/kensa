@@ -14,4 +14,5 @@ class KotlinParserCache : ParserCache<KotlinParser.FunctionDeclarationContext> {
     override val testMethodSentenceCache: MutableMap<Method, List<Sentence>> = HashMap()
     override val nestedSentenceCache: MutableMap<KClass<*>, Map<String, List<Sentence>>> = HashMap()
     override val emphasisedMethodCache: MutableMap<KClass<*>, Map<String, EmphasisDescriptor>> = HashMap()
+    override val methodCache: MutableMap<KClass<*>, Map<String, MethodDescriptor>> = HashMap()
 }

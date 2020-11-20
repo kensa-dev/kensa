@@ -22,27 +22,29 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
         val emphasisedFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
-        val cdc = compilationUnitFor(testClass).topLevelObject()
-                .map { it.declaration()?.classDeclaration() }
-                .firstOrNull()
-                ?: throw KensaException("Unable to find class declaration in source code")
-
-        cdc.classBody().classMemberDeclarations().classMemberDeclaration().forEach { cmd ->
-            cmd.declaration()?.functionDeclaration()?.let { fd ->
-                testFunctionDeclarations.takeIf { isAnnotatedAsTest(fd) }?.add(fd)
-                nestedFunctionDeclarations.takeIf { isAnnotatedAsNested(fd) }?.add(fd)
-                emphasisedFunctionDeclarations.takeIf { isAnnotatedAsEmphasised(fd) }?.add(fd)
+        compilationUnitFor(testClass).topLevelObject()
+            .mapNotNull { it.declaration()?.classDeclaration() }
+            .forEach {
+                it.classBody().classMemberDeclarations().classMemberDeclaration().forEach { cmd ->
+                    cmd.declaration()?.functionDeclaration()?.let { fd ->
+                        testFunctionDeclarations.takeIf { isAnnotatedAsTest(fd) }?.add(fd)
+                        nestedFunctionDeclarations.takeIf { isAnnotatedAsNested(fd) }?.add(fd)
+                        emphasisedFunctionDeclarations.takeIf { isAnnotatedAsEmphasised(fd) }?.add(fd)
+                    }
+                }
             }
-        }
+
+        if (testFunctionDeclarations.isEmpty())
+            throw KensaException("Unable to find class declaration in source code")
 
         return Triple(testFunctionDeclarations, nestedFunctionDeclarations, emphasisedFunctionDeclarations)
     }
 
     private fun compilationUnitFor(testClass: KClass<out Any>): KotlinParser.KotlinFileContext {
         return KotlinParser(
-                CommonTokenStream(
-                        KotlinLexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
-                )
+            CommonTokenStream(
+                KotlinLexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
+            )
         ).apply {
             takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
@@ -76,10 +78,10 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
     override fun parameterNamesAndTypesFrom(dc: KotlinParser.FunctionDeclarationContext): List<Pair<String, String>> {
         return ArrayList<Pair<String, String>>().apply {
             dc.functionValueParameters().functionValueParameter()
-                    .map { it -> it.parameter() }
-                    .forEach {
-                        add(Pair(it.simpleIdentifier().text, it.type().text))
-                    }
+                .map { it -> it.parameter() }
+                .forEach {
+                    add(Pair(it.simpleIdentifier().text, it.type().text))
+                }
         }
     }
 

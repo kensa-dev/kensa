@@ -12,4 +12,5 @@ interface ParserCache<DC> {
     val testMethodSentenceCache: MutableMap<Method, List<Sentence>>
     val nestedSentenceCache: MutableMap<KClass<*>, Map<String, List<Sentence>>>
     val emphasisedMethodCache: MutableMap<KClass<*>, Map<String, EmphasisDescriptor>>
+    val methodCache: MutableMap<KClass<*>, Map<String, MethodDescriptor>>
 }

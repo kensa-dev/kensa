@@ -39,6 +39,11 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
         tokens.add(SentenceToken(value, tokenTypes = arrayOf(ScenarioValue)))
     }
 
+    fun appendMethodIdentifier(location: Pair<Int, Int>, value: String) {
+        checkLineAndIndent(location)
+        tokens.add(SentenceToken(value, tokenTypes = arrayOf(MethodValue)))
+    }
+
     fun appendFieldIdentifier(location: Pair<Int, Int>, value: String) {
         checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = arrayOf(FieldValue)))

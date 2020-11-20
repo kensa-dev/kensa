@@ -39,7 +39,7 @@
   text-decoration: underline;
 }
 
-.token-scenario-value, .token-field-value, .token-parameter-value {
+.token-scenario-value, .token-field-value, .token-method-value, .token-parameter-value {
   font-weight: bold;
   color: $grey-dark
 }

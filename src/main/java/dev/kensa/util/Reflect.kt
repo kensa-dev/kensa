@@ -16,6 +16,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaField
 
 object Reflect {
 
@@ -40,10 +41,10 @@ object Reflect {
     }
 
     private fun findProperty(name: String, kClass: KClass<*>?): KProperty1<out Any?, Any?>? =
-            if (kClass == null || kClass == Any::class) null else {
-                kClass.declaredMemberProperties.singleOrNull { it.name == name }
-                        ?: findProperty(name, kClass.superclasses.singleOrNull { !it.java.isInterface })
-            }
+        if (kClass == null || kClass == Any::class) null else {
+            kClass.declaredMemberProperties.singleOrNull { it.name == name }
+                ?: findProperty(name, kClass.superclasses.singleOrNull { !it.java.isInterface })
+        }
 
     fun <T> propertyValue(property: KProperty1<out Any?, Any?>, target: Any): T? = property.run {
         isAccessible = true
@@ -53,15 +54,19 @@ object Reflect {
 
     fun findMethod(name: String, target: KClass<*>): Method {
         return findMethods(target.java, LinkedHashSet()) { it.name == name }
-                .firstOrNull()
-                ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
+            .firstOrNull()
+            ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
     }
 
     private fun <T> invokeMethod(name: String, target: Any): T? {
         val method = findMethods(target::class.java, LinkedHashSet()) { it.name == name && it.parameters.isEmpty() }
-                .firstOrNull()
-                ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
+            .firstOrNull()
+            ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
 
+        return invoke<T>(method, target)
+    }
+
+    fun <T> invoke(method: Method, target: Any): T? {
         method.isAccessible = true
         @Suppress("UNCHECKED_CAST")
         return method.invoke(target) as T?
@@ -80,15 +85,15 @@ object Reflect {
 
     fun <T> fieldValue(name: String, target: Any): T? {
         val field = findField(name, target::class.java)
-                ?: throw IllegalArgumentException("No field [$name] found in class [${target::class}]")
+            ?: throw IllegalArgumentException("No field [$name] found in class [${target::class}]")
 
         return fieldValue(field, target)
     }
 
     private fun findField(name: String, clazz: Class<*>): Field? =
-            if (clazz == Any::class.java) null else {
-                clazz.declaredFields.singleOrNull { it.name == name } ?: findField(name, clazz.superclass)
-            }
+        if (clazz == Any::class.java) null else {
+            clazz.declaredFields.singleOrNull { it.name == name } ?: findField(name, clazz.superclass)
+        }
 
 
     fun <T> fieldValue(field: Field, target: Any): T? = field.run {
@@ -103,15 +108,37 @@ object Reflect {
         }
     }
 
+    fun methodsOf(clazz: Class<*>) : List<Method> = methodsOf(clazz, ArrayList())
+
     fun fieldsOf(clazz: Class<*>): List<Field> = fieldsOf(clazz, ArrayList())
 
-    private fun fieldsOf(clazz: Class<*>, results: MutableList<Field>): List<Field> =
+    private fun methodsOf(clazz: Class<*>, results: MutableList<Method>): List<Method> =
             if (Any::class.java == clazz) {
                 results
             } else results.apply {
-                addAll(clazz.declaredFields)
-                fieldsOf(clazz.superclass, results)
+                addAll(clazz.declaredMethods)
+                methodsOf(clazz.superclass, results)
             }
+
+    fun fieldsOf(clazz: KClass<*>): List<Field> = fieldsOf(clazz, ArrayList())
+
+    private fun fieldsOf(clazz: KClass<*>, results: MutableList<Field>): List<Field> =
+        results.apply {
+            clazz.declaredMemberProperties
+                .mapNotNull { it.javaField }
+                .forEach {
+                    println(it.name)
+                    add(it)
+                }
+        }
+
+    private fun fieldsOf(clazz: Class<*>, results: MutableList<Field>): List<Field> =
+        if (Any::class.java == clazz) {
+            results
+        } else results.apply {
+            addAll(clazz.declaredFields)
+            fieldsOf(clazz.superclass, results)
+        }
 
     fun testFunctionsOf(clazz: Class<*>): Set<Method> = findMethods(clazz, LinkedHashSet()) { hasAnnotation<Test>(it) || hasAnnotation<ParameterizedTest>(it) }
 
@@ -124,8 +151,8 @@ object Reflect {
         var clazz: Class<*> = target::class.java
         while (clazz != Any::class.java) {
             clazz.declaredFields
-                    .filter { field -> hasAnnotation<Scenario>(field) }
-                    .forEach { field -> names.add(field.name) }
+                .filter { field -> hasAnnotation<Scenario>(field) }
+                .forEach { field -> names.add(field.name) }
             clazz = clazz.superclass
         }
         return CachingScenarioMethodAccessor(target, names)

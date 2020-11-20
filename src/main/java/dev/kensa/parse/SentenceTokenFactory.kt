@@ -15,6 +15,7 @@ class SentenceTokenFactory(
         private val scenarioAccessor: CachingScenarioMethodAccessor,
         private val parameters: Map<String, ParameterDescriptor>,
         private val fields: Map<String, FieldDescriptor>,
+        private val methods: Map<String, MethodDescriptor>,
         private val highlightedValues: Set<NamedValue>
 ) {
 
@@ -36,6 +37,16 @@ class SentenceTokenFactory(
             })
         }
     } ?: throw KensaException("Token with type FieldValue did not refer to an actual field")
+
+    fun methodValueTokenFrom(token: SentenceToken) = methods[token.value]?.let { md ->
+        renderers.renderValueOnly(Reflect.invoke<Any>(md.method, testInstance)).let { value ->
+            SentenceToken(value, HashSet<TokenType>().apply {
+                add(MethodValue)
+                takeIf { md.isHighlighted }?.add(Highlighted)
+                takeIf { valueIsHighlighted(value) }?.add(Highlighted)
+            })
+        }
+    } ?: throw KensaException("Token with type MethodValue did not refer to an actual method")
 
     fun parameterValueTokenFrom(token: SentenceToken) = parameters[token.value]?.let { pd ->
         renderers.renderValueOnly(arguments[pd.index]).let { value ->

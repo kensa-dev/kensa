@@ -1,9 +1,8 @@
 package dev.kensa
 
 import kotlin.annotation.AnnotationRetention.RUNTIME
-import kotlin.annotation.AnnotationTarget.FIELD
-import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
+import kotlin.annotation.AnnotationTarget.*
 
 @kotlin.annotation.Retention(RUNTIME)
-@Target(FIELD, VALUE_PARAMETER)
+@Target(FIELD, VALUE_PARAMETER, FUNCTION)
 annotation class SentenceValue

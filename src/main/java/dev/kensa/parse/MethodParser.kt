@@ -26,6 +26,10 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                     prepareEmphasisedMethods(testClass, emphasisedMethodDeclarations)
                 }
 
+                val methods: Map<String, MethodDescriptor> = methodCache.getOrPut(testClass) {
+                    prepareMethodsFor(testClass)
+                }
+
                 nestedSentenceCache[testClass] = nestedSentenceDeclarations
                         .map {
                             Pair(
@@ -33,6 +37,7 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                                     ParserStateMachine(
                                             Kensa.configuration.dictionary,
                                             properties,
+                                            methods,
                                             testMethodParameters.descriptors
                                     ).run {
                                         parse(this, it)
@@ -44,6 +49,7 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                 val testMethodSentences = ParserStateMachine(
                         Kensa.configuration.dictionary,
                         properties,
+                        methods,
                         testMethodParameters.descriptors,
                         nestedSentenceCache[testClass] ?: emptyMap(),
                         emphasisedMethods
@@ -52,7 +58,7 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                     sentences
                 }
 
-                ParsedMethod(method.name, parameterCache[method]!!, testMethodSentences, nestedSentenceCache[testClass]!!, properties)
+                ParsedMethod(method.name, parameterCache[method]!!, testMethodSentences, nestedSentenceCache[testClass]!!, properties, methods)
             }
 
     private fun prepareEmphasisedMethods(testClass: KClass<*>, emphasisedMethodDeclarations: List<DC>): Map<String, EmphasisDescriptor> {
@@ -72,6 +78,11 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                         ParameterDescriptor(parameterNamesAndTypes[index].first, index, Reflect.hasAnnotation<SentenceValue>(parameter), Reflect.hasAnnotation<Highlight>(parameter))
                     }.associateByTo(LinkedHashMap(), ParameterDescriptor::name)
             )
+
+    private fun prepareMethodsFor(clazz: KClass<*>) =
+            Reflect.methodsOf(clazz.java)
+                    .map { MethodDescriptor(it.name, it, Reflect.hasAnnotation<SentenceValue>(it), Reflect.hasAnnotation<Highlight>(it))}
+                    .associateBy(MethodDescriptor::name)
 
     private fun prepareFieldsFor(clazz: KClass<*>) =
             Reflect.fieldsOf(clazz.java)

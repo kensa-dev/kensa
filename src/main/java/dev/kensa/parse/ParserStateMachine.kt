@@ -14,6 +14,7 @@ import dev.kensa.sentence.SentenceBuilder
 class ParserStateMachine(
         dictionary: Dictionary,
         private val fields: Map<String, FieldDescriptor>,
+        private val methods: Map<String, MethodDescriptor>,
         private val parameters: Map<String, ParameterDescriptor> = emptyMap(),
         private val nestedMethods: Map<String, List<Sentence>> = emptyMap(),
         private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()) {
@@ -100,6 +101,10 @@ class ParserStateMachine(
                             sentenceBuilder.appendFieldIdentifier(event.location, text)
                             currentState
                         }
+                        isMethodIdentifier(text) -> {
+                            sentenceBuilder.appendMethodIdentifier(event.location, text)
+                            currentState
+                        }
                         isParameterIdentifier(text) -> {
                             sentenceBuilder.appendParameterIdentifier(event.location, text)
                             currentState
@@ -146,6 +151,8 @@ class ParserStateMachine(
     private fun isScenarioIdentifier(value: String) = fields[value]?.isScenario ?: false
 
     private fun isFieldIdentifier(value: String) = fields[value]?.run { isSentenceValue || isHighlighted } ?: false
+
+    private fun isMethodIdentifier(value: String) = methods[value]?.run { isSentenceValue || isHighlighted } ?: false
 
     private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlighted } ?: false
 

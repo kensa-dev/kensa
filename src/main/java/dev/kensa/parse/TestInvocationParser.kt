@@ -34,6 +34,7 @@ class TestInvocationParser {
                         Reflect.scenarioAccessorFor(context.instance),
                         parsedMethod.parameters.descriptors,
                         parsedMethod.fields,
+                        parsedMethod.methods,
                         highlightedValues
                 )
 
@@ -53,6 +54,7 @@ class TestInvocationParser {
             tokens.map { token ->
                 when {
                     token.hasType(FieldValue) -> tokenFactory.fieldValueTokenFrom(token)
+                    token.hasType(MethodValue) -> tokenFactory.methodValueTokenFrom(token)
                     token.hasType(ParameterValue) -> tokenFactory.parameterValueTokenFrom(token)
                     token.hasType(ScenarioValue) -> tokenFactory.scenarioValueTokenFrom(token)
                     token.hasType(Expandable) -> SentenceToken(token.value, token.tokenTypes, nestedTokens = token.nestedTokens.map { subTokens -> regenerateTokens(subTokens, tokenFactory) })
