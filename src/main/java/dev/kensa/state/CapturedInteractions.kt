@@ -5,18 +5,16 @@ import java.util.function.Predicate
 
 class CapturedInteractions : KensaMap<CapturedInteractions>() {
 
-    private var isUnderTestEnabled = true
-    private var isUnderTest = false
+    var isUnderTestEnabled = true
+    var isUnderTest = false
 
     fun capture(builder: CapturedInteractionBuilder) {
-        if (isUnderTestEnabled) {
-            builder.underTest(isUnderTest)
+        with(builder) {
+            if (isUnderTestEnabled) {
+                underTest(isUnderTest)
+            }
+            applyTo(this@CapturedInteractions)
         }
-        builder.applyTo(this)
-    }
-
-    fun setUnderTest(isUnderTest: Boolean) {
-        this.isUnderTest = isUnderTest
     }
 
     fun disableUnderTest() {

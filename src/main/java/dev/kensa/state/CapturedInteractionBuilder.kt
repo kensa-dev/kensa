@@ -1,64 +1,46 @@
-package dev.kensa.state;
+package dev.kensa.state
 
-import dev.kensa.util.Attributes;
+import dev.kensa.util.Attributes
+import dev.kensa.util.Attributes.Companion.of
 
-public final class CapturedInteractionBuilder {
+class CapturedInteractionBuilder private constructor(private val fromParty: Party) {
+    private var attributes = of()
+    private var toParty: Party? = null
+    private var group: String? = null
+    private var content: Any? = null
+    private var contentDescriptor: String? = null
 
-    private static final String TEMPLATE = "%s __idx __from %s to %s";
-
-    public static CapturedInteractionBuilder from(Party party) {
-        return new CapturedInteractionBuilder(party);
+    fun to(toParty: Party): CapturedInteractionBuilder = apply {
+        this.toParty = toParty
     }
 
-    private Attributes attributes = Attributes.of();
-    private Party toParty;
-    private String group;
-    private Object content;
-    private String contentDescriptor;
-    private final Party fromParty;
-
-    private CapturedInteractionBuilder(Party party) {
-        fromParty = party;
+    fun group(group: String): CapturedInteractionBuilder = apply {
+        this.group = group
     }
 
-    public CapturedInteractionBuilder to(Party toParty) {
-        this.toParty = toParty;
-
-        return this;
-    }
-
-    public CapturedInteractionBuilder group(String group) {
-        this.group = group;
-
-        return this;
-    }
-
-    public CapturedInteractionBuilder underTest(boolean isUnderTest) {
-        if (group == null & isUnderTest) {
-            group = "Test";
+    fun underTest(isUnderTest: Boolean): CapturedInteractionBuilder = apply {
+        if (group == null && isUnderTest) {
+            group = "Test"
         }
-
-        return this;
     }
 
-    public CapturedInteractionBuilder with(Object content, String contentDescriptor) {
-        this.content = content;
-        this.contentDescriptor = contentDescriptor;
-
-        return this;
+    fun with(content: Any, contentDescriptor: String): CapturedInteractionBuilder = apply {
+        this.content = content
+        this.contentDescriptor = contentDescriptor
     }
 
-    public CapturedInteractionBuilder with(Attributes attributes) {
-        this.attributes = attributes;
-
-        return this;
+    fun with(attributes: Attributes): CapturedInteractionBuilder = apply {
+        this.attributes = attributes
     }
 
-    void applyTo(CapturedInteractions capturedInteractions) {
-        String keyPrefix = group == null ? "" : String.format("(%s) ", group);
+    fun applyTo(interactions: CapturedInteractions) {
+        val keyPrefix = group?.let { "($it) " } ?: ""
+        val key = "${keyPrefix}${contentDescriptor} __idx __from ${fromParty.asString()} to ${toParty!!.asString()}"
+        interactions.putWithUniqueKey(key, content, attributes)
+    }
 
-        String key = keyPrefix + String.format(TEMPLATE, contentDescriptor, fromParty.asString(), toParty.asString());
-
-        capturedInteractions.putWithUniqueKey(key, content, attributes);
+    companion object {
+        @JvmStatic
+        fun from(party: Party): CapturedInteractionBuilder = CapturedInteractionBuilder(party)
     }
 }

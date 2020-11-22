@@ -15,7 +15,7 @@ internal class IoUtilTest {
     internal fun canRecreateDirectory(@TempDir tempDir: Path) {
         val dir = createSomeFilesIn(tempDir.resolve("dir"))
         recreate(dir)
-        assertThat(Files.isDirectory(dir)).isTrue()
+        assertThat(Files.isDirectory(dir)).isTrue
         assertThat(Files.list(dir).count()).isEqualTo(0)
     }
 

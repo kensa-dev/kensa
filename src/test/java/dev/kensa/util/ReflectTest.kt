@@ -9,7 +9,7 @@ internal class ReflectTest {
     @Test
     internal fun `can identify kotlin and java classes`() {
         assertThat(Reflect.isKotlinClass(SomeJavaSubClass::class)).isFalse()
-        assertThat(Reflect.isKotlinClass(SomeKotlinSubClass::class)).isTrue()
+        assertThat(Reflect.isKotlinClass(SomeKotlinSubClass::class)).isTrue
     }
 
     @Test

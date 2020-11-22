@@ -35,7 +35,7 @@ internal class KensaMapTest {
         assertThat(map.entrySet().size).isEqualTo(threadCount)
         repeat(threadCount) {
             val expectedKey = "Foo" + if (it == 0) "" else " $it"
-            assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue()
+            assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue
         }
     }
 
@@ -55,7 +55,7 @@ internal class KensaMapTest {
         assertThat(map.entrySet().size).isEqualTo(threadCount)
         repeat(threadCount) {
             val expectedKey = "String" + if (it == 0) "" else it
-            assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue()
+            assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue
         }
     }
 
