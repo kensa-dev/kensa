@@ -17,7 +17,7 @@ object Versions {
 
     // Dependencies
     const val javaParser = "3.6.22"
-    const val plantUml = "8059"
+    const val plantUml = "1.2020.23"
     const val pebble = "3.0.8"
     const val mockito = "2.24.0"
     const val junitPlatform = "1.6.2"
