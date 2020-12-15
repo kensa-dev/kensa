@@ -12,7 +12,6 @@ build:
     when: always
     reports:
       junit:
-        - build/test-results/test/**/TEST-*.xml
         - build/reports/tests/test/**
 
   cache:
