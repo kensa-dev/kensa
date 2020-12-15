@@ -1,8 +1,9 @@
 package dev.kensa.state
 
+import dev.kensa.render.diagram.directive.ArrowStyle
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.state.CapturedInteractionsTest.GOTParty.*
-import dev.kensa.util.Attributes.Companion.of
+import dev.kensa.util.Attributes
 import dev.kensa.util.KensaMap
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -47,7 +48,7 @@ internal class CapturedInteractionsTest {
         val expectedContent = "You know nothing Jon Snow"
 
         with(interactions) {
-            capture(from(Ygritte).to(Jon).with(expectedContent, "Snarky comment").with(of("language", "bolshy")))
+            capture(from(Ygritte).to(Jon).with(expectedContent, "Snarky comment").with(Attributes.of("language", "bolshy")))
 
             assertThat(containsKey(expectedKey))
                     .withFailMessage("Expected interactions to contain key [%s] but keys were: %s", expectedKey, keysIn(interactions))
@@ -56,9 +57,9 @@ internal class CapturedInteractionsTest {
 
             // Attributes currently only required to be Iterable to allow serialization into Json
             entrySet().forEach { entry: KensaMap.Entry ->
-                entry.attributes.forEach { (name, value) ->
-                    assertThat(name).isEqualTo("language")
-                    assertThat(value).isEqualTo("bolshy")
+                assertThat(entry.attributes).satisfies { attributes ->
+                    assertThat(attributes.arrowStyle).isEqualTo(ArrowStyle.ArrowThin)
+                    assertThat(attributes["language"]).isEqualTo("bolshy")
                 }
             }
         }
@@ -80,7 +81,7 @@ internal class CapturedInteractionsTest {
     @Test
     fun canAddInteractionWithGroup() {
         interactions.capture(from(Jon).to(Daenerys).group("Temporary").with("I will not bend the knee", "Defiant statement"))
-        assertThat(interactions.containsKey("(Temporary) Defiant statement from Jon to Daenerys")).isTrue
+        assertThat(interactions.containsKey("Defiant statement from Jon to Daenerys")).isTrue
     }
 
     @Test
@@ -89,9 +90,9 @@ internal class CapturedInteractionsTest {
             capture(from(Jon).to(Daenerys).group("Temporary").with("I will not bend the knee", "Defiant statement"))
             capture(from(Jon).to(Daenerys).group("Temporary").with("I will not bend the knee", "Defiant statement"))
             capture(from(Jon).to(Daenerys).group("Temporary").with("I will not bend the knee", "Defiant statement"))
-            assertThat(containsKey("(Temporary) Defiant statement from Jon to Daenerys")).isTrue
-            assertThat(containsKey("(Temporary) Defiant statement 1 from Jon to Daenerys")).isTrue
-            assertThat(containsKey("(Temporary) Defiant statement 2 from Jon to Daenerys")).isTrue
+            assertThat(containsKey("Defiant statement from Jon to Daenerys")).isTrue
+            assertThat(containsKey("Defiant statement 1 from Jon to Daenerys")).isTrue
+            assertThat(containsKey("Defiant statement 2 from Jon to Daenerys")).isTrue
         }
     }
 
@@ -100,7 +101,7 @@ internal class CapturedInteractionsTest {
         with(interactions) {
             isUnderTest = true
             capture(from(Jon).to(Daenerys).with("I will not bend the knee", "Defiant statement"))
-            assertThat(interactions.containsKey("(Test) Defiant statement from Jon to Daenerys")).isTrue
+            assertThat(interactions.containsKey("Defiant statement from Jon to Daenerys")).isTrue
             isUnderTest = false
             capture(from(NightKing).to(Daenerys).with("Here's that zombie dragon you ordered!", "Snarky comment"))
             assertThat(containsKey("Snarky comment from NightKing to Daenerys")).isTrue
@@ -113,7 +114,7 @@ internal class CapturedInteractionsTest {
             isUnderTest = true
             capture(from(Jon).to(Daenerys).group("Override").with("I will not bend the knee", "Defiant statement"))
 
-            assertThat(containsKey("(Override) Defiant statement from Jon to Daenerys")).isTrue
+            assertThat(containsKey("Defiant statement from Jon to Daenerys")).isTrue
         }
     }
 
@@ -130,7 +131,6 @@ internal class CapturedInteractionsTest {
 
     private fun keysIn(interactions: CapturedInteractions): List<String> = interactions.entrySet()
             .map(KensaMap.Entry::key)
-            .toList()
 
     internal enum class GOTParty : Party {
         Daenerys, Jon, Ygritte, NightKing;
