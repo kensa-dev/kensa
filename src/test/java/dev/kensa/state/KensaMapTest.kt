@@ -80,7 +80,7 @@ internal class KensaMapTest {
 
         // Attributes currently only required to be Iterable to allow serialization into Json
         map.entrySet().forEach { entry: KensaMap.Entry ->
-            entry.attributes.forEach { (name, value): NamedValue ->
+            entry.attributes.forEach { (name, value) ->
                 assertThat(name).isEqualTo(attributeName)
                 assertThat(value).isEqualTo(attributeValue)
             }

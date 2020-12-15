@@ -8,7 +8,11 @@ import dev.kensa.TextStyle.*
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithAssertJ
 import dev.kensa.kotlin.WithHamcrest
+import dev.kensa.render.diagram.directive.ArrowStyle
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.actor
 import dev.kensa.sentence.Acronym
+import dev.kensa.state.CapturedInteractionBuilder.Companion.from
+import dev.kensa.state.Party
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.jupiter.api.BeforeEach
@@ -38,7 +42,15 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
             acronyms = setOf(Acronym.of("ACTION1", ""))
             antlrPredicationMode = PredictionMode.LL
             sectionOrder = listOf(Sentences, Buttons, Exception)
+            umlDirectives = listOf(actor("A"), actor("B"))
         }
+    }
+
+    enum class Parrty : Party {
+        A,
+        B;
+
+        override fun asString(): String = this.name
     }
 
     @Test
@@ -53,10 +65,10 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
         withAllTheNestedThings()
         then(foo()).isEqualTo(scenario.thing())
         then(foo1())
-                .isEqualTo("777")
-                    .hasSameClassAs("888")
+            .isEqualTo("777")
+            .hasSameClassAs("888")
         then(foo())
-                .isEqualTo(666)
+            .isEqualTo(666)
     }
 
     @NestedSentence
@@ -65,7 +77,10 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     }
 
     private fun foo(): StateExtractor<Int?> {
-        return StateExtractor { 666 }
+        return StateExtractor {
+            it.divider()
+            666
+        }
     }
 
     private fun foo1(): StateExtractor<String?> {
@@ -98,6 +113,7 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase, TextDecorationUnderline], textColour = TextLight, backgroundColor = BackgroundDanger)
     fun theActionIsPerformedAndTheResultIsAddedToCapturedInteractions(): ActionUnderTest {
         return ActionUnderTest { givens, interactions ->
+            interactions.capture(from(Parrty.A).to(Parrty.B).group("Test").lineType(ArrowStyle.ArrowCross).with("Message", "The Message"))
             givens.get<String>("actionName")?.let {
                 interactions.put("result", performer.perform(it))
             }
@@ -112,8 +128,8 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
         @JvmStatic
         private fun parameterProvider(): Stream<Arguments> {
             return Stream.of(
-                    Arguments.arguments("ACTION2", "Performed: ACTION2"),
-                    Arguments.arguments("ACTION3", "Performed: ACTION3")
+                Arguments.arguments("ACTION2", "Performed: ACTION2"),
+                Arguments.arguments("ACTION3", "Performed: ACTION3")
             )
         }
     }

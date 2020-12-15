@@ -22,7 +22,12 @@ import java.time.temporal.ChronoUnit.MILLIS
 
 class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
     private val testContainerFactory = TestContainerFactory()
-    private val testInvocationFactory = TestInvocationFactory(TestInvocationParser(), JavaMethodParser(), KotlinFunctionParser(), SequenceDiagramFactory())
+    private val testInvocationFactory = TestInvocationFactory(
+        TestInvocationParser(),
+        JavaMethodParser(),
+        KotlinFunctionParser(),
+        SequenceDiagramFactory
+    )
 
     override fun beforeAll(context: ExtensionContext) {
         with(context.getStore(KENSA)) {

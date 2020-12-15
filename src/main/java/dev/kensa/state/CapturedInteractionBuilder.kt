@@ -1,7 +1,10 @@
 package dev.kensa.state
 
+import dev.kensa.render.diagram.directive.ArrowStyle
 import dev.kensa.util.Attributes
 import dev.kensa.util.Attributes.Companion.of
+import dev.kensa.util.Attributes.Key.Arrow
+import dev.kensa.util.Attributes.Key.Group
 
 class CapturedInteractionBuilder private constructor(private val fromParty: Party) {
     private var attributes = of()
@@ -9,6 +12,11 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     private var group: String? = null
     private var content: Any? = null
     private var contentDescriptor: String? = null
+    private var arrowStyle : ArrowStyle = ArrowStyle.ArrowThin
+
+    fun lineType(arrowStyle: ArrowStyle) = apply {
+        this.arrowStyle = arrowStyle
+    }
 
     fun to(toParty: Party): CapturedInteractionBuilder = apply {
         this.toParty = toParty
@@ -34,8 +42,10 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     }
 
     fun applyTo(interactions: CapturedInteractions) {
-        val keyPrefix = group?.let { "($it) " } ?: ""
-        val key = "${keyPrefix}${contentDescriptor} __idx __from ${fromParty.asString()} to ${toParty!!.asString()}"
+        attributes = group?.let { attributes.merge(of(Group, it, Arrow, arrowStyle)) } ?: attributes
+
+        val key = "$contentDescriptor __idx __from ${fromParty.asString()} to ${toParty!!.asString()}"
+
         interactions.putWithUniqueKey(key, content, attributes)
     }
 

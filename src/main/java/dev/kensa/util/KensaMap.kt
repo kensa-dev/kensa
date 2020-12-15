@@ -3,7 +3,7 @@ package dev.kensa.util
 import dev.kensa.util.Attributes.Companion.emptyAttributes
 import java.util.*
 
-open class KensaMap<M : KensaMap<M>> {
+abstract class KensaMap<M : KensaMap<M>> {
 
     private val lock = Any()
     private val values: MutableMap<String, Entry> = LinkedHashMap()
@@ -15,7 +15,7 @@ open class KensaMap<M : KensaMap<M>> {
         synchronized(lock) { values[key] = Entry(key, value, attributes) }
     }
 
-    fun putWithUniqueKey(key: String, value: Any?, attributes: Attributes): M = self().apply {
+    internal fun putWithUniqueKey(key: String, value: Any?, attributes: Attributes): M = self().apply {
         fun baseKeyFrom(result: MatchResult) = result.groups["prefix"]?.value + result.groups["suffix"]?.value
         fun indexedKeyFrom(result: MatchResult, index: Int) = (result.groups["prefix"]?.value + (result.groups["prekey"]?.value + index +
                 if (result.groups["suffix"]?.value?.isNotBlank() == true) result.groups["postkey"]?.value else "") + result.groups["suffix"]?.value)

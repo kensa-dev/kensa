@@ -10,6 +10,7 @@ import dev.kensa.render.Renderers
 import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceToken
+import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
 import dev.kensa.state.TestInvocation
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.util.DurationFormatter
@@ -40,12 +41,12 @@ object JsonTransforms {
                                 .add("invocations", asJsonArray(invocation.invocations) { i ->
                                     jsonObject()
                                             .add("elapsedTime", DurationFormatter.format(i.elapsed))
-                                            .add("highlights", asJsonArray(i.highlightedValues, nvpValueAsJson(renderers)))
+                                            .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
                                             .add("acronyms", acronymsAsJson(i.acronyms))
                                             .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
                                             .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
                                             .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
-                                            .add("capturedInteractions", asJsonArray(i.interactions, interactionEntryAsJson(renderers)))
+                                            .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
                                             .add("sequenceDiagram", if (i.sequenceDiagram == null) null else i.sequenceDiagram.toString())
                                             .add("state", i.state.description)
                                             .add("executionException", executionExceptionFrom(i))
@@ -114,27 +115,35 @@ object JsonTransforms {
                 }
             }
 
-    private fun <T> asJsonArray(collection: Collection<T>, transformer: (T) -> JsonValue): JsonArray {
+    private fun <T> asJsonArray(collection: Collection<T>, transformer: (T) -> JsonValue?): JsonArray {
         return Json.array().apply {
-            collection.map(transformer)
-                    .forEach {
-                        add(it)
-                    }
+            collection.mapNotNull(transformer)
+                    .forEach { add(it) }
+        }
+    }
+
+    private fun <T> asJsonArray(sequence: Sequence<T>, transformer: (T) -> JsonValue?): JsonArray {
+        return Json.array().apply {
+            sequence.mapNotNull(transformer)
+                    .forEach { add(it) }
         }
     }
 
     private fun givensEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue = { entry: KensaMap.Entry -> jsonObject().add(entry.key, renderers.renderValueOnly(entry.value)) }
 
-    private fun interactionEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue {
-        return { entry: KensaMap.Entry ->
-            jsonObject()
-                    .add("id", entry.key.hashCode().toString())
-                    .add("name", entry.key)
-                    .add("value", renderers.renderValueOnly(entry.value))
-                    .add("renderableAttributes", asJsonArray(renderers.renderAll(entry.value), renderableAttributeAsJson()))
-                    .add("attributes", asJsonArray(entry.attributes.attributes, nvAsJson(renderers)))
-        }
-    }
+    private fun interactionEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue? =
+            { entry ->
+                entry.takeUnless {
+                    it.key.matches("^\\{.+}.*$".toRegex())
+                }?.let {
+                    jsonObject()
+                            .add("id", it.key.hashCode().toString())
+                            .add("name", it.key)
+                            .add("value", renderers.renderValueOnly(it.value))
+                            .add("renderableAttributes", asJsonArray(renderers.renderAll(it.value), renderableAttributeAsJson()))
+                            .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))
+                }
+            }
 
     @Suppress("UNCHECKED_CAST")
     private fun renderableAttributeAsJson(): (Pair<Boolean, NamedValue>) -> JsonValue {
@@ -142,16 +151,18 @@ object JsonTransforms {
             when (val value = pair.second.value) {
                 is Set<*> -> jsonObject()
                         .add("showOnSequenceDiagram", pair.first)
-                        .add(pair.second.name, asJsonArray(value as Set<NamedValue>) { nv-> jsonObject().add(nv.name, nv.value.toString()) })
+                        .add(pair.second.name, asJsonArray(value as Set<NamedValue>) { nv -> jsonObject().add(nv.name, nv.value.toString()) })
 
                 else -> jsonObject().add(pair.second.name, pair.second.value.toString())
             }
         }
     }
 
-    private fun nvpValueAsJson(renderers: Renderers) = { nv: NamedValue -> Json.value(renderers.renderValueOnly(nv.value)) }
+    private fun nvValueAsJson(renderers: Renderers) = { nv: NamedValue -> Json.value(renderers.renderValueOnly(nv.value)) }
 
     private fun nvAsJson(renderers: Renderers) = { nv: NamedValue -> jsonObject().add(nv.name, renderers.renderValueOnly(nv.value)) }
+
+    private fun entryAsJson(renderers: Renderers) = { e: Map.Entry<String, *> -> jsonObject().add(e.key, renderers.renderValueOnly(e.value)) }
 
     private fun executionExceptionFrom(invocation: TestInvocation) =
             invocation.executionException?.let {
