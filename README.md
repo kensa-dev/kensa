@@ -103,7 +103,7 @@ class MyTest : KotlinKensaTest, WithAssertJ {}
 
 ![showOnSequenceDiagram](src/main/resources/showOnSequenceDiagram.png)
 
-###Specify 'Time Passing' for timeouts etc
+### Specify 'Time Passing' for timeouts etc
 `interactions.captureTimePassing("Message")`<br />
 `interactions.divider("Message")` is also available to give a double divider line in diagrams<br />
 see Smaug's `KubernetesStub` and `BungoStub` on `git.bskyb.com` for implementations
