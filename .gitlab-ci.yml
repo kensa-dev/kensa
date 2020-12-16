@@ -1,4 +1,4 @@
-image: openjdk:11.0-jdk-slim-buster
+image: openjdk:11.0-jdk-buster
 
 variables:
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
