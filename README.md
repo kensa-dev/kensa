@@ -1,15 +1,12 @@
 # Kensa
 ##Documentation
 
-Kensa is an acceptance test tool which supports Java, Kotlin and JUnit5. Its artifacts reside within Artifactory under `seru-systems`.
+Kensa is an acceptance test tool which supports Java, Kotlin and JUnit5.
 
-The Kensa source code is on Gitlab, owned by Paul Brooks.
-
-Team Sonique are maintainers and will happily merge pull requests.
 <br />
 Kotlin and Java are both fully supported as of version 105.
 <br />
-On request, Paul will make forking available.
+On request, forking will be made available.
 ### Dependency:
 ```
 <dependency>
@@ -24,7 +21,6 @@ implementation("dev.kensa:kensa:105")
 
 ### Wiring Kensa into the application
 Either add the following static initialiser to an existing application configuration class or create a standalone Kensa configuration class
-(For reference Sonique has implemented this in ```<ApplicationName>Extension.java``` for RedQueen, Bran, Roobarb, Bullwinkle, Garibaldi and Doogal at time of writing)
 
 `For Java`
 ```
@@ -49,7 +45,7 @@ class YourAppNameExtension : org.junit.jupiter.api.extension.Extension {
                 withAcronyms(
                         Acronym.of("SA", "some Acronym")
                 )
-                issueTrackerUrl = URL("https://cbsjira.bskyb.com/browse/")
+                issueTrackerUrl = URL("https://my-issue-tracker.com/")
                 outputStyle = MultiFile
             }
         }
@@ -58,9 +54,9 @@ class YourAppNameExtension : org.junit.jupiter.api.extension.Extension {
 ```
 This is a basic example of the configuration required for a simple application.<br />
 ```Acronym``` - Configuring acronyms is completely optional. They underline preconfigured words, which show the full definition on hover over.<br />
-```IssueTrackerUrl``` - This adds hyperlinks for the story numbers annotated on a test, using the ```@Issue``` annotation.<br />
+```IssueTrackerUrl``` - This adds a query parameter to the issueTrackerUrl, using the parameter object of the ```@Issue({"myQueryParameter"})``` annotation.<br />
 ```OutputStyle``` - This sets the format for how Kensa generates the test files.<br /><br />
-```ParameterizedTests``` are fully supported.
+```ParameterizedTests``` are fully supported.<br />
 ### Implementing Kensa in Acceptance Tests
 
 Annotate the test class with the ```@ExtendWith``` annotation
@@ -81,7 +77,7 @@ class MyTest : KotlinKensaTest, WithAssertJ {}
 
 ### Test Annotations of Interest
 
-```@Issue```    replaces @Notes from Yatspec for story number display. It turns story numbers into a link to the related story/stories.<br />
+```@Issue```    replaces @Notes from Yatspec to link to issue tracker.<br />
 ```@Notes```    print comments, this works at method and class level.<br />
 ```@Highlight```     can be used on field declarations and highlight the field / field value in the test output.<br />
 ```@SentenceValue```    can be used on field declarations or parameter declarations and shows the field or variable value in the test output.<br />
@@ -101,11 +97,6 @@ class MyTest : KotlinKensaTest, WithAssertJ {}
 ### Request headers output
 ```showOnSequenceDiagram()``` is a `RenderableAttribute` and is set to `false` by default. Override to `true` to display a minimised table of the request url and the request method above the response body inside the UML modal
 
-![showOnSequenceDiagram](src/main/resources/showOnSequenceDiagram.png)
-
 ### Specify 'Time Passing' for timeouts etc
 `interactions.captureTimePassing("Message")`<br />
 `interactions.divider("Message")` is also available to give a double divider line in diagrams<br />
-see Smaug's `KubernetesStub` and `BungoStub` on `git.bskyb.com` for implementations
-
-![showTimeOut](src/main/resources/showTimeOut.png)
