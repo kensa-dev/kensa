@@ -19,7 +19,7 @@ On request, Paul will make forking available.
 </dependency>
 ```
 ```
-compile("dev.kensa:kensa:105")
+implementation("dev.kensa:kensa:105")
 ```
 
 ### Wiring Kensa into the application
