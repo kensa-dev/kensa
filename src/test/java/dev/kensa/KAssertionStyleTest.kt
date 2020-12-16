@@ -113,7 +113,7 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
     @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase, TextDecorationUnderline], textColour = TextLight, backgroundColor = BackgroundDanger)
     fun theActionIsPerformedAndTheResultIsAddedToCapturedInteractions(): ActionUnderTest {
         return ActionUnderTest { givens, interactions ->
-            interactions.capture(from(Parrty.A).to(Parrty.B).group("Test").lineType(ArrowStyle.ArrowCross).with("Message", "The Message"))
+            interactions.capture(from(Parrty.A).to(Parrty.B).group("Test").arrowStyle(ArrowStyle.ArrowCross).with("Message", "The Message"))
             givens.get<String>("actionName")?.let {
                 interactions.put("result", performer.perform(it))
             }

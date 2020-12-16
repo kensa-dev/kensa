@@ -14,7 +14,7 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     private var contentDescriptor: String? = null
     private var arrowStyle : ArrowStyle = ArrowStyle.ArrowThin
 
-    fun lineType(arrowStyle: ArrowStyle) = apply {
+    fun arrowStyle(arrowStyle: ArrowStyle) = apply {
         this.arrowStyle = arrowStyle
     }
 

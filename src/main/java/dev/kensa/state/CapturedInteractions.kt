@@ -34,6 +34,6 @@ class CapturedInteractions : KensaMap<CapturedInteractions>() {
     fun containsEntriesMatching(predicate: (Entry) -> Boolean): Boolean = entrySet().any(predicate)
 
     companion object {
-        val sdMarkerKey = "SD-MARKER"
+        const val sdMarkerKey = "SD-MARKER"
     }
 }
