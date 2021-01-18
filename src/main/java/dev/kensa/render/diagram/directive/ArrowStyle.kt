@@ -5,5 +5,8 @@ enum class ArrowStyle(val value: String) {
     ArrowThin("->"),
     ArrowThick("->>"),
     ArrowCircle("->o"),
+    ArrowDotted("-->"),
+    ArrowDottedCross("-->x"),
+    ArrowDottedCircle("-->o")
     ;
 }
