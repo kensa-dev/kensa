@@ -42,7 +42,8 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     }
 
     fun applyTo(interactions: CapturedInteractions) {
-        attributes = group?.let { attributes.merge(of(Group, it, Arrow, arrowStyle)) } ?: attributes
+        attributes = group?.let { attributes.merge(of(Group, it, Arrow, arrowStyle)) }
+            ?: attributes.merge(of(Arrow, arrowStyle))
 
         val key = "$contentDescriptor __idx __from ${fromParty.asString()} to ${toParty!!.asString()}"
 
