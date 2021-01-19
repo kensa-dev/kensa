@@ -58,7 +58,7 @@ internal class CapturedInteractionsTest {
             // Attributes currently only required to be Iterable to allow serialization into Json
             entrySet().forEach { entry: KensaMap.Entry ->
                 assertThat(entry.attributes).satisfies { attributes ->
-                    assertThat(attributes.arrowStyle).isEqualTo(ArrowStyle.ArrowThin)
+                    assertThat(attributes.arrowStyle).isEqualTo(ArrowStyle.UmlSynchronous)
                     assertThat(attributes["language"]).isEqualTo("bolshy")
                 }
             }

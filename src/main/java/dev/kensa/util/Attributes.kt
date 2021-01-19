@@ -19,7 +19,7 @@ class Attributes private constructor(private val attributes: Map<String, Any?>) 
         get() = attributes[Group] as? String
 
     val arrowStyle: ArrowStyle
-        get() = (attributes[Arrow] ?: ArrowStyle.ArrowThin) as ArrowStyle
+        get() = (attributes[Arrow] ?: ArrowStyle.UmlSynchronous) as ArrowStyle
 
     fun merge(other: Attributes): Attributes =
             Attributes(

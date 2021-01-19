@@ -1,6 +1,7 @@
 package dev.kensa.util
 
-import dev.kensa.render.diagram.directive.ArrowStyle
+import dev.kensa.render.diagram.directive.ArrowStyle.UmlSynchronous
+import dev.kensa.render.diagram.directive.ArrowStyle.UmlSynchronousDelete
 import dev.kensa.util.Attributes.Key.Arrow
 import dev.kensa.util.Attributes.Key.Group
 import org.assertj.core.api.Assertions.assertThat
@@ -16,8 +17,8 @@ internal class AttributesTest {
 
     @Test
     internal fun `can get line type attribute`() {
-        assertThat(Attributes.of(Arrow, ArrowStyle.ArrowCross).arrowStyle).isEqualTo(ArrowStyle.ArrowCross)
-        assertThat(Attributes.emptyAttributes().arrowStyle).isEqualTo(ArrowStyle.ArrowThin)
+        assertThat(Attributes.of(Arrow, UmlSynchronousDelete).arrowStyle).isEqualTo(UmlSynchronousDelete)
+        assertThat(Attributes.emptyAttributes().arrowStyle).isEqualTo(UmlSynchronous)
     }
 
     @Test

@@ -12,7 +12,7 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     private var group: String? = null
     private var content: Any? = null
     private var contentDescriptor: String? = null
-    private var arrowStyle : ArrowStyle = ArrowStyle.ArrowThin
+    private var arrowStyle : ArrowStyle = ArrowStyle.UmlSynchronous
 
     fun arrowStyle(arrowStyle: ArrowStyle) = apply {
         this.arrowStyle = arrowStyle
