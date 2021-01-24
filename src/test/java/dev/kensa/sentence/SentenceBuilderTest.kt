@@ -6,7 +6,7 @@ import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aLiteralOf
 import dev.kensa.sentence.SentenceTokens.aMethodIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aNewline
-import dev.kensa.sentence.SentenceTokens.aParameterIdentifierOf
+import dev.kensa.sentence.SentenceTokens.aParameterValueOf
 import dev.kensa.sentence.SentenceTokens.aScenarioIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
@@ -59,7 +59,7 @@ internal class SentenceBuilderTest {
                         aScenarioIdentifierOf("scenario.call"),
                         aFieldIdentifierOf("fieldName"),
                         aMethodIdentifierOf("methodName"),
-                        aParameterIdentifierOf("parameterName"),
+                        aParameterValueOf("parameterName"),
                         aNewline(),
                         anIndent(),
                         anIndent(),

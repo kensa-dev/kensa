@@ -32,5 +32,5 @@ object SentenceTokens {
 
     fun aMethodIdentifierOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(MethodValue))
 
-    fun aParameterIdentifierOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(ParameterValue))
+    fun aParameterValueOf(value: String) = SentenceToken(value, tokenTypes = arrayOf(ParameterValue))
 }

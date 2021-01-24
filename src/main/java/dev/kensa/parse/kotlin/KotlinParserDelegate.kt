@@ -14,30 +14,46 @@ import kotlin.reflect.KClass
 
 object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationContext> {
 
-    override fun methodNameFrom(dc: KotlinParser.FunctionDeclarationContext): String = dc.simpleIdentifier().text.replace("`", "")
+    override fun methodNameFrom(dc: KotlinParser.FunctionDeclarationContext): String =
+        dc.simpleIdentifier().text.replace("`", "")
 
     override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Triple<List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>> {
-        val testFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
-        val nestedFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
-        val emphasisedFunctionDeclarations = ArrayList<KotlinParser.FunctionDeclarationContext>()
+        val testFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
+        val nestedFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
+        val emphasisedFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
         compilationUnitFor(testClass).topLevelObject()
-            .mapNotNull { it.declaration()?.classDeclaration() }
+            .mapNotNull { it.declaration()?.classDeclaration() ?: it.declaration().functionDeclaration() }
             .forEach {
-                it.classBody().classMemberDeclarations().classMemberDeclaration().forEach { cmd ->
-                    cmd.declaration()?.functionDeclaration()?.let { fd ->
-                        testFunctionDeclarations.takeIf { isAnnotatedAsTest(fd) }?.add(fd)
-                        nestedFunctionDeclarations.takeIf { isAnnotatedAsNested(fd) }?.add(fd)
-                        emphasisedFunctionDeclarations.takeIf { isAnnotatedAsEmphasised(fd) }?.add(fd)
+                when (it) {
+                    is KotlinParser.ClassDeclarationContext -> {
+                        it.classBody().classMemberDeclarations().classMemberDeclaration().forEach { cmd ->
+                            cmd.declaration()?.functionDeclaration()?.let(
+                                assignDeclarations(testFunctions, nestedFunctions, emphasisedFunctions)
+                            )
+                        }
+                    }
+                    is KotlinParser.FunctionDeclarationContext -> {
+                        assignDeclarations(testFunctions, nestedFunctions, emphasisedFunctions)(it)
                     }
                 }
             }
 
-        if (testFunctionDeclarations.isEmpty())
+        if (testFunctions.isEmpty())
             throw KensaException("Unable to find class declaration in source code")
 
-        return Triple(testFunctionDeclarations, nestedFunctionDeclarations, emphasisedFunctionDeclarations)
+        return Triple(testFunctions, nestedFunctions, emphasisedFunctions)
+    }
+
+    private fun assignDeclarations(
+        testFunctions: ArrayList<KotlinParser.FunctionDeclarationContext>,
+        nestedFunctions: ArrayList<KotlinParser.FunctionDeclarationContext>,
+        emphasisedFunctions: ArrayList<KotlinParser.FunctionDeclarationContext>
+    ): (KotlinParser.FunctionDeclarationContext) -> Unit = { fd ->
+        testFunctions.takeIf { isAnnotatedAsTest(fd) }?.add(fd)
+        nestedFunctions.takeIf { isAnnotatedAsNested(fd) }?.add(fd)
+        emphasisedFunctions.takeIf { isAnnotatedAsEmphasised(fd) }?.add(fd)
     }
 
     private fun compilationUnitFor(testClass: KClass<out Any>): KotlinParser.KotlinFileContext {
@@ -78,9 +94,9 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
     override fun parameterNamesAndTypesFrom(dc: KotlinParser.FunctionDeclarationContext): List<Pair<String, String>> {
         return ArrayList<Pair<String, String>>().apply {
             dc.functionValueParameters().functionValueParameter()
-                .map { it -> it.parameter() }
+                .map { it.parameter() }
                 .forEach {
-                    add(Pair(it.simpleIdentifier().text, it.type().text))
+                    add(Pair(it.simpleIdentifier().text, it.type().text.trimEnd('?')))
                 }
         }
     }

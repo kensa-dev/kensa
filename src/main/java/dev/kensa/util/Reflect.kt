@@ -90,7 +90,9 @@ object Reflect {
         return fieldValue(field, target)
     }
 
-    private fun findField(name: String, clazz: Class<*>): Field? =
+    fun findField(name: String, clazz: KClass<*>) : Field? = findField(name, clazz.java)
+
+    fun findField(name: String, clazz: Class<*>): Field? =
         if (clazz == Any::class.java) null else {
             clazz.declaredFields.singleOrNull { it.name == name } ?: findField(name, clazz.superclass)
         }

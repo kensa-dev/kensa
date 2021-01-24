@@ -1,51 +1,75 @@
-package dev.kensa.acceptance;
+package dev.kensa.acceptance
 
-import dev.kensa.acceptance.example.TestWithMultiplePassingTests;
-import dev.kensa.acceptance.example.TestWithSinglePassingTest;
-import org.junit.jupiter.api.Test;
+import dev.kensa.acceptance.KensaTestExecutor.executeTests
+import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations
+import dev.kensa.acceptance.example.KotlinTestWithVariousParameterCombinations
+import dev.kensa.acceptance.example.TestWithMultiplePassingTests
+import dev.kensa.acceptance.example.TestWithSinglePassingTest
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.junit.platform.engine.TestExecutionResult
+import org.junit.platform.engine.TestExecutionResult.Status.FAILED
+import java.nio.file.Files.exists
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import static dev.kensa.acceptance.KensaTestExecutor.executeTests;
-import static org.assertj.core.api.Assertions.assertThat;
-
-class BasicFrameworkTest extends KensaAcceptanceTest {
+internal class BasicFrameworkTest : KensaAcceptanceTest() {
 
     @Test
-    void createsOutputFilesWhenMultipleTestClassesExecuted() {
-        Class<?>[] testClasses = {TestWithSinglePassingTest.class, TestWithMultiplePassingTests.class};
-        executeTests(testClasses);
+    internal fun createsOutputFilesWhenMultipleTestClassesExecuted() {
+        val testClasses =
+            arrayOf<Class<*>>(TestWithSinglePassingTest::class.java, TestWithMultiplePassingTests::class.java)
 
-        for (Class<?> testClass : testClasses) {
-            Path outputFilePath = kensaOutputDir.resolve(testClass.getName() + ".html");
-            assertThat(Files.exists(outputFilePath))
-                    .withFailMessage("Expected file [%s] to exist.", outputFilePath)
-                    .isTrue();
+        executeTests(*testClasses)
+
+        testClasses.forEach {
+            val outputFilePath = kensaOutputDir.resolve(it.name + ".html")
+
+            assertThat(exists(outputFilePath))
+                .withFailMessage("Expected file [%s] to exist.", outputFilePath)
+                .isTrue
         }
+        assertThat(exists(kensaOutputDir.resolve("index.html"))).isTrue
+        assertThat(exists(kensaOutputDir.resolve("kensa.js"))).isTrue
+    }
 
-        assertThat(Files.exists(kensaOutputDir.resolve("index.html"))).isTrue();
-        assertThat(Files.exists(kensaOutputDir.resolve("kensa.js"))).isTrue();
+    @Test
+    internal fun handlesJavaTestsWithVariousParameterCombinations() {
+        val results = executeTests(JavaTestWithVariousParameterCombinations::class.java)
+
+        val failedTests = results.testEvents().failed()
+            .map { it.getPayload(TestExecutionResult::class.java).orElseThrow() }
+            .filter { it.status == FAILED }
+
+        assertThat(failedTests).isEmpty()
+    }
+
+    @Test
+    internal fun handlesKotlinTestsWithVariousParameterCombinations() {
+        val results = executeTests(KotlinTestWithVariousParameterCombinations::class.java)
+
+        val failedTests = results.testEvents().failed()
+            .map { it.getPayload(TestExecutionResult::class.java).orElseThrow() }
+            .filter { it.status == FAILED }
+
+        assertThat(failedTests).isEmpty()
     }
 
 //    @Test
-//    void executesWhenAllTestsAreDisabled() {
-//        executeAllTestsIn(TestWithAllTestsDisabled.class);
-//    }
-//
-//    @Test
-//    void testExecutionContextContainsCorrectValues_SinglePassingTest() {
-//        executeAllTestsIn(TestWithSinglePassingTest.class);
-//    }
-//
-//    @Test
-//    void testExecutionContextContainsCorrectValues_SingleFailingTest() {
-//        executeAllTestsIn(TestWithSingleFailingTest.class);
-//    }
-//
-//    @Test
-//    void testExecutionContextContainsCorrectValues_ParallelPassingTests() {
-//        executeAllTestsInParallelIn(TestWithMultiplePassingTests.class);
-//    }
-
+    //    void executesWhenAllTestsAreDisabled() {
+    //        executeAllTestsIn(TestWithAllTestsDisabled.class);
+    //    }
+    //
+    //    @Test
+    //    void testExecutionContextContainsCorrectValues_SinglePassingTest() {
+    //        executeAllTestsIn(TestWithSinglePassingTest.class);
+    //    }
+    //
+    //    @Test
+    //    void testExecutionContextContainsCorrectValues_SingleFailingTest() {
+    //        executeAllTestsIn(TestWithSingleFailingTest.class);
+    //    }
+    //
+    //    @Test
+    //    void testExecutionContextContainsCorrectValues_ParallelPassingTests() {
+    //        executeAllTestsInParallelIn(TestWithMultiplePassingTests.class);
+    //    }
 }

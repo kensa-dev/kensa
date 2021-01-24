@@ -1,24 +1,22 @@
-package dev.kensa.acceptance;
+package dev.kensa.acceptance
 
-import dev.kensa.Kensa;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.io.TempDir;
+import dev.kensa.Kensa.configure
+import dev.kensa.output.OutputStyle
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
-import java.nio.file.Path;
+internal abstract class KensaAcceptanceTest {
+    companion object {
+        lateinit var kensaOutputDir: Path
 
-import static dev.kensa.output.OutputStyle.MultiFile;
-
-abstract class KensaAcceptanceTest {
-
-    static Path kensaOutputDir;
-
-    @BeforeAll
-    static void beforeAll(@TempDir Path tempDir) {
-        kensaOutputDir = tempDir.resolve("kensa-output");
-
-        Kensa.configure()
-             .withOutputDir(kensaOutputDir)
-             .withOutputStyle(MultiFile)
-        ;
+        @JvmStatic
+        @BeforeAll
+        fun beforeAll(@TempDir tempDir: Path) {
+            kensaOutputDir = tempDir.resolve("kensa-output")
+            configure()
+                .withOutputDir(kensaOutputDir)
+                .withOutputStyle(OutputStyle.MultiFile)
+        }
     }
 }

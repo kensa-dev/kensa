@@ -14,13 +14,13 @@ import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Givens
 import dev.kensa.state.TestInvocationContext
 import dev.kensa.state.TestInvocationFactory
-import dev.kensa.util.Reflect
 import org.junit.jupiter.api.extension.*
-import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor
+import java.lang.reflect.Method
 import java.time.Duration
 import java.time.temporal.ChronoUnit.MILLIS
 
-class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
+class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
+    AfterTestExecutionCallback, InvocationInterceptor {
     private val testContainerFactory = TestContainerFactory()
     private val testInvocationFactory = TestInvocationFactory(
         TestInvocationParser(),
@@ -40,17 +40,44 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeT
 
     override fun beforeEach(context: ExtensionContext) {
         with(context.getStore(KENSA)) {
-            val testContext = TestContext(Givens(), CapturedInteractions())
-            put(TEST_CONTEXT_KEY, testContext)
-            bindToThread(testContext)
+            TestContext(Givens(), CapturedInteractions()).also {
+                put(TEST_CONTEXT_KEY, it)
+                bindToThread(it)
+            }
         }
     }
 
-    override fun beforeTestExecution(context: ExtensionContext) {
-        context.getStore(KENSA).put(TEST_START_TIME_KEY, System.currentTimeMillis())
+    // Called for @ParameterizedTest methods
+    override fun interceptTestTemplateMethod(
+        invocation: InvocationInterceptor.Invocation<Void>,
+        invocationContext: ReflectiveInvocationContext<Method>,
+        context: ExtensionContext
+    ) {
+        createTestInvocationContext(context, invocationContext.arguments.toTypedArray())
+        invocation.proceed()
+    }
 
-        // Workaround for JUnit5 argument access
-        processTestMethodArguments(context, argumentsFrom(context))
+    // Called for @Test methods
+    override fun interceptTestMethod(
+        invocation: InvocationInterceptor.Invocation<Void>,
+        invocationContext: ReflectiveInvocationContext<Method>,
+        context: ExtensionContext
+    ) {
+        createTestInvocationContext(context, invocationContext.arguments.toTypedArray())
+        invocation.proceed()
+    }
+
+    private fun createTestInvocationContext(context: ExtensionContext, arguments: Array<Any?>) {
+        with(context.getStore(KENSA)) {
+            put(TEST_START_TIME_KEY, System.currentTimeMillis())
+            put(
+                TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext(
+                    context.requiredTestInstance,
+                    context.requiredTestMethod,
+                    arguments
+                )
+            )
+        }
     }
 
     override fun afterTestExecution(context: ExtensionContext) {
@@ -63,12 +90,12 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeT
                 val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod!!)
                 val testInvocationContext = get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext::class.java)
                 invocation.add(
-                        testInvocationFactory.create(
-                                Duration.of(endTime - startTime, MILLIS),
-                                testContext,
-                                testInvocationContext,
-                                context.executionException.orElse(null)
-                        )
+                    testInvocationFactory.create(
+                        Duration.of(endTime - startTime, MILLIS),
+                        testContext,
+                        testInvocationContext,
+                        context.executionException.orElse(null)
+                    )
                 )
             }
         } finally {
@@ -76,33 +103,15 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, BeforeT
         }
     }
 
-    // TODO:: Need to watch this issue and remove reflection once extension point added in JUnit5
-    // TODO:: https://github.com/junit-team/junit5/issues/1139
-    private fun processTestMethodArguments(context: ExtensionContext, arguments: Array<Any?>) {
-        with(context.getStore(KENSA)) {
-            put(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext(context.requiredTestInstance, context.requiredTestMethod, arguments))
-        }
-    }
-
-    private fun argumentsFrom(context: ExtensionContext): Array<Any?> {
-        return try {
-            Reflect.invoke<TestMethodTestDescriptor>("getTestDescriptor", context)?.let { td ->
-                Reflect.fieldValue<TestTemplateInvocationContext>("invocationContext", td)?.let {
-                    Reflect.fieldValue<Array<Any?>>("arguments", it)
-                }
-            } ?: emptyArray()
-        } catch (e: Exception) {
-            return emptyArray()
-        }
-    }
-
     // Add the KensaExecutionContext to the store so we can hook up the close method to be executed when the
     // whole test run is complete
     @Synchronized
-    private fun bindToRootContextOf(context: ExtensionContext): KensaExecutionContext {
-        val store = context.root.getStore(KENSA)
-        return store.getOrComputeIfAbsent(KENSA_EXECUTION_CONTEXT_KEY, EXECUTION_CONTEXT_FACTORY, KensaExecutionContext::class.java)
-    }
+    private fun bindToRootContextOf(context: ExtensionContext) =
+        context.root.getStore(KENSA).getOrComputeIfAbsent(
+            KENSA_EXECUTION_CONTEXT_KEY,
+            EXECUTION_CONTEXT_FACTORY,
+            KensaExecutionContext::class.java
+        )
 
     companion object {
         val KENSA: ExtensionContext.Namespace = ExtensionContext.Namespace.create("dev", "kensa")

@@ -17,7 +17,8 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                         declarationCache.getOrPut(testClass) { findMethodDeclarationsIn(testClass) }
                 val testMethodDeclaration = testMethodDeclarations.find { dc ->
                     // Only match on parameter simple type name - saves having to go looking in the imports
-                    methodNameFrom(dc) == method.name && parameterNamesAndTypesFrom(dc).map { it.second } == method.parameterTypes.map { it.simpleName }
+                    methodNameFrom(dc) == method.name &&
+                            parameterNamesAndTypesFrom(dc).map { it.second.substringAfterLast('.') } == method.parameterTypes.map { it.simpleName }
                 } ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
 
                 val testMethodParameters = parameterCache.getOrPut(method) { prepareParametersFor(method, parameterNamesAndTypesFrom(testMethodDeclaration)) }

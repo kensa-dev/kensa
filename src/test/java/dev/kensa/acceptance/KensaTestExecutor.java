@@ -4,6 +4,7 @@ import org.junit.jupiter.engine.Constants;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.testkit.engine.EngineExecutionResults;
 import org.junit.platform.testkit.engine.EngineTestKit;
 
 import java.lang.reflect.Method;
@@ -18,8 +19,8 @@ final class KensaTestExecutor {
         executeKensaTest(false, selectMethod(clazz, method));
     }
 
-    static void executeTests(Class<?>... classes) {
-        executeKensaTest(false, Stream.of(classes).map(DiscoverySelectors::selectClass).toArray(ClassSelector[]::new));
+    static EngineExecutionResults executeTests(Class<?>... classes) {
+        return executeKensaTest(false, Stream.of(classes).map(DiscoverySelectors::selectClass).toArray(ClassSelector[]::new));
     }
 
     static void executeAllTestsIn(Class<?> clazz) {
@@ -30,8 +31,8 @@ final class KensaTestExecutor {
         executeKensaTest(true, selectClass(clazz));
     }
 
-    static void executeKensaTest(Boolean parallel, DiscoverySelector... classSelectors) {
-        EngineTestKit
+    static EngineExecutionResults executeKensaTest(Boolean parallel, DiscoverySelector... classSelectors) {
+        return EngineTestKit
                 .engine("junit-jupiter")
                 .configurationParameter(Constants.PARALLEL_EXECUTION_ENABLED_PROPERTY_NAME, parallel.toString())
                 .selectors(classSelectors)
