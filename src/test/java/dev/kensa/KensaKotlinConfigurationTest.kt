@@ -57,6 +57,16 @@ internal class KensaKotlinConfigurationTest {
     }
 
     @Test
+    internal fun outputIsDisabledWhenPropertyIsPresentAndIsBlank() {
+        System.setProperty("kensa.disable.output", "")
+
+        val configuration = Configuration()
+        assertThat(configuration.isOutputEnabled).isFalse
+
+        System.clearProperty("kensa.disable.output")
+    }
+
+    @Test
     fun throwsWhenIssueTrackerUrlInvalid() {
         assertThatThrownBy { configure().withIssueTrackerUrl("foo") }
             .isInstanceOf(IllegalArgumentException::class.java)

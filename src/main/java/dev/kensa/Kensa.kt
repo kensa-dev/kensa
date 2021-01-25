@@ -99,7 +99,9 @@ class Configuration(
         System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")),
         KENSA_OUTPUT_DIR
     ),
-    var isOutputEnabled: Boolean = System.getProperty(KENSA_DISABLE_OUTPUT)?.let { !it.toBoolean() } ?: true,
+    var isOutputEnabled: Boolean = if(System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
+        System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
+    } else true,
     val renderers: Renderers = Renderers(),
     var antlrPredicationMode: PredictionMode = PredictionMode.SLL,
     var antlrErrorListenerDisabled: Boolean = true,
