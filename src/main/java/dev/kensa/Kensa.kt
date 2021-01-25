@@ -1,5 +1,6 @@
 package dev.kensa
 
+import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
@@ -21,6 +22,7 @@ import kotlin.reflect.KClass
 object Kensa {
 
     internal const val KENSA_OUTPUT_ROOT = "kensa.output.root"
+    internal const val KENSA_DISABLE_OUTPUT = "kensa.disable.output"
     internal const val KENSA_OUTPUT_DIR = "kensa-output"
 
     @JvmStatic
@@ -52,6 +54,10 @@ object Kensa {
         configuration.outputDir = if (dir.endsWith(KENSA_OUTPUT_DIR)) dir else dir.resolve(KENSA_OUTPUT_DIR)
     }
 
+    fun withOutputDisabled(): Kensa = apply {
+        configuration.isOutputEnabled = false
+    }
+
     fun <T : Any> withRenderer(klass: Class<T>, renderer: Renderer<out T>): Kensa = apply {
         configuration.renderers.add(klass, renderer)
     }
@@ -76,7 +82,7 @@ object Kensa {
         configuration.sectionOrder = order.toList()
     }
 
-    fun withTabSize(tabSize: Int) : Kensa = apply {
+    fun withTabSize(tabSize: Int): Kensa = apply {
         configuration.tabSize = tabSize
     }
 }
@@ -88,15 +94,20 @@ enum class Section {
 }
 
 class Configuration(
-        val dictionary: Dictionary = Dictionary(),
-        var outputDir: Path = Paths.get(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR),
-        val renderers: Renderers = Renderers(),
-        var antlrPredicationMode: PredictionMode = PredictionMode.SLL,
-        var antlrErrorListenerDisabled: Boolean = true,
-        var umlDirectives: List<UmlDirective> = ArrayList(),
-        var outputStyle: OutputStyle = OutputStyle.MultiFile,
-        var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
-        var tabSize: Int = 5) {
+    val dictionary: Dictionary = Dictionary(),
+    var outputDir: Path = Paths.get(
+        System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")),
+        KENSA_OUTPUT_DIR
+    ),
+    var isOutputEnabled: Boolean = System.getProperty(KENSA_DISABLE_OUTPUT)?.let { !it.toBoolean() } ?: true,
+    val renderers: Renderers = Renderers(),
+    var antlrPredicationMode: PredictionMode = PredictionMode.SLL,
+    var antlrErrorListenerDisabled: Boolean = true,
+    var umlDirectives: List<UmlDirective> = ArrayList(),
+    var outputStyle: OutputStyle = OutputStyle.MultiFile,
+    var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
+    var tabSize: Int = 5
+) {
 
     var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
         set(order) {
@@ -112,7 +123,12 @@ class Configuration(
     var acronyms: Set<Acronym> = emptySet()
         set(value) = dictionary.putAcronyms(value)
 
-    fun createTemplate(path: String, mode: Template.Mode): Template = Template(outputDir.resolve(path), mode, issueTrackerUrl, sectionOrder)
+    fun disableOutput() {
+        isOutputEnabled = false
+    }
+
+    fun createTemplate(path: String, mode: Template.Mode): Template =
+        Template(outputDir.resolve(path), mode, issueTrackerUrl, sectionOrder)
 
     companion object {
         private fun defaultIssueTrackerUrl(): URL = try {

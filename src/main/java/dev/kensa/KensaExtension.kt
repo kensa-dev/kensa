@@ -1,5 +1,6 @@
 package dev.kensa
 
+import dev.kensa.Kensa.configuration
 import dev.kensa.context.TestContainer
 import dev.kensa.context.TestContainerFactory
 import dev.kensa.context.TestContext
@@ -30,11 +31,13 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     )
 
     override fun beforeAll(context: ExtensionContext) {
-        with(context.getStore(KENSA)) {
-            val executionContext = bindToRootContextOf(context)
-            val container = testContainerFactory.createFor(context)
-            put(TEST_CONTAINER_KEY, container)
-            executionContext.register(container)
+        if (configuration.isOutputEnabled) {
+            with(context.getStore(KENSA)) {
+                val executionContext = bindToRootContextOf(context)
+                val container = testContainerFactory.createFor(context)
+                put(TEST_CONTAINER_KEY, container)
+                executionContext.register(container)
+            }
         }
     }
 
@@ -68,35 +71,39 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     }
 
     private fun createTestInvocationContext(context: ExtensionContext, arguments: Array<Any?>) {
-        with(context.getStore(KENSA)) {
-            put(TEST_START_TIME_KEY, System.currentTimeMillis())
-            put(
-                TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext(
-                    context.requiredTestInstance,
-                    context.requiredTestMethod,
-                    arguments
+        if (configuration.isOutputEnabled) {
+            with(context.getStore(KENSA)) {
+                put(TEST_START_TIME_KEY, System.currentTimeMillis())
+                put(
+                    TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext(
+                        context.requiredTestInstance,
+                        context.requiredTestMethod,
+                        arguments
+                    )
                 )
-            )
+            }
         }
     }
 
     override fun afterTestExecution(context: ExtensionContext) {
         try {
-            val endTime = System.currentTimeMillis()
-            with(context.getStore(KENSA)) {
-                val startTime = get(TEST_START_TIME_KEY, Long::class.java)
-                val testContext = get(TEST_CONTEXT_KEY, TestContext::class.java)
-                val testContainer = get(TEST_CONTAINER_KEY, TestContainer::class.java)
-                val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod!!)
-                val testInvocationContext = get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext::class.java)
-                invocation.add(
-                    testInvocationFactory.create(
-                        Duration.of(endTime - startTime, MILLIS),
-                        testContext,
-                        testInvocationContext,
-                        context.executionException.orElse(null)
+            if (configuration.isOutputEnabled) {
+                val endTime = System.currentTimeMillis()
+                with(context.getStore(KENSA)) {
+                    val startTime = get(TEST_START_TIME_KEY, Long::class.java)
+                    val testContext = get(TEST_CONTEXT_KEY, TestContext::class.java)
+                    val testContainer = get(TEST_CONTAINER_KEY, TestContainer::class.java)
+                    val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod!!)
+                    val testInvocationContext = get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext::class.java)
+                    invocation.add(
+                        testInvocationFactory.create(
+                            Duration.of(endTime - startTime, MILLIS),
+                            testContext,
+                            testInvocationContext,
+                            context.executionException.orElse(null)
+                        )
                     )
-                )
+                }
             }
         } finally {
             clearFromThread()
