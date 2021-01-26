@@ -8,7 +8,13 @@ import dev.kensa.java.JavaKensaTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static dev.kensa.acceptance.example.TestExtension.MY_PARAMETER_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,11 +54,24 @@ public class JavaTestWithVariousParameterCombinations implements JavaKensaTest {
         assertThat(second.getValue()).isEqualTo(MY_PARAMETER_VALUE);
     }
 
+    @ParameterizedTest
+    @MethodSource("genericParameters")
+    void testWithGenericExtensionParameter(List<Map<String, String>> param) {
+        assertThat(param.get(0)).containsKey("a");
+    }
+
     @SentenceValue
     private void method1() {
     }
 
     @NestedSentence
     private void nested1() {
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> genericParameters() {
+        return Stream.of(
+                Arguments.of(List.of(Map.of("a", "b")))
+        );
     }
 }

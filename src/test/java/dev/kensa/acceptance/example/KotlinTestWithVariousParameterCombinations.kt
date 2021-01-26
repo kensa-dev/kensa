@@ -10,7 +10,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
+import java.util.stream.Stream
 
 @ExtendWith(TestExtension::class)
 class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
@@ -46,11 +49,25 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
         assertThat(second.value).isEqualTo(MY_PARAMETER_VALUE)
     }
 
+    @ParameterizedTest
+    @MethodSource("genericParameters")
+    fun testWithGenericExtensionParameter(param: List<Map<String, String>>) {
+        assertThat(param.first()).containsKey("a")
+    }
+
     @SentenceValue
     fun method1() {
     }
 
     @NestedSentence
     fun nested1() {
+    }
+
+    companion object {
+        @Suppress("unused")
+        @JvmStatic
+        fun genericParameters(): Stream<Arguments> = Stream.of(
+            Arguments.of(listOf(mapOf("a" to "b")))
+        )
     }
 }

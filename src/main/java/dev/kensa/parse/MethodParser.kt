@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.tree.ParseTree
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
+val greedyGenericPattern = "<.*>".toRegex()
+
 interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
     fun parse(method: Method): ParsedMethod =
             parsedMethodCache.getOrPut(method) {
@@ -15,11 +17,8 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                 }
                 val (testMethodDeclarations, nestedSentenceDeclarations, emphasisedMethodDeclarations) =
                         declarationCache.getOrPut(testClass) { findMethodDeclarationsIn(testClass) }
-                val testMethodDeclaration = testMethodDeclarations.find { dc ->
-                    // Only match on parameter simple type name - saves having to go looking in the imports
-                    methodNameFrom(dc) == method.name &&
-                            parameterNamesAndTypesFrom(dc).map { it.second.substringAfterLast('.') } == method.parameterTypes.map { it.simpleName }
-                } ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
+                val testMethodDeclaration = testMethodDeclarations.find (matchingDeclarationFor(method))
+                    ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
 
                 val testMethodParameters = parameterCache.getOrPut(method) { prepareParametersFor(method, parameterNamesAndTypesFrom(testMethodDeclaration)) }
 
@@ -61,6 +60,15 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
 
                 ParsedMethod(method.name, parameterCache[method]!!, testMethodSentences, nestedSentenceCache[testClass]!!, properties, methods)
             }
+
+    fun matchingDeclarationFor(method: Method) = { dc: DC ->
+        methodNameFrom(dc) == method.name &&
+                // Only match on parameter simple type name - saves having to go looking in the imports
+                parameterNamesAndTypesFrom(dc).map {
+                    it.second.substringAfterLast('.')
+                        .replace(greedyGenericPattern, "")
+                } == method.parameterTypes.map { it.simpleName }
+    }
 
     private fun prepareEmphasisedMethods(testClass: KClass<*>, emphasisedMethodDeclarations: List<DC>): Map<String, EmphasisDescriptor> {
         return emphasisedMethodDeclarations
