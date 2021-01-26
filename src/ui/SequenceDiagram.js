@@ -3,12 +3,13 @@ import Lowlight from 'react-lowlight';
 import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {joinForRegex} from "./Util";
 
 class RenderableAttributes extends Component {
 
     setCodeRef(wrappingDiv) {
         if (wrappingDiv) {
-            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${this.props.highlights.join('|')})`) : null;
+            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
             if (highlightRegexp) {
                 highlightPlainText(wrappingDiv, highlightRegexp)
             }
@@ -82,7 +83,7 @@ class Popup extends Component {
 
     setCodeRef(wrappingDiv) {
         if (wrappingDiv && this.props.interaction) {
-            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${this.props.highlights.join('|')})`) : null;
+            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
             if (highlightRegexp) {
                 let codeNode = wrappingDiv.firstElementChild.firstElementChild;
                 if (this.state.language === 'xml') {

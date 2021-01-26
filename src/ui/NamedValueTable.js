@@ -1,10 +1,11 @@
 import React, {Component} from "react";
 import {highlightPlainText} from "./Highlighting";
+import {joinForRegex} from "./Util";
 
 export class NamedValueTable extends Component {
     setCodeRef(wrappingDiv) {
         if (wrappingDiv) {
-            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${this.props.highlights.join('|')})`) : null;
+            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
             if (highlightRegexp) {
                 highlightPlainText(wrappingDiv, highlightRegexp)
             }

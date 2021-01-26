@@ -5,6 +5,7 @@ import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Lowlight from 'react-lowlight';
 import {NamedValueTable} from "./NamedValueTable";
+import {joinForRegex} from "./Util";
 
 export class CapturedInteractions extends Component {
     render() {
@@ -60,7 +61,7 @@ export class Interaction extends Component {
         super(props);
 
         let capturedInteraction = props.capturedInteraction;
-        let highlightRegexp = props.highlights.length > 0 ? new RegExp(`(${props.highlights.join('|')})`) : null;
+        let highlightRegexp = props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
         let languageAttr = capturedInteraction.attributes.find(attr => attr.hasOwnProperty("language"));
         let language = languageAttr ? languageAttr["language"] : "plainText";
 
