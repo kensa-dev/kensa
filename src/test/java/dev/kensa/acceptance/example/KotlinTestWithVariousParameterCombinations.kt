@@ -55,6 +55,42 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
         assertThat(param.first()).containsKey("a")
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = [1])
+    fun testWithIntParameter(param: Int) {
+        assertThat(param).isEqualTo(1)
+    }
+
+    @ParameterizedTest
+    @ValueSource(bytes = [1])
+    fun testWithByteParameter(param: Byte) {
+        assertThat(param).isEqualTo(1)
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = [1])
+    fun testWithLongParameter(param: Long) {
+        assertThat(param).isEqualTo(1)
+    }
+
+    @ParameterizedTest
+    @ValueSource(shorts = [1])
+    fun testWithShortParameter(param: Short) {
+        assertThat(param).isEqualTo(1)
+    }
+
+    @ParameterizedTest
+    @MethodSource("intListParameters")
+    fun testWithIntListParameter(param: List<Int>) {
+        assertThat(param.first()).isEqualTo(1)
+    }
+
+    @ParameterizedTest
+    @MethodSource("byteListParameters")
+    fun testWithByteListParameter(param: List<Byte>) {
+        assertThat(param.first()).isEqualTo(1)
+    }
+
     @SentenceValue
     fun method1() {
     }
@@ -68,6 +104,18 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
         @JvmStatic
         fun genericParameters(): Stream<Arguments> = Stream.of(
             Arguments.of(listOf(mapOf("a" to "b")))
+        )
+
+        @Suppress("unused")
+        @JvmStatic
+        fun intListParameters(): Stream<Arguments> = Stream.of(
+            Arguments.of(listOf(1))
+        )
+
+        @Suppress("unused")
+        @JvmStatic
+        fun byteListParameters(): Stream<Arguments> = Stream.of(
+            Arguments.of(listOf<Byte>(1))
         )
     }
 }

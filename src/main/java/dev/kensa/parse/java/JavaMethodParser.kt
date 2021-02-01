@@ -6,5 +6,8 @@ import dev.kensa.parse.ParserCache
 import dev.kensa.parse.ParserDelegate
 
 class JavaMethodParser : MethodParser<Java8Parser.MethodDeclarationContext>,
-        ParserCache<Java8Parser.MethodDeclarationContext> by JavaParserCache(),
-        ParserDelegate<Java8Parser.MethodDeclarationContext> by JavaParserDelegate
+    ParserCache<Java8Parser.MethodDeclarationContext> by JavaParserCache(),
+    ParserDelegate<Java8Parser.MethodDeclarationContext> by JavaParserDelegate {
+
+    override val toSimpleTypeName: (Class<*>) -> String = { it.simpleName }
+}

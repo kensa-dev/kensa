@@ -6,5 +6,8 @@ import dev.kensa.parse.ParserCache
 import dev.kensa.parse.ParserDelegate
 
 class KotlinFunctionParser : MethodParser<KotlinParser.FunctionDeclarationContext>,
-        ParserCache<KotlinParser.FunctionDeclarationContext> by KotlinParserCache(),
-        ParserDelegate<KotlinParser.FunctionDeclarationContext> by KotlinParserDelegate
+    ParserCache<KotlinParser.FunctionDeclarationContext> by KotlinParserCache(),
+    ParserDelegate<KotlinParser.FunctionDeclarationContext> by KotlinParserDelegate {
+
+    override val toSimpleTypeName: (Class<*>) -> String = { it.kotlin.simpleName ?: throw IllegalArgumentException("Parameter types must have names") }
+}

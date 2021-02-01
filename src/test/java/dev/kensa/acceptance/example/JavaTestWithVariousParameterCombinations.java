@@ -60,6 +60,12 @@ public class JavaTestWithVariousParameterCombinations implements JavaKensaTest {
         assertThat(param.get(0)).containsKey("a");
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {1})
+    void parameterizedTestWithPrimitiveParameter(int param) {
+        assertThat(param).isEqualTo(1);
+    }
+
     @SentenceValue
     private void method1() {
     }

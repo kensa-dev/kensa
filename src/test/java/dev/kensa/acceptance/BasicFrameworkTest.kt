@@ -53,23 +53,4 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
         assertThat(failedTests).isEmpty()
     }
 
-//    @Test
-    //    void executesWhenAllTestsAreDisabled() {
-    //        executeAllTestsIn(TestWithAllTestsDisabled.class);
-    //    }
-    //
-    //    @Test
-    //    void testExecutionContextContainsCorrectValues_SinglePassingTest() {
-    //        executeAllTestsIn(TestWithSinglePassingTest.class);
-    //    }
-    //
-    //    @Test
-    //    void testExecutionContextContainsCorrectValues_SingleFailingTest() {
-    //        executeAllTestsIn(TestWithSingleFailingTest.class);
-    //    }
-    //
-    //    @Test
-    //    void testExecutionContextContainsCorrectValues_ParallelPassingTests() {
-    //        executeAllTestsInParallelIn(TestWithMultiplePassingTests.class);
-    //    }
 }
