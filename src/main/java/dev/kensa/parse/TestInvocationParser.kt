@@ -1,5 +1,6 @@
 package dev.kensa.parse
 
+import dev.kensa.Highlight
 import dev.kensa.Kensa.configuration
 import dev.kensa.KensaException
 import dev.kensa.sentence.Sentence
@@ -64,6 +65,11 @@ class TestInvocationParser {
 
     private fun highlightedFieldValues(fields: Map<String, FieldDescriptor>, testInstance: Any) = fields.values
             .filter { it.isHighlighted }
-            .map { NamedValue(it.name, configuration.renderers.renderValueOnly(Reflect.fieldValue<Any>(it.field, testInstance))) }
+            .map { NamedValue(highlightOrFieldNameFor(it), configuration.renderers.renderValueOnly(Reflect.fieldValue<Any>(it.field, testInstance))) }
             .toSet()
+
+    private fun highlightOrFieldNameFor(descriptor: FieldDescriptor): String =
+            Reflect.findAnnotation<Highlight>(descriptor.field)?.value.let {
+                if (it.isNullOrEmpty()) descriptor.name else it
+            }
 }
