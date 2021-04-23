@@ -66,7 +66,7 @@ internal class JavaMethodParserTest {
             assertThat(it.name).isEqualTo("testWithExtensionParameter")
             assertThat(it.parameters.descriptors).containsEntry(
                 "first",
-                ParameterDescriptor("first", 0, false, false)
+                ParameterDescriptor("first", 0, false, false, true)
             )
             assertFieldDescriptors(it.fields, JavaTestWithVariousParameterCombinations::class)
             assertMethodDescriptors(it.methods, JavaTestWithVariousParameterCombinations::class)
@@ -96,7 +96,7 @@ internal class JavaMethodParserTest {
             assertThat(it.name).isEqualTo("parameterizedTest")
             assertThat(it.parameters.descriptors).containsEntry(
                 "first",
-                ParameterDescriptor("first", 0, false, false)
+                ParameterDescriptor("first", 0, false, false, true)
             )
             assertFieldDescriptors(it.fields, JavaTestWithVariousParameterCombinations::class)
             assertMethodDescriptors(it.methods, JavaTestWithVariousParameterCombinations::class)
@@ -144,11 +144,11 @@ internal class JavaMethodParserTest {
             assertThat(it.name).isEqualTo("parameterizedTestWithExtensionParameter")
             assertThat(it.parameters.descriptors).containsEntry(
                 "first",
-                ParameterDescriptor("first", 0, false, false)
+                ParameterDescriptor("first", 0, false, false, true)
             )
             assertThat(it.parameters.descriptors).containsEntry(
                 "second",
-                ParameterDescriptor("second", 1, true, false)
+                ParameterDescriptor("second", 1, true, false, true)
             )
             assertFieldDescriptors(it.fields, JavaTestWithVariousParameterCombinations::class)
             assertMethodDescriptors(it.methods, JavaTestWithVariousParameterCombinations::class)

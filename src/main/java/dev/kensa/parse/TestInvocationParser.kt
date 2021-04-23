@@ -16,7 +16,9 @@ class TestInvocationParser {
             try {
                 val parsedMethod = methodParser.parse(context.method)
 
-                val namedParameterValues = parsedMethod.parameters.descriptors.map { entry ->
+                val namedParameterValues = parsedMethod.parameters.descriptors
+                        .filterValues { it.isCaptured}
+                        .map { entry ->
                     NamedValue(entry.key, configuration.renderers.renderValueOnly(context.arguments[entry.value.index]))
                 }
 

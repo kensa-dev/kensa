@@ -4,6 +4,7 @@ import dev.kensa.*
 import dev.kensa.util.Reflect
 import org.antlr.v4.runtime.tree.ParseTree
 import java.lang.reflect.Method
+import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 
 val greedyGenericPattern = "<.*>".toRegex()
@@ -107,10 +108,15 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                     parameterNamesAndTypes[index].first,
                     index,
                     Reflect.hasAnnotation<SentenceValue>(parameter),
-                    Reflect.hasAnnotation<Highlight>(parameter)
+                    Reflect.hasAnnotation<Highlight>(parameter),
+                    shouldRender(parameter),
                 )
             }.associateByTo(LinkedHashMap(), ParameterDescriptor::name)
         )
+
+    fun shouldRender(parameter: Parameter) =
+            Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true ||
+                    Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true
 
     private fun prepareMethodsFor(clazz: KClass<*>) =
         Reflect.methodsOf(clazz.java)
