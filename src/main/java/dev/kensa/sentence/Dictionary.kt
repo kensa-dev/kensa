@@ -37,4 +37,8 @@ class Dictionary {
     fun putKeywords(values: Set<String>) {
         values.forEach(this::putKeyword)
     }
+
+    fun isAcronym(value: String) = acronyms.any { it.acronym.equals(value, ignoreCase = true) }
+    fun isKeyword(value: String) = keywords.any { it.equals(value, ignoreCase = true) }
+    fun isWhen(value: String) = value.equals("when", ignoreCase = true) || value.equals("whenever", ignoreCase = true)
 }

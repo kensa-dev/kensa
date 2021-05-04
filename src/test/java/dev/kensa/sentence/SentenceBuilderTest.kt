@@ -29,7 +29,7 @@ internal class SentenceBuilderTest {
                 simpleAcronymOf("HA1")
         )
 
-        builder = SentenceBuilder(1, dictionary.keywords, dictionary.acronymStrings)
+        builder = SentenceBuilder(1, dictionary)
     }
 
     @Test

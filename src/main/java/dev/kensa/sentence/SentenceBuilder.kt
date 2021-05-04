@@ -6,16 +6,16 @@ import dev.kensa.sentence.TokenType.*
 import dev.kensa.sentence.TokenType.Acronym
 import dev.kensa.sentence.scanner.Index
 import dev.kensa.sentence.scanner.TokenScanner
-import java.util.*
 
-class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, private val acronyms: Set<String>) {
+class SentenceBuilder(private var lastLineNumber: Int, private val dictionary: Dictionary) {
     private val tokens: MutableList<SentenceToken> = ArrayList()
-    private val scanner: TokenScanner = TokenScanner(keywords, acronyms)
+    private val scanner: TokenScanner = TokenScanner(dictionary)
 
     fun appendNested(location: Pair<Int, Int>, placeholder: String, sentences: List<Sentence>) {
         checkLineAndIndent(location)
 
-        val scannedPlaceholder = scanner.scan(placeholder).joinToString(separator = " ") { index -> placeholder.substring(index.start, index.end) }
+        val (ph, indices) = scanner.scan(placeholder)
+        val scannedPlaceholder = indices.joinToString(separator = " ") { index -> ph.substring(index.start, index.end) }
 
         tokens.add(SentenceToken(scannedPlaceholder, setOf(Expandable), nestedTokens = sentences.map { it.tokens }))
     }
@@ -27,7 +27,7 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
 
     fun appendStringLiteral(location: Pair<Int, Int>, value: String) {
         checkLineAndIndent(location)
-        if (isAcronym(value)) {
+        if (dictionary.isAcronym(value)) {
             append(value, StringLiteral, Acronym)
         } else {
             append(value, StringLiteral)
@@ -56,8 +56,10 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
 
     fun appendIdentifier(location: Pair<Int, Int>, value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
         checkLineAndIndent(location)
-        scanner.scan(value).forEach { index: Index ->
-            append(tokenValueFor(index, value.substring(index.start, index.end)), index.type, emphasisDescriptor = emphasisDescriptor)
+
+        val (v, indices) = scanner.scan(value)
+        indices.forEach { index: Index ->
+            append(tokenValueFor(index, v.substring(index.start, index.end)), index.type, emphasisDescriptor = emphasisDescriptor)
         }
     }
 
@@ -95,6 +97,4 @@ class SentenceBuilder(private var lastLineNumber: Int, keywords: Set<String>, pr
         }
         return tokenValue
     }
-
-    private fun isAcronym(value: String) = acronyms.any { it == value }
 }

@@ -12,15 +12,13 @@ import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceBuilder
 
 class ParserStateMachine(
-        dictionary: Dictionary,
+        private val dictionary: Dictionary,
         private val fields: Map<String, FieldDescriptor>,
         private val methods: Map<String, MethodDescriptor>,
         private val parameters: Map<String, ParameterDescriptor> = emptyMap(),
         private val nestedMethods: Map<String, List<Sentence>> = emptyMap(),
         private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()) {
 
-    private val keywords = dictionary.keywords
-    private val acronyms = dictionary.acronymStrings
     private val _sentences: MutableList<Sentence> = ArrayList()
 
     val sentences: List<Sentence>
@@ -32,7 +30,7 @@ class ParserStateMachine(
         get() = _sentenceBuilder ?: throw IllegalStateException("Expected Sentence Builder to be available - ensure sentence has been started!")
 
     private fun beginSentence(location: Pair<Int, Int>) {
-        _sentenceBuilder = SentenceBuilder(location.first, keywords, acronyms)
+        _sentenceBuilder = SentenceBuilder(location.first, dictionary)
     }
 
     private fun finishSentence() {
