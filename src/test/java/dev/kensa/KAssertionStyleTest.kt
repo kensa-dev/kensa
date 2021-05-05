@@ -65,10 +65,11 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
         withAllTheNestedThings()
         then(foo()).isEqualTo(scenario.thing())
         then(foo1())
-            .isEqualTo("777")
-            .hasSameClassAs("888")
+                .isEqualTo("777")
+                .hasSameClassAs("888")
+
         then(foo())
-            .isEqualTo(666)
+                .isEqualTo(666)
     }
 
     @NestedSentence
@@ -128,8 +129,8 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
         @JvmStatic
         private fun parameterProvider(): Stream<Arguments> {
             return Stream.of(
-                Arguments.arguments("ACTION2", "Performed: ACTION2"),
-                Arguments.arguments("ACTION3", "Performed: ACTION3")
+                    Arguments.arguments("ACTION2", "Performed: ACTION2"),
+                    Arguments.arguments("ACTION3", "Performed: ACTION3")
             )
         }
     }

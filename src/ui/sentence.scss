@@ -52,17 +52,17 @@
   font-weight: bold;
 }
 
-.token-new-line:before {
-  display: block;
-  content: "\A";
+.token-new-line {
+  display: table;
 }
 
-//.token-new-line:after {
-//  content: "\2003";
-//}
+.token-blank-line {
+  white-space: pre;
+}
 
-.token-indent:before {
+.token-blank-line:after {
   display: block;
+  content: "\a";
 }
 
 .token-indent:after {

@@ -16,13 +16,6 @@ data class SentenceToken(
     companion object {
         operator fun invoke(
                 value: String,
-                vararg tokenTypes: TokenType,
-                nestedTokens: List<List<SentenceToken>> = listOf(emptyList()),
-                emphasisDescriptor: EmphasisDescriptor = Default
-        ): SentenceToken = SentenceToken(value, setOf(*tokenTypes), emphasisDescriptor, nestedTokens)
-
-        operator fun invoke(
-                value: String,
                 tokenTypes: Set<TokenType>,
                 nestedTokens: List<List<SentenceToken>> = listOf(emptyList()),
                 emphasis: EmphasisDescriptor = Default

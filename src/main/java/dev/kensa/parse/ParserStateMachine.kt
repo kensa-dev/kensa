@@ -20,22 +20,19 @@ class ParserStateMachine(
         private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()) {
 
     private val _sentences: MutableList<Sentence> = ArrayList()
-
     val sentences: List<Sentence>
         get() = _sentences
 
-    private var _sentenceBuilder: SentenceBuilder? = null
+    private lateinit var sentenceBuilder: SentenceBuilder
+    private var lastLocation: Location? = null
 
-    private val sentenceBuilder: SentenceBuilder
-        get() = _sentenceBuilder ?: throw IllegalStateException("Expected Sentence Builder to be available - ensure sentence has been started!")
-
-    private fun beginSentence(location: Pair<Int, Int>) {
-        _sentenceBuilder = SentenceBuilder(location.first, dictionary)
+    private fun beginSentence(location: Location) {
+        sentenceBuilder = SentenceBuilder(lastLocation ?: location, dictionary)
     }
 
     private fun finishSentence() {
+        lastLocation = sentenceBuilder.lastLocation
         _sentences += sentenceBuilder.build()
-        _sentenceBuilder = null
     }
 
     private val stateMachine: StateMachine<State, Event<*>> = aStateMachine {
@@ -60,10 +57,10 @@ class ParserStateMachine(
         state<InStatement> {
             on<ExitStatementEvent> { _, event ->
                 finishSentence()
-                beginSentence(event.location)
                 InTestMethod(event.parseTree)
             }
             on<EnterMethodInvocationEvent> { currentState, event ->
+                beginSentence(event.location)
                 InMethodCall(event.parseTree, currentState)
             }
             ignoreAll<Event<*>> {
@@ -89,7 +86,8 @@ class ParserStateMachine(
                 event.parseTree.run {
                     when {
                         isNestedMethodCall(text) -> {
-                            sentenceBuilder.appendNested(event.location, text, nestedMethods[text] ?: error("Expected nested method sentences to be present"))
+                            sentenceBuilder.appendNested(event.location, text, nestedMethods[text]
+                                    ?: error("Expected nested method sentences to be present"))
                             currentState
                         }
                         isScenarioIdentifier(text) -> {
@@ -108,7 +106,8 @@ class ParserStateMachine(
                             currentState
                         }
                         else -> {
-                            sentenceBuilder.appendIdentifier(event.location, text, emphasisedMethods[text] ?: EmphasisDescriptor.Default)
+                            sentenceBuilder.appendIdentifier(event.location, text, emphasisedMethods[text]
+                                    ?: EmphasisDescriptor.Default)
                             currentState
                         }
                     }
@@ -152,6 +151,7 @@ class ParserStateMachine(
 
     private fun isMethodIdentifier(value: String) = methods[value]?.run { isSentenceValue || isHighlighted } ?: false
 
-    private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlighted } ?: false
+    private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlighted }
+            ?: false
 
 }

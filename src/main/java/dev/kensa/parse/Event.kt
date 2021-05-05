@@ -7,8 +7,8 @@ import org.antlr.v4.runtime.tree.TerminalNode
 
 sealed class Event<PT : ParseTree>(val parseTree: PT) {
 
-    val location: Pair<Int, Int>
-        get() = Pair(lineNumber, linePosition)
+    val location: Location
+        get() = Location(lineNumber, linePosition)
 
     private val lineNumber: Int
         get() = when (parseTree) {
@@ -39,4 +39,6 @@ sealed class Event<PT : ParseTree>(val parseTree: PT) {
         class StringLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
         class NumberLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
     }
+
+    data class Location(val lineNumber: Int, val linePosition: Int)
 }

@@ -15,6 +15,7 @@ enum class TokenType {
     Indent,
     ParameterValue,
     ScenarioValue,
+    BlankLine,
     StringLiteral,
     Word;
 

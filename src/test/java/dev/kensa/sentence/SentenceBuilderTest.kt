@@ -1,5 +1,6 @@
 package dev.kensa.sentence
 
+import dev.kensa.parse.Event.Location
 import dev.kensa.sentence.Acronym.Companion.of
 import dev.kensa.sentence.SentenceTokens.aFieldIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
@@ -29,21 +30,21 @@ internal class SentenceBuilderTest {
                 simpleAcronymOf("HA1")
         )
 
-        builder = SentenceBuilder(1, dictionary)
+        builder = SentenceBuilder(Location(1, 0), dictionary)
     }
 
     @Test
     fun canConstructASentenceFromVariousValueTypes() {
         builder.apply {
-            appendIdentifier(Pair(1, 0), value = "givenFOOMooBarZOO")
-            appendStringLiteral(Pair(1, 0), "stringLiteral1")
-            appendLiteral(Pair(1, 0), "10")
-            appendScenarioIdentifier(Pair(2, 0), "scenario.call")
-            appendFieldIdentifier(Pair(2, 0), "fieldName")
-            appendMethodIdentifier(Pair(2, 0), "methodName")
-            appendParameterIdentifier(Pair(2, 0), "parameterName")
-            appendIdentifier(Pair(3, 25), value = "sendsAThing")
-            appendIdentifier(Pair(4, 0), value = "somethingA_CONSTANT_019")
+            appendIdentifier(Location(1, 0), value = "givenFOOMooBarZOO")
+            appendStringLiteral(Location(1, 0), "stringLiteral1")
+            appendLiteral(Location(1, 0), "10")
+            appendScenarioIdentifier(Location(2, 0), "scenario.call")
+            appendFieldIdentifier(Location(2, 0), "fieldName")
+            appendMethodIdentifier(Location(2, 0), "methodName")
+            appendParameterIdentifier(Location(2, 0), "parameterName")
+            appendIdentifier(Location(3, 25), value = "sendsAThing")
+            appendIdentifier(Location(4, 0), value = "somethingA_CONSTANT_019")
         }
 
         assertThat(builder.build().tokens)
@@ -55,7 +56,6 @@ internal class SentenceBuilderTest {
                         aWordOf("ZOO"),
                         aStringLiteralOf("stringLiteral1"),
                         aLiteralOf("10"),
-                        aNewline(),
                         aScenarioIdentifierOf("scenario.call"),
                         aFieldIdentifierOf("fieldName"),
                         aMethodIdentifierOf("methodName"),
@@ -69,7 +69,6 @@ internal class SentenceBuilderTest {
                         aWordOf("sends"),
                         aWordOf("a"),
                         aWordOf("thing"),
-                        aNewline(),
                         aWordOf("something"),
                         aWordOf("A_CONSTANT_019")
                 )
