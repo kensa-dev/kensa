@@ -36,6 +36,11 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
         assertThat(first.value).isEqualTo(MY_PARAMETER_VALUE)
     }
 
+    @Test
+    internal fun internalTest() {
+        assertThat("true").isEqualTo("true")
+    }
+
     @ParameterizedTest
     @ValueSource(strings = ["a", "b"])
     fun parameterizedTest(first: String?) {

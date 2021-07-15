@@ -28,12 +28,25 @@ internal class TestContainerFactoryTest {
                 TestClass::test3.javaMethod,
                 TestClass::test4.javaMethod,
                 TestClass::test5.javaMethod,
-                TestClass::test6.javaMethod
+                TestClass::test6.javaMethod,
+                TestClass::test7.javaMethod
         )
         doReturn(testClass).`when`(extensionContext)!!.requiredTestClass
         val result = factory!!.createFor(extensionContext!!)
 
         assertThat(result.invocations.values.toList()).extracting("method").containsAll(expected)
+    }
+
+    @Test
+    internal fun `derives display name for internal method`() {
+        val testClass: Class<*> = TestClass::class.java
+
+        doReturn(testClass).`when`(extensionContext)!!.requiredTestClass
+        val result = factory!!.createFor(extensionContext!!)
+
+        assertThat(result.invocations).anySatisfy { _, value ->
+            assertThat(value.displayName).isEqualTo("Test 7")
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -53,13 +66,16 @@ internal class TestContainerFactoryTest {
         @Test
         fun test4() {
         }
-
         @ParameterizedTest
         fun test5(foo: String?) {
         }
 
         @Test
         fun test6() {
+        }
+
+        @Test
+        internal fun test7() {
         }
     }
 }
