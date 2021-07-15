@@ -2,12 +2,15 @@ package dev.kensa.parse
 
 import dev.kensa.*
 import dev.kensa.util.Reflect
+import dev.kensa.util.Strings
 import org.antlr.v4.runtime.tree.ParseTree
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 
 val greedyGenericPattern = "<.*>".toRegex()
+
+internal fun Method.normaliseName(): String = name.run { takeIf { it.contains('$') }?.substringBefore('$') ?: this }
 
 interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
     fun parse(method: Method): ParsedMethod =
@@ -65,7 +68,7 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
             }
 
             ParsedMethod(
-                method.name,
+                method.normaliseName(),
                 parameterCache[method]!!,
                 testMethodSentences,
                 nestedSentenceCache[testClass]!!,
@@ -75,7 +78,7 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
         }
 
     fun matchingDeclarationFor(method: Method) = { dc: DC ->
-        methodNameFrom(dc) == method.name &&
+        method.name.startsWith(methodNameFrom(dc)) &&
                 // Only match on parameter simple type name - saves having to go looking in the imports
                 parameterNamesAndTypesFrom(dc).map {
                     it.second.substringAfterLast('.').replace(greedyGenericPattern, "")

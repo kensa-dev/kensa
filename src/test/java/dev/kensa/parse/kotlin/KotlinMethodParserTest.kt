@@ -28,6 +28,33 @@ internal class KotlinMethodParserTest {
     }
 
     @Test
+    internal fun parsesInternalTestMethod() {
+        val expectedSentence = Sentence(
+            listOf(
+                aWordOf("assert"),
+                aWordOf("that"),
+                aStringLiteralOf("true"),
+                aWordOf("is"),
+                aWordOf("equal"),
+                aWordOf("to"),
+                aStringLiteralOf("true")
+            )
+        )
+
+        val parsedMethod =
+            parser.parse(Reflect.findMethod("internalTest\$kensa", KotlinTestWithVariousParameterCombinations::class))
+
+        assertThat(parsedMethod).satisfies {
+            assertThat(it.name).isEqualTo("internalTest")
+            assertThat(it.parameters.descriptors).isEmpty()
+            assertFieldDescriptors(it.fields, KotlinTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(it.methods, KotlinTestWithVariousParameterCombinations::class)
+            assertThat(it.nestedSentences).containsKey("nested1")
+            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+        }
+    }
+
+    @Test
     internal fun parsesTestMethodWithNoParameters() {
         val expectedSentence = Sentence(
             listOf(
