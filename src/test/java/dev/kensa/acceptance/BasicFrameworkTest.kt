@@ -1,17 +1,28 @@
 package dev.kensa.acceptance
 
+import dev.kensa.Kensa
 import dev.kensa.acceptance.KensaTestExecutor.executeTests
 import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations
 import dev.kensa.acceptance.example.KotlinTestWithVariousParameterCombinations
 import dev.kensa.acceptance.example.TestWithMultiplePassingTests
 import dev.kensa.acceptance.example.TestWithSinglePassingTest
+import dev.kensa.context.TestContainer
+import dev.kensa.output.ResultWriter
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.TestExecutionResult.Status.FAILED
 import java.nio.file.Files.exists
 
 internal class BasicFrameworkTest : KensaAcceptanceTest() {
+
+    @BeforeEach
+    @AfterEach
+    internal fun resetKensaResultWriter() {
+        Kensa.configure().withResultWriter(ResultWriter())
+    }
 
     @Test
     internal fun createsOutputFilesWhenMultipleTestClassesExecuted() {
@@ -52,5 +63,29 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
 
         assertThat(failedTests).isEmpty()
     }
+
+    @Test
+    internal fun usesConfiguredResultWriter() {
+        val resultWriter = OverriddenResultWriter()
+        Kensa.configure().withResultWriter(resultWriter)
+
+        executeTests(TestWithSinglePassingTest::class.java)
+
+        assertThat(resultWriter.getContainers()).isNotEmpty
+    }
+
+    private class OverriddenResultWriter : ResultWriter() {
+        private var containers: Set<TestContainer>? = null
+
+        override fun write(containers: Set<TestContainer>) {
+            this.containers = containers
+        }
+
+        fun getContainers(): Set<TestContainer>? {
+            return containers
+        }
+
+    }
+
 
 }

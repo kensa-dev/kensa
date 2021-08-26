@@ -4,8 +4,8 @@ import dev.kensa.Kensa
 import dev.kensa.context.TestContainer
 import dev.kensa.util.IoUtil
 
-class ResultWriter {
-    fun write(containers: Set<TestContainer>) {
+open class ResultWriter {
+    open fun write(containers: Set<TestContainer>) {
         val configuration = Kensa.configuration
         val outputDir = configuration.outputDir
         val outputStyle = configuration.outputStyle
