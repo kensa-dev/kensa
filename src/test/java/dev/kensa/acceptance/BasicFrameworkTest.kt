@@ -7,6 +7,7 @@ import dev.kensa.acceptance.example.KotlinTestWithVariousParameterCombinations
 import dev.kensa.acceptance.example.TestWithMultiplePassingTests
 import dev.kensa.acceptance.example.TestWithSinglePassingTest
 import dev.kensa.context.TestContainer
+import dev.kensa.output.DefaultResultWriter
 import dev.kensa.output.ResultWriter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -21,7 +22,7 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
     @BeforeEach
     @AfterEach
     internal fun resetKensaResultWriter() {
-        Kensa.configure().withResultWriter(ResultWriter())
+        Kensa.configure().withResultWriter(DefaultResultWriter())
     }
 
     @Test
@@ -74,7 +75,7 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
         assertThat(resultWriter.getContainers()).isNotEmpty
     }
 
-    private class OverriddenResultWriter : ResultWriter() {
+    private class OverriddenResultWriter : ResultWriter {
         private var containers: Set<TestContainer>? = null
 
         override fun write(containers: Set<TestContainer>) {
@@ -84,8 +85,6 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
         fun getContainers(): Set<TestContainer>? {
             return containers
         }
-
     }
-
 
 }

@@ -4,6 +4,7 @@ import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
+import dev.kensa.output.DefaultResultWriter
 import dev.kensa.output.OutputStyle
 import dev.kensa.output.ResultWriter
 import dev.kensa.output.template.Template
@@ -114,7 +115,7 @@ class Configuration(
     var outputStyle: OutputStyle = OutputStyle.MultiFile,
     var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
     var tabSize: Int = 5,
-    var resultWriter: ResultWriter = ResultWriter()
+    var resultWriter: ResultWriter = DefaultResultWriter()
 ) {
 
     var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)

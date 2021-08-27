@@ -1,9 +1,11 @@
 package dev.kensa;
 
+import dev.kensa.context.TestContainer;
 import dev.kensa.output.ResultWriter;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -53,8 +55,10 @@ class KensaJavaConfigurationTest {
         assertThat(Kensa.getConfiguration().getResultWriter()).isEqualTo(resultWriter);
     }
 
-    private static class TestResultWriter extends ResultWriter {
-
+    private static class TestResultWriter implements ResultWriter {
+        @Override
+        public void write(Set<TestContainer> containers) {
+        }
     }
 
 }
