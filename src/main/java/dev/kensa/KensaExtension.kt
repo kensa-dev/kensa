@@ -6,7 +6,6 @@ import dev.kensa.context.TestContainerFactory
 import dev.kensa.context.TestContext
 import dev.kensa.context.TestContextHolder.bindToThread
 import dev.kensa.context.TestContextHolder.clearFromThread
-import dev.kensa.output.ResultWriter
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
 import dev.kensa.parse.kotlin.KotlinFunctionParser
@@ -123,7 +122,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     companion object {
         val KENSA: ExtensionContext.Namespace = ExtensionContext.Namespace.create("dev", "kensa")
         const val TEST_CONTEXT_KEY = "TestContext"
-        private val EXECUTION_CONTEXT_FACTORY = { _: String -> KensaExecutionContext(ResultWriter()) }
+        private val EXECUTION_CONTEXT_FACTORY = { _: String -> KensaExecutionContext(configuration.resultWriter) }
         private const val TEST_START_TIME_KEY = "StartTime"
         private const val TEST_CONTAINER_KEY = "TestContainer"
         private const val TEST_INVOCATION_CONTEXT_KEY = "TestArguments"

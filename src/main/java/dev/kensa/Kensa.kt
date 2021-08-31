@@ -4,7 +4,9 @@ import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
+import dev.kensa.output.DefaultResultWriter
 import dev.kensa.output.OutputStyle
+import dev.kensa.output.ResultWriter
 import dev.kensa.output.template.Template
 import dev.kensa.render.Renderer
 import dev.kensa.render.Renderers
@@ -85,6 +87,10 @@ object Kensa {
     fun withTabSize(tabSize: Int): Kensa = apply {
         configuration.tabSize = tabSize
     }
+
+    fun withResultWriter(resultWriter: ResultWriter): Kensa = apply {
+        configuration.resultWriter = resultWriter
+    }
 }
 
 enum class Section {
@@ -99,7 +105,7 @@ class Configuration(
         System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")),
         KENSA_OUTPUT_DIR
     ),
-    var isOutputEnabled: Boolean = if(System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
+    var isOutputEnabled: Boolean = if (System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
         System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
     } else true,
     val renderers: Renderers = Renderers(),
@@ -108,7 +114,8 @@ class Configuration(
     var umlDirectives: List<UmlDirective> = ArrayList(),
     var outputStyle: OutputStyle = OutputStyle.MultiFile,
     var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
-    var tabSize: Int = 5
+    var tabSize: Int = 5,
+    var resultWriter: ResultWriter = DefaultResultWriter()
 ) {
 
     var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
