@@ -77,7 +77,7 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
             }
 
     private fun findAnnotationsIn(fd: KotlinParser.FunctionDeclarationContext): List<KotlinParser.AnnotationContext> =
-            fd.modifiers()?.annotation()
+            fd.modifiers()?.annotation()?.takeIf { it.isNotEmpty() }
                     ?: fd.parent?.parent?.takeIf { it is KotlinParser.StatementContext }?.let { (it as KotlinParser.StatementContext).annotation() }
                     ?: emptyList()
 

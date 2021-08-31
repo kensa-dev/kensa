@@ -142,7 +142,7 @@ internal class KensaMapTest {
 
     companion object {
         @JvmStatic
-        private fun mapInstances(): Stream<out KensaMap<*>?> {
+        fun mapInstances(): Stream<out KensaMap<*>?> {
             return Stream.of(
                     Givens(),
                     CapturedInteractions()

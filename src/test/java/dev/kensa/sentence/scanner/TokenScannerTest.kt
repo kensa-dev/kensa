@@ -2,8 +2,7 @@ package dev.kensa.sentence.scanner
 
 import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
-import dev.kensa.sentence.TokenType
-import dev.kensa.sentence.TokenType.*
+import dev.kensa.sentence.TokenType.Keyword
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -149,7 +148,7 @@ internal class TokenScannerTest {
 
     companion object {
         @JvmStatic
-        private fun mixedCaseExamples(): Stream<List<String>> {
+        fun mixedCaseExamples(): Stream<List<String>> {
             return Stream.of(
                     listOf("FTTC"),
                     listOf("Fttc"),

@@ -127,7 +127,7 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
 
     companion object {
         @JvmStatic
-        private fun parameterProvider(): Stream<Arguments> {
+        fun parameterProvider(): Stream<Arguments> {
             return Stream.of(
                     Arguments.arguments("ACTION2", "Performed: ACTION2"),
                     Arguments.arguments("ACTION3", "Performed: ACTION3")

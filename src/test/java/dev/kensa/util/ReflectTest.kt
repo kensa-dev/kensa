@@ -128,11 +128,11 @@ internal class ReflectTest {
 
     @Test
     internal fun `can get fields of a java class`() {
-        assertThat(Reflect.fieldsOf(SomeJavaSubClass::class.java)).extracting("name").containsExactly("field1", "valueSupplier", "superField")
+        assertThat(Reflect.fieldsOf(SomeJavaSubClass::class.java)).extracting("name").containsExactlyInAnyOrder("field1", "valueSupplier", "superField")
     }
 
     @Test
     internal fun `can get fields of a kotlin class`() {
-        assertThat(Reflect.fieldsOf(SomeKotlinSubClass::class.java)).extracting("name").containsExactly("valueSupplier", "aProperty", "field1", "superField")
+        assertThat(Reflect.fieldsOf(SomeKotlinSubClass::class.java)).extracting("name").containsExactlyInAnyOrder("valueSupplier", "aProperty", "field1", "superField")
     }
 }

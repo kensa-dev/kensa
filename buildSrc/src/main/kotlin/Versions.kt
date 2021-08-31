@@ -2,7 +2,7 @@ import org.gradle.api.JavaVersion
 
 object Versions {
 
-    const val kotlin = "1.4.21"
+    const val kotlin = "1.5.30"
     val mainJavaVersion = JavaVersion.VERSION_1_8
     val testJavaVersion = JavaVersion.VERSION_11
 
@@ -19,8 +19,8 @@ object Versions {
     const val plantUml = "1.2020.23"
     const val pebble = "3.0.8"
     const val mockito = "2.24.0"
-    const val junitPlatform = "1.7.0"
-    const val junitJupiter = "5.7.0"
+    const val junitPlatform = "1.7.2"
+    const val junitJupiter = "5.7.2"
     const val assertJ = "3.11.1"
     const val hamcrest = "1.3"
     const val awaitility = "4.0.3"
