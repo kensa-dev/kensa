@@ -76,15 +76,13 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
     }
 
     private class OverriddenResultWriter : ResultWriter {
-        private var containers: Set<TestContainer>? = null
+        private lateinit var containers: Set<TestContainer>
 
         override fun write(containers: Set<TestContainer>) {
             this.containers = containers
         }
 
-        fun getContainers(): Set<TestContainer>? {
-            return containers
-        }
+        fun getContainers(): Set<TestContainer> = containers
     }
 
 }

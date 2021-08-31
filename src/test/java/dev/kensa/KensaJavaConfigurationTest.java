@@ -1,6 +1,7 @@
 package dev.kensa;
 
 import dev.kensa.context.TestContainer;
+import dev.kensa.output.DefaultResultWriter;
 import dev.kensa.output.ResultWriter;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +49,13 @@ class KensaJavaConfigurationTest {
     }
 
     @Test
+    void hasDefaultResultWriter() {
+        Kensa.configure();
+
+        assertThat(Kensa.getConfiguration().getResultWriter()).isInstanceOf(DefaultResultWriter.class);
+    }
+
+    @Test
     void canSetResultWriter() {
         TestResultWriter resultWriter = new TestResultWriter();
         Kensa.configure().withResultWriter(resultWriter);
@@ -60,5 +68,4 @@ class KensaJavaConfigurationTest {
         public void write(Set<TestContainer> containers) {
         }
     }
-
 }
