@@ -37,6 +37,11 @@ class TestContext(val givens: Givens, val interactions: CapturedInteractions) {
         MatcherAssert.assertThat(extractor.execute(interactions), matcher)
     }
 
+    fun <T> thenEventually(extractor: StateExtractor<T?>, matcher: Matcher<in T?>) {
+        await untilAsserted { MatcherAssert.assertThat(extractor.execute(interactions), matcher) }
+        MatcherAssert.assertThat(extractor.execute(interactions), matcher)
+    }
+
     fun disableInteractionTestGroup() {
         interactions.disableUnderTest()
     }
