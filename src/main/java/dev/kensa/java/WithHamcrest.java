@@ -13,4 +13,8 @@ public interface WithHamcrest {
     default <T> void and(StateExtractor<T> extractor, Matcher<? super T> matcher) {
         then(extractor, matcher);
     }
+
+    default <T> void thenEventually(StateExtractor<T> extractor, Matcher<? super T> matcher) {
+        testContext().thenEventually(extractor, matcher);
+    }
 }

@@ -10,11 +10,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static dev.kensa.Colour.BackgroundDanger;
 import static dev.kensa.Colour.TextLight;
-import static dev.kensa.TextStyle.*;
+import static dev.kensa.TextStyle.Italic;
+import static dev.kensa.TextStyle.TextWeightBold;
+import static dev.kensa.TextStyle.Uppercase;
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static org.hamcrest.CoreMatchers.is;
 
 @Notes("Some notes {@link dev.kensa.AssertionStyleTest#canUseAssertJStyle} with text in between " +
@@ -113,6 +117,20 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
                 Arguments.arguments("ACTION2", "Performed: ACTION2"),
                 Arguments.arguments("ACTION3", "Performed: ACTION3")
         );
+    }
+
+    @Test
+    void canUseThenEventuallyToWaitForResult() {
+        when(aResultIsAddedToCapturedInteractionsAfterSomeTime());
+
+        thenEventually(theResultStoredInCapturedInteractions(), is("result added after some time"));
+    }
+
+    private ActionUnderTest aResultIsAddedToCapturedInteractionsAfterSomeTime() {
+        return (givens, capturedInteractions) -> newSingleThreadScheduledExecutor()
+                .schedule(() -> {
+                    capturedInteractions.put("result", "result added after some time");
+                }, 300, TimeUnit.MILLISECONDS);
     }
 
     public static class ScenarioFoo {
