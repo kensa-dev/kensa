@@ -1,4 +1,4 @@
-image: openjdk:11.0-jdk-buster
+image: eclipse-temurin:17.0.1_12-jre-alpine
 
 variables:
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"

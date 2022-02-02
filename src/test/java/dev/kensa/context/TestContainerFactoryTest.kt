@@ -5,17 +5,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import kotlin.reflect.jvm.javaMethod
 
 internal class TestContainerFactoryTest {
-    private var factory: TestContainerFactory? = null
-    private var extensionContext: ExtensionContext? = null
+    private lateinit var factory: TestContainerFactory
+    private lateinit var extensionContext: ExtensionContext
 
     @BeforeEach
     internal fun setUp() {
-        extensionContext = mock(ExtensionContext::class.java)
+        extensionContext = mock()
         factory = TestContainerFactory()
     }
 
@@ -31,8 +31,8 @@ internal class TestContainerFactoryTest {
                 TestClass::test6.javaMethod,
                 TestClass::test7.javaMethod
         )
-        doReturn(testClass).`when`(extensionContext)!!.requiredTestClass
-        val result = factory!!.createFor(extensionContext!!)
+        whenever(extensionContext.requiredTestClass).thenReturn(testClass)
+        val result = factory.createFor(extensionContext)
 
         assertThat(result.invocations.values.toList()).extracting("method").containsAll(expected)
     }
@@ -41,8 +41,8 @@ internal class TestContainerFactoryTest {
     internal fun `derives display name for internal method`() {
         val testClass: Class<*> = TestClass::class.java
 
-        doReturn(testClass).`when`(extensionContext)!!.requiredTestClass
-        val result = factory!!.createFor(extensionContext!!)
+        whenever(extensionContext.requiredTestClass).thenReturn(testClass)
+        val result = factory.createFor(extensionContext)
 
         assertThat(result.invocations).anySatisfy { _, value ->
             assertThat(value.displayName).isEqualTo("Test 7")

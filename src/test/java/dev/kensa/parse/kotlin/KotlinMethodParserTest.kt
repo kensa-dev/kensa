@@ -44,13 +44,13 @@ internal class KotlinMethodParserTest {
         val parsedMethod =
             parser.parse(Reflect.findMethod("internalTest\$kensa", KotlinTestWithVariousParameterCombinations::class))
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("internalTest")
-            assertThat(it.parameters.descriptors).isEmpty()
-            assertFieldDescriptors(it.fields, KotlinTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, KotlinTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("internalTest")
+            assertThat(parameters.descriptors).isEmpty()
+            assertFieldDescriptors(fields, KotlinTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }
 
@@ -71,13 +71,13 @@ internal class KotlinMethodParserTest {
         val parsedMethod =
             parser.parse(Reflect.findMethod("testWithNoParameters", KotlinTestWithVariousParameterCombinations::class))
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("testWithNoParameters")
-            assertThat(it.parameters.descriptors).isEmpty()
-            assertFieldDescriptors(it.fields, KotlinTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, KotlinTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("testWithNoParameters")
+            assertThat(parameters.descriptors).isEmpty()
+            assertFieldDescriptors(fields, KotlinTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }
 
@@ -99,16 +99,16 @@ internal class KotlinMethodParserTest {
         val parsedMethod =
             parser.parse(Reflect.findMethod("testWithExtensionParameter", KotlinTestWithVariousParameterCombinations::class))
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("testWithExtensionParameter")
-            assertThat(it.parameters.descriptors).containsEntry(
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("testWithExtensionParameter")
+            assertThat(parameters.descriptors).containsEntry(
                 "first",
                 ParameterDescriptor("first", 0, false, false, true)
             )
-            assertFieldDescriptors(it.fields, KotlinTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, KotlinTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+            assertFieldDescriptors(fields, KotlinTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }
 
@@ -129,16 +129,16 @@ internal class KotlinMethodParserTest {
         val parsedMethod =
             parser.parse(Reflect.findMethod("parameterizedTest", KotlinTestWithVariousParameterCombinations::class))
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("parameterizedTest")
-            assertThat(it.parameters.descriptors).containsEntry(
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("parameterizedTest")
+            assertThat(parameters.descriptors).containsEntry(
                 "first",
                 ParameterDescriptor("first", 0, false, false, true)
             )
-            assertFieldDescriptors(it.fields, KotlinTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, KotlinTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
+            assertFieldDescriptors(fields, KotlinTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
         }
     }
 
@@ -176,21 +176,21 @@ internal class KotlinMethodParserTest {
                 )
             )
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("parameterizedTestWithExtensionParameter")
-            assertThat(it.parameters.descriptors).containsEntry(
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("parameterizedTestWithExtensionParameter")
+            assertThat(parameters.descriptors).containsEntry(
                 "first",
                 ParameterDescriptor("first", 0, false, false, true)
             )
-            assertThat(it.parameters.descriptors).containsEntry(
+            assertThat(parameters.descriptors).containsEntry(
                 "second",
                 ParameterDescriptor("second", 1, true, false, true)
             )
-            assertFieldDescriptors(it.fields, KotlinTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, KotlinTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
-            assertThat(it.sentences.last().tokens).isEqualTo(expectedSentence2.tokens)
+            assertFieldDescriptors(fields, KotlinTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
+            assertThat(sentences.last().tokens).isEqualTo(expectedSentence2.tokens)
         }
     }
 }

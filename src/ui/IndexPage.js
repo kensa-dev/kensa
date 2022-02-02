@@ -76,19 +76,19 @@ class Class extends Component {
         const cls = this.props.cls;
 
         return (
-                <dl className={this.deriveClassFor(cls)}>
-                    <dt>
-                        <span className="idx-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></span>
-                        <a onClick={() => this.load()}>{cls.name}</a>
-                    </dt>
-                    {cls.tests.length > 0 &&
-                    cls.tests.map((entry) => {
-                        return <dd>
+            <dl className={this.deriveClassFor(cls)}>
+                <dt>
+                    <span className="idx-icon" onClick={this.toggle}><FontAwesomeIcon icon={this.icon()}/></span>
+                    <a onClick={() => this.load()}>{cls.name}</a>
+                </dt>
+                {cls.tests.length > 0 &&
+                    cls.tests.map((entry, index) => {
+                        return <dd key={index}>
                             <a onClick={() => this.load(entry.method)} className={this.isHidden()}>{entry.name}</a>
                         </dd>
                     })
-                    }
-                </dl>);
+                }
+            </dl>);
     }
 }
 
@@ -156,19 +156,19 @@ class Package extends Component {
             </dt>
             <dd>
                 {
-                    pkg.packages && pkg.packages.map((pkg) =>
-                            <Package pkg={pkg}
-                                     filterType={this.props.filterType}
-                                     filterValue={this.props.filterValue}
-                                     parentIsExpanded={this.state.expanded}/>
+                    pkg.packages && pkg.packages.map((pkg, index) =>
+                        <Package key={index} pkg={pkg}
+                                 filterType={this.props.filterType}
+                                 filterValue={this.props.filterValue}
+                                 parentIsExpanded={this.state.expanded}/>
                     )
                 }
                 {
-                    pkg.classes && pkg.classes.map((cls) =>
-                            <Class cls={cls}
-                                   filterType={this.props.filterType}
-                                   filterValue={this.props.filterValue}
-                                   parentIsExpanded={this.state.expanded}/>
+                    pkg.classes && pkg.classes.map((cls, index) =>
+                        <Class key={index} cls={cls}
+                               filterType={this.props.filterType}
+                               filterValue={this.props.filterValue}
+                               parentIsExpanded={this.state.expanded}/>
                     )
                 }
             </dd>
@@ -350,7 +350,7 @@ export default class Indices extends Component {
         let filterType = this.state.filterType;
 
         return (filterType === "State" && filterValue === "All") ||
-                this.state.filterMatched;
+            this.state.filterMatched;
     }
 
     onStateFilterSelect(e) {
@@ -359,7 +359,9 @@ export default class Indices extends Component {
             this.setState({
                 filterType: "State",
                 filterValue: e.target.textContent
-            }, () => {this.updateLocalStorage()});
+            }, () => {
+                this.updateLocalStorage()
+            });
         }
     }
 
@@ -374,38 +376,38 @@ export default class Indices extends Component {
         const inputFilterValue = filterType === "State" ? "" : filterValue;
 
         return (
-                <nav className="panel">
-                    <div className="panel-block">
-                        <p className="control has-icons-left">
-                            <input ref={(input) => this.filterInput = input}
-                                   className="input"
-                                   value={inputFilterValue}
-                                   type="text"
-                                   placeholder="filter"
-                                   onChange={this.onInputChanged}/>
-                            <span className="icon is-left"><FontAwesomeIcon icon={faSearch}/></span>
-                        </p>
-                    </div>
-                    <p className="panel-tabs">
-                        {this.stateFilterTabFor("All")}
-                        {this.stateFilterTabFor("Passed")}
-                        {this.stateFilterTabFor("Failed")}
-                        {this.stateFilterTabFor("Disabled")}
+            <nav className="panel">
+                <div className="panel-block">
+                    <p className="control has-icons-left">
+                        <input ref={(input) => this.filterInput = input}
+                               className="input"
+                               value={inputFilterValue}
+                               type="text"
+                               placeholder="filter"
+                               onChange={this.onInputChanged}/>
+                        <span className="icon is-left"><FontAwesomeIcon icon={faSearch}/></span>
                     </p>
-                    <div className={this.showWhenFilterOffOrHasMatch()}>
-                        {this.state.indices.packages && this.state.indices.packages.map((pkg) =>
-                                <Package pkg={pkg}
-                                         filterType={filterType}
-                                         filterValue={filterValue}
-                                         parentIsExpanded={true}/>
-                        )}
+                </div>
+                <p className="panel-tabs">
+                    {this.stateFilterTabFor("All")}
+                    {this.stateFilterTabFor("Passed")}
+                    {this.stateFilterTabFor("Failed")}
+                    {this.stateFilterTabFor("Disabled")}
+                </p>
+                <div className={this.showWhenFilterOffOrHasMatch()}>
+                    {this.state.indices.packages && this.state.indices.packages.map((pkg, index) =>
+                        <Package key={index} pkg={pkg}
+                                 filterType={filterType}
+                                 filterValue={filterValue}
+                                 parentIsExpanded={true}/>
+                    )}
+                </div>
+                <div className={this.hideWhenFilterOffOrHasMatch()}>
+                    <div className="has-text-danger">
+                        No tests match the filter!
                     </div>
-                    <div className={this.hideWhenFilterOffOrHasMatch()}>
-                        <div className="has-text-danger">
-                            No tests match the filter!
-                        </div>
-                    </div>
-                </nav>
+                </div>
+            </nav>
         );
     }
 }

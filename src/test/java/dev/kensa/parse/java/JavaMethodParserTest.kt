@@ -33,13 +33,13 @@ internal class JavaMethodParserTest {
         val parsedMethod =
             parser.parse(Reflect.findMethod("testWithNoParameters", JavaTestWithVariousParameterCombinations::class))
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("testWithNoParameters")
-            assertThat(it.parameters.descriptors).isEmpty()
-            assertFieldDescriptors(it.fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, JavaTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("testWithNoParameters")
+            assertThat(parameters.descriptors).isEmpty()
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }
 
@@ -62,16 +62,16 @@ internal class JavaMethodParserTest {
         val parsedMethod =
             parser.parse(Reflect.findMethod("testWithExtensionParameter", JavaTestWithVariousParameterCombinations::class))
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("testWithExtensionParameter")
-            assertThat(it.parameters.descriptors).containsEntry(
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("testWithExtensionParameter")
+            assertThat(parameters.descriptors).containsEntry(
                 "first",
                 ParameterDescriptor("first", 0, false, false, true)
             )
-            assertFieldDescriptors(it.fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, JavaTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }
 
@@ -92,16 +92,16 @@ internal class JavaMethodParserTest {
         val parsedMethod =
             parser.parse(Reflect.findMethod("parameterizedTest", JavaTestWithVariousParameterCombinations::class))
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("parameterizedTest")
-            assertThat(it.parameters.descriptors).containsEntry(
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("parameterizedTest")
+            assertThat(parameters.descriptors).containsEntry(
                 "first",
                 ParameterDescriptor("first", 0, false, false, true)
             )
-            assertFieldDescriptors(it.fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, JavaTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
         }
     }
 
@@ -140,21 +140,21 @@ internal class JavaMethodParserTest {
                 )
             )
 
-        assertThat(parsedMethod).satisfies {
-            assertThat(it.name).isEqualTo("parameterizedTestWithExtensionParameter")
-            assertThat(it.parameters.descriptors).containsEntry(
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("parameterizedTestWithExtensionParameter")
+            assertThat(parameters.descriptors).containsEntry(
                 "first",
                 ParameterDescriptor("first", 0, false, false, true)
             )
-            assertThat(it.parameters.descriptors).containsEntry(
+            assertThat(parameters.descriptors).containsEntry(
                 "second",
                 ParameterDescriptor("second", 1, true, false, true)
             )
-            assertFieldDescriptors(it.fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(it.methods, JavaTestWithVariousParameterCombinations::class)
-            assertThat(it.nestedSentences).containsKey("nested1")
-            assertThat(it.sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
-            assertThat(it.sentences.last().tokens).isEqualTo(expectedSentence2.tokens)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
+            assertThat(sentences.last().tokens).isEqualTo(expectedSentence2.tokens)
         }
     }
 }

@@ -16,7 +16,6 @@ module.exports = {
         filename: 'kensa.js'
     },
     devServer: {
-        writeToDisk: true,
     },
     module: {
         rules: [
@@ -40,11 +39,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.DefinePlugin({
-            'process.env': {
-                'NODE_ENV': JSON.stringify('production')
-            }
-        }),
+        new webpack.DefinePlugin({}),
         new MiniCssExtractPlugin({
             filename: "[name].css",
             chunkFilename: "[id].css"

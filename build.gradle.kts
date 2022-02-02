@@ -42,11 +42,6 @@ tasks {
     processResources {
         dependsOn("webpack")
     }
-
-    wrapper {
-        distributionType = Wrapper.DistributionType.ALL
-        gradleVersion = Versions.gradleWrapper
-    }
 }
 
 dependencies {
@@ -67,5 +62,5 @@ dependencies {
 
     testImplementation("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
     testImplementation("org.junit.platform:junit-platform-testkit:${Versions.junitPlatform}")
-    testImplementation("org.mockito:mockito-core:${Versions.mockito}")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:${Versions.mockito}")
 }

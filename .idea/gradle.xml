@@ -14,7 +14,6 @@
             <option value="$PROJECT_DIR$/buildSrc" />
           </set>
         </option>
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

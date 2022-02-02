@@ -90,7 +90,7 @@ interface WithAssertJ {
 
     fun then(extractor: StateExtractor<Instant?>): AbstractInstantAssert<*> = testContext().then(extractor) { actual: Instant? -> AssertionsForClassTypes.assertThat(actual) }
 
-    fun then(extractor: StateExtractor<Throwable?>): ThrowableAssert = testContext().then(extractor, ::ThrowableAssert)
+    fun then(extractor: StateExtractor<Throwable?>): ThrowableAssert<*> = testContext().then(extractor, ::ThrowableAssert)
 
     fun <T> and(extractor: StateExtractor<Optional<T>>): OptionalAssert<T> = then(extractor)
 
@@ -160,6 +160,6 @@ interface WithAssertJ {
 
     fun and(extractor: StateExtractor<Instant?>): AbstractInstantAssert<*> = then(extractor)
 
-    fun and(extractor: StateExtractor<Throwable?>): ThrowableAssert = then(extractor)
+    fun and(extractor: StateExtractor<Throwable?>): ThrowableAssert<*> = then(extractor)
 
 }

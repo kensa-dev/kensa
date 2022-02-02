@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {Invocation} from "./Invocation";
 import App, {makeNotes} from "./App";
-import ScrollableAnchor from "react-scrollable-anchor";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -58,10 +57,10 @@ class Test extends Component {
 
         if (issue.length > 0 || notes) {
             return (
-                    <div className="message-body is-info">
-                        {issueContent}
-                        {notesContent}
-                    </div>
+                <div className="message-body is-info">
+                    {issueContent}
+                    {notesContent}
+                </div>
             )
         }
 
@@ -70,13 +69,13 @@ class Test extends Component {
 
     renderIssues(issues) {
         return (
-                <div className="tags">
-                    {
-                        issues.map(issue => {
-                            return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
-                        })
-                    }
-                </div>
+            <div className="tags">
+                {
+                    issues.map(issue => {
+                        return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
+                    })
+                }
+            </div>
         );
     }
 
@@ -95,30 +94,26 @@ class Test extends Component {
         const state = test.state;
         if (state === 'Disabled') {
             return (
-                    <ScrollableAnchor id={test.testMethod}>
-                        <div className={"message " + App.stateClassFor(state)}>
-                            <div className="message-header">{test.displayName}</div>
-                            <div className="message-body">
-                                Test was not executed.
-                            </div>
-                        </div>
-                    </ScrollableAnchor>
+                <div className={"message " + App.stateClassFor(state)}>
+                    <div className="message-header">{test.displayName}</div>
+                    <div className="message-body">
+                        Test was not executed.
+                    </div>
+                </div>
             );
         } else {
             return (
-                    <ScrollableAnchor id={test.testMethod}>
-                        <div className={"message " + App.stateClassFor(state)}>
-                            <div onClick={this.toggle} className="message-header">
-                                {test.displayName}
-                                <a><FontAwesomeIcon icon={this.icon()}/></a>
-                            </div>
-                            <div className={this.contentClass()}>
-                                {this.renderInformation(test.issue, test.notes)}
-                                {test.invocations.map((invocation, index) => <Invocation key={index} sectionOrder={this.props.sectionOrder} testMethod={test.testMethod} invocation={invocation}
-                                                                                         invocationNumber={index}/>)}
-                            </div>
-                        </div>
-                    </ScrollableAnchor>
+                <div className={"message " + App.stateClassFor(state)}>
+                    <div onClick={this.toggle} className="message-header">
+                        {test.displayName}
+                        <a><FontAwesomeIcon icon={this.icon()}/></a>
+                    </div>
+                    <div className={this.contentClass()}>
+                        {this.renderInformation(test.issue, test.notes)}
+                        {test.invocations.map((invocation, index) => <Invocation key={index} sectionOrder={this.props.sectionOrder} testMethod={test.testMethod} invocation={invocation}
+                                                                                 invocationNumber={index}/>)}
+                    </div>
+                </div>
             );
         }
     }
@@ -127,9 +122,9 @@ class Test extends Component {
 export default class TestWrapper extends Component {
     render() {
         return (
-                this.props.tests.map((test, index) =>
-                        <Test issueTrackerUrl={this.props.issueTrackerUrl} sectionOrder={this.props.sectionOrder} key={index} test={test}/>
-                )
+            this.props.tests.map((test, index) =>
+                <Test issueTrackerUrl={this.props.issueTrackerUrl} sectionOrder={this.props.sectionOrder} key={index} test={test}/>
+            )
         );
     }
 }
