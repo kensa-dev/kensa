@@ -3,6 +3,7 @@ package dev.kensa.parse.java
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.Event.LiteralEvent.NumberLiteralEvent
 import dev.kensa.parse.Event.LiteralEvent.StringLiteralEvent
+import dev.kensa.parse.Java8Lexer.*
 import dev.kensa.parse.Java8Parser
 import dev.kensa.parse.Java8ParserBaseListener
 import dev.kensa.parse.ParserStateMachine
@@ -52,20 +53,9 @@ class JavaMethodBodyParser(private val stateMachine: ParserStateMachine) : Java8
 
     override fun visitTerminal(node: TerminalNode) {
         when (node.symbol.type) {
-            /**
-             * Java literal assignments:
-             *
-             * IntegerLiteral=51
-             * FloatingPointLiteral=52
-             * BooleanLiteral=53
-             * CharacterLiteral=54
-             * StringLiteral=55
-             * NullLiteral=56
-             *
-             **/
-            51, 52 -> stateMachine.transition(NumberLiteralEvent(node, node.text))
-            54, 55 -> stateMachine.transition(StringLiteralEvent(node, stripStartEndQuotes(node.text)))
-            102 -> stateMachine.transition(IdentifierEvent(node))
+            IntegerLiteral, FloatingPointLiteral -> stateMachine.transition(NumberLiteralEvent(node, node.text))
+            CharacterLiteral, StringLiteral -> stateMachine.transition(StringLiteralEvent(node, stripStartEndQuotes(node.text)))
+            Identifier -> stateMachine.transition(IdentifierEvent(node))
 
             else -> stateMachine.transition(TerminalNodeEvent(node))
         }

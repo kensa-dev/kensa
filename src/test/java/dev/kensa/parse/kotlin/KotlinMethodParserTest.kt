@@ -194,4 +194,3 @@ internal class KotlinMethodParserTest {
         }
     }
 }
-
