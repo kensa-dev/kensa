@@ -27,12 +27,14 @@ class ParserStateMachine(
     private var lastLocation: Location? = null
 
     private fun beginSentence(location: Location) {
+//        println("Begin:: ${stateMachine.state::class.simpleName}")
         sentenceBuilder = SentenceBuilder(lastLocation ?: location, dictionary)
     }
 
     private fun finishSentence() {
         lastLocation = sentenceBuilder.lastLocation
         _sentences += sentenceBuilder.build()
+//            .also { println("Finished: ${it.squashedTokens}") }
     }
 
     private val stateMachine: StateMachine<State, Event<*>> = aStateMachine {
@@ -40,12 +42,12 @@ class ParserStateMachine(
         initialState = Start
 
         state<Start> {
-            on<EnterTestMethod> { _, event ->
+            on<EnterTestMethodEvent> { _, event ->
                 InTestMethod(event.parseTree)
             }
         }
         state<InTestMethod> {
-            on<ExitTestMethod>(transitionTo(End))
+            on<ExitTestMethodEvent>(transitionTo(End))
             on<EnterStatementEvent> { currentState, event ->
                 beginSentence(event.location)
                 InStatement(event.parseTree, currentState)
@@ -59,8 +61,15 @@ class ParserStateMachine(
                 finishSentence()
                 InTestMethod(event.parseTree)
             }
-            on<EnterMethodInvocationEvent> { currentState, event ->
+            on<EnterExpressionEvent> { currentState, event ->
                 beginSentence(event.location)
+                currentState
+            }
+            on<ExitExpressionEvent> { currentState, event ->
+                finishSentence()
+                currentState
+            }
+            on<EnterMethodInvocationEvent> { currentState, event ->
                 InMethodCall(event.parseTree, currentState)
             }
             ignoreAll<Event<*>> {
@@ -117,6 +126,8 @@ class ParserStateMachine(
                 add(Matcher.any<TerminalNodeEvent>())
                 add(Matcher.any<EnterStatementEvent>())
                 add(Matcher.any<ExitStatementEvent>())
+                add(Matcher.any<EnterExpressionEvent>())
+                add(Matcher.any<ExitExpressionEvent>())
             }
         }
         state<InScenarioCall> {

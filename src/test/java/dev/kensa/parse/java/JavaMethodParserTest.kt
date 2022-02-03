@@ -5,9 +5,12 @@ import dev.kensa.parse.MethodParserAssertions.assertFieldDescriptors
 import dev.kensa.parse.MethodParserAssertions.assertMethodDescriptors
 import dev.kensa.parse.ParameterDescriptor
 import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.SentenceTokens.aKeywordOf
+import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
+import dev.kensa.sentence.SentenceTokens.anIndent
 import dev.kensa.util.Reflect
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -28,6 +31,23 @@ internal class JavaMethodParserTest {
                 aWordOf("blank"),
             )
         )
+        val expectedNestedSentence = Sentence(
+            listOf(
+                aWordOf("some"),
+                aWordOf("builder"),
+                aNewline(),
+                anIndent(),
+                anIndent(),
+                anIndent(),
+                aKeywordOf("With"),
+                aWordOf("something"),
+                aNewline(),
+                anIndent(),
+                anIndent(),
+                anIndent(),
+                aWordOf("build")
+            )
+        )
 
         val parsedMethod =
             parser.parse(Reflect.findMethod("similarNameTest1", JavaTestWithVariousParameterCombinations::class))
@@ -38,6 +58,7 @@ internal class JavaMethodParserTest {
             assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
             assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
             assertThat(nestedSentences).containsKey("nested1")
+            assertThat(nestedSentences["nested1"]?.first()?.tokens).isEqualTo(expectedNestedSentence.tokens)
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }

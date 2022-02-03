@@ -26,14 +26,16 @@ sealed class Event<PT : ParseTree>(val parseTree: PT) {
             else -> throw KensaException("Could not get line position from parse tree of type [${parseTree.javaClass}")
         }
 
-    class EnterTestMethod(parseTree: ParseTree) : Event<ParseTree>(parseTree)
-    class ExitTestMethod(parseTree: ParseTree) : Event<ParseTree>(parseTree)
+    class EnterTestMethodEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
+    class ExitTestMethodEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class TerminalNodeEvent(parseTree: TerminalNode) : Event<TerminalNode>(parseTree)
     class EnterMethodInvocationEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class ExitMethodInvocationEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class IdentifierEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class EnterStatementEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class ExitStatementEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
+    class EnterExpressionEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
+    class ExitExpressionEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
 
     sealed class LiteralEvent(parseTree: ParseTree, val value: String) : Event<ParseTree>(parseTree) {
         class StringLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)

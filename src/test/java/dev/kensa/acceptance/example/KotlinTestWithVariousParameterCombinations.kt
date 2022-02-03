@@ -1,9 +1,8 @@
 package dev.kensa.acceptance.example
 
-import dev.kensa.Highlight
-import dev.kensa.NestedSentence
-import dev.kensa.Scenario
-import dev.kensa.SentenceValue
+import dev.kensa.*
+import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations.SomeBuilder
+import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations.SomeBuilder.someBuilder
 import dev.kensa.acceptance.example.TestExtension.Companion.MY_PARAMETER_VALUE
 import dev.kensa.kotlin.KotlinKensaTest
 import org.assertj.core.api.Assertions.assertThat
@@ -111,7 +110,10 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
     }
 
     @NestedSentence
-    internal fun nested1() {
+    private fun nested1(): GivensBuilder {
+        return someBuilder()
+            .withSomething()
+            .build()
     }
 
     @NestedSentence

@@ -13,20 +13,20 @@ import org.antlr.v4.runtime.tree.TerminalNode
 class KotlinFunctionBodyParser(private val stateMachine: ParserStateMachine) : KotlinParserBaseListener() {
 
 //  For Debugging:
-    override fun enterEveryRule(ctx: ParserRuleContext) {
-        println("Entering: ${ctx::class} :: ${ctx.text}")
-    }
-
-    override fun exitEveryRule(ctx: ParserRuleContext) {
-        println("Exiting: ${ctx::class} :: ${ctx.text}")
-    }
+//    override fun enterEveryRule(ctx: ParserRuleContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
+//    }
+//
+//    override fun exitEveryRule(ctx: ParserRuleContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
+//    }
 
     override fun enterFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
-        stateMachine.transition(EnterTestMethod(ctx))
+        stateMachine.transition(EnterTestMethodEvent(ctx))
     }
 
     override fun exitFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
-        stateMachine.transition(ExitTestMethod(ctx))
+        stateMachine.transition(ExitTestMethodEvent(ctx))
     }
 
     override fun enterStatement(ctx: KotlinParser.StatementContext) {

@@ -1,9 +1,6 @@
 package dev.kensa.acceptance.example;
 
-import dev.kensa.Highlight;
-import dev.kensa.NestedSentence;
-import dev.kensa.Scenario;
-import dev.kensa.SentenceValue;
+import dev.kensa.*;
 import dev.kensa.java.JavaKensaTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations.SomeBuilder.someBuilder;
 import static dev.kensa.acceptance.example.TestExtension.MY_PARAMETER_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,7 +79,24 @@ public class JavaTestWithVariousParameterCombinations implements JavaKensaTest {
     }
 
     @NestedSentence
-    private void nested1() {
+    private GivensBuilder nested1() {
+        return someBuilder()
+                .withSomething()
+                .build();
+    }
+
+    public static class SomeBuilder {
+        public static SomeBuilder someBuilder() {
+            return new SomeBuilder();
+        }
+
+        public SomeBuilder withSomething() {
+            return this;
+        }
+
+        public GivensBuilder build() {
+            return (givens) -> givens.put("notImportant", "");
+        }
     }
 
     @SuppressWarnings("unused")

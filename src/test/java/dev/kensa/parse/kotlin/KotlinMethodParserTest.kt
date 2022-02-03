@@ -6,9 +6,12 @@ import dev.kensa.parse.MethodParserAssertions.assertFieldDescriptors
 import dev.kensa.parse.MethodParserAssertions.assertMethodDescriptors
 import dev.kensa.parse.ParameterDescriptor
 import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.SentenceTokens
+import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
+import dev.kensa.sentence.SentenceTokens.anIndent
 import dev.kensa.util.Reflect
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.assertj.core.api.Assertions.assertThat
@@ -40,6 +43,22 @@ internal class KotlinMethodParserTest {
             )
         )
 
+        val expectedNestedSentence = Sentence(
+            listOf(
+                aWordOf("some"),
+                aWordOf("builder"),
+                aNewline(),
+                anIndent(),
+                anIndent(),
+                SentenceTokens.aKeywordOf("With"),
+                aWordOf("something"),
+                aNewline(),
+                anIndent(),
+                anIndent(),
+                aWordOf("build")
+            )
+        )
+
         val parsedMethod =
             parser.parse(Reflect.findMethod("similarNameTest1", KotlinTestWithVariousParameterCombinations::class))
 
@@ -49,6 +68,7 @@ internal class KotlinMethodParserTest {
             assertFieldDescriptors(fields, KotlinTestWithVariousParameterCombinations::class)
             assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class)
             assertThat(nestedSentences).containsKey("nested1")
+            assertThat(nestedSentences["nested1"]?.first()?.tokens).isEqualTo(expectedNestedSentence.tokens)
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }

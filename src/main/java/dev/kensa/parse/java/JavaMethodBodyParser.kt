@@ -7,16 +7,34 @@ import dev.kensa.parse.Java8Lexer.*
 import dev.kensa.parse.Java8Parser
 import dev.kensa.parse.Java8ParserBaseListener
 import dev.kensa.parse.ParserStateMachine
+import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class JavaMethodBodyParser(private val stateMachine: ParserStateMachine) : Java8ParserBaseListener() {
 
+    //  For Debugging:
+//    override fun enterEveryRule(ctx: ParserRuleContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
+//    }
+//
+//    override fun exitEveryRule(ctx: ParserRuleContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
+//    }
+
+    override fun enterExpression(ctx: Java8Parser.ExpressionContext) {
+        stateMachine.transition(EnterExpressionEvent(ctx))
+    }
+
+    override fun exitExpression(ctx: Java8Parser.ExpressionContext) {
+        stateMachine.transition(ExitExpressionEvent(ctx))
+    }
+
     override fun enterMethodBody(ctx: Java8Parser.MethodBodyContext) {
-        stateMachine.transition(EnterTestMethod(ctx))
+        stateMachine.transition(EnterTestMethodEvent(ctx))
     }
 
     override fun exitMethodBody(ctx: Java8Parser.MethodBodyContext) {
-        stateMachine.transition(ExitTestMethod(ctx))
+        stateMachine.transition(ExitTestMethodEvent(ctx))
     }
 
     override fun enterStatement(ctx: Java8Parser.StatementContext) {
@@ -61,7 +79,7 @@ class JavaMethodBodyParser(private val stateMachine: ParserStateMachine) : Java8
         }
     }
 
-    fun stripStartEndQuotes(value: String): String = optionalQuotesRegex.matchEntire(value)?.groupValues?.get(1) ?: value
+    private fun stripStartEndQuotes(value: String): String = optionalQuotesRegex.matchEntire(value)?.groupValues?.get(1) ?: value
 
     companion object {
         private val optionalQuotesRegex = "^\"(.*)\"$|^(.*)$".toRegex()

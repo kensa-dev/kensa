@@ -129,7 +129,7 @@ object Reflect {
             clazz.declaredMemberProperties
                 .mapNotNull { it.javaField }
                 .forEach {
-                    println(it.name)
+//                    println(it.name)
                     add(it)
                 }
         }
