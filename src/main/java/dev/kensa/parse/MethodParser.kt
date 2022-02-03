@@ -2,7 +2,6 @@ package dev.kensa.parse
 
 import dev.kensa.*
 import dev.kensa.util.Reflect
-import dev.kensa.util.Strings
 import org.antlr.v4.runtime.tree.ParseTree
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -77,8 +76,10 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
             )
         }
 
+    fun realNameOf(method: Method): String
+
     fun matchingDeclarationFor(method: Method) = { dc: DC ->
-        method.name.startsWith(methodNameFrom(dc)) &&
+        realNameOf(method) == methodNameFrom(dc) &&
                 // Only match on parameter simple type name - saves having to go looking in the imports
                 parameterNamesAndTypesFrom(dc).map {
                     it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
@@ -118,8 +119,8 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
         )
 
     fun shouldRender(parameter: Parameter) =
-            Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true ||
-                    Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true
+        Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true ||
+                Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true
 
     private fun prepareMethodsFor(clazz: KClass<*>) =
         Reflect.methodsOf(clazz.java)

@@ -1,26 +1,30 @@
 import React, {Component} from "react";
 import "./sentence.scss"
 
-export class Sentence extends Component {
+export class Token extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
             expanded: this.props.expanded || false,
-            nested: this.props.nested || false
         };
 
         this.toggle = this.toggle.bind(this);
     }
 
-    acronymExpansionFor(types, value) {
-        if (types.includes("token-acronym")) {
-            return this.props.acronyms[value];
+    acronymExpansion() {
+        if (this.props.types.includes("token-acronym")) {
+            return this.props.acronyms[this.props.value];
         }
     }
 
-    classesFor(types) {
+    showWhenExpanded() {
+        return this.state.expanded ? "" : "is-hidden"
+    }
+
+    classes() {
+        const types = this.props.types
         let c = ""
 
         types.forEach(type => {
@@ -39,47 +43,55 @@ export class Sentence extends Component {
         return c;
     }
 
-    showWhenExpanded() {
-        return this.state.expanded ? "" : "is-hidden"
-    }
-
     toggle() {
         this.setState(prevState => ({
             expanded: !prevState.expanded
         }))
     }
 
-    sentence(sentence) {
+    render() {
+        let types = this.props.types;
+        let value = this.props.value;
+
+        if (types.includes("token-expandable")) {
+            return <>
+                <span onClick={this.toggle}
+                      className={this.classes()}
+                      data-tooltip={this.acronymExpansion()}>
+                    {value}
+                </span>
+                <span className={this.showWhenExpanded()}>
+                   {
+                       this.props.tokens.map((tokens) => {
+                           return <Sentence nested={true} sentence={tokens} acronyms={this.props.acronyms}/>
+                       })
+                   }
+                </span>
+            </>
+        } else {
+            return <span
+                className={this.classes()}
+                data-tooltip={this.acronymExpansion()}>
+            {value}
+                </span>
+        }
+    }
+}
+
+export class Sentence extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            nested: this.props.nested || false
+        };
+    }
+
+    tokensOf(sentence) {
         return sentence.map((token, index) => {
-            let types = token.types;
-            let value = token.value;
-
-            if (types.includes("token-expandable")) {
-                return <>
-                        <span key={index}
-                              onClick={this.toggle}
-                              className={this.classesFor(types)}
-                              data-tooltip={this.acronymExpansionFor(types, value)}>
-                    {value}
-                </span>
-                    <span className={this.showWhenExpanded()}>
-                        {
-                            token.tokens.map((tokens) => {
-                                return <Sentence nested={true} sentence={tokens} acronyms={this.props.acronyms}/>
-                            })
-                        }
-                    </span>
-                </>
-            } else {
-                return <span key={index}
-                             className={this.classesFor(types)}
-                             data-tooltip={this.acronymExpansionFor(types, value)}>
-                    {value}
-                </span>
-
-            }
-        })
-                .reduce((prev, curr) => [prev, " ", curr])
+            return <Token key={index} types={token.types} value={token.value} tokens={token.tokens} expanded={false} acronyms={this.props.acronyms}/>
+        }).reduce((prev, curr) => [prev, " ", curr])
     }
 
     isNested() {
@@ -92,7 +104,7 @@ export class Sentence extends Component {
         const sentence = this.props.sentence;
 
         return (
-                <div className={this.isNested()}>{this.sentence(sentence)}</div>
+            <div className={this.isNested()}>{this.tokensOf(sentence)}</div>
         )
     }
 }

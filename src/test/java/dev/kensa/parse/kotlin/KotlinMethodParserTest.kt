@@ -28,6 +28,32 @@ internal class KotlinMethodParserTest {
     }
 
     @Test
+    internal fun parsesTestMethodWhenOtherMethodsHaveSimilarNames() {
+        val expectedSentence = Sentence(
+            listOf(
+                aWordOf("assert"),
+                aWordOf("that"),
+                aStringLiteralOf("string"),
+                aWordOf("is"),
+                aWordOf("not"),
+                aWordOf("blank"),
+            )
+        )
+
+        val parsedMethod =
+            parser.parse(Reflect.findMethod("similarNameTest1", KotlinTestWithVariousParameterCombinations::class))
+
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("similarNameTest1")
+            assertThat(parameters.descriptors).isEmpty()
+            assertFieldDescriptors(fields, KotlinTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+        }
+    }
+
+    @Test
     internal fun parsesInternalTestMethod() {
         val expectedSentence = Sentence(
             listOf(

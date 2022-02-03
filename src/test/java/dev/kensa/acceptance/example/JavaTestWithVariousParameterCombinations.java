@@ -32,6 +32,16 @@ public class JavaTestWithVariousParameterCombinations implements JavaKensaTest {
     private String field3;
 
     @Test
+    void similarNameTest() {
+        assertThat("true").isEqualTo("true");
+    }
+
+    @Test
+    void similarNameTest1() {
+        assertThat("string").isNotBlank();
+    }
+
+    @Test
     void testWithNoParameters() {
         assertThat("true").isEqualTo("true");
     }

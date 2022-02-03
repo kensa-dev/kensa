@@ -17,6 +17,32 @@ internal class JavaMethodParserTest {
     private val parser = JavaMethodParser()
 
     @Test
+    internal fun `parses test method when other methods have similar names`() {
+        val expectedSentence = Sentence(
+            listOf(
+                aWordOf("assert"),
+                aWordOf("that"),
+                aStringLiteralOf("string"),
+                aWordOf("is"),
+                aWordOf("not"),
+                aWordOf("blank"),
+            )
+        )
+
+        val parsedMethod =
+            parser.parse(Reflect.findMethod("similarNameTest1", JavaTestWithVariousParameterCombinations::class))
+
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("similarNameTest1")
+            assertThat(parameters.descriptors).isEmpty()
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertThat(nestedSentences).containsKey("nested1")
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+        }
+    }
+
+    @Test
     internal fun parsesTestMethodWithNoParameters() {
         val expectedSentence = Sentence(
             listOf(

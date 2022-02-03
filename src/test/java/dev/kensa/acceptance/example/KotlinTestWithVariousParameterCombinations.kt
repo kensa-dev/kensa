@@ -27,6 +27,16 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
     private val field3: String? = null
 
     @Test
+    fun similarNameTest() {
+        assertThat("true").isEqualTo("true")
+    }
+
+    @Test
+    fun similarNameTest1() {
+        assertThat("string").isNotBlank
+    }
+
+    @Test
     fun testWithNoParameters() {
         assertThat("true").isEqualTo("true")
     }
@@ -101,7 +111,11 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
     }
 
     @NestedSentence
-    fun nested1() {
+    internal fun nested1() {
+    }
+
+    @NestedSentence
+    internal fun nested123() {
     }
 
     companion object {
