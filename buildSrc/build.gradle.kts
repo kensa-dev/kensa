@@ -9,9 +9,5 @@ repositories {
 }
 
 dependencies {
-	implementation(kotlin("gradle-plugin", version="1.5.30"))
-}
-
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
+	implementation(kotlin("gradle-plugin", version="1.6.10"))
 }
