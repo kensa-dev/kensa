@@ -1,4 +1,4 @@
-image: eclipse-temurin:17.0.1_12-jre-alpine
+image: eclipse-temurin:17.0.1_12-jdk-alpine
 
 variables:
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
