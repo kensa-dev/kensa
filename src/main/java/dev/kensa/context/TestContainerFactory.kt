@@ -27,6 +27,7 @@ class TestContainerFactory {
 
     private fun invocationDataFor(testClass: Class<*>): Map<Method, TestMethodInvocation> =
         testClass.testMethods()
+            .filter { !testClass.isKotlinClass || it.declaringClass == testClass }
             .map { method: Method -> createInvocationData(method) }
             .associateByTo(LinkedHashMap()) { invocation: TestMethodInvocation -> invocation.method }
 

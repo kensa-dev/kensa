@@ -2,25 +2,19 @@ package dev.kensa.parse.kotlin
 
 import dev.kensa.Kensa
 import dev.kensa.KensaException
-import dev.kensa.parse.KotlinLexer
-import dev.kensa.parse.KotlinParser
-import dev.kensa.parse.ParserDelegate
-import dev.kensa.parse.ParserStateMachine
+import dev.kensa.parse.*
 import dev.kensa.util.SourceCodeIndex
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
-object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationContext> {
+object KotlinParserDelegate : ParserDelegate {
 
-    override fun methodNameFrom(dc: KotlinParser.FunctionDeclarationContext): String =
-            dc.simpleIdentifier().text.replace("`", "")
-
-    override fun findMethodDeclarationsIn(testClass: Class<out Any>): Triple<List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>> {
-        val testFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
-        val nestedFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
-        val emphasisedFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
+    override fun findMethodDeclarationsIn(testClass: Class<out Any>): Triple<List<MethodDeclarationContext>, List<MethodDeclarationContext>, List<MethodDeclarationContext>> {
+        val testFunctions = ArrayList<MethodDeclarationContext>()
+        val nestedFunctions = ArrayList<MethodDeclarationContext>()
+        val emphasisedFunctions = ArrayList<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
         ArrayList<KotlinParser.FunctionDeclarationContext>().apply {
@@ -49,13 +43,13 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
     }
 
     private fun assignDeclarations(
-            testFunctions: ArrayList<KotlinParser.FunctionDeclarationContext>,
-            nestedFunctions: ArrayList<KotlinParser.FunctionDeclarationContext>,
-            emphasisedFunctions: ArrayList<KotlinParser.FunctionDeclarationContext>
+        testFunctions: ArrayList<MethodDeclarationContext>,
+        nestedFunctions: ArrayList<MethodDeclarationContext>,
+        emphasisedFunctions: ArrayList<MethodDeclarationContext>
     ): (KotlinParser.FunctionDeclarationContext) -> Unit = { fd ->
-        testFunctions.takeIf { isAnnotatedAsTest(fd) }?.add(fd)
-        nestedFunctions.takeIf { isAnnotatedAsNested(fd) }?.add(fd)
-        emphasisedFunctions.takeIf { isAnnotatedAsEmphasised(fd) }?.add(fd)
+        testFunctions.takeIf { isAnnotatedAsTest(fd) }?.add(KotlinMethodDeclarationContext(fd))
+        nestedFunctions.takeIf { isAnnotatedAsNested(fd) }?.add(KotlinMethodDeclarationContext(fd))
+        emphasisedFunctions.takeIf { isAnnotatedAsEmphasised(fd) }?.add(KotlinMethodDeclarationContext(fd))
     }
 
     private fun compilationUnitFor(testClass: Class<out Any>): KotlinParser.KotlinFileContext =
@@ -94,16 +88,7 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
                 } ?: false
             }
 
-    override fun parameterNamesAndTypesFrom(dc: KotlinParser.FunctionDeclarationContext): List<Pair<String, String>> =
-            ArrayList<Pair<String, String>>().apply {
-                dc.functionValueParameters().functionValueParameter()
-                        .map { it.parameter() }
-                        .forEach {
-                            add(Pair(it.simpleIdentifier().text, it.type().text.trimEnd('?')))
-                        }
-            }
-
-    override fun parse(stateMachine: ParserStateMachine, dc: KotlinParser.FunctionDeclarationContext) {
-        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine), dc.functionBody())
+    override fun parse(stateMachine: ParserStateMachine, dc: MethodDeclarationContext) {
+        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine), dc.body)
     }
 }

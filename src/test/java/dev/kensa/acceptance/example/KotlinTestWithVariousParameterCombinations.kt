@@ -18,11 +18,10 @@ import java.util.stream.Stream
 class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
     private val field1: String? = null
 
-    @Scenario
+    @field:Scenario
     private val field2: String? = null
 
-    @Highlight
-    @SentenceValue
+    @field:[Highlight SentenceValue]
     private val field3: String? = null
 
     @Test

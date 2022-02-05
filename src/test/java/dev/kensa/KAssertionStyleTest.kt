@@ -5,6 +5,7 @@ import dev.kensa.Colour.TextLight
 import dev.kensa.Kensa.konfigure
 import dev.kensa.Section.*
 import dev.kensa.TextStyle.*
+import dev.kensa.acceptance.example.KotlinTestInterface
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithAssertJ
 import dev.kensa.kotlin.WithHamcrest
@@ -24,7 +25,7 @@ import java.util.stream.Stream
 
 @Notes("Class Level Notes")
 @Issue("ISS-007")
-class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest {
+class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTestInterface {
     private val actionName = "ACTION1"
 
     @SentenceValue

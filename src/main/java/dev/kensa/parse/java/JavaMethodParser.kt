@@ -1,11 +1,10 @@
 package dev.kensa.parse.java
 
 import dev.kensa.parse.*
-import java.lang.reflect.Method
 
-class JavaMethodParser : MethodParser<Java8Parser.MethodDeclarationContext>,
-    ParserCache<Java8Parser.MethodDeclarationContext> by JavaParserCache(),
-    ParserDelegate<Java8Parser.MethodDeclarationContext> by JavaParserDelegate {
+class JavaMethodParser : MethodParser,
+    ParserCache by RealParserCache(),
+    ParserDelegate by JavaParserDelegate {
 
     override val toSimpleTypeName: (Class<*>) -> String = { it.simpleName }
 }

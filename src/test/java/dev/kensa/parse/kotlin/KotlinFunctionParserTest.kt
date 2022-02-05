@@ -1,7 +1,9 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.Kensa.konfigure
-import dev.kensa.acceptance.example.KotlinTestWithVariousParameterCombinations
+import dev.kensa.acceptance.example.*
+import dev.kensa.parse.FieldDescriptor
+import dev.kensa.parse.MethodDescriptor
 import dev.kensa.parse.MethodParserAssertions.assertFieldDescriptors
 import dev.kensa.parse.MethodParserAssertions.assertMethodDescriptors
 import dev.kensa.parse.ParameterDescriptor
@@ -13,20 +15,73 @@ import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anIndent
 import dev.kensa.util.findMethod
+import dev.kensa.util.findRequiredField
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-internal class KotlinMethodParserTest {
+internal class KotlinFunctionParserTest {
 
     private val parser = KotlinFunctionParser()
-
 
     @BeforeEach
     internal fun setUp() {
         konfigure {
             antlrPredicationMode = PredictionMode.LL
+        }
+    }
+
+    @Test
+    internal fun `parses interface method`() {
+        val expectedSentence = Sentence(
+            listOf(
+                aWordOf("assert"),
+                aWordOf("that"),
+                aStringLiteralOf("abc"),
+                aWordOf("contains"),
+                aStringLiteralOf("a")
+            )
+        )
+
+        val parsedMethod = parser.parse(KotlinTestFromInterface::class.java.findMethod("interfaceTestMethod"))
+
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("interfaceTestMethod")
+            assertThat(parameters.descriptors).isEmpty()
+            assertThat(methods).containsEntry(
+                "interfaceTestMethod", MethodDescriptor("interfaceTestMethod", KotlinTestInterface::class.java.findMethod("interfaceTestMethod"), isSentenceValue = false, isHighlighted = false)
+            )
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+        }
+    }
+
+    @Test
+    internal fun `parses test method on class that has test interface`() {
+        val expectedSentence = Sentence(
+            listOf(
+                aWordOf("assert"),
+                aWordOf("that"),
+                aStringLiteralOf("xyz"),
+                aWordOf("contains"),
+                aStringLiteralOf("x")
+            )
+        )
+
+        val method = KotlinTestFromInterface::class.java.findMethod("classTestMethod")
+        val parsedMethod = parser.parse(method)
+
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("classTestMethod")
+            assertThat(parameters.descriptors).isEmpty()
+            assertThat(fields)
+                .containsEntry("field1", FieldDescriptor("field1", KotlinTestFromInterface::class.java.findRequiredField("field1"), isSentenceValue = false, isHighlighted = false, isScenario = false))
+                .containsEntry("field2", FieldDescriptor("field2", KotlinTestFromInterface::class.java.findRequiredField("field2"), isSentenceValue = false, isHighlighted = false, isScenario = true))
+                .containsEntry("field3", FieldDescriptor("field3", KotlinTestFromInterface::class.java.findRequiredField("field3"), isSentenceValue = true, isHighlighted = true, isScenario = false))
+            assertThat(methods).containsEntry(
+                "classTestMethod", MethodDescriptor("classTestMethod", method, isSentenceValue = false, isHighlighted = false)
+            )
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }
 

@@ -40,8 +40,8 @@ private val allFields = FieldPredicate { true }
 private val annotatedAsScenario = FieldPredicate { hasAnnotation<Scenario>(it) }
 private fun withFieldName(name: String) = FieldPredicate { it.name == name }
 
-internal fun Method.actualDeclaringClass(): Class<*> =
-    findMethods(withMethodName(name).and(notDeclaredIn(declaringClass)), declaringClass).firstOrNull()?.run {
+internal val Method.actualDeclaringClass: Class<*>
+    get() = findMethods(withMethodName(name).and(notDeclaredIn(declaringClass)), declaringClass).firstOrNull()?.run {
         declaringClass
     } ?: declaringClass
 
@@ -83,8 +83,8 @@ internal fun Class<*>.allFields() = findFields(allFields, this)
 private fun findFields(predicate: FieldPredicate, clazz: Class<*>, results: MutableSet<Field> = LinkedHashSet()): Set<Field> =
     results.also {
         clazz.takeUnless { it == Any::class.java }?.apply {
-            it.addAll(clazz.declaredFields.filter { predicate.invoke(it) })
-            findFields(predicate, clazz.superclass, it)
+            it.addAll(declaredFields.filter { predicate.invoke(it) })
+            superclass?.let { sc -> findFields(predicate, sc, it) }
         }
     }
 
@@ -111,7 +111,8 @@ internal fun Any.scenarioAccessor(): CachingScenarioMethodAccessor =
 
 private fun findField(predicate: FieldPredicate, clazz: Class<*>?): Field? =
     clazz?.takeUnless { it == Any::class.java }?.run {
-        declaredFields.singleOrNull { predicate.invoke(it) } ?: findField(predicate, clazz.superclass)
+        declaredFields.singleOrNull { predicate.invoke(it) }
+            ?: findField(predicate, clazz.superclass)
     }
 
 private fun findKotlinProperties(

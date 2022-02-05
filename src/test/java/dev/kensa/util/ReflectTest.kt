@@ -10,28 +10,28 @@ internal class ReflectTest {
     internal fun `can find actual declaring Java interface of a method`() {
         val method = SomeJavaSubClass::class.java.findMethod("overrideMe")
 
-        assertThat(method.actualDeclaringClass()).isEqualTo(SomeJavaInterface::class.java)
+        assertThat(method.actualDeclaringClass).isEqualTo(SomeJavaInterface::class.java)
     }
 
     @Test
     internal fun `can find actual declaring Kotlin interface of a method`() {
         val method = SomeKotlinSubClass::class.java.findMethod("overrideMe")
 
-        assertThat(method.actualDeclaringClass()).isEqualTo(SomeKotlinInterface::class.java)
+        assertThat(method.actualDeclaringClass).isEqualTo(SomeKotlinInterface::class.java)
     }
 
     @Test
     internal fun `can find actual declaring Java class of a method`() {
         val method = SomeJavaSubClass::class.java.findMethod("aSuperMethod")
 
-        assertThat(method.actualDeclaringClass()).isEqualTo(SomeJavaSuperClass::class.java)
+        assertThat(method.actualDeclaringClass).isEqualTo(SomeJavaSuperClass::class.java)
     }
 
     @Test
     internal fun `can find actual declaring Kotlin class of a method`() {
         val method = SomeKotlinSubClass::class.java.findMethod("aSuperFunction")
 
-        assertThat(method.actualDeclaringClass()).isEqualTo(SomeKotlinSuperClass::class.java)
+        assertThat(method.actualDeclaringClass).isEqualTo(SomeKotlinSuperClass::class.java)
     }
 
     @Test

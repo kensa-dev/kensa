@@ -2,30 +2,29 @@ package dev.kensa.parse
 
 import dev.kensa.*
 import dev.kensa.util.*
-import dev.kensa.util.allMethods
-import dev.kensa.util.findMethod
-import org.antlr.v4.runtime.tree.ParseTree
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 
 val greedyGenericPattern = "<.*>".toRegex()
 
-interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
+interface MethodParser : ParserCache, ParserDelegate {
     fun parse(method: Method): ParsedMethod =
         parsedMethodCache.getOrPut(method) {
             val testClass = method.declaringClass
-            val properties = fieldCache.getOrPut(testClass) {
-                prepareFieldsFor(testClass)
-            }
+            val actualDeclaringClass = method.actualDeclaringClass
+
+            val classToParse = testClass.takeIf { it == actualDeclaringClass } ?: actualDeclaringClass
+            val properties = fieldCache.getOrPut(testClass) { prepareFieldsFor(testClass) }
             val (testMethodDeclarations, nestedSentenceDeclarations, emphasisedMethodDeclarations) =
-                declarationCache.getOrPut(testClass) { findMethodDeclarationsIn(testClass) }
+                    declarationCache.getOrPut(classToParse) { findMethodDeclarationsIn(classToParse) }
+
             val testMethodDeclaration = testMethodDeclarations.find(matchingDeclarationFor(method))
                 ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
 
             val testMethodParameters = parameterCache.getOrPut(method) {
                 prepareParametersFor(
                     method,
-                    parameterNamesAndTypesFrom(testMethodDeclaration)
+                    testMethodDeclaration.parameterNamesAndTypes
                 )
             }
 
@@ -40,7 +39,7 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
             nestedSentenceCache[testClass] = nestedSentenceDeclarations
                 .map {
                     Pair(
-                        methodNameFrom(it),
+                        it.name,
                         ParserStateMachine(
                             Kensa.configuration.dictionary,
                             properties,
@@ -75,10 +74,10 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
             )
         }
 
-    fun matchingDeclarationFor(method: Method) = { dc: DC ->
-        method.normalisedName == methodNameFrom(dc) &&
+    fun matchingDeclarationFor(method: Method) = { dc: MethodDeclarationContext ->
+        method.normalisedName == dc.name &&
                 // Only match on parameter simple type name - saves having to go looking in the imports
-                parameterNamesAndTypesFrom(dc).map {
+                dc.parameterNamesAndTypes.map {
                     it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
                 } == method.parameterTypes.map(toSimpleTypeName)
     }
@@ -87,13 +86,12 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
 
     private fun prepareEmphasisedMethods(
         testClass: Class<*>,
-        emphasisedMethodDeclarations: List<DC>
+        emphasisedMethodDeclarations: List<MethodDeclarationContext>
     ): Map<String, EmphasisDescriptor> {
         return emphasisedMethodDeclarations
             .map { dc ->
-                val methodName = methodNameFrom(dc)
-                findAnnotation<Emphasise>(testClass.findMethod(methodName))!!.run {
-                    Pair(methodName, EmphasisDescriptor(textStyles.toSet(), textColour, backgroundColor))
+                findAnnotation<Emphasise>(testClass.findMethod(dc.name))!!.run {
+                    Pair(dc.name, EmphasisDescriptor(textStyles.toSet(), textColour, backgroundColor))
                 }
             }
             .associateBy({ it.first }, { it.second })

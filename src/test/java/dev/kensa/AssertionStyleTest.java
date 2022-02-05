@@ -1,5 +1,6 @@
 package dev.kensa;
 
+import dev.kensa.acceptance.example.JavaTestInterface;
 import dev.kensa.java.JavaKensaTest;
 import dev.kensa.java.WithAssertJ;
 import dev.kensa.java.WithHamcrest;
@@ -23,7 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 @Notes("Some notes {@link dev.kensa.AssertionStyleTest#canUseAssertJStyle} with text in between " +
         "{@link dev.kensa.AssertionStyleTest#canUseHamcrestStyle} and some trailing text")
-class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ {
+class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ, JavaTestInterface {
 
     private final String actionName = "ACTION1";
 

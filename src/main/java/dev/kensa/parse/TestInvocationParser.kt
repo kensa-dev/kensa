@@ -14,7 +14,7 @@ import dev.kensa.util.valueOfIn
 
 class TestInvocationParser {
 
-    fun parse(context: TestInvocationContext, methodParser: MethodParser<*>): ParsedTestInvocation =
+    fun parse(context: TestInvocationContext, methodParser: MethodParser): ParsedTestInvocation =
         try {
             val parsedMethod = methodParser.parse(context.method)
 

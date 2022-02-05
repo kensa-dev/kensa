@@ -92,7 +92,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
                     val startTime = get(TEST_START_TIME_KEY, Long::class.java)
                     val testContext = get(TEST_CONTEXT_KEY, TestContext::class.java)
                     val testContainer = get(TEST_CONTAINER_KEY, TestContainer::class.java)
-                    val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod!!)
+                    val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod)
                     val testInvocationContext = get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext::class.java)
                     invocation.add(
                         testInvocationFactory.create(
