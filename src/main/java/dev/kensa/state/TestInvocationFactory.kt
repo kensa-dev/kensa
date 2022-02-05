@@ -29,7 +29,7 @@ class TestInvocationFactory(
 
     private fun parse(context: TestInvocationContext): ParsedTestInvocation =
         when {
-            context.isKotlin() -> testInvocationParser.parse(context, kotlinFunctionParser)
+            context.isKotlin -> testInvocationParser.parse(context, kotlinFunctionParser)
             else -> testInvocationParser.parse(context, javaMethodParser)
         }
 }

@@ -53,7 +53,7 @@ tasks {
         dependsOn("generateGrammarSource")
         kotlinOptions {
             jvmTarget = "1.8"
-            freeCompilerArgs += "-Xjvm-default=compatibility"
+            freeCompilerArgs += listOf("-Xjvm-default=compatibility", "-Xopt-in=kotlin.contracts.ExperimentalContracts")
         }
     }
 

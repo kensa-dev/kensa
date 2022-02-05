@@ -7,81 +7,70 @@ import org.junit.jupiter.params.ParameterizedTest
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-import java.util.*
 import java.util.function.Supplier
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashSet
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.kotlinFunction
 
+val Class<*>.isKotlinClass get() = declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
+val KClass<*>.isKotlinClass get() = java.isKotlinClass
+val KClass<*>.isNotKotlinClass get() = !java.isKotlinClass
+
+val Method.normalisedName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
+
+@Suppress("UNCHECKED_CAST")
 object Reflect {
+    private fun withMethodName(name: String): (Method) -> Boolean = { it.name == name }
+    private fun withMethodNameAndNoParameters(name: String): (Method) -> Boolean = { it.name == name && it.parameters.isEmpty() }
+    private fun withPropertyName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
 
-    fun isKotlinClass(target: KClass<*>): Boolean = target.java.declaredAnnotations.any {
-        it.annotationClass.qualifiedName == "kotlin.Metadata"
-    }
-
-    fun isJavaClass(target: KClass<*>): Boolean = target.java.declaredAnnotations.none {
-        it.annotationClass.qualifiedName == "kotlin.Metadata"
-    }
-
-    // Only need parameterless method invocation
-    fun <T> invoke(name: String, target: Any): T? {
-        // Try to find a kotlin property first...
-        return if (isKotlinClass(target::class) && isProperty(name, target::class)) {
-            propertyValue(findProperty(name, target::class)!!, target)
-        } else invokeMethod<T>(name, target)
-    }
-
-    private fun isProperty(name: String, target: KClass<*>): Boolean {
-        return findProperty(name, target) != null
-    }
-
-    private fun findProperty(name: String, kClass: KClass<*>?): KProperty1<out Any?, Any?>? =
-        if (kClass == null || kClass == Any::class) null else {
-            kClass.declaredMemberProperties.singleOrNull { it.name == name }
-                ?: findProperty(name, kClass.superclasses.singleOrNull { !it.java.isInterface })
+    fun <T> invokeMethod(name: String, target: Any): T? {
+        findKotlinProperties(withPropertyName(name), target::class.java).firstOrNull()?.run {
+            isAccessible = true
+            return getter.call(target) as T?
         }
 
-    fun <T> propertyValue(property: KProperty1<out Any?, Any?>, target: Any): T? = property.run {
+        findMethods(withMethodNameAndNoParameters(name), target::class.java).firstOrNull()?.run {
+            isAccessible = true
+            return invoke(target) as T?
+        }
+
+        throw IllegalArgumentException("No method or property [$name] found in class [${target::class}]")
+    }
+
+    fun <T> invokeMethod(method: Method, target: Any): T? = method.run {
         isAccessible = true
-        @Suppress("UNCHECKED_CAST")
-        getter.call(target) as T
+        invoke(target) as T?
     }
 
-    fun findMethod(name: String, target: KClass<*>): Method {
-        return findMethods(target.java, LinkedHashSet()) { it.name == name }
-            .firstOrNull()
-            ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
-    }
-
-    private fun <T> invokeMethod(name: String, target: Any): T? {
-        val method = findMethods(target::class.java, LinkedHashSet()) { it.name == name && it.parameters.isEmpty() }
+    fun findMethod(name: String, target: KClass<*>) =
+        findMethods(withMethodName(name), target.java)
             .firstOrNull()
             ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
 
-        return invoke<T>(method, target)
-    }
-
-    fun <T> invoke(method: Method, target: Any): T? {
-        method.isAccessible = true
-        @Suppress("UNCHECKED_CAST")
-        return method.invoke(target) as T?
-    }
-
-    private fun findMethods(clazz: Class<*>?, results: MutableSet<Method>, predicate: (Method) -> Boolean): Set<Method> {
-        return if (clazz == null || clazz == Any::class.java) results else results.apply {
-            clazz.declaredMethods.filterTo(this, predicate)
-
-            findMethods(clazz.superclass, results, predicate)
-            clazz.interfaces.forEach {
-                findMethods(it, results, predicate)
+    private fun findMethods(predicate: (Method) -> Boolean, clazz: Class<*>?, results: MutableSet<Method> = LinkedHashSet()): Set<Method> =
+        results.also {
+            clazz?.takeUnless { clazz == Any::class.java }?.apply {
+                declaredMethods.filterTo(results, predicate)
+                findMethods(predicate, superclass, results)
+                interfaces.forEach { i -> findMethods(predicate, i, results) }
             }
         }
-    }
+
+    private fun findKotlinProperties(
+        predicate: (KProperty1<out Any?, Any?>) -> Boolean,
+        clazz: Class<*>?,
+        results: MutableSet<KProperty1<out Any?, Any?>> = LinkedHashSet()
+    ): Set<KProperty1<out Any?, Any?>> =
+        results.also {
+            clazz?.takeUnless { clazz == Any::class.java }?.apply {
+                if (isKotlinClass) kotlin.declaredMemberProperties.filterTo(results, predicate)
+                findKotlinProperties(predicate, superclass, results)
+            }
+        }
 
     fun <T> fieldValue(name: String, target: Any): T? {
         val field = findField(name, target::class.java)
@@ -90,13 +79,12 @@ object Reflect {
         return fieldValue(field, target)
     }
 
-    fun findField(name: String, clazz: KClass<*>) : Field? = findField(name, clazz.java)
+    fun findRequiredField(name: String, clazz: KClass<*>) = findField(name, clazz.java) ?: throw IllegalArgumentException("Did not find field [$name] in class [${clazz.simpleName}]")
 
-    fun findField(name: String, clazz: Class<*>): Field? =
+    private fun findField(name: String, clazz: Class<*>): Field? =
         if (clazz == Any::class.java) null else {
             clazz.declaredFields.singleOrNull { it.name == name } ?: findField(name, clazz.superclass)
         }
-
 
     fun <T> fieldValue(field: Field, target: Any): T? = field.run {
         isAccessible = true
@@ -110,17 +98,17 @@ object Reflect {
         }
     }
 
-    fun methodsOf(clazz: Class<*>) : List<Method> = methodsOf(clazz, ArrayList())
+    fun methodsOf(clazz: Class<*>): List<Method> = methodsOf(clazz, ArrayList())
 
     fun fieldsOf(clazz: Class<*>): List<Field> = fieldsOf(clazz, ArrayList())
 
     private fun methodsOf(clazz: Class<*>, results: MutableList<Method>): List<Method> =
-            if (Any::class.java == clazz) {
-                results
-            } else results.apply {
-                addAll(clazz.declaredMethods)
-                methodsOf(clazz.superclass, results)
-            }
+        if (Any::class.java == clazz) {
+            results
+        } else results.apply {
+            addAll(clazz.declaredMethods)
+            methodsOf(clazz.superclass, results)
+        }
 
     fun fieldsOf(clazz: KClass<*>): List<Field> = fieldsOf(clazz, ArrayList())
 
@@ -142,7 +130,7 @@ object Reflect {
             fieldsOf(clazz.superclass, results)
         }
 
-    fun testFunctionsOf(clazz: Class<*>): Set<Method> = findMethods(clazz, LinkedHashSet()) { hasAnnotation<Test>(it) || hasAnnotation<ParameterizedTest>(it) }
+    fun testMethodsOf(clazz: Class<*>): Set<Method> = findMethods({ hasAnnotation<Test>(it) || hasAnnotation<ParameterizedTest>(it) }, clazz)
 
     inline fun <reified T : Annotation> findAnnotation(element: AnnotatedElement): T? = element.annotations?.firstOrNull { it is T } as T?
 

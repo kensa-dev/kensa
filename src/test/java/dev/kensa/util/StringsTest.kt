@@ -1,41 +1,39 @@
 package dev.kensa.util
 
-import dev.kensa.util.Strings.unCamel
-import dev.kensa.util.Strings.unCamelToSeparated
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class StringsTest {
     @Test
     internal fun `can un-camel`() {
-        assertThat(unCamel("")).isEqualTo("")
-        assertThat(unCamel(" ")).isEqualTo(" ")
-        assertThat(unCamel("camelCasePhrase")).isEqualTo("Camel Case Phrase")
-        assertThat(unCamel(" camelCasePhrase ")).isEqualTo("Camel Case Phrase")
-        assertThat(unCamel("CamelCasePhrase")).isEqualTo("Camel Case Phrase")
-        assertThat(unCamel("CamelCasePhrase_WithSuffix")).isEqualTo("Camel Case Phrase With Suffix")
-        assertThat(unCamel("\$CamelCasePhrase")).isEqualTo("Camel Case Phrase")
-        assertThat(unCamel("_CamelCasePhrase")).isEqualTo("Camel Case Phrase")
-        assertThat(unCamel("aCamelCasePhrase")).isEqualTo("A Camel Case Phrase")
-        assertThat(unCamel("CamelCasePhraseWithAnItem")).isEqualTo("Camel Case Phrase With An Item")
-        assertThat(unCamel("CamelCaseFTTCPhrase")).isEqualTo("Camel Case FTTC Phrase")
-        assertThat(unCamel("CamelCasePhraseFTTC")).isEqualTo("Camel Case Phrase FTTC")
-        assertThat(unCamel("FTTCCamelCasePhrase")).isEqualTo("FTTC Camel Case Phrase")
-        assertThat(unCamel("FTTCCamelCasePhrase9000")).isEqualTo("FTTC Camel Case Phrase 9000")
-        assertThat(unCamel("FTTCCamel9000CasePhrase")).isEqualTo("FTTC Camel 9000 Case Phrase")
-        assertThat(unCamel("9000FTTCCamelCasePhrase")).isEqualTo("9000 FTTC Camel Case Phrase")
+        assertThat("".unCamel()).isEqualTo("")
+        assertThat(" ".unCamel()).isEqualTo(" ")
+        assertThat("camelCasePhrase".unCamel()).isEqualTo("Camel Case Phrase")
+        assertThat(" camelCasePhrase ".unCamel()).isEqualTo("Camel Case Phrase")
+        assertThat("CamelCasePhrase".unCamel()).isEqualTo("Camel Case Phrase")
+        assertThat("CamelCasePhrase_WithSuffix".unCamel()).isEqualTo("Camel Case Phrase With Suffix")
+        assertThat("\$CamelCasePhrase".unCamel()).isEqualTo("Camel Case Phrase")
+        assertThat("_CamelCasePhrase".unCamel()).isEqualTo("Camel Case Phrase")
+        assertThat("aCamelCasePhrase".unCamel()).isEqualTo("A Camel Case Phrase")
+        assertThat("CamelCasePhraseWithAnItem".unCamel()).isEqualTo("Camel Case Phrase With An Item")
+        assertThat("CamelCaseFTTCPhrase".unCamel()).isEqualTo("Camel Case FTTC Phrase")
+        assertThat("CamelCasePhraseFTTC".unCamel()).isEqualTo("Camel Case Phrase FTTC")
+        assertThat("FTTCCamelCasePhrase".unCamel()).isEqualTo("FTTC Camel Case Phrase")
+        assertThat("FTTCCamelCasePhrase9000".unCamel()).isEqualTo("FTTC Camel Case Phrase 9000")
+        assertThat("FTTCCamel9000CasePhrase".unCamel()).isEqualTo("FTTC Camel 9000 Case Phrase")
+        assertThat("9000FTTCCamelCasePhrase".unCamel()).isEqualTo("9000 FTTC Camel Case Phrase")
     }
 
     @Test
     internal fun `can un-camel and separate with separator`() {
-        assertThat(unCamelToSeparated("")).isEqualTo("")
-        assertThat(unCamelToSeparated(" ")).isEqualTo(" ")
-        assertThat(unCamelToSeparated("camelCasePhrase")).isEqualTo("camel-case-phrase")
-        assertThat(unCamelToSeparated(" camelCasePhrase ")).isEqualTo("camel-case-phrase")
-        assertThat(unCamelToSeparated("CamelCasePhrase")).isEqualTo("camel-case-phrase")
+        assertThat("".unCamelToSeparated()).isEqualTo("")
+        assertThat(" ".unCamelToSeparated()).isEqualTo(" ")
+        assertThat("camelCasePhrase".unCamelToSeparated()).isEqualTo("camel-case-phrase")
+        assertThat(" camelCasePhrase ".unCamelToSeparated()).isEqualTo("camel-case-phrase")
+        assertThat("CamelCasePhrase".unCamelToSeparated()).isEqualTo("camel-case-phrase")
 
-        assertThat(unCamelToSeparated("camelCasePhrase", ".")).isEqualTo("camel.case.phrase")
-        assertThat(unCamelToSeparated(" camelCasePhrase ", ".")).isEqualTo("camel.case.phrase")
-        assertThat(unCamelToSeparated("CamelCasePhrase", ".")).isEqualTo("camel.case.phrase")
+        assertThat("camelCasePhrase".unCamelToSeparated(".")).isEqualTo("camel.case.phrase")
+        assertThat(" camelCasePhrase ".unCamelToSeparated(".")).isEqualTo("camel.case.phrase")
+        assertThat("CamelCasePhrase".unCamelToSeparated(".")).isEqualTo("camel.case.phrase")
     }
 }

@@ -8,8 +8,8 @@ internal class ReflectTest {
 
     @Test
     internal fun `can identify kotlin and java classes`() {
-        assertThat(Reflect.isKotlinClass(SomeJavaSubClass::class)).isFalse()
-        assertThat(Reflect.isKotlinClass(SomeKotlinSubClass::class)).isTrue
+        assertThat(SomeJavaSubClass::class.isKotlinClass).isFalse
+        assertThat(SomeKotlinSubClass::class.isKotlinClass).isTrue
     }
 
     @Test
@@ -25,7 +25,15 @@ internal class ReflectTest {
         val value = "A Value"
         val target = SomeKotlinSubClass(10, value)
 
-        assertThat(Reflect.invoke<String>("aProperty", target)).isEqualTo(value)
+        assertThat(Reflect.invokeMethod<String>("aProperty", target)).isEqualTo(value)
+    }
+
+    @Test
+    internal fun `can get a private property from a simple kotlin class`() {
+        val value = "A Value"
+        val target = SomeKotlinSubClass(10, value)
+
+        assertThat(Reflect.invokeMethod<String>("aPrivateProperty", target)).isEqualTo(value)
     }
 
     @Test
@@ -59,6 +67,12 @@ internal class ReflectTest {
     }
 
     @Test
+    internal fun `throws on attempt to invoke non existent method`() {
+        assertThatThrownBy { Reflect.invokeMethod<String>("foo", SomeJavaSubClass(10, "")) }
+                .isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @Test
     internal fun `can get value of field via supplier when field type is java supplier`() {
         val suppliedValue = "A Value"
         val target = SomeJavaSubClass(10, suppliedValue)
@@ -76,28 +90,28 @@ internal class ReflectTest {
     internal fun `can invoke a method on a java class`() {
         val value = "A Value"
         val target = SomeJavaSubClass(10, value)
-        assertThat(Reflect.invoke<String>("aMethod", target))
+        assertThat(Reflect.invokeMethod<String>("aMethod", target))
     }
 
     @Test
     internal fun `can invoke a super method on a java class`() {
         val value = 10
         val target = SomeJavaSubClass(value, "foo")
-        assertThat(Reflect.invoke<Int>("aSuperMethod", target))
+        assertThat(Reflect.invokeMethod<Int>("aSuperMethod", target))
     }
 
     @Test
     internal fun `can invoke a function on a kotlin class`() {
         val value = "A Value"
         val target = SomeKotlinSubClass(10, value)
-        assertThat(Reflect.invoke<String>("aFunction", target))
+        assertThat(Reflect.invokeMethod<String>("aFunction", target))
     }
 
     @Test
     internal fun `can invoke a super function on a kotlin class`() {
         val value = 10
         val target = SomeKotlinSubClass(value, "foo")
-        assertThat(Reflect.invoke<Int>("aSuperFunction", target))
+        assertThat(Reflect.invokeMethod<Int>("aSuperFunction", target))
     }
 
     @Test
@@ -105,7 +119,7 @@ internal class ReflectTest {
         val value = "A Value"
         val target = SomeJavaSubClass(10, value)
 
-        assertThat(Reflect.invoke<String>("overrideMe", target)).isEqualTo(value)
+        assertThat(Reflect.invokeMethod<String>("overrideMe", target)).isEqualTo(value)
     }
 
     @Test
@@ -113,17 +127,17 @@ internal class ReflectTest {
         val value = "A Value"
         val target = SomeKotlinSubClass(10, value)
 
-        assertThat(Reflect.invoke<String>("overrideMe", target)).isEqualTo(value)
+        assertThat(Reflect.invokeMethod<String>("overrideMe", target)).isEqualTo(value)
     }
 
     @Test
     internal fun `can invoke a default method on a java interface`() {
-        assertThat(Reflect.invoke<String>("aDefaultMethod", SomeJavaSubClass(10, "foo"))).isEqualTo("DefaultValue")
+        assertThat(Reflect.invokeMethod<String>("aDefaultMethod", SomeJavaSubClass(10, "foo"))).isEqualTo("DefaultValue")
     }
 
     @Test
     internal fun `can invoke a default function on a kotlin interface`() {
-        assertThat(Reflect.invoke<String>("aDefaultFunction", SomeKotlinSubClass(10, "foo"))).isEqualTo("DefaultValue")
+        assertThat(Reflect.invokeMethod<String>("aDefaultFunction", SomeKotlinSubClass(10, "foo"))).isEqualTo("DefaultValue")
     }
 
     @Test

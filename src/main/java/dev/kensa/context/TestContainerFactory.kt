@@ -2,11 +2,11 @@ package dev.kensa.context
 
 import dev.kensa.Issue
 import dev.kensa.Notes
-import dev.kensa.parse.normaliseName
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.state.TestState.*
 import dev.kensa.util.Reflect
-import dev.kensa.util.Strings
+import dev.kensa.util.normalisedName
+import dev.kensa.util.unCamel
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -18,7 +18,7 @@ class TestContainerFactory {
         return context.requiredTestClass.let { testClass ->
             TestContainer(
                 testClass,
-                deriveDisplayNameFor(testClass) { Strings.unCamel(testClass.simpleName) },
+                deriveDisplayNameFor(testClass) { testClass.simpleName.unCamel() },
                 invocationDataFor(testClass),
                 notesFor(testClass),
                 issuesFor(testClass)
@@ -26,21 +26,19 @@ class TestContainerFactory {
         }
     }
 
-    private fun invocationDataFor(testClass: Class<*>): Map<Method, TestMethodInvocation> {
-        return Reflect.testFunctionsOf(testClass)
+    private fun invocationDataFor(testClass: Class<*>): Map<Method, TestMethodInvocation> =
+        Reflect.testMethodsOf(testClass)
             .map { method: Method -> createInvocationData(method) }
             .associateByTo(LinkedHashMap()) { invocation: TestMethodInvocation -> invocation.method }
-    }
 
-    private fun createInvocationData(method: Method): TestMethodInvocation {
-        return TestMethodInvocation(
+    private fun createInvocationData(method: Method): TestMethodInvocation =
+        TestMethodInvocation(
             method,
-            deriveDisplayNameFor(method) { Strings.unCamel(method.normaliseName()) },
+            deriveDisplayNameFor(method) { method.normalisedName.unCamel() },
             notesFor(method),
             issuesFor(method),
             initialStateFor(method)
         )
-    }
 
     private fun initialStateFor(method: Method) = if (Reflect.hasAnnotation<Disabled>(method)) Disabled else NotExecuted
 
@@ -49,6 +47,5 @@ class TestContainerFactory {
 
     private fun notesFor(element: AnnotatedElement): String? = Reflect.findAnnotation<Notes>(element)?.value
 
-    private fun issuesFor(element: AnnotatedElement): List<String> =
-        Reflect.findAnnotation<Issue>(element)?.value?.toList() ?: emptyList()
+    private fun issuesFor(element: AnnotatedElement): List<String> = Reflect.findAnnotation<Issue>(element)?.value?.toList() ?: emptyList()
 }

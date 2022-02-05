@@ -1,25 +1,22 @@
 package dev.kensa.util
 
-object Strings {
-    private val CAMEL_SPLIT_REGEX = Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[0-9])")
-    private val UPPER_CASE_LETTER_REGEX = Regex("(?=\\p{Lu})")
+import java.util.*
 
-    fun unCamel(phrase: String): String {
-        if (phrase.isBlank()) {
-            return phrase
-        }
-        val replaced = phrase.replace("[^a-zA-Z0-9]".toRegex(), "")
-        return CAMEL_SPLIT_REGEX.split(replaced).toTypedArray().let { elements ->
-            elements[0] = Character.toUpperCase(elements[0][0]).toString() + elements[0].substring(1)
-            elements.joinToString(" ")
+private val CAMEL_SPLIT_REGEX = Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[0-9])")
+private val UPPER_CASE_LETTER_REGEX = Regex("(?=\\p{Lu})")
+private val ALPHA_NUMERIC_REGEX = Regex("[^a-zA-Z0-9]")
+
+fun String.unCamel() =
+    when {
+        this.isBlank() -> this
+        else -> replace(ALPHA_NUMERIC_REGEX, "").let { p ->
+            CAMEL_SPLIT_REGEX.split(p).toTypedArray().let { elements ->
+                elements[0] = elements[0].replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                elements.joinToString(" ")
+            }
         }
     }
 
-    fun unCamelToSeparated(phrase: String, separator: String = "-"): String? {
-        return if (phrase.isBlank()) {
-            phrase
-        } else {
-            UPPER_CASE_LETTER_REGEX.split(phrase.trim()).filterNot { it.isBlank() }.joinToString(separator).toLowerCase()
-        }
-    }
-}
+fun String.unCamelToSeparated(separator: String = "-") =
+    if (this.isBlank()) this
+    else UPPER_CASE_LETTER_REGEX.split(trim()).filterNot { it.isBlank() }.joinToString(separator).lowercase(Locale.getDefault())

@@ -18,7 +18,7 @@ object MethodParserAssertions {
             "field1",
             FieldDescriptor(
                 "field1",
-                Reflect.findField("field1", clazz)!!,
+                Reflect.findRequiredField("field1", clazz)!!,
                 false,
                 false,
                 false
@@ -28,7 +28,7 @@ object MethodParserAssertions {
             "field2",
             FieldDescriptor(
                 "field2",
-                Reflect.findField("field2", clazz)!!,
+                Reflect.findRequiredField("field2", clazz)!!,
                 false,
                 false,
                 true
@@ -38,7 +38,7 @@ object MethodParserAssertions {
             "field3",
             FieldDescriptor(
                 "field3",
-                Reflect.findField("field3", clazz)!!,
+                Reflect.findRequiredField("field3", clazz)!!,
                 true,
                 true,
                 false

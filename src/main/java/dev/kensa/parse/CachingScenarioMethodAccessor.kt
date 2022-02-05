@@ -14,7 +14,7 @@ class CachingScenarioMethodAccessor(private val testInstance: Any, scenarioNames
         val value = valueCache[scenarioName]?.compute(methodName) { mn: String, existing: Any? ->
             existing ?: scenarioInstanceWithName(scenarioName)?.let { target ->
                 if (target !== NullValue) {
-                    Reflect.invoke<Any>(mn, target)
+                    Reflect.invokeMethod<Any>(mn, target)
                 } else target
             } ?: NullValue
         }

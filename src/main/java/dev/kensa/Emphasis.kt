@@ -1,6 +1,6 @@
 package dev.kensa
 
-import dev.kensa.util.Strings
+import dev.kensa.util.unCamelToSeparated
 
 // Each Colour is mapped to Bulma colours
 enum class Colour(private val bulmaPrefix: String = "has") {
@@ -68,7 +68,7 @@ enum class Colour(private val bulmaPrefix: String = "has") {
     TextWarningDark,
     TextDangerDark;
 
-    fun asCss(): String = "$bulmaPrefix-${Strings.unCamelToSeparated(name)}"
+    fun asCss(): String = "$bulmaPrefix-${name.unCamelToSeparated()}"
 
 }
 
@@ -84,6 +84,6 @@ enum class TextStyle(private val bulmaPrefix: String = "has") {
     Uppercase("is"),
     Italic("is");
 
-    fun asCss(): String = "$bulmaPrefix-${Strings.unCamelToSeparated(name)}"
+    fun asCss(): String = "$bulmaPrefix-${name.unCamelToSeparated()}"
 
 }

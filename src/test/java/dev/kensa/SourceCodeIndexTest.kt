@@ -1,14 +1,14 @@
 package dev.kensa
 
-import dev.kensa.util.SourceCodeIndex.Companion.locate
-import org.assertj.core.api.Assertions
+import dev.kensa.util.SourceCodeIndex.locate
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import kotlin.io.path.absolutePathString
 
 internal class SourceCodeIndexTest {
     @Test
     fun canLocateByInnerClass() {
-        val path = locate(InnerClass::class)
-        Assertions.assertThat(path).isNotNull()
+        assertThat(locate(InnerClass::class).absolutePathString()).endsWith("/src/test/java/dev/kensa/SourceCodeIndexTest.kt")
     }
 
     internal class InnerClass
