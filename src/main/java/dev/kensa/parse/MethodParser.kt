@@ -1,19 +1,19 @@
 package dev.kensa.parse
 
 import dev.kensa.*
-import dev.kensa.util.Reflect
-import dev.kensa.util.normalisedName
+import dev.kensa.util.*
+import dev.kensa.util.allMethods
+import dev.kensa.util.findMethod
 import org.antlr.v4.runtime.tree.ParseTree
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
-import kotlin.reflect.KClass
 
 val greedyGenericPattern = "<.*>".toRegex()
 
 interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
     fun parse(method: Method): ParsedMethod =
         parsedMethodCache.getOrPut(method) {
-            val testClass = method.declaringClass.kotlin
+            val testClass = method.declaringClass
             val properties = fieldCache.getOrPut(testClass) {
                 prepareFieldsFor(testClass)
             }
@@ -86,13 +86,13 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
     val toSimpleTypeName: (Class<*>) -> String
 
     private fun prepareEmphasisedMethods(
-        testClass: KClass<*>,
+        testClass: Class<*>,
         emphasisedMethodDeclarations: List<DC>
     ): Map<String, EmphasisDescriptor> {
         return emphasisedMethodDeclarations
             .map { dc ->
                 val methodName = methodNameFrom(dc)
-                Reflect.findAnnotation<Emphasise>(Reflect.findMethod(methodName, testClass))!!.run {
+                findAnnotation<Emphasise>(testClass.findMethod(methodName))!!.run {
                     Pair(methodName, EmphasisDescriptor(textStyles.toSet(), textColour, backgroundColor))
                 }
             }
@@ -108,38 +108,38 @@ interface MethodParser<DC : ParseTree> : ParserCache<DC>, ParserDelegate<DC> {
                 ParameterDescriptor(
                     parameterNamesAndTypes[index].first,
                     index,
-                    Reflect.hasAnnotation<SentenceValue>(parameter),
-                    Reflect.hasAnnotation<Highlight>(parameter),
+                    hasAnnotation<SentenceValue>(parameter),
+                    hasAnnotation<Highlight>(parameter),
                     shouldRender(parameter),
                 )
             }.associateByTo(LinkedHashMap(), ParameterDescriptor::name)
         )
 
     fun shouldRender(parameter: Parameter) =
-        Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true ||
-                Reflect.findAnnotation<CapturedParameter>(parameter.type)?.value ?: true
+        findAnnotation<CapturedParameter>(parameter.type)?.value ?: true ||
+                findAnnotation<CapturedParameter>(parameter.type)?.value ?: true
 
-    private fun prepareMethodsFor(clazz: KClass<*>) =
-        Reflect.methodsOf(clazz.java)
+    private fun prepareMethodsFor(clazz: Class<*>) =
+        clazz.allMethods()
             .map {
                 MethodDescriptor(
                     it.name,
                     it,
-                    Reflect.hasAnnotation<SentenceValue>(it),
-                    Reflect.hasAnnotation<Highlight>(it)
+                    hasAnnotation<SentenceValue>(it),
+                    hasAnnotation<Highlight>(it)
                 )
             }
             .associateBy(MethodDescriptor::name)
 
-    private fun prepareFieldsFor(clazz: KClass<*>) =
-        Reflect.fieldsOf(clazz.java)
+    private fun prepareFieldsFor(clazz: Class<*>) =
+        clazz.allFields()
             .map {
                 FieldDescriptor(
                     it.name,
                     it,
-                    Reflect.hasAnnotation<SentenceValue>(it),
-                    Reflect.hasAnnotation<Highlight>(it),
-                    Reflect.hasAnnotation<Scenario>(it)
+                    hasAnnotation<SentenceValue>(it),
+                    hasAnnotation<Highlight>(it),
+                    hasAnnotation<Scenario>(it)
                 )
             }
             .associateBy(FieldDescriptor::name)

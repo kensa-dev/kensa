@@ -8,7 +8,7 @@ import kotlin.io.path.absolutePathString
 internal class SourceCodeIndexTest {
     @Test
     fun canLocateByInnerClass() {
-        assertThat(locate(InnerClass::class).absolutePathString()).endsWith("/src/test/java/dev/kensa/SourceCodeIndexTest.kt")
+        assertThat(locate(InnerClass::class.java).absolutePathString()).endsWith("/src/test/java/dev/kensa/SourceCodeIndexTest.kt")
     }
 
     internal class InnerClass

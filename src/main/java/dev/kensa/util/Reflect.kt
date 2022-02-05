@@ -12,139 +12,125 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.kotlinFunction
 
 val Class<*>.isKotlinClass get() = declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
 val KClass<*>.isKotlinClass get() = java.isKotlinClass
-val KClass<*>.isNotKotlinClass get() = !java.isKotlinClass
 
 val Method.normalisedName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
 
+fun interface MethodPredicate {
+    operator fun invoke(method: Method): Boolean
+
+    fun and(other: MethodPredicate): MethodPredicate = MethodPredicate { m -> invoke(m) && other.invoke(m) }
+}
+
+private val annotatedAsTests = MethodPredicate { hasAnnotation<Test>(it) || hasAnnotation<ParameterizedTest>(it) }
+private val allMethods = MethodPredicate { true }
+private fun notDeclaredIn(clazz: Class<*>) = MethodPredicate { it.declaringClass != clazz }
+private fun withMethodName(name: String) = MethodPredicate { it.name == name }
+private fun noParameters() = MethodPredicate { it.parameters.isEmpty() }
+private fun withPropertyName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
+
+fun interface FieldPredicate {
+    operator fun invoke(field: Field): Boolean
+}
+
+private val allFields = FieldPredicate { true }
+private val annotatedAsScenario = FieldPredicate { hasAnnotation<Scenario>(it) }
+private fun withFieldName(name: String) = FieldPredicate { it.name == name }
+
+internal fun Method.actualDeclaringClass(): Class<*> =
+    findMethods(withMethodName(name).and(notDeclaredIn(declaringClass)), declaringClass).firstOrNull()?.run {
+        declaringClass
+    } ?: declaringClass
+
 @Suppress("UNCHECKED_CAST")
-object Reflect {
-    private fun withMethodName(name: String): (Method) -> Boolean = { it.name == name }
-    private fun withMethodNameAndNoParameters(name: String): (Method) -> Boolean = { it.name == name && it.parameters.isEmpty() }
-    private fun withPropertyName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
-
-    fun <T> invokeMethod(name: String, target: Any): T? {
-        findKotlinProperties(withPropertyName(name), target::class.java).firstOrNull()?.run {
-            isAccessible = true
-            return getter.call(target) as T?
-        }
-
-        findMethods(withMethodNameAndNoParameters(name), target::class.java).firstOrNull()?.run {
-            isAccessible = true
-            return invoke(target) as T?
-        }
-
-        throw IllegalArgumentException("No method or property [$name] found in class [${target::class}]")
-    }
-
-    fun <T> invokeMethod(method: Method, target: Any): T? = method.run {
+internal fun <T> Any.invokeMethod(name: String): T? {
+    findKotlinProperties(withPropertyName(name), this::class.java).firstOrNull()?.run {
         isAccessible = true
-        invoke(target) as T?
+        return getter.call(this@invokeMethod) as T?
     }
 
-    fun findMethod(name: String, target: KClass<*>) =
-        findMethods(withMethodName(name), target.java)
-            .firstOrNull()
-            ?: throw IllegalArgumentException("No method [$name] found in class [${target::class}]")
-
-    private fun findMethods(predicate: (Method) -> Boolean, clazz: Class<*>?, results: MutableSet<Method> = LinkedHashSet()): Set<Method> =
-        results.also {
-            clazz?.takeUnless { clazz == Any::class.java }?.apply {
-                declaredMethods.filterTo(results, predicate)
-                findMethods(predicate, superclass, results)
-                interfaces.forEach { i -> findMethods(predicate, i, results) }
-            }
-        }
-
-    private fun findKotlinProperties(
-        predicate: (KProperty1<out Any?, Any?>) -> Boolean,
-        clazz: Class<*>?,
-        results: MutableSet<KProperty1<out Any?, Any?>> = LinkedHashSet()
-    ): Set<KProperty1<out Any?, Any?>> =
-        results.also {
-            clazz?.takeUnless { clazz == Any::class.java }?.apply {
-                if (isKotlinClass) kotlin.declaredMemberProperties.filterTo(results, predicate)
-                findKotlinProperties(predicate, superclass, results)
-            }
-        }
-
-    fun <T> fieldValue(name: String, target: Any): T? {
-        val field = findField(name, target::class.java)
-            ?: throw IllegalArgumentException("No field [$name] found in class [${target::class}]")
-
-        return fieldValue(field, target)
-    }
-
-    fun findRequiredField(name: String, clazz: KClass<*>) = findField(name, clazz.java) ?: throw IllegalArgumentException("Did not find field [$name] in class [${clazz.simpleName}]")
-
-    private fun findField(name: String, clazz: Class<*>): Field? =
-        if (clazz == Any::class.java) null else {
-            clazz.declaredFields.singleOrNull { it.name == name } ?: findField(name, clazz.superclass)
-        }
-
-    fun <T> fieldValue(field: Field, target: Any): T? = field.run {
+    findMethods(withMethodName(name).and(noParameters()), this::class.java).firstOrNull()?.run {
         isAccessible = true
-        get(target)?.let {
-            @Suppress("UNCHECKED_CAST")
-            when (it) {
-                is Function0<*> -> it() as T?
-                is Supplier<*> -> it.get() as T?
-                else -> it as T?
-            }
+        return invoke(this@invokeMethod) as T?
+    }
+
+    throw IllegalArgumentException("No method or property [$name] found in class [${this::class}]")
+
+}
+
+@Suppress("UNCHECKED_CAST")
+internal fun <T> Any.invokeMethod(method: Method): T? = method.run {
+    isAccessible = true
+    invoke(this@invokeMethod) as T?
+}
+
+internal fun Class<*>.findMethod(name: String) =
+    findMethods(withMethodName(name), this)
+        .firstOrNull()
+        ?: throw IllegalArgumentException("No method [$name] found in class [${this}]")
+
+internal fun Class<*>.findRequiredField(name: String) = findField(withFieldName(name), this) ?: throw IllegalArgumentException("Did not find field [$name] in class [$simpleName]")
+
+internal fun <T> Any.fieldValue(name: String): T? = this::class.java.findRequiredField(name).valueOfIn(this)
+
+internal fun Class<*>.allMethods() = findMethods(allMethods, this)
+
+internal fun Class<*>.allFields() = findFields(allFields, this)
+
+private fun findFields(predicate: FieldPredicate, clazz: Class<*>, results: MutableSet<Field> = LinkedHashSet()): Set<Field> =
+    results.also {
+        clazz.takeUnless { it == Any::class.java }?.apply {
+            it.addAll(clazz.declaredFields.filter { predicate.invoke(it) })
+            findFields(predicate, clazz.superclass, it)
         }
     }
 
-    fun methodsOf(clazz: Class<*>): List<Method> = methodsOf(clazz, ArrayList())
-
-    fun fieldsOf(clazz: Class<*>): List<Field> = fieldsOf(clazz, ArrayList())
-
-    private fun methodsOf(clazz: Class<*>, results: MutableList<Method>): List<Method> =
-        if (Any::class.java == clazz) {
-            results
-        } else results.apply {
-            addAll(clazz.declaredMethods)
-            methodsOf(clazz.superclass, results)
+@Suppress("UNCHECKED_CAST")
+internal fun <T> Field.valueOfIn(target: Any): T? = run {
+    isAccessible = true
+    get(target)?.let {
+        when (it) {
+            is Function0<*> -> it() as T?
+            is Supplier<*> -> it.get() as T?
+            else -> it as T?
         }
-
-    fun fieldsOf(clazz: KClass<*>): List<Field> = fieldsOf(clazz, ArrayList())
-
-    private fun fieldsOf(clazz: KClass<*>, results: MutableList<Field>): List<Field> =
-        results.apply {
-            clazz.declaredMemberProperties
-                .mapNotNull { it.javaField }
-                .forEach {
-//                    println(it.name)
-                    add(it)
-                }
-        }
-
-    private fun fieldsOf(clazz: Class<*>, results: MutableList<Field>): List<Field> =
-        if (Any::class.java == clazz) {
-            results
-        } else results.apply {
-            addAll(clazz.declaredFields)
-            fieldsOf(clazz.superclass, results)
-        }
-
-    fun testMethodsOf(clazz: Class<*>): Set<Method> = findMethods({ hasAnnotation<Test>(it) || hasAnnotation<ParameterizedTest>(it) }, clazz)
-
-    inline fun <reified T : Annotation> findAnnotation(element: AnnotatedElement): T? = element.annotations?.firstOrNull { it is T } as T?
-
-    inline fun <reified T : Annotation> hasAnnotation(element: AnnotatedElement): Boolean = findAnnotation<T>(element) != null
-
-    fun scenarioAccessorFor(target: Any): CachingScenarioMethodAccessor {
-        val names: MutableSet<String> = HashSet()
-        var clazz: Class<*> = target::class.java
-        while (clazz != Any::class.java) {
-            clazz.declaredFields
-                .filter { field -> hasAnnotation<Scenario>(field) }
-                .forEach { field -> names.add(field.name) }
-            clazz = clazz.superclass
-        }
-        return CachingScenarioMethodAccessor(target, names)
     }
 }
+
+internal fun Class<*>.testMethods() = findMethods(annotatedAsTests, this)
+
+internal inline fun <reified T : Annotation> findAnnotation(element: AnnotatedElement): T? = element.annotations?.firstOrNull { it is T } as T?
+
+internal inline fun <reified T : Annotation> hasAnnotation(element: AnnotatedElement): Boolean = findAnnotation<T>(element) != null
+
+internal fun Any.scenarioAccessor(): CachingScenarioMethodAccessor =
+    CachingScenarioMethodAccessor(this, findFields(annotatedAsScenario, this::class.java).map { it.name }.toSet())
+
+private fun findField(predicate: FieldPredicate, clazz: Class<*>?): Field? =
+    clazz?.takeUnless { it == Any::class.java }?.run {
+        declaredFields.singleOrNull { predicate.invoke(it) } ?: findField(predicate, clazz.superclass)
+    }
+
+private fun findKotlinProperties(
+    predicate: (KProperty1<out Any?, Any?>) -> Boolean,
+    clazz: Class<*>?,
+    results: MutableSet<KProperty1<out Any?, Any?>> = LinkedHashSet()
+): Set<KProperty1<out Any?, Any?>> =
+    results.also {
+        clazz?.takeUnless { it == Any::class.java }?.apply {
+            if (isKotlinClass) kotlin.declaredMemberProperties.filterTo(it, predicate)
+            findKotlinProperties(predicate, superclass, it)
+        }
+    }
+
+private fun findMethods(predicate: MethodPredicate, clazz: Class<*>?, results: MutableSet<Method> = LinkedHashSet()): Set<Method> =
+    results.also {
+        clazz?.takeUnless { it == Any::class.java }?.apply {
+            declaredMethods.filterTo(it) { predicate.invoke(it) }
+            findMethods(predicate, superclass, it)
+            interfaces.forEach { i -> findMethods(predicate, i, it) }
+        }
+    }

@@ -6,7 +6,8 @@ import dev.kensa.sentence.SentenceToken
 import dev.kensa.sentence.TokenType
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.util.NamedValue
-import dev.kensa.util.Reflect
+import dev.kensa.util.valueOfIn
+import dev.kensa.util.invokeMethod
 
 class SentenceTokenFactory(
         private val testInstance: Any,
@@ -29,7 +30,7 @@ class SentenceTokenFactory(
     }
 
     fun fieldValueTokenFrom(token: SentenceToken) = fields[token.value]?.let { fd ->
-        renderers.renderValueOnly(Reflect.fieldValue<Any>(fd.field, testInstance)).let { value ->
+        renderers.renderValueOnly(fd.field.valueOfIn(testInstance)).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(FieldValue)
                 takeIf { fd.isHighlighted }?.add(Highlighted)
@@ -39,7 +40,7 @@ class SentenceTokenFactory(
     } ?: throw KensaException("Token with type FieldValue did not refer to an actual field")
 
     fun methodValueTokenFrom(token: SentenceToken) = methods[token.value]?.let { md ->
-        renderers.renderValueOnly(Reflect.invokeMethod<Any>(md.method, testInstance)).let { value ->
+        renderers.renderValueOnly(testInstance.invokeMethod<Any>(md.method)).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(MethodValue)
                 takeIf { md.isHighlighted }?.add(Highlighted)

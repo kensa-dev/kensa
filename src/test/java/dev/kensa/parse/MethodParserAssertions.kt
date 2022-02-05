@@ -1,47 +1,47 @@
 package dev.kensa.parse
 
-import dev.kensa.util.Reflect
+import dev.kensa.util.findMethod
+import dev.kensa.util.findRequiredField
 import org.assertj.core.api.Assertions.assertThat
-import kotlin.reflect.KClass
 
 object MethodParserAssertions {
 
-    internal fun assertMethodDescriptors(methods: Map<String, MethodDescriptor>, clazz: KClass<*>) {
+    internal fun assertMethodDescriptors(methods: Map<String, MethodDescriptor>, clazz: Class<*>) {
         assertThat(methods).containsEntry(
             "method1",
-            MethodDescriptor("method1", Reflect.findMethod("method1", clazz), true, false)
+            MethodDescriptor("method1", clazz.findMethod("method1"), isSentenceValue = true, isHighlighted = false)
         )
     }
 
-    internal fun assertFieldDescriptors(fields: Map<String, FieldDescriptor>, clazz: KClass<*>) {
+    internal fun assertFieldDescriptors(fields: Map<String, FieldDescriptor>, clazz: Class<*>) {
         assertThat(fields).containsEntry(
             "field1",
             FieldDescriptor(
                 "field1",
-                Reflect.findRequiredField("field1", clazz)!!,
-                false,
-                false,
-                false
+                clazz.findRequiredField("field1"),
+                isSentenceValue = false,
+                isHighlighted = false,
+                isScenario = false
             )
         )
         assertThat(fields).containsEntry(
             "field2",
             FieldDescriptor(
                 "field2",
-                Reflect.findRequiredField("field2", clazz)!!,
-                false,
-                false,
-                true
+                clazz.findRequiredField("field2"),
+                isSentenceValue = false,
+                isHighlighted = false,
+                isScenario = true
             )
         )
         assertThat(fields).containsEntry(
             "field3",
             FieldDescriptor(
                 "field3",
-                Reflect.findRequiredField("field3", clazz)!!,
-                true,
-                true,
-                false
+                clazz.findRequiredField("field3"),
+                isSentenceValue = true,
+                isHighlighted = true,
+                isScenario = false
             )
         )
     }

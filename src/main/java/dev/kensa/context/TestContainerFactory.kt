@@ -4,9 +4,8 @@ import dev.kensa.Issue
 import dev.kensa.Notes
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.state.TestState.*
-import dev.kensa.util.Reflect
-import dev.kensa.util.normalisedName
-import dev.kensa.util.unCamel
+import dev.kensa.util.*
+import dev.kensa.util.testMethods
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -27,7 +26,7 @@ class TestContainerFactory {
     }
 
     private fun invocationDataFor(testClass: Class<*>): Map<Method, TestMethodInvocation> =
-        Reflect.testMethodsOf(testClass)
+        testClass.testMethods()
             .map { method: Method -> createInvocationData(method) }
             .associateByTo(LinkedHashMap()) { invocation: TestMethodInvocation -> invocation.method }
 
@@ -40,12 +39,12 @@ class TestContainerFactory {
             initialStateFor(method)
         )
 
-    private fun initialStateFor(method: Method) = if (Reflect.hasAnnotation<Disabled>(method)) Disabled else NotExecuted
+    private fun initialStateFor(method: Method) = if (hasAnnotation<Disabled>(method)) Disabled else NotExecuted
 
     private fun deriveDisplayNameFor(element: AnnotatedElement, lazyDefault: () -> String) =
-        Reflect.findAnnotation<DisplayName>(element)?.value ?: lazyDefault()
+        findAnnotation<DisplayName>(element)?.value ?: lazyDefault()
 
-    private fun notesFor(element: AnnotatedElement): String? = Reflect.findAnnotation<Notes>(element)?.value
+    private fun notesFor(element: AnnotatedElement): String? = findAnnotation<Notes>(element)?.value
 
-    private fun issuesFor(element: AnnotatedElement): List<String> = Reflect.findAnnotation<Issue>(element)?.value?.toList() ?: emptyList()
+    private fun issuesFor(element: AnnotatedElement): List<String> = findAnnotation<Issue>(element)?.value?.toList() ?: emptyList()
 }

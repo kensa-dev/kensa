@@ -2,20 +2,18 @@ package dev.kensa.parse
 
 import dev.kensa.parse.CacheState.NotCached
 import dev.kensa.parse.CacheState.NullValue
-import dev.kensa.util.Reflect
-import java.util.*
+import dev.kensa.util.fieldValue
+import dev.kensa.util.invokeMethod
 
 class CachingScenarioMethodAccessor(private val testInstance: Any, scenarioNames: Set<String>) {
 
-    private val scenarioCache: MutableMap<String, Any>
-    private val valueCache: Map<String, MutableMap<String, Any?>>
+    private val scenarioCache: MutableMap<String, Any> = scenarioNames.associateByTo(HashMap(), { it }, { NotCached })
+    private val valueCache: Map<String, MutableMap<String, Any?>> = scenarioNames.associateByTo(HashMap(), { it }, { HashMap() })
 
     fun valueOf(scenarioName: String, methodName: String): Any? {
-        val value = valueCache[scenarioName]?.compute(methodName) { mn: String, existing: Any? ->
-            existing ?: scenarioInstanceWithName(scenarioName)?.let { target ->
-                if (target !== NullValue) {
-                    Reflect.invokeMethod<Any>(mn, target)
-                } else target
+        val value = valueCache[scenarioName]?.compute(methodName) { mn, existing ->
+            existing ?: scenarioInstanceWithName(scenarioName)?.let { scenario ->
+                if (scenario != NullValue) scenario.invokeMethod<Any>(mn) else scenario
             } ?: NullValue
         }
 
@@ -24,13 +22,6 @@ class CachingScenarioMethodAccessor(private val testInstance: Any, scenarioNames
 
     private fun scenarioInstanceWithName(scenarioName: String): Any? =
             scenarioCache.compute(scenarioName) { sn: String, existing: Any? ->
-                if (existing === NotCached) {
-                    Reflect.fieldValue<Any>(sn, testInstance) ?: NullValue
-                } else existing
+                if (existing == NotCached) testInstance.fieldValue<Any>(sn) ?: NullValue else existing
             }
-
-    init {
-        scenarioCache = scenarioNames.associateByTo(HashMap(), { it }, { NotCached })
-        valueCache = scenarioNames.associateByTo(HashMap(), { it }, { HashMap<String, Any?>() })
-    }
 }

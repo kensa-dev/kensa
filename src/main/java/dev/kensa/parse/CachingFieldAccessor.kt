@@ -1,22 +1,13 @@
 package dev.kensa.parse
 
 import dev.kensa.parse.CacheState.NotCached
-import dev.kensa.util.Reflect
+import dev.kensa.util.invokeMethod
 
 class CachingFieldAccessor(private val testInstance: Any, fieldNames: Set<String>) {
-    private val cachedValues: MutableMap<String, Any>
+    private val cachedValues: MutableMap<String, Any> = fieldNames.associateByTo(HashMap(), { it }, { NotCached })
 
-    fun valueOf(fieldName: String): Any? {
-        return cachedValues.compute(fieldName) { fn, existing ->
-            if (existing == NotCached) {
-                Reflect.fieldValue<Any>(fieldName, testInstance)
-            } else {
-                existing
-            }
+    fun valueOf(fieldName: String): Any? =
+        cachedValues.compute(fieldName) { _, existing ->
+            if (existing == NotCached) testInstance.invokeMethod(fieldName) else existing
         }
-    }
-
-    init {
-        cachedValues = fieldNames.associateByTo(HashMap(), { it }, { NotCached })
-    }
 }

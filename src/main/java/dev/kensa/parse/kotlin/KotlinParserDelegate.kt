@@ -11,14 +11,13 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTreeWalker
-import kotlin.reflect.KClass
 
 object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationContext> {
 
     override fun methodNameFrom(dc: KotlinParser.FunctionDeclarationContext): String =
             dc.simpleIdentifier().text.replace("`", "")
 
-    override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Triple<List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>> {
+    override fun findMethodDeclarationsIn(testClass: Class<out Any>): Triple<List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>, List<KotlinParser.FunctionDeclarationContext>> {
         val testFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
         val nestedFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
         val emphasisedFunctions = ArrayList<KotlinParser.FunctionDeclarationContext>()
@@ -59,7 +58,7 @@ object KotlinParserDelegate : ParserDelegate<KotlinParser.FunctionDeclarationCon
         emphasisedFunctions.takeIf { isAnnotatedAsEmphasised(fd) }?.add(fd)
     }
 
-    private fun compilationUnitFor(testClass: KClass<out Any>): KotlinParser.KotlinFileContext =
+    private fun compilationUnitFor(testClass: Class<out Any>): KotlinParser.KotlinFileContext =
             KotlinParser(
                     CommonTokenStream(
                             KotlinLexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))

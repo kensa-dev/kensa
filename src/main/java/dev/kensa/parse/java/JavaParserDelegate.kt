@@ -16,7 +16,7 @@ object JavaParserDelegate : ParserDelegate<Java8Parser.MethodDeclarationContext>
 
     override fun methodNameFrom(dc: Java8Parser.MethodDeclarationContext): String = dc.methodHeader().methodDeclarator().Identifier().text
 
-    override fun findMethodDeclarationsIn(testClass: KClass<out Any>): Triple<List<Java8Parser.MethodDeclarationContext>, List<Java8Parser.MethodDeclarationContext>, List<Java8Parser.MethodDeclarationContext>> {
+    override fun findMethodDeclarationsIn(testClass: Class<out Any>): Triple<List<Java8Parser.MethodDeclarationContext>, List<Java8Parser.MethodDeclarationContext>, List<Java8Parser.MethodDeclarationContext>> {
         val testMethodDeclarations = ArrayList<Java8Parser.MethodDeclarationContext>()
         val nestedMethodDeclarations = ArrayList<Java8Parser.MethodDeclarationContext>()
         val emphasisedMethodDeclarations = ArrayList<Java8Parser.MethodDeclarationContext>()
@@ -38,7 +38,7 @@ object JavaParserDelegate : ParserDelegate<Java8Parser.MethodDeclarationContext>
         return Triple(testMethodDeclarations, nestedMethodDeclarations, emphasisedMethodDeclarations)
     }
 
-    private fun compilationUnitFor(testClass: KClass<out Any>): Java8Parser.CompilationUnitContext {
+    private fun compilationUnitFor(testClass: Class<out Any>): Java8Parser.CompilationUnitContext {
         return Java8Parser(
                 CommonTokenStream(
                         Java8Lexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))

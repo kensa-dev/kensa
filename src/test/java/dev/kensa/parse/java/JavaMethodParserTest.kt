@@ -11,7 +11,7 @@ import dev.kensa.sentence.SentenceTokens.aParameterValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anIndent
-import dev.kensa.util.Reflect
+import dev.kensa.util.findMethod
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -50,13 +50,13 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(Reflect.findMethod("similarNameTest1", JavaTestWithVariousParameterCombinations::class))
+            parser.parse(JavaTestWithVariousParameterCombinations::class.java.findMethod("similarNameTest1"))
 
         with(parsedMethod) {
             assertThat(name).isEqualTo("similarNameTest1")
             assertThat(parameters.descriptors).isEmpty()
-            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
             assertThat(nestedSentences).containsKey("nested1")
             assertThat(nestedSentences["nested1"]?.first()?.tokens).isEqualTo(expectedNestedSentence.tokens)
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
@@ -78,13 +78,13 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(Reflect.findMethod("testWithNoParameters", JavaTestWithVariousParameterCombinations::class))
+            parser.parse(JavaTestWithVariousParameterCombinations::class.java.findMethod("testWithNoParameters"))
 
         with(parsedMethod) {
             assertThat(name).isEqualTo("testWithNoParameters")
             assertThat(parameters.descriptors).isEmpty()
-            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
             assertThat(nestedSentences).containsKey("nested1")
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
@@ -107,16 +107,16 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(Reflect.findMethod("testWithExtensionParameter", JavaTestWithVariousParameterCombinations::class))
+            parser.parse(JavaTestWithVariousParameterCombinations::class.java.findMethod("testWithExtensionParameter"))
 
         with(parsedMethod) {
             assertThat(name).isEqualTo("testWithExtensionParameter")
             assertThat(parameters.descriptors).containsEntry(
                 "first",
-                ParameterDescriptor("first", 0, false, false, true)
+                ParameterDescriptor("first", 0, isSentenceValue = false, isHighlighted = false, isCaptured = true)
             )
-            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
             assertThat(nestedSentences).containsKey("nested1")
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
@@ -137,16 +137,16 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(Reflect.findMethod("parameterizedTest", JavaTestWithVariousParameterCombinations::class))
+            parser.parse(JavaTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTest"))
 
         with(parsedMethod) {
             assertThat(name).isEqualTo("parameterizedTest")
             assertThat(parameters.descriptors).containsEntry(
                 "first",
-                ParameterDescriptor("first", 0, false, false, true)
+                ParameterDescriptor("first", 0, isSentenceValue = false, isHighlighted = false, isCaptured = true)
             )
-            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
             assertThat(nestedSentences).containsKey("nested1")
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
         }
@@ -180,25 +180,20 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(
-                Reflect.findMethod(
-                    "parameterizedTestWithExtensionParameter",
-                    JavaTestWithVariousParameterCombinations::class
-                )
-            )
+            parser.parse(JavaTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTestWithExtensionParameter"))
 
         with(parsedMethod) {
             assertThat(name).isEqualTo("parameterizedTestWithExtensionParameter")
             assertThat(parameters.descriptors).containsEntry(
                 "first",
-                ParameterDescriptor("first", 0, false, false, true)
+                ParameterDescriptor("first", 0, isSentenceValue = false, isHighlighted = false, isCaptured = true)
             )
             assertThat(parameters.descriptors).containsEntry(
                 "second",
-                ParameterDescriptor("second", 1, true, false, true)
+                ParameterDescriptor("second", 1, isSentenceValue = true, isHighlighted = false, isCaptured = true)
             )
-            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class)
+            assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
             assertThat(nestedSentences).containsKey("nested1")
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence1.tokens)
             assertThat(sentences.last().tokens).isEqualTo(expectedSentence2.tokens)

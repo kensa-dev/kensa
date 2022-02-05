@@ -5,17 +5,15 @@ import java.io.IOException
 import java.nio.file.*
 import java.nio.file.FileVisitResult.CONTINUE
 import java.nio.file.attribute.BasicFileAttributes
-import kotlin.reflect.KClass
-import kotlin.reflect.jvm.jvmName
 
 object SourceCodeIndex {
     private val workingDirectory = Path.of(System.getProperty("user.dir"))
 
-    private val KClass<*>.sourceExtension get() = if (isKotlinClass) "kt" else "java"
+    private val Class<*>.sourceExtension get() = if (isKotlinClass) "kt" else "java"
 
-    fun locate(kClass: KClass<*>): Path =
-        kClass.jvmName.substringBefore("$").let { name ->
-            Walker(name, kClass.sourceExtension).run {
+    fun locate(clazz: Class<*>): Path =
+        clazz.name.substringBefore("$").let { name ->
+            Walker(name, clazz.sourceExtension).run {
                 Files.walkFileTree(workingDirectory, this)
                 result ?: throw KensaException("Could not locate source file for [$name]")
             }
