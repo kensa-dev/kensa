@@ -49,7 +49,7 @@ class TestInvocationParser {
 
             ParsedTestInvocation(parsedMethod.name, namedParameterValues, sentences, highlightedValues)
         } catch (e: Exception) {
-            throw KensaException("Unable to parse test invocation for  ", e)
+            throw KensaException("Unable to parse test invocation ", e)
         }
 
     private fun regenerateSentences(source: List<Sentence>, tokenFactory: SentenceTokenFactory): List<Sentence> =

@@ -21,51 +21,63 @@ class JavaMethodBodyParser(private val stateMachine: ParserStateMachine) : Java8
 //        println("Exiting: ${ctx::class} :: ${ctx.text}")
 //    }
 
-    override fun enterExpression(ctx: Java8Parser.ExpressionContext) {
-        stateMachine.transition(EnterExpressionEvent(ctx))
-    }
+//    override fun enterExpression(ctx: Java8Parser.ExpressionContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
+//        stateMachine.transition(EnterExpressionEvent(ctx))
+//    }
 
-    override fun exitExpression(ctx: Java8Parser.ExpressionContext) {
-        stateMachine.transition(ExitExpressionEvent(ctx))
-    }
+//    override fun exitExpression(ctx: Java8Parser.ExpressionContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
+//        stateMachine.transition(ExitExpressionEvent(ctx))
+//    }
 
     override fun enterMethodBody(ctx: Java8Parser.MethodBodyContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterTestMethodEvent(ctx))
     }
 
     override fun exitMethodBody(ctx: Java8Parser.MethodBodyContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitTestMethodEvent(ctx))
     }
 
     override fun enterStatement(ctx: Java8Parser.StatementContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterStatementEvent(ctx))
     }
 
     override fun exitStatement(ctx: Java8Parser.StatementContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitStatementEvent(ctx))
     }
 
     override fun enterMethodInvocation(ctx: Java8Parser.MethodInvocationContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterMethodInvocationEvent(ctx))
     }
 
     override fun exitMethodInvocation(ctx: Java8Parser.MethodInvocationContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitMethodInvocationEvent(ctx))
     }
 
     override fun enterMethodInvocation_lfno_primary(ctx: Java8Parser.MethodInvocation_lfno_primaryContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterMethodInvocationEvent(ctx))
     }
 
     override fun exitMethodInvocation_lfno_primary(ctx: Java8Parser.MethodInvocation_lfno_primaryContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitMethodInvocationEvent(ctx))
     }
 
     override fun enterMethodInvocation_lf_primary(ctx: Java8Parser.MethodInvocation_lf_primaryContext) {
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterMethodInvocationEvent(ctx))
     }
 
     override fun exitMethodInvocation_lf_primary(ctx: Java8Parser.MethodInvocation_lf_primaryContext) {
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitMethodInvocationEvent(ctx))
     }
 

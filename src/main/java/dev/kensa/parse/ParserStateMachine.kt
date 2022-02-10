@@ -27,14 +27,12 @@ class ParserStateMachine(
     private var lastLocation: Location? = null
 
     private fun beginSentence(location: Location) {
-//        println("Begin:: ${stateMachine.state::class.simpleName}")
         sentenceBuilder = SentenceBuilder(lastLocation ?: location, dictionary)
     }
 
     private fun finishSentence() {
         lastLocation = sentenceBuilder.lastLocation
         _sentences += sentenceBuilder.build()
-//            .also { println("Finished: ${it.squashedTokens}") }
     }
 
     private val stateMachine: StateMachine<State, Event<*>> = aStateMachine {
@@ -60,14 +58,6 @@ class ParserStateMachine(
             on<ExitStatementEvent> { _, event ->
                 finishSentence()
                 InTestMethod(event.parseTree)
-            }
-            on<EnterExpressionEvent> { currentState, event ->
-                beginSentence(event.location)
-                currentState
-            }
-            on<ExitExpressionEvent> { currentState, event ->
-                finishSentence()
-                currentState
             }
             on<EnterMethodInvocationEvent> { currentState, event ->
                 InMethodCall(event.parseTree, currentState)
@@ -126,8 +116,6 @@ class ParserStateMachine(
                 add(Matcher.any<TerminalNodeEvent>())
                 add(Matcher.any<EnterStatementEvent>())
                 add(Matcher.any<ExitStatementEvent>())
-                add(Matcher.any<EnterExpressionEvent>())
-                add(Matcher.any<ExitExpressionEvent>())
             }
         }
         state<InScenarioCall> {

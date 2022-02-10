@@ -120,6 +120,7 @@ internal class JavaMethodParserTest {
             assertFieldDescriptors(fields, JavaTestWithVariousParameterCombinations::class.java)
             assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
             assertThat(nestedSentences).containsKey("nested1")
+            assertThat(nestedSentences["nested1"]?.size).isEqualTo(1)
             assertThat(nestedSentences["nested1"]?.first()?.tokens).isEqualTo(expectedNestedSentence.tokens)
             assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
