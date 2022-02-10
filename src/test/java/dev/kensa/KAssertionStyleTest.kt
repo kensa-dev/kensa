@@ -55,10 +55,6 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTe
     }
 
     @Test
-    internal fun name() : Unit =
-        given(someActionNameIsAddedToGivens())
-
-    @Test
     @Notes("Method Notes {@link AssertionStyleTest#canUseAssertJStyle}")
     @Issue("ISS-007")
     fun `can Use AssertJStyle`() {

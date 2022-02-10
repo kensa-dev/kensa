@@ -9,6 +9,7 @@ import dev.kensa.parse.MethodParserAssertions.assertMethodDescriptors
 import dev.kensa.parse.ParameterDescriptor
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceTokens
+import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
@@ -29,6 +30,33 @@ internal class KotlinFunctionParserTest {
     internal fun setUp() {
         konfigure {
             antlrPredicationMode = PredictionMode.LL
+        }
+    }
+
+    @Test
+    internal fun `parses test expression function`() {
+        val expectedSentence = Sentence(
+            listOf(
+                aKeywordOf("Given"),
+                aWordOf("some"),
+                aWordOf("action"),
+                aWordOf("name"),
+                aWordOf("is"),
+                aWordOf("added"),
+                aWordOf("to"),
+                aWordOf("givens"),
+            )
+        )
+
+        val parsedMethod = parser.parse(KotlinTestWithExpressionFunction::class.java.findMethod("expressionTest"))
+
+        with(parsedMethod) {
+            assertThat(name).isEqualTo("expressionTest")
+            assertThat(parameters.descriptors).isEmpty()
+            assertThat(methods).containsEntry(
+                "expressionTest", MethodDescriptor("expressionTest", KotlinTestWithExpressionFunction::class.java.findMethod("expressionTest"), isSentenceValue = false, isHighlighted = false)
+            )
+            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
         }
     }
 
