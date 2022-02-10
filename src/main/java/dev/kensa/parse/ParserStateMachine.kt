@@ -50,6 +50,10 @@ class ParserStateMachine(
                 beginSentence(event.location)
                 InStatement(event.parseTree, currentState)
             }
+            on<EnterMethodInvocationEvent> { currentState, event ->
+                beginSentence(event.location)
+                InMethodCall(event.parseTree, currentState, didBegin = true)
+            }
             ignoreAll<Event<*>> {
                 add(Matcher.any<TerminalNodeEvent>())
             }
@@ -71,7 +75,9 @@ class ParserStateMachine(
                 InMethodCall(event.parseTree, currentState)
             }
             on<ExitMethodInvocationEvent> { currentState, _ ->
-                currentState.parentState
+                currentState.parentState.also {
+                    if(it is InMethodCall && it.didBegin) finishSentence()
+                }
             }
             on<StringLiteralEvent> { currentState, event ->
                 sentenceBuilder.appendStringLiteral(event.location, event.value)

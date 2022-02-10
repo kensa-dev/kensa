@@ -55,76 +55,80 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTe
     }
 
     @Test
-    @Notes("Method Notes {@link AssertionStyleTest#canUseAssertJStyle}")
-    @Issue("ISS-007")
-    fun `can Use AssertJStyle`() {
+    internal fun name() : Unit =
         given(someActionNameIsAddedToGivens())
 
-        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
-
-        then(theResultStoredInCapturedInteractions()).isEqualTo(theExpectedResult)
-        withAllTheNestedThings()
-        then(foo()).isEqualTo(scenario.thing())
-        then(foo1())
-                .isEqualTo("777")
-                .hasSameClassAs("888")
-
-        then(foo())
-                .isEqualTo(666)
-    }
-
-    @NestedSentence
-    private fun withAllTheNestedThings() {
-        then(foo()).isEqualTo(scenario.thing())
-    }
-
-    private fun foo(): StateExtractor<Int?> {
-        return StateExtractor {
-            it.divider()
-            666
-        }
-    }
-
-    private fun foo1(): StateExtractor<String?> {
-        return StateExtractor { "777" }
-    }
-
-    @Test
-    fun canUseHamcrestStyle() {
-        given(someActionNameIsAddedToGivens())
-        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
-        then(theResultStoredInCapturedInteractions())
-    }
-
-    @ParameterizedTest
-    @MethodSource("parameterProvider")
-    fun parameterizedTest(@SentenceValue actionName: String, @SentenceValue theExpectedResult: String) {
-        given(somethingIsDoneWith(actionName))
-        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
-        then(theResultStoredInCapturedInteractions(), `is`(theExpectedResult))
-    }
-
-    private fun somethingIsDoneWith(actionName: String): GivensBuilder {
-        return GivensBuilder { givens -> givens.put("actionName", actionName) }
-    }
-
+//    @Test
+//    @Notes("Method Notes {@link AssertionStyleTest#canUseAssertJStyle}")
+//    @Issue("ISS-007")
+//    fun `can Use AssertJStyle`() {
+//        given(someActionNameIsAddedToGivens())
+//
+//        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
+//
+//        then(theResultStoredInCapturedInteractions()).isEqualTo(theExpectedResult)
+//        withAllTheNestedThings()
+//        then(foo()).isEqualTo(scenario.thing())
+//        then(foo1())
+//                .isEqualTo("777")
+//                .hasSameClassAs("888")
+//
+//        then(foo())
+//                .isEqualTo(666)
+//    }
+//
+//    @NestedSentence
+//    private fun withAllTheNestedThings() {
+//        then(foo()).isEqualTo(scenario.thing())
+//    }
+//
+//    private fun foo(): StateExtractor<Int?> {
+//        return StateExtractor {
+//            it.divider()
+//            666
+//        }
+//    }
+//
+//    private fun foo1(): StateExtractor<String?> {
+//        return StateExtractor { "777" }
+//    }
+//
+//    @Test
+//    fun canUseHamcrestStyle() {
+//        given(someActionNameIsAddedToGivens())
+//        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
+//        then(theResultStoredInCapturedInteractions())
+//    }
+//
+//    @ParameterizedTest
+//    @MethodSource("parameterProvider")
+//    fun parameterizedTest(@SentenceValue actionName: String, @SentenceValue theExpectedResult: String) {
+//        given(somethingIsDoneWith(actionName))
+//        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
+//        then(theResultStoredInCapturedInteractions(), `is`(theExpectedResult))
+//    }
+//
+//    private fun somethingIsDoneWith(actionName: String): GivensBuilder {
+//        return GivensBuilder { givens -> givens.put("actionName", actionName) }
+//    }
+//
     private fun someActionNameIsAddedToGivens(): GivensBuilder {
         return GivensBuilder { givens -> givens.put("actionName", actionName) }
     }
-
-    @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase, TextDecorationUnderline], textColour = TextLight, backgroundColor = BackgroundDanger)
-    fun theActionIsPerformedAndTheResultIsAddedToCapturedInteractions(): ActionUnderTest {
-        return ActionUnderTest { givens, interactions ->
-            interactions.capture(from(Parrty.A).to(Parrty.B).group("Test").arrowStyle(ArrowStyle.UmlAsynchronousDelete).with("Message", "The Message"))
-            givens.get<String>("actionName")?.let {
-                interactions.put("result", performer.perform(it))
-            }
-        }
-    }
-
-    private fun theResultStoredInCapturedInteractions(): StateExtractor<String?> {
-        return StateExtractor { interactions -> interactions["result"] }
-    }
+//
+//    @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase, TextDecorationUnderline], textColour = TextLight, backgroundColor = BackgroundDanger)
+//    fun theActionIsPerformedAndTheResultIsAddedToCapturedInteractions(): ActionUnderTest {
+//        return ActionUnderTest { givens, interactions ->
+//            interactions.capture(from(Parrty.A).to(Parrty.B).group("Test").arrowStyle(ArrowStyle.UmlAsynchronousDelete).with("Message", "The Message"))
+//            givens.get<String>("actionName")?.let {
+//                interactions.put("result", performer.perform(it))
+//            }
+//        }
+//    }
+//
+//    private fun theResultStoredInCapturedInteractions(): StateExtractor<String?> {
+//        return StateExtractor { interactions -> interactions["result"] }
+//    }
 
     companion object {
         @JvmStatic
