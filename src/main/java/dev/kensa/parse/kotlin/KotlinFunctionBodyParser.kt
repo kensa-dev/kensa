@@ -22,37 +22,37 @@ class KotlinFunctionBodyParser(private val stateMachine: ParserStateMachine) : K
 //    }
 
     override fun enterFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
-        println("Entering: ${ctx::class} :: ${ctx.text}")
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterTestMethodEvent(ctx))
     }
 
     override fun exitFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
-        println("Exiting: ${ctx::class} :: ${ctx.text}")
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitTestMethodEvent(ctx))
     }
 
     override fun enterStatement(ctx: KotlinParser.StatementContext) {
-        println("Entering: ${ctx::class} :: ${ctx.text}")
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterStatementEvent(ctx))
     }
 
     override fun exitStatement(ctx: KotlinParser.StatementContext) {
-        println("Exiting: ${ctx::class} :: ${ctx.text}")
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitStatementEvent(ctx))
     }
 
     override fun enterExpression(ctx: KotlinParser.ExpressionContext) {
-        println("Entering: ${ctx::class} :: ${ctx.text}")
+//        println("Entering: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(EnterMethodInvocationEvent(ctx))
     }
 
     override fun exitExpression(ctx: KotlinParser.ExpressionContext) {
-        println("Exiting: ${ctx::class} :: ${ctx.text}")
+//        println("Exiting: ${ctx::class} :: ${ctx.text}")
         stateMachine.transition(ExitMethodInvocationEvent(ctx))
     }
 
     override fun visitTerminal(node: TerminalNode) {
-        println("Visit Terminal: ${node.text}")
+//        println("Visit Terminal: ${node.text}")
         when (node.symbol.type) {
             LineStrText -> stateMachine.transition(StringLiteralEvent(node, node.text))
             RealLiteral, FloatLiteral, DoubleLiteral, IntegerLiteral, UnsignedLiteral, LongLiteral -> stateMachine.transition(NumberLiteralEvent(node, node.text))
