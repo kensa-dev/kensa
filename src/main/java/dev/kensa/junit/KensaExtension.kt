@@ -1,11 +1,11 @@
-package dev.kensa
+package dev.kensa.junit
 
-import dev.kensa.Kensa.configuration
+import dev.kensa.Kensa
+import dev.kensa.KensaExecutionContext
 import dev.kensa.context.TestContainer
 import dev.kensa.context.TestContainerFactory
 import dev.kensa.context.TestContext
-import dev.kensa.context.TestContextHolder.bindToThread
-import dev.kensa.context.TestContextHolder.clearFromThread
+import dev.kensa.context.TestContextHolder
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
 import dev.kensa.parse.kotlin.KotlinFunctionParser
@@ -17,7 +17,7 @@ import dev.kensa.state.TestInvocationFactory
 import org.junit.jupiter.api.extension.*
 import java.lang.reflect.Method
 import java.time.Duration
-import java.time.temporal.ChronoUnit.MILLIS
+import java.time.temporal.ChronoUnit
 
 class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     AfterTestExecutionCallback, InvocationInterceptor {
@@ -30,7 +30,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     )
 
     override fun beforeAll(context: ExtensionContext) {
-        if (configuration.isOutputEnabled) {
+        if (Kensa.configuration.isOutputEnabled) {
             with(context.getStore(KENSA)) {
                 val executionContext = bindToRootContextOf(context)
                 val container = testContainerFactory.createFor(context)
@@ -44,7 +44,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
         with(context.getStore(KENSA)) {
             TestContext(Givens(), CapturedInteractions()).also {
                 put(TEST_CONTEXT_KEY, it)
-                bindToThread(it)
+                TestContextHolder.bindToThread(it)
             }
         }
     }
@@ -70,7 +70,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     }
 
     private fun createTestInvocationContext(context: ExtensionContext, arguments: Array<Any?>) {
-        if (configuration.isOutputEnabled) {
+        if (Kensa.configuration.isOutputEnabled) {
             with(context.getStore(KENSA)) {
                 put(TEST_START_TIME_KEY, System.currentTimeMillis())
                 put(
@@ -86,7 +86,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
 
     override fun afterTestExecution(context: ExtensionContext) {
         try {
-            if (configuration.isOutputEnabled) {
+            if (Kensa.configuration.isOutputEnabled) {
                 val endTime = System.currentTimeMillis()
                 with(context.getStore(KENSA)) {
                     val startTime = get(TEST_START_TIME_KEY, Long::class.java)
@@ -96,7 +96,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
                     val testInvocationContext = get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext::class.java)
                     invocation.add(
                         testInvocationFactory.create(
-                            Duration.of(endTime - startTime, MILLIS),
+                            Duration.of(endTime - startTime, ChronoUnit.MILLIS),
                             testContext,
                             testInvocationContext,
                             context.executionException.orElse(null)
@@ -105,7 +105,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
                 }
             }
         } finally {
-            clearFromThread()
+            TestContextHolder.clearFromThread()
         }
     }
 
@@ -122,7 +122,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     companion object {
         val KENSA: ExtensionContext.Namespace = ExtensionContext.Namespace.create("dev", "kensa")
         const val TEST_CONTEXT_KEY = "TestContext"
-        private val EXECUTION_CONTEXT_FACTORY = { _: String -> KensaExecutionContext(configuration.resultWriter) }
+        private val EXECUTION_CONTEXT_FACTORY = { _: String -> KensaExecutionContext(Kensa.configuration.resultWriter) }
         private const val TEST_START_TIME_KEY = "StartTime"
         private const val TEST_CONTAINER_KEY = "TestContainer"
         private const val TEST_INVOCATION_CONTEXT_KEY = "TestArguments"

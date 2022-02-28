@@ -50,6 +50,8 @@ dependencies {
     api(kotlin("stdlib-jdk8", version = Versions.kotlin))
     api(kotlin("reflect", version = Versions.kotlin))
 
+    implementation("io.kotest:kotest-assertions-core:${Versions.kotest}")
+    implementation("io.kotest:kotest-runner-junit5:${Versions.kotest}")
     implementation("org.junit.jupiter:junit-jupiter-params:${Versions.junitJupiter}")
     implementation("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")
     implementation("org.junit.jupiter:junit-jupiter-engine:${Versions.junitJupiter}")

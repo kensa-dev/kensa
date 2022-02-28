@@ -3,7 +3,7 @@ package dev.kensa.java;
 import dev.kensa.ActionUnderTest;
 import dev.kensa.GivensBuilder;
 import dev.kensa.GivensWithInteractionsBuilder;
-import dev.kensa.KensaExtension;
+import dev.kensa.junit.KensaExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static dev.kensa.context.TestContextHolder.testContext;
