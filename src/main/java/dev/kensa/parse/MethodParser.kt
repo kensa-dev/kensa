@@ -1,6 +1,12 @@
 package dev.kensa.parse
 
-import dev.kensa.*
+import dev.kensa.CapturedParameter
+import dev.kensa.Emphasise
+import dev.kensa.Kensa
+import dev.kensa.KensaException
+import dev.kensa.parse.Accessor.ParameterAccessor
+import dev.kensa.parse.Accessor.ValueAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.util.*
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -14,9 +20,9 @@ interface MethodParser : ParserCache, ParserDelegate {
             val actualDeclaringClass = method.actualDeclaringClass
 
             val classToParse = testClass.takeIf { it == actualDeclaringClass } ?: actualDeclaringClass
-            val properties = fieldCache.getOrPut(testClass) { prepareFieldsFor(testClass) }
+            val properties = propertyCache.getOrPut(testClass) { preparePropertiesFor(testClass) }
             val (testMethodDeclarations, nestedSentenceDeclarations, emphasisedMethodDeclarations) =
-                    declarationCache.getOrPut(classToParse) { findMethodDeclarationsIn(classToParse) }
+                declarationCache.getOrPut(classToParse) { findMethodDeclarationsIn(classToParse) }
 
             val testMethodDeclaration = testMethodDeclarations.find(matchingDeclarationFor(method))
                 ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
@@ -32,7 +38,7 @@ interface MethodParser : ParserCache, ParserDelegate {
                 prepareEmphasisedMethods(testClass, emphasisedMethodDeclarations)
             }
 
-            val methods: Map<String, MethodDescriptor> = methodCache.getOrPut(testClass) {
+            val methods: Map<String, MethodAccessor> = methodCache.getOrPut(testClass) {
                 prepareMethodsFor(testClass)
             }
 
@@ -90,7 +96,7 @@ interface MethodParser : ParserCache, ParserDelegate {
     ): Map<String, EmphasisDescriptor> {
         return emphasisedMethodDeclarations
             .map { dc ->
-                findAnnotation<Emphasise>(testClass.findMethod(dc.name))!!.run {
+                testClass.findMethod(dc.name).findAnnotation<Emphasise>()!!.run {
                     Pair(dc.name, EmphasisDescriptor(textStyles.toSet(), textColour, backgroundColor))
                 }
             }
@@ -103,42 +109,26 @@ interface MethodParser : ParserCache, ParserDelegate {
     ): MethodParameters =
         MethodParameters(
             method.parameters.mapIndexed { index, parameter ->
-                ParameterDescriptor(
+                ParameterAccessor(
+                    parameter,
                     parameterNamesAndTypes[index].first,
                     index,
-                    hasAnnotation<SentenceValue>(parameter),
-                    hasAnnotation<Highlight>(parameter),
                     shouldRender(parameter),
                 )
-            }.associateByTo(LinkedHashMap(), ParameterDescriptor::name)
+            }.associateByTo(LinkedHashMap(), ParameterAccessor::name)
         )
 
     fun shouldRender(parameter: Parameter) =
-        findAnnotation<CapturedParameter>(parameter.type)?.value ?: true ||
-                findAnnotation<CapturedParameter>(parameter.type)?.value ?: true
+        parameter.type.findAnnotation<CapturedParameter>()?.value ?: true ||
+                parameter.type.findAnnotation<CapturedParameter>()?.value ?: true
 
     private fun prepareMethodsFor(clazz: Class<*>) =
-        clazz.allMethods()
-            .map {
-                MethodDescriptor(
-                    it.name,
-                    it,
-                    hasAnnotation<SentenceValue>(it),
-                    hasAnnotation<Highlight>(it)
-                )
-            }
-            .associateBy(MethodDescriptor::name)
+        clazz.allMethods
+            .map { MethodAccessor(it) }
+            .associateBy(MethodAccessor::name)
 
-    private fun prepareFieldsFor(clazz: Class<*>) =
-        clazz.allFields()
-            .map {
-                FieldDescriptor(
-                    it.name,
-                    it,
-                    hasAnnotation<SentenceValue>(it),
-                    hasAnnotation<Highlight>(it),
-                    hasAnnotation<Scenario>(it)
-                )
-            }
-            .associateBy(FieldDescriptor::name)
+    private fun preparePropertiesFor(clazz: Class<*>) =
+        clazz.allProperties
+            .map { ValueAccessor(it) }
+            .associateBy(ValueAccessor::name)
 }

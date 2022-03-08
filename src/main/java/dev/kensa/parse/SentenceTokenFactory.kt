@@ -1,23 +1,25 @@
 package dev.kensa.parse
 
 import dev.kensa.KensaException
+import dev.kensa.parse.Accessor.ParameterAccessor
+import dev.kensa.parse.Accessor.ValueAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.SentenceToken
 import dev.kensa.sentence.TokenType
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.util.NamedValue
-import dev.kensa.util.valueOfIn
 import dev.kensa.util.invokeMethod
 
 class SentenceTokenFactory(
-        private val testInstance: Any,
-        private val arguments: Array<Any?>,
-        private val renderers: Renderers,
-        private val scenarioAccessor: CachingScenarioMethodAccessor,
-        private val parameters: Map<String, ParameterDescriptor>,
-        private val fields: Map<String, FieldDescriptor>,
-        private val methods: Map<String, MethodDescriptor>,
-        private val highlightedValues: Set<NamedValue>
+    private val testInstance: Any,
+    private val arguments: Array<Any?>,
+    private val renderers: Renderers,
+    private val scenarioAccessor: CachingScenarioMethodAccessor,
+    private val parameters: Map<String, ParameterAccessor>,
+    private val properties: Map<String, ValueAccessor>,
+    private val methods: Map<String, MethodAccessor>,
+    private val highlightedValues: Set<NamedValue>
 ) {
 
     fun scenarioValueTokenFrom(token: SentenceToken) = token.value.split(".").let { split ->
@@ -29,11 +31,11 @@ class SentenceTokenFactory(
         }
     }
 
-    fun fieldValueTokenFrom(token: SentenceToken) = fields[token.value]?.let { fd ->
-        renderers.renderValueOnly(fd.field.valueOfIn(testInstance)).let { value ->
+    fun fieldValueTokenFrom(token: SentenceToken) = properties[token.value]?.let { pd ->
+        renderers.renderValueOnly(pd.valueOfIn(testInstance)).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(FieldValue)
-                takeIf { fd.isHighlighted }?.add(Highlighted)
+                takeIf { pd.isHighlight }?.add(Highlighted)
                 takeIf { valueIsHighlighted(value) }?.add(Highlighted)
             })
         }
@@ -43,7 +45,7 @@ class SentenceTokenFactory(
         renderers.renderValueOnly(testInstance.invokeMethod<Any>(md.method)).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(MethodValue)
-                takeIf { md.isHighlighted }?.add(Highlighted)
+                takeIf { md.isHighlight }?.add(Highlighted)
                 takeIf { valueIsHighlighted(value) }?.add(Highlighted)
             })
         }
@@ -53,7 +55,7 @@ class SentenceTokenFactory(
         renderers.renderValueOnly(arguments[pd.index]).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(ParameterValue)
-                takeIf { pd.isHighlighted }?.add(Highlighted)
+                takeIf { pd.isHighlight }?.add(Highlighted)
                 takeIf { valueIsHighlighted(value) }?.add(Highlighted)
             })
         }

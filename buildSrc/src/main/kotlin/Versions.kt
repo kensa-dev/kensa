@@ -19,6 +19,7 @@ object Versions {
     const val plantUml = "1.2020.23"
     const val pebble = "3.0.8"
     const val mockito = "4.0.0"
+    const val kotest = "5.1.0"
     const val junitPlatform = "1.8.2"
     const val junitJupiter = "5.8.2"
     const val assertJ = "3.22.0"

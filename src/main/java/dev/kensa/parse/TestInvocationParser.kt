@@ -1,16 +1,14 @@
 package dev.kensa.parse
 
-import dev.kensa.Highlight
 import dev.kensa.Kensa.configuration
 import dev.kensa.KensaException
+import dev.kensa.parse.Accessor.ValueAccessor
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceToken
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.state.TestInvocationContext
 import dev.kensa.util.NamedValue
-import dev.kensa.util.findAnnotation
 import dev.kensa.util.scenarioAccessor
-import dev.kensa.util.valueOfIn
 
 class TestInvocationParser {
 
@@ -25,11 +23,11 @@ class TestInvocationParser {
                 }
 
             val highlightedParameterValues = namedParameterValues.filter { namedValue: NamedValue ->
-                parsedMethod.parameters.descriptors[namedValue.name]?.isHighlighted ?: false
+                parsedMethod.parameters.descriptors[namedValue.name]?.isHighlight ?: false
             }
 
             val highlightedValues = LinkedHashSet<NamedValue>()
-                .plus(highlightedFieldValues(parsedMethod.fields, context.instance))
+                .plus(highlightedPropertyValues(parsedMethod.properties, context.instance))
                 .plus(highlightedParameterValues)
 
             val tokenFactory = SentenceTokenFactory(
@@ -38,7 +36,7 @@ class TestInvocationParser {
                 configuration.renderers,
                 context.instance.scenarioAccessor(),
                 parsedMethod.parameters.descriptors,
-                parsedMethod.fields,
+                parsedMethod.properties,
                 parsedMethod.methods,
                 highlightedValues
             )
@@ -67,13 +65,13 @@ class TestInvocationParser {
             }
         }
 
-    private fun highlightedFieldValues(fields: Map<String, FieldDescriptor>, testInstance: Any) = fields.values
-        .filter(FieldDescriptor::isHighlighted)
-        .map { NamedValue(highlightOrFieldNameFor(it), configuration.renderers.renderValueOnly(it.field.valueOfIn(testInstance))) }
+    private fun highlightedPropertyValues(fields: Map<String, ValueAccessor>, testInstance: Any) = fields.values
+        .filter(ValueAccessor::isHighlight)
+        .map { NamedValue(highlightOrFieldNameFor(it), configuration.renderers.renderValueOnly(it.valueOfIn(testInstance))) }
         .toSet()
 
-    private fun highlightOrFieldNameFor(descriptor: FieldDescriptor): String =
-        findAnnotation<Highlight>(descriptor.field)?.value.let {
-            if (it.isNullOrEmpty()) descriptor.name else it
-        }
+    private fun highlightOrFieldNameFor(accessor: ValueAccessor): String =
+        accessor.takeIf { it.isHighlight }?.run {
+            highlight.value.run { ifEmpty { accessor.name } }
+        } ?: accessor.name
 }

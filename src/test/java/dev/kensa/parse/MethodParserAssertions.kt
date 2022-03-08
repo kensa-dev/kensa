@@ -1,48 +1,38 @@
 package dev.kensa.parse
 
+import dev.kensa.kotest.shouldBe
+import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
+import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
-import dev.kensa.util.findRequiredField
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.assertions.asClue
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.nulls.shouldNotBeNull
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
-object MethodParserAssertions {
+fun KClass<*>.propertyNamed(name: String): KProperty<*> = allProperties.find { it.name == name } ?: throw IllegalArgumentException("Property $name not found in class ${this.qualifiedName}")
 
-    internal fun assertMethodDescriptors(methods: Map<String, MethodDescriptor>, clazz: Class<*>) {
-        assertThat(methods).containsEntry(
-            "method1",
-            MethodDescriptor("method1", clazz.findMethod("method1"), isSentenceValue = true, isHighlighted = false)
-        )
+internal fun assertMethodDescriptors(methods: Map<String, MethodAccessor>, clazz: Class<*>) {
+    assertSoftly(methods["method1"]) {
+        shouldNotBeNull()
+        asClue { shouldBe(MethodAccessor(clazz.findMethod("method1"))) }
     }
+}
 
-    internal fun assertFieldDescriptors(fields: Map<String, FieldDescriptor>, clazz: Class<*>) {
-        assertThat(fields).containsEntry(
-            "field1",
-            FieldDescriptor(
-                "field1",
-                clazz.findRequiredField("field1"),
-                isSentenceValue = false,
-                isHighlighted = false,
-                isScenario = false
-            )
-        )
-        assertThat(fields).containsEntry(
-            "field2",
-            FieldDescriptor(
-                "field2",
-                clazz.findRequiredField("field2"),
-                isSentenceValue = false,
-                isHighlighted = false,
-                isScenario = true
-            )
-        )
-        assertThat(fields).containsEntry(
-            "field3",
-            FieldDescriptor(
-                "field3",
-                clazz.findRequiredField("field3"),
-                isSentenceValue = true,
-                isHighlighted = true,
-                isScenario = false
-            )
-        )
+internal fun assertPropertyDescriptors(properties: Map<String, PropertyAccessor>, clazz: Class<*>) {
+    with(properties) {
+        assertSoftly(get("field1")) {
+            shouldNotBeNull()
+            asClue { shouldBe(PropertyAccessor(clazz.kotlin.propertyNamed("field1"))) }
+        }
+        assertSoftly(get("field2")) {
+            shouldNotBeNull()
+            asClue { shouldBe(PropertyAccessor(clazz.kotlin.propertyNamed("field2"))) }
+        }
+        assertSoftly(get("field3")) {
+            shouldNotBeNull()
+            asClue { shouldBe(PropertyAccessor(clazz.kotlin.propertyNamed("field3"))) }
+        }
     }
 }

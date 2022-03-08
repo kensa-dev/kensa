@@ -1,7 +1,6 @@
 package dev.kensa.acceptance.example
 
 import dev.kensa.*
-import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations.SomeBuilder
 import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations.SomeBuilder.someBuilder
 import dev.kensa.acceptance.example.TestExtension.Companion.MY_PARAMETER_VALUE
 import dev.kensa.kotlin.KotlinKensaTest
@@ -23,6 +22,16 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
 
     @field:[Highlight SentenceValue]
     private val field3: String? = null
+
+    @[Highlight SentenceValue]
+    private val property1: String = "property1"
+
+    @get:[Highlight SentenceValue]
+    private val propertyWithGetter: String
+        get() = "propertyWithGetter"
+
+    @get:[Highlight SentenceValue]
+    private val lazyProperty: String by lazy { "lazyProperty" }
 
     @Test
     fun similarNameTest() {

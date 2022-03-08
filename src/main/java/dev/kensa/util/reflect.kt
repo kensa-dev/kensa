@@ -7,12 +7,13 @@ import org.junit.jupiter.params.ParameterizedTest
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.util.function.Supplier
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.kotlinFunction
+import kotlin.reflect.full.*
+import kotlin.reflect.jvm.*
 
 val Class<*>.isKotlinClass get() = declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
 val KClass<*>.isKotlinClass get() = java.isKotlinClass
@@ -25,8 +26,8 @@ fun interface MethodPredicate {
     fun and(other: MethodPredicate): MethodPredicate = MethodPredicate { m -> invoke(m) && other.invoke(m) }
 }
 
-private val annotatedAsTests = MethodPredicate { hasAnnotation<Test>(it) || hasAnnotation<ParameterizedTest>(it) }
-private val allMethods = MethodPredicate { true }
+private val annotatedAsTests = MethodPredicate { it.hasAnnotation<Test>() || it.hasAnnotation<ParameterizedTest>() }
+private val allTheMethods = MethodPredicate { true }
 private fun notDeclaredIn(clazz: Class<*>) = MethodPredicate { it.declaringClass != clazz }
 private fun withMethodName(name: String) = MethodPredicate { it.name == name }
 private fun noParameters() = MethodPredicate { it.parameters.isEmpty() }
@@ -36,8 +37,8 @@ fun interface FieldPredicate {
     operator fun invoke(field: Field): Boolean
 }
 
-private val allFields = FieldPredicate { true }
-private val annotatedAsScenario = FieldPredicate { hasAnnotation<Scenario>(it) }
+private val allTheFields = FieldPredicate { true }
+private val annotatedAsScenario = FieldPredicate { it.hasAnnotation<Scenario>() }
 private fun withFieldName(name: String) = FieldPredicate { it.name == name }
 
 internal val Method.actualDeclaringClass: Class<*>
@@ -58,7 +59,6 @@ internal fun <T> Any.invokeMethod(name: String): T? {
     }
 
     throw IllegalArgumentException("No method or property [$name] found in class [${this::class}]")
-
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -74,11 +74,22 @@ internal fun Class<*>.findMethod(name: String) =
 
 internal fun Class<*>.findRequiredField(name: String) = findField(withFieldName(name), this) ?: throw IllegalArgumentException("Did not find field [$name] in class [$simpleName]")
 
-internal fun <T> Any.fieldValue(name: String): T? = this::class.java.findRequiredField(name).valueOfIn(this)
+internal fun Any.fieldValue(name: String): Any? = this::class.java.findRequiredField(name).valueOfIn(this)
 
-internal fun Class<*>.allMethods() = findMethods(allMethods, this)
+internal val Class<*>.allMethods get() = findMethods(allTheMethods, this)
+internal val Class<*>.allProperties: Collection<KProperty<*>> get() = kotlin.allProperties
+internal val KClass<*>.allProperties: Collection<KProperty<*>> get() = memberProperties + allStaticProperties()
+internal val Class<*>.allFields get() = findFields(allTheFields, this)
 
-internal fun Class<*>.allFields() = findFields(allFields, this)
+private fun KClass<*>.allStaticProperties(results: MutableSet<KProperty<*>> = LinkedHashSet()): Collection<KProperty<*>> =
+    results.also { r ->
+        takeUnless { it == Any::class }?.apply {
+            r.addAll(staticProperties)
+            superclasses.forEach { sc ->
+                sc.allStaticProperties(r)
+            }
+        }
+    }
 
 private fun findFields(predicate: FieldPredicate, clazz: Class<*>, results: MutableSet<Field> = LinkedHashSet()): Set<Field> =
     results.also {
@@ -89,25 +100,49 @@ private fun findFields(predicate: FieldPredicate, clazz: Class<*>, results: Muta
     }
 
 @Suppress("UNCHECKED_CAST")
-internal fun <T> Field.valueOfIn(target: Any): T? = run {
-    isAccessible = true
-    get(target)?.let {
-        when (it) {
-            is Function0<*> -> it() as T?
-            is Supplier<*> -> it.get() as T?
-            else -> it as T?
-        }
+private fun Field.valueOfIn(target: Any): Any? = run {
+    takeUnless { Modifier.isStatic(modifiers) }?.run {
+        (kotlinProperty?.run {
+            valueOfKotlinPropertyIn(target)
+        } ?: valueOfJavaFieldIn(target))
+    } ?: valueOfJavaStaticFieldIn(target)
+}
+
+fun KProperty<*>.valueOfKotlinPropertyIn(target: Any): Any? = run {
+    javaField?.takeIf { Modifier.isStatic(it.modifiers) }?.run {
+        valueOfJavaStaticFieldIn(target)
+    } ?: run {
+        isAccessible = true
+        getter.call(target)?.realValue()
     }
 }
 
+private fun Field.valueOfJavaStaticFieldIn(target: Any): Any? = kotlin.run {
+    isAccessible = true
+    get(target::class.java)
+}
+
+private fun Field.valueOfJavaFieldIn(target: Any) = run {
+    isAccessible = true
+    get(target)?.realValue()
+}
+
+private fun Any.realValue() =
+    when (this) {
+        is Function0<*> -> this()
+        is Supplier<*> -> this.get()
+        else -> this
+    }
+
 internal fun Class<*>.testMethods() = findMethods(annotatedAsTests, this)
 
-internal inline fun <reified T : Annotation> findAnnotation(element: AnnotatedElement): T? = element.annotations?.firstOrNull { it is T } as T?
+internal inline fun <reified T : Annotation> KProperty<*>.findKotlinOrJavaAnnotation() = findAnnotation() ?: javaField?.findAnnotation() ?: javaGetter?.findAnnotation<T>()
+internal inline fun <reified T : Annotation> KProperty<*>.hasKotlinOrJavaAnnotation() = hasAnnotation<T>() || javaElementHasAnnotation<T>()
+internal inline fun <reified T : Annotation> KProperty<*>.javaElementHasAnnotation() = javaField?.findAnnotation<T>() != null || javaGetter?.findAnnotation<T>() != null
+internal inline fun <reified T : Annotation> AnnotatedElement.hasAnnotation() = findAnnotation<T>() != null
+internal inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? = annotations?.firstOrNull { it is T } as T?
 
-internal inline fun <reified T : Annotation> hasAnnotation(element: AnnotatedElement): Boolean = findAnnotation<T>(element) != null
-
-internal fun Any.scenarioAccessor(): CachingScenarioMethodAccessor =
-    CachingScenarioMethodAccessor(this, findFields(annotatedAsScenario, this::class.java).map { it.name }.toSet())
+internal fun Any.scenarioAccessor() = CachingScenarioMethodAccessor(this, findFields(annotatedAsScenario, this::class.java).map { it.name }.toSet())
 
 private fun findField(predicate: FieldPredicate, clazz: Class<*>?): Field? =
     clazz?.takeUnless { it == Any::class.java }?.run {
