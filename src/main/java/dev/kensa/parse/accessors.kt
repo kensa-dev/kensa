@@ -4,12 +4,16 @@ import dev.kensa.Highlight
 import dev.kensa.Scenario
 import dev.kensa.SentenceValue
 import dev.kensa.util.*
+import java.lang.System.err
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-fun throwAnnotationNotFound(annotation: KClass<out Annotation>): Nothing = throw IllegalStateException("Did not find ${annotation.simpleName}")
+private fun throwAnnotationNotFound(annotation: KClass<out Annotation>): Nothing = throw IllegalStateException("Did not find ${annotation.simpleName}")
+
+private fun accessAndLogError(accessor: () -> Any?) : Any? =
+    try { accessor() } catch ( e: Exception ) { err.println("Accessor threw an exception: "); e.printStackTrace(err); null }
 
 sealed interface Accessor {
     val name: String
@@ -27,7 +31,7 @@ sealed interface Accessor {
             override val isSentenceValue: Boolean by lazy { property.hasKotlinOrJavaAnnotation<SentenceValue>() }
             override val isHighlight: Boolean by lazy { property.hasKotlinOrJavaAnnotation<Highlight>() }
             override val isScenario: Boolean by lazy { property.hasKotlinOrJavaAnnotation<Scenario>() }
-            override fun valueOfIn(target: Any): Any? = property.valueOfKotlinPropertyIn(target)
+            override fun valueOfIn(target: Any): Any? = accessAndLogError { property.valueOfKotlinPropertyIn(target) }
             override val highlight by lazy { property.findKotlinOrJavaAnnotation<Highlight>() ?: throwAnnotationNotFound(Highlight::class) }
         }
 
@@ -36,7 +40,7 @@ sealed interface Accessor {
             override val isSentenceValue: Boolean by lazy { method.hasAnnotation<SentenceValue>() }
             override val isHighlight: Boolean by lazy { method.hasAnnotation<Highlight>() }
             override val isScenario: Boolean by lazy { method.hasAnnotation<Scenario>() }
-            override fun valueOfIn(target: Any): Any? = target.invokeMethod(name)
+            override fun valueOfIn(target: Any): Any? = accessAndLogError { target.invokeMethod(name) }
             override val highlight by lazy { method.findAnnotation<Highlight>() ?: throwAnnotationNotFound(Highlight::class) }
         }
 

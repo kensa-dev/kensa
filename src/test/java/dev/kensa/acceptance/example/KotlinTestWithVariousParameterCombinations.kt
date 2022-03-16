@@ -31,6 +31,10 @@ class KotlinTestWithVariousParameterCombinations : KotlinKensaTest {
         get() = "propertyWithGetter"
 
     @get:[Highlight SentenceValue]
+    private val throwingGetter: String
+        get() = throw RuntimeException("Boom!")
+
+    @get:[Highlight SentenceValue]
     private val lazyProperty: String by lazy { "lazyProperty" }
 
     @Test
