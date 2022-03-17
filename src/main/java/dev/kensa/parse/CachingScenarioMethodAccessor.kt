@@ -22,6 +22,6 @@ class CachingScenarioMethodAccessor(private val testInstance: Any, scenarioNames
 
     private fun scenarioInstanceWithName(scenarioName: String): Any? =
             scenarioCache.compute(scenarioName) { sn: String, existing: Any? ->
-                if (existing == NotCached) testInstance.fieldValue<Any>(sn) ?: NullValue else existing
+                if (existing == NotCached) testInstance.fieldValue(sn) ?: NullValue else existing
             }
 }

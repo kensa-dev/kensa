@@ -45,7 +45,7 @@ internal class ReflectTest {
         val privateValue = "A Value"
         val target = SomeJavaSubClass(10, privateValue)
 
-        assertThat(target.fieldValue<String>("field1")).isEqualTo(privateValue)
+        assertThat(target.fieldValue("field1")).isEqualTo(privateValue)
     }
 
     @Test
@@ -57,7 +57,7 @@ internal class ReflectTest {
     }
 
     @Test
-    internal fun `can get a private property from a simple kotlin object`() {
+    internal fun `can get a private property via invokeMethod from a simple kotlin object`() {
         val value = "A Value"
         val target = SomeKotlinSubClass(10, value)
 
@@ -69,7 +69,7 @@ internal class ReflectTest {
         val privateValue = "A Value"
         val target = SomeKotlinSubClass(10, privateValue)
 
-        assertThat(target.fieldValue<String>("field1")).isEqualTo(privateValue)
+        assertThat(target.fieldValue("field1")).isEqualTo(privateValue)
     }
 
     @Test
@@ -77,7 +77,7 @@ internal class ReflectTest {
         val superField = 66
         val target = SomeJavaSubClass(superField, "A Value")
 
-        assertThat(target.fieldValue<Int>("superField")).isEqualTo(superField)
+        assertThat(target.fieldValue("superField")).isEqualTo(superField)
     }
 
     @Test
@@ -85,12 +85,12 @@ internal class ReflectTest {
         val superField = 66
         val target = SomeKotlinSubClass(superField, "A Value")
 
-        assertThat(target.fieldValue<Int>("superField")).isEqualTo(superField)
+        assertThat(target.fieldValue("superField")).isEqualTo(superField)
     }
 
     @Test
     internal fun `throws on attempt to access non existent field`() {
-        assertThatThrownBy { SomeJavaSubClass(10, "").fieldValue<String>("foo") }
+        assertThatThrownBy { SomeJavaSubClass(10, "").fieldValue("foo") }
                 .isInstanceOf(IllegalArgumentException::class.java)
     }
 
@@ -104,14 +104,14 @@ internal class ReflectTest {
     internal fun `can get value of field via supplier when field type is java supplier`() {
         val suppliedValue = "A Value"
         val target = SomeJavaSubClass(10, suppliedValue)
-        assertThat(target.fieldValue<String>("valueSupplier")).isEqualTo(suppliedValue)
+        assertThat(target.fieldValue("valueSupplier")).isEqualTo(suppliedValue)
     }
 
     @Test
     internal fun `can get value of field via lambda when field type is lambda`() {
         val suppliedValue = "A Value"
         val target = SomeKotlinSubClass(10, suppliedValue)
-        assertThat(target.fieldValue<String>("valueSupplier")).isEqualTo(suppliedValue)
+        assertThat(target.fieldValue("valueSupplier")).isEqualTo(suppliedValue)
     }
 
     @Test
@@ -170,11 +170,11 @@ internal class ReflectTest {
 
     @Test
     internal fun `can get fields of a java class`() {
-        assertThat(SomeJavaSubClass::class.java.allFields()).extracting("name").containsExactlyInAnyOrder("field1", "valueSupplier", "superField")
+        assertThat(SomeJavaSubClass::class.java.allFields).extracting("name").containsExactlyInAnyOrder("field1", "valueSupplier", "superField")
     }
 
     @Test
     internal fun `can get fields of a kotlin class`() {
-        assertThat(SomeKotlinSubClass::class.java.allFields()).extracting("name").containsExactlyInAnyOrder("valueSupplier", "aProperty", "field1", "superField")
+        assertThat(SomeKotlinSubClass::class.java.allFields).extracting("name").containsExactlyInAnyOrder("valueSupplier", "aProperty", "field1", "superField")
     }
 }

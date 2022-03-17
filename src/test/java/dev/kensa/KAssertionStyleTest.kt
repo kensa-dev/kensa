@@ -28,8 +28,8 @@ import java.util.stream.Stream
 class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTestInterface {
     private val actionName = "ACTION1"
 
-    @SentenceValue
-    private val theExpectedResult = "Performed: ACTION1"
+    @get:SentenceValue
+    private val theExpectedResult get() = "Performed: ACTION1"
 
     @Scenario
     private val scenario = ScenarioFoo()

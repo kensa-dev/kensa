@@ -61,6 +61,7 @@ dependencies {
     implementation("com.eclipsesource.minimal-json:minimal-json:${Versions.minimalJson}")
     implementation("net.sourceforge.plantuml:plantuml:${Versions.plantUml}")
     implementation("io.pebbletemplates:pebble:${Versions.pebble}")
+    implementation("io.kotest:kotest-assertions-core-jvm:${Versions.kotest}")
 
     testImplementation("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
     testImplementation("org.junit.platform:junit-platform-testkit:${Versions.junitPlatform}")

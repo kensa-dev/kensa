@@ -1,5 +1,8 @@
 package dev.kensa.parse
 
+import dev.kensa.parse.Accessor.ParameterAccessor
+import dev.kensa.parse.Accessor.ValueAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.Event.LiteralEvent.NumberLiteralEvent
 import dev.kensa.parse.Event.LiteralEvent.StringLiteralEvent
@@ -12,12 +15,13 @@ import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceBuilder
 
 class ParserStateMachine(
-        private val dictionary: Dictionary,
-        private val fields: Map<String, FieldDescriptor>,
-        private val methods: Map<String, MethodDescriptor>,
-        private val parameters: Map<String, ParameterDescriptor> = emptyMap(),
-        private val nestedMethods: Map<String, List<Sentence>> = emptyMap(),
-        private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()) {
+    private val dictionary: Dictionary,
+    private val properties: Map<String, ValueAccessor>,
+    private val methods: Map<String, MethodAccessor>,
+    private val parameters: Map<String, ParameterAccessor> = emptyMap(),
+    private val nestedMethods: Map<String, List<Sentence>> = emptyMap(),
+    private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()
+) {
 
     private val _sentences: MutableList<Sentence> = ArrayList()
     val sentences: List<Sentence>
@@ -76,7 +80,7 @@ class ParserStateMachine(
             }
             on<ExitMethodInvocationEvent> { currentState, _ ->
                 currentState.parentState.also {
-                    if(it is InMethodCall && it.didBegin) finishSentence()
+                    if (it is InMethodCall && it.didBegin) finishSentence()
                 }
             }
             on<StringLiteralEvent> { currentState, event ->
@@ -91,8 +95,10 @@ class ParserStateMachine(
                 event.parseTree.run {
                     when {
                         isNestedMethodCall(text) -> {
-                            sentenceBuilder.appendNested(event.location, text, nestedMethods[text]
-                                    ?: error("Expected nested method sentences to be present"))
+                            sentenceBuilder.appendNested(
+                                event.location, text, nestedMethods[text]
+                                    ?: error("Expected nested method sentences to be present")
+                            )
                             currentState
                         }
                         isScenarioIdentifier(text) -> {
@@ -111,8 +117,10 @@ class ParserStateMachine(
                             currentState
                         }
                         else -> {
-                            sentenceBuilder.appendIdentifier(event.location, text, emphasisedMethods[text]
-                                    ?: EmphasisDescriptor.Default)
+                            sentenceBuilder.appendIdentifier(
+                                event.location, text, emphasisedMethods[text]
+                                    ?: EmphasisDescriptor.Default
+                            )
                             currentState
                         }
                     }
@@ -150,13 +158,12 @@ class ParserStateMachine(
 
     private fun isNestedMethodCall(value: String) = nestedMethods.containsKey(value)
 
-    private fun isScenarioIdentifier(value: String) = fields[value]?.isScenario ?: false
+    private fun isScenarioIdentifier(value: String) = properties[value]?.isScenario ?: false
 
-    private fun isFieldIdentifier(value: String) = fields[value]?.run { isSentenceValue || isHighlighted } ?: false
+    private fun isFieldIdentifier(value: String) = properties[value]?.run { isSentenceValue || isHighlight } ?: false
 
-    private fun isMethodIdentifier(value: String) = methods[value]?.run { isSentenceValue || isHighlighted } ?: false
+    private fun isMethodIdentifier(value: String) = methods[value]?.run { isSentenceValue || isHighlight } ?: false
 
-    private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlighted }
-            ?: false
+    private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlight } ?: false
 
 }

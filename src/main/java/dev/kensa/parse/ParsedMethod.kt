@@ -1,5 +1,7 @@
 package dev.kensa.parse
 
+import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
 import dev.kensa.sentence.Sentence
 
 data class ParsedMethod(
@@ -7,6 +9,6 @@ data class ParsedMethod(
         val parameters: MethodParameters,
         val sentences: List<Sentence>,
         val nestedSentences: Map<String, List<Sentence>>,
-        val fields: Map<String, FieldDescriptor>,
-        val methods: Map<String, MethodDescriptor>
+        val properties: Map<String, PropertyAccessor>,
+        val methods: Map<String, MethodAccessor>
 )

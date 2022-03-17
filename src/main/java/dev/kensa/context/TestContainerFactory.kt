@@ -5,7 +5,6 @@ import dev.kensa.Notes
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.state.TestState.*
 import dev.kensa.util.*
-import dev.kensa.util.testMethods
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -40,12 +39,12 @@ class TestContainerFactory {
             initialStateFor(method)
         )
 
-    private fun initialStateFor(method: Method) = if (hasAnnotation<Disabled>(method)) Disabled else NotExecuted
+    private fun initialStateFor(method: Method) = if (method.hasAnnotation<Disabled>()) Disabled else NotExecuted
 
     private fun deriveDisplayNameFor(element: AnnotatedElement, lazyDefault: () -> String) =
-        findAnnotation<DisplayName>(element)?.value ?: lazyDefault()
+        element.findAnnotation<DisplayName>()?.value ?: lazyDefault()
 
-    private fun notesFor(element: AnnotatedElement): String? = findAnnotation<Notes>(element)?.value
+    private fun notesFor(element: AnnotatedElement): String? = element.findAnnotation<Notes>()?.value
 
-    private fun issuesFor(element: AnnotatedElement): List<String> = findAnnotation<Issue>(element)?.value?.toList() ?: emptyList()
+    private fun issuesFor(element: AnnotatedElement): List<String> = element.findAnnotation<Issue>()?.value?.toList() ?: emptyList()
 }
