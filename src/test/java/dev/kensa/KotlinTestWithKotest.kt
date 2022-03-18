@@ -1,13 +1,20 @@
 package dev.kensa
 
+import dev.kensa.Colour.BackgroundDanger
+import dev.kensa.Colour.TextLight
+import dev.kensa.KAssertionStyleTest.Parrty.A
+import dev.kensa.KAssertionStyleTest.Parrty.B
+import dev.kensa.TextStyle.*
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithKotest
-import dev.kensa.render.diagram.directive.ArrowStyle
+import dev.kensa.render.diagram.directive.ArrowStyle.UmlAsynchronousDelete
 import dev.kensa.state.CapturedInteractionBuilder
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.*
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.string.startWith
 import org.junit.jupiter.api.Test
 
-class KotlinTestWithKotestAssertions : KotlinKensaTest, WithKotest {
+class KotlinTestWithKotest : KotlinKensaTest, WithKotest {
 
     private val actionName = "ACTION1"
 
@@ -23,15 +30,19 @@ class KotlinTestWithKotestAssertions : KotlinKensaTest, WithKotest {
         whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
 
         then(theResultStoredInCapturedInteractions()) {
+            shouldNotBeNull()
             shouldBe(theExpectedResult)
+            should(be(theExpectedResult).and(startWith("Per")))
         }
+
+        then(theResultStoredInCapturedInteractions(), be(theExpectedResult))
     }
 
-    @Emphasise(textStyles = [TextStyle.TextWeightBold, TextStyle.Italic, TextStyle.Uppercase, TextStyle.TextDecorationUnderline], textColour = Colour.TextLight, backgroundColor = Colour.BackgroundDanger)
+    @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase, TextDecorationUnderline], textColour = TextLight, backgroundColor = BackgroundDanger)
     fun theActionIsPerformedAndTheResultIsAddedToCapturedInteractions(): ActionUnderTest {
         return ActionUnderTest { givens, interactions ->
             interactions.capture(
-                CapturedInteractionBuilder.from(KAssertionStyleTest.Parrty.A).to(KAssertionStyleTest.Parrty.B).group("Test").arrowStyle(ArrowStyle.UmlAsynchronousDelete).with("Message", "The Message"))
+                CapturedInteractionBuilder.from(A).to(B).group("Test").arrowStyle(UmlAsynchronousDelete).with("Message", "The Message"))
             givens.get<String>("actionName")?.let {
                 interactions.put("result", performer.perform(it))
             }
