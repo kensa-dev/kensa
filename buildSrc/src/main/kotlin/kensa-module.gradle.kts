@@ -52,7 +52,7 @@ tasks {
     withTypeIfPresent<KotlinCompile>("compileKotlin") {
         dependsOn("generateGrammarSource")
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             freeCompilerArgs += listOf("-Xjvm-default=compatibility", "-Xopt-in=kotlin.contracts.ExperimentalContracts")
         }
     }

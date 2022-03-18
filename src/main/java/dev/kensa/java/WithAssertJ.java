@@ -1,150 +1,156 @@
 package dev.kensa.java;
 
 import dev.kensa.StateExtractor;
+import dev.kensa.context.AssertJThen;
+import kotlin.jvm.functions.Function1;
 import org.assertj.core.api.*;
 
 import static dev.kensa.context.TestContextHolder.testContext;
 
 public interface WithAssertJ {
 
+    private <T, A> A then(StateExtractor<T> extractor, Function1<T, A> assertProvider) {
+        return AssertJThen.then(testContext(), extractor, assertProvider);
+    }
+
     default <T> OptionalAssert<T> then(OptionalStateExtractor<T> extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default OptionalDoubleAssert then(OptionalDoubleStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default OptionalIntAssert then(OptionalIntStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default OptionalLongAssert then(OptionalLongStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default BigDecimalAssert then(BigDecimalStateExtractor extractor) {
-        return testContext().then(extractor, BigDecimalAssert::new);
+        return then(extractor, BigDecimalAssert::new);
     }
 
     default BigIntegerAssert then(BigIntegerStateExtractor extractor) {
-        return testContext().then(extractor, BigIntegerAssert::new);
+        return then(extractor, BigIntegerAssert::new);
     }
 
     default UriAssert then(UriStateExtractor extractor) {
-        return testContext().then(extractor, UriAssert::new);
+        return then(extractor, UriAssert::new);
     }
 
     default UrlAssert then(UrlStateExtractor extractor) {
-        return testContext().then(extractor, UrlAssert::new);
+        return then(extractor, UrlAssert::new);
     }
 
     default BooleanAssert then(BooleanStateExtractor extractor) {
-        return testContext().then(extractor, BooleanAssert::new);
+        return then(extractor, BooleanAssert::new);
     }
 
     default StringAssert then(StringStateExtractor extractor) {
-        return testContext().then(extractor, StringAssert::new);
+        return then(extractor, StringAssert::new);
     }
 
     default ByteAssert then(ByteStateExtractor extractor) {
-        return testContext().then(extractor, ByteAssert::new);
+        return then(extractor, ByteAssert::new);
     }
 
     default ByteArrayAssert then(ByteArrayStateExtractor extractor) {
-        return testContext().then(extractor, ByteArrayAssert::new);
+        return then(extractor, ByteArrayAssert::new);
     }
 
     default CharacterAssert then(CharacterStateExtractor extractor) {
-        return testContext().then(extractor, CharacterAssert::new);
+        return then(extractor, CharacterAssert::new);
     }
 
     default CharArrayAssert then(CharArrayStateExtractor extractor) {
-        return testContext().then(extractor, CharArrayAssert::new);
+        return then(extractor, CharArrayAssert::new);
     }
 
     default ClassAssert then(ClassStateExtractor extractor) {
-        return testContext().then(extractor, ClassAssert::new);
+        return then(extractor, ClassAssert::new);
     }
 
     default DoubleAssert then(DoubleStateExtractor extractor) {
-        return testContext().then(extractor, DoubleAssert::new);
+        return then(extractor, DoubleAssert::new);
     }
 
     default DoubleArrayAssert then(DoubleArrayStateExtractor extractor) {
-        return testContext().then(extractor, DoubleArrayAssert::new);
+        return then(extractor, DoubleArrayAssert::new);
     }
 
     default FileAssert then(FileStateExtractor extractor) {
-        return testContext().then(extractor, FileAssert::new);
+        return then(extractor, FileAssert::new);
     }
 
     default FloatAssert then(FloatStateExtractor extractor) {
-        return testContext().then(extractor, FloatAssert::new);
+        return then(extractor, FloatAssert::new);
     }
 
     default FloatArrayAssert then(FloatArrayStateExtractor extractor) {
-        return testContext().then(extractor, FloatArrayAssert::new);
+        return then(extractor, FloatArrayAssert::new);
     }
 
     default IntegerAssert then(IntegerStateExtractor extractor) {
-        return testContext().then(extractor, IntegerAssert::new);
+        return then(extractor, IntegerAssert::new);
     }
 
     default IntArrayAssert then(IntArrayStateExtractor extractor) {
-        return testContext().then(extractor, IntArrayAssert::new);
+        return then(extractor, IntArrayAssert::new);
     }
 
     default LongAssert then(LongStateExtractor extractor) {
-        return testContext().then(extractor, LongAssert::new);
+        return then(extractor, LongAssert::new);
     }
 
     default LongArrayAssert then(LongArrayStateExtractor extractor) {
-        return testContext().then(extractor, LongArrayAssert::new);
+        return then(extractor, LongArrayAssert::new);
     }
 
     default <T> ObjectAssert<T> then(StateExtractor<T> extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default <T> ObjectArrayAssert<T> then(ObjectArrayStateExtractor<T> extractor) {
-        return testContext().then(extractor, ObjectArrayAssert::new);
+        return then(extractor, ObjectArrayAssert::new);
     }
 
     default ShortAssert then(ShortStateExtractor extractor) {
-        return testContext().then(extractor, ShortAssert::new);
+        return then(extractor, ShortAssert::new);
     }
 
     default ShortArrayAssert then(ShortArrayStateExtractor extractor) {
-        return testContext().then(extractor, ShortArrayAssert::new);
+        return then(extractor, ShortArrayAssert::new);
     }
 
     default AbstractZonedDateTimeAssert<?> then(ZonedDateTimeStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default AbstractLocalDateTimeAssert<?> then(LocalDateTimeStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default AbstractOffsetDateTimeAssert<?> then(OffsetDateTimeStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default AbstractLocalTimeAssert<?> then(LocalTimeStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default AbstractLocalDateAssert<?> then(LocalDateStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default AbstractInstantAssert<?> then(InstantStateExtractor extractor) {
-        return testContext().then(extractor, AssertionsForClassTypes::assertThat);
+        return then(extractor, AssertionsForClassTypes::assertThat);
     }
 
     default ThrowableAssert then(ThrowableStateExtractor extractor) {
-        return testContext().then(extractor, ThrowableAssert::new);
+        return then(extractor, ThrowableAssert::new);
     }
 
     default <T> OptionalAssert<T> and(OptionalStateExtractor<T> extractor) {
