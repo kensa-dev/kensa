@@ -2,6 +2,7 @@ package dev.kensa.sentence.scanner
 
 import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
+import dev.kensa.sentence.HighlightedIdentifier
 import dev.kensa.sentence.TokenType.Keyword
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -11,13 +12,23 @@ import java.util.stream.Stream
 
 internal class TokenScannerTest {
     private val acronyms = setOf(
-            Acronym.of("FTTC", "Fibre To The Cabinet"),
-            Acronym.of("FTTP", "Fibre To The Premises"),
-            Acronym.of("TT", "Tourist Trophy"),
-            Acronym.of("BT", "British Telecom"),
-            Acronym.of("FT", "Financial Times"),
-            Acronym.of("ONT", "Optical Network Termination")
+        Acronym.of("FTTC", "Fibre To The Cabinet"),
+        Acronym.of("FTTP", "Fibre To The Premises"),
+        Acronym.of("TT", "Tourist Trophy"),
+        Acronym.of("BT", "British Telecom"),
+        Acronym.of("FT", "Financial Times"),
+        Acronym.of("ONT", "Optical Network Termination")
     )
+
+    @Test
+    internal fun recognisesHighlightedIdentifiers() {
+        val identifier = "MyIdentifier"
+
+        val (actual, indices) = tokenScannerWith(emptySet(), setOf(HighlightedIdentifier("MyIdentifier"))).scan(identifier)
+
+        assertThat(actual).isEqualTo(identifier)
+        assertThat(transformed(actual, indices)).isEqualTo(listOf(identifier))
+    }
 
     @Test
     fun recognisesKeywordsAtStartOfSentenceOnly() {
@@ -25,7 +36,7 @@ internal class TokenScannerTest {
         val (_, indices) = tokenScannerWith(emptySet()).scan(string)
 
         indices.filter { index -> index.type === Keyword }
-                .forEach { index -> assertThat(index.start).isEqualTo(0) }
+            .forEach { index -> assertThat(index.start).isEqualTo(0) }
     }
 
     @Test
@@ -138,26 +149,27 @@ internal class TokenScannerTest {
     }
 
     private fun transformed(string: String, indices: Indices): List<String> =
-            indices.map { index -> string.substring(index.start, index.end) }.toList()
+        indices.map { index -> string.substring(index.start, index.end) }.toList()
 
-    private fun tokenScannerWith(acronyms: Set<Acronym>): TokenScanner = TokenScanner(
-            Dictionary().apply {
-                putAcronyms(acronyms)
-            }
+    private fun tokenScannerWith(acronyms: Set<Acronym>, highlightedIdentifiers: Set<HighlightedIdentifier> = emptySet()): TokenScanner = TokenScanner(
+        Dictionary().apply {
+            putAcronyms(acronyms)
+            putHighlightedIdentifiers(highlightedIdentifiers)
+        }
     )
 
     companion object {
         @JvmStatic
         fun mixedCaseExamples(): Stream<List<String>> {
             return Stream.of(
-                    listOf("FTTC"),
-                    listOf("Fttc"),
-                    listOf("Ftt", "C"),
-                    listOf("Ft", "Tc"),
-                    listOf("Ft", "TC"),
-                    listOf("F", "Ttc"),
-                    listOf("Ft", "Tc"),
-                    listOf("fttc")
+                listOf("FTTC"),
+                listOf("Fttc"),
+                listOf("Ftt", "C"),
+                listOf("Ft", "Tc"),
+                listOf("Ft", "TC"),
+                listOf("F", "Ttc"),
+                listOf("Ft", "Tc"),
+                listOf("fttc")
             )
         }
     }

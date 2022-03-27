@@ -1,8 +1,11 @@
 package dev.kensa.sentence
 
+import dev.kensa.Colour.TextDanger
+import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Event.Location
 import dev.kensa.sentence.Acronym.Companion.of
 import dev.kensa.sentence.SentenceTokens.aFieldIdentifierOf
+import dev.kensa.sentence.SentenceTokens.aHighlightedIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aLiteralOf
 import dev.kensa.sentence.SentenceTokens.aMethodIdentifierOf
@@ -22,13 +25,15 @@ internal class SentenceBuilderTest {
 
     @BeforeEach
     fun setUp() {
-        val dictionary = Dictionary()
-        dictionary.putAcronyms(
+        val dictionary = Dictionary().apply {
+            putHighlightedIdentifiers(HighlightedIdentifier("highlightedIdentifier", EmphasisDescriptor(textColour = TextDanger)))
+            putAcronyms(
                 simpleAcronymOf("FOO"),
                 simpleAcronymOf("BAR"),
                 simpleAcronymOf("LA1"),
                 simpleAcronymOf("HA1")
-        )
+            )
+        }
 
         builder = SentenceBuilder(Location(1, 0), dictionary)
     }
@@ -45,33 +50,35 @@ internal class SentenceBuilderTest {
             appendParameterIdentifier(Location(2, 0), "parameterName")
             appendIdentifier(Location(3, 25), value = "sendsAThing")
             appendIdentifier(Location(4, 0), value = "somethingA_CONSTANT_019")
+            appendIdentifier(Location(5, 0), value = "highlightedIdentifier")
         }
 
         assertThat(builder.build().tokens)
-                .containsExactly(
-                        aKeywordOf("Given"),
-                        anAcronymOf("FOO"),
-                        aWordOf("moo"),
-                        anAcronymOf("BAR"),
-                        aWordOf("ZOO"),
-                        aStringLiteralOf("stringLiteral1"),
-                        aLiteralOf("10"),
-                        aScenarioIdentifierOf("scenario.call"),
-                        aFieldIdentifierOf("fieldName"),
-                        aMethodIdentifierOf("methodName"),
-                        aParameterValueOf("parameterName"),
-                        aNewline(),
-                        anIndent(),
-                        anIndent(),
-                        anIndent(),
-                        anIndent(),
-                        anIndent(),
-                        aWordOf("sends"),
-                        aWordOf("a"),
-                        aWordOf("thing"),
-                        aWordOf("something"),
-                        aWordOf("A_CONSTANT_019")
-                )
+            .containsExactly(
+                aKeywordOf("Given"),
+                anAcronymOf("FOO"),
+                aWordOf("moo"),
+                anAcronymOf("BAR"),
+                aWordOf("ZOO"),
+                aStringLiteralOf("stringLiteral1"),
+                aLiteralOf("10"),
+                aScenarioIdentifierOf("scenario.call"),
+                aFieldIdentifierOf("fieldName"),
+                aMethodIdentifierOf("methodName"),
+                aParameterValueOf("parameterName"),
+                aNewline(),
+                anIndent(),
+                anIndent(),
+                anIndent(),
+                anIndent(),
+                anIndent(),
+                aWordOf("sends"),
+                aWordOf("a"),
+                aWordOf("thing"),
+                aWordOf("something"),
+                aWordOf("A_CONSTANT_019"),
+                aHighlightedIdentifierOf("highlightedIdentifier", EmphasisDescriptor(textColour = TextDanger))
+            )
     }
 
     private fun simpleAcronymOf(acronym: String) = of(acronym, "")

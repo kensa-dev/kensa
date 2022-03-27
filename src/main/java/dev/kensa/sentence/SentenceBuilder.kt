@@ -5,6 +5,7 @@ import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Event.Location
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.sentence.TokenType.Acronym
+import dev.kensa.sentence.TokenType.Keyword
 import dev.kensa.sentence.scanner.Index
 import dev.kensa.sentence.scanner.TokenScanner
 
@@ -60,7 +61,7 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
 
         val (scanned, indices) = scanner.scan(value)
         indices.forEach { index: Index ->
-            append(tokenValueFor(index, scanned.substring(index.start, index.end)), index.type, emphasis = emphasisDescriptor)
+            append(tokenValueFor(index, scanned.substring(index.start, index.end)), index.type, emphasis = index.emphasisDescriptor ?: emphasisDescriptor)
         }
     }
 
@@ -84,13 +85,13 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
     }
 
     private fun tokenValueFor(index: Index, rawToken: String): String =
-            when (index.type) {
-                Acronym -> rawToken.toUpperCase()
-                Keyword -> rawToken.capitalize()
-                Word -> if (rawToken.length > 1 && rawToken.matches(ALPHANUMERIC_UNDERSCORE)) rawToken else rawToken.decapitalize()
+        when (index.type) {
+            Acronym -> rawToken.toUpperCase()
+            Keyword -> rawToken.capitalize()
+            Word -> if (rawToken.length > 1 && rawToken.matches(ALPHANUMERIC_UNDERSCORE)) rawToken else rawToken.decapitalize()
 
-                else -> rawToken
-            }
+            else -> rawToken
+        }
 
     companion object {
         private val ALPHANUMERIC_UNDERSCORE = "^[A-Z0-9_]+$".toRegex()
