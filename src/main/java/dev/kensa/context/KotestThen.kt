@@ -2,6 +2,7 @@ package dev.kensa.context
 
 import dev.kensa.StateExtractor
 import io.kotest.matchers.Matcher
+import io.kotest.matchers.invokeMatcher
 
 object KotestThen {
     fun <T> then(testContext: TestContext, extractor: StateExtractor<T>, block: T.() -> Unit) {
@@ -9,6 +10,6 @@ object KotestThen {
     }
 
     fun <T> then(testContext: TestContext, extractor: StateExtractor<T>, match: Matcher<T>) {
-        match.test(extractor.execute(testContext.interactions))
+        invokeMatcher(extractor.execute(testContext.interactions), match)
     }
 }
