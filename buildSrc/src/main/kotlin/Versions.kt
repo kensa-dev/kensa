@@ -2,9 +2,9 @@ import org.gradle.api.JavaVersion
 
 object Versions {
 
-    const val kotlin = "1.6.10"
+    const val kotlin = "1.6.20"
     val mainJavaVersion = JavaVersion.VERSION_11
-    val testJavaVersion = JavaVersion.VERSION_17
+    val testJavaVersion = JavaVersion.VERSION_11
 
     // Wrapper
     const val gradleWrapper = "6.8.1"

@@ -11,14 +11,16 @@ import java.net.URI
 import java.net.URL
 import java.time.*
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 interface WithAssertJ {
 
     private fun <T, A> then(extractor: StateExtractor<T>, assertProvider: (T?) -> A): A =
         AssertJThen.then(testContext(), extractor, assertProvider)
 
-    fun <T, A> thenEventually(extractor: StateExtractor<T>, assertProvider: (T?) -> A, block: A.() -> Unit) =
-        AssertJThen.thenEventually(testContext(), extractor) { actual ->
+    fun <T, A> thenEventually(duration: Duration = 10.seconds, extractor: StateExtractor<T>, assertProvider: (T?) -> A, block: A.() -> Unit) =
+        AssertJThen.thenEventually(duration, testContext(), extractor) { actual ->
             assertProvider(actual).apply(block)
         }
 

@@ -34,14 +34,11 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
-//        systemProperty("junit.jupiter.execution.parallel.enabled", true)
-//        systemProperty("junit.jupiter.execution.parallel.config.fixed.parallelism", 10)
-//        systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
-//        systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
     }
 
     withTypeIfPresent<JavaCompile>("compileJava") {
-        options.compilerArgs.addAll(listOf("--release", Versions.mainJavaVersion.majorVersion))
+        sourceCompatibility = Versions.testJavaVersion.majorVersion
+        targetCompatibility = Versions.testJavaVersion.majorVersion
     }
 
     withTypeIfPresent<JavaCompile>("compileTestJava") {
@@ -53,13 +50,13 @@ tasks {
         dependsOn("generateGrammarSource")
         kotlinOptions {
             jvmTarget = "11"
-            freeCompilerArgs += listOf("-Xjvm-default=compatibility", "-Xopt-in=kotlin.contracts.ExperimentalContracts")
+            freeCompilerArgs += listOf("-Xjvm-default=all-compatibility", "-opt-in=kotlin.contracts.ExperimentalContracts", "-opt-in=io.kotest.common.ExperimentalKotest")
         }
     }
 
     withTypeIfPresent<KotlinCompile>("compileTestKotlin") {
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "11"
         }
     }
 }
