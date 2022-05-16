@@ -21,4 +21,10 @@ object KotestThen {
             invokeMatcher(extractor.execute(testContext.interactions), match)
         }
     }
+
+    suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateExtractor<T>, block: T.() -> Unit) {
+        eventually(duration) {
+            block(extractor.execute(testContext.interactions))
+        }
+    }
 }
