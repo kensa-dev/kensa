@@ -1,3 +1,5 @@
+.gradle
+.idea/workspace.xml
 node_modules
 npm-debug.log*
 build

@@ -1,19 +1,68 @@
 import com.moowork.gradle.node.task.NodeTask
+import org.gradle.api.JavaVersion.VERSION_11
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "dev.kensa"
-version = System.getenv("CI_PIPELINE_IID") ?: "DEV-SNAPSHOT"
+version = project.properties["releaseVersion"] ?: "DEV-SNAPSHOT"
 
 plugins {
-    `kensa-module`
-    id("com.github.node-gradle.node") version Versions.moowork
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.nodeGradle)
+    antlr
+    signing
+    `maven-publish`
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    antlr(libs.antlr)
+
+    api(libs.kotlinStdLib)
+    api(libs.kotlinReflect)
+
+    implementation(libs.junitJupiterParams)
+    implementation(libs.junitJupiterApi)
+    implementation(libs.junitJupiterEngine)
+    implementation(libs.assertJCore)
+    implementation(libs.hamcrestCore)
+    implementation(libs.awaitilityKotlin)
+    implementation(libs.minimalJson)
+    implementation(libs.plantuml)
+    implementation(libs.pebble)
+    implementation(libs.kotestAssertions)
+
+    testImplementation(libs.junitPlatformLauncher)
+    testImplementation(libs.junitPlatformTestKit)
+    testImplementation(libs.mockitoKotlin)
 }
 
 node {
-    version = Versions.node
+    version = libs.versions.node.get()
     download = true
 }
 
 tasks {
+    withType<KotlinCompile> {
+        dependsOn("generateGrammarSource")
+            kotlinOptions {
+            jvmTarget = "11"
+            freeCompilerArgs += listOf("-Xjvm-default=compatibility", "-Xopt-in=kotlin.contracts.ExperimentalContracts")
+        }
+    }
+
+    java {
+        sourceCompatibility = VERSION_11
+        targetCompatibility = VERSION_11
+    }
+
+    withType(AntlrTask::class) {
+        outputDirectory = file("$outputDirectory/dev/kensa/parse")
+        arguments = arguments + listOf("-listener", "-no-visitor", "-package", "dev.kensa.parse")
+    }
+
     withType(Test::class) {
         useJUnitPlatform {
             exclude("dev/kensa/acceptance/example/**")
@@ -21,7 +70,7 @@ tasks {
     }
 
     register<NodeTask>("webpack") {
-        setScript(project.file("node_modules/.bin/webpack"))
+        script = project.file("node_modules/.bin/webpack")
         inputs.file("webpack.config.js")
         inputs.file("package-lock.json")
         inputs.dir("src/ui")
@@ -30,7 +79,7 @@ tasks {
     }
 
     register<NodeTask>("startUiDevServer") {
-        setScript(project.file("node_modules/.bin/webpack-dev-server"))
+        script = project.file("node_modules/.bin/webpack-dev-server")
         setArgs(listOf("--mode", "development"))
         inputs.file("webpack.config.js")
         inputs.file("package-lock.json")
@@ -44,24 +93,57 @@ tasks {
     }
 }
 
-dependencies {
-    antlr("org.antlr:antlr4:${Versions.antlr}")
+//signing {
+//    val signingKey: String? by project
+//    val signingPassword: String? by project
+//    useInMemoryPgpKeys(signingKey, signingPassword)
+//    sign(publishing.publications)
+//}
 
-    api(kotlin("stdlib-jdk8", version = Versions.kotlin))
-    api(kotlin("reflect", version = Versions.kotlin))
-
-    implementation("org.junit.jupiter:junit-jupiter-params:${Versions.junitJupiter}")
-    implementation("org.junit.jupiter:junit-jupiter-api:${Versions.junitJupiter}")
-    implementation("org.junit.jupiter:junit-jupiter-engine:${Versions.junitJupiter}")
-    implementation("org.assertj:assertj-core:${Versions.assertJ}")
-    implementation("org.hamcrest:hamcrest-core:${Versions.hamcrest}")
-    implementation("org.awaitility:awaitility-kotlin:${Versions.awaitility}")
-    implementation("com.eclipsesource.minimal-json:minimal-json:${Versions.minimalJson}")
-    implementation("net.sourceforge.plantuml:plantuml:${Versions.plantUml}")
-    implementation("io.pebbletemplates:pebble:${Versions.pebble}")
-    implementation("io.kotest:kotest-assertions-core-jvm:${Versions.kotest}")
-
-    testImplementation("org.junit.platform:junit-platform-launcher:${Versions.junitPlatform}")
-    testImplementation("org.junit.platform:junit-platform-testkit:${Versions.junitPlatform}")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:${Versions.mockito}")
-}
+//publishing {
+//    val nexusUsername: String? by project
+//    val nexusPassword: String? by project
+//
+//    repositories {
+//        maven {
+//            name = "SonatypeStaging"
+//            setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+//            credentials {
+//                username = nexusUsername
+//                password = nexusPassword
+//            }
+//        }
+//        maven {
+//            name = "SonatypeSnapshot"
+//            setUrl("https://oss.sonatype.org/content/repositories/snapshots/")
+//            credentials {
+//                username = nexusUsername
+//                password = nexusPassword
+//            }
+//        }
+//    }
+//    publications {
+//        create<MavenPublication>("mavenJava") {
+//            artifactId = "kensa"
+//            pom.withXml {
+//                asNode().appendNode("name", "kensa")
+//                asNode().appendNode("description", description)
+//                asNode().appendNode("url", "https://kensa.dev")
+//                asNode().appendNode("developers")
+//                    .appendNode("developer").appendNode("name", "Paul Brooks").parent()
+//                    .appendNode("email", "paul@kensa.dev")
+//                asNode().appendNode("scm")
+//                    .appendNode("url", "git@github.com:kensa-dev/kensa.git").parent()
+//                    .appendNode("connection", "scm:git:git@github.com:kensa-dev/kensa.git").parent()
+//                    .appendNode("developerConnection", "scm:git:git@github.com:kensa-dev/kensa.git")
+//                asNode().appendNode("licenses").appendNode("license")
+//                    .appendNode("name", "Apache License, Version 2.0").parent()
+//                    .appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
+//            }
+//            from(components["java"])
+//
+////            artifact(tasks["sourcesJar"])
+////            artifact(tasks["testsJar"])
+//        }
+//    }
+//}

@@ -7,3 +7,7 @@ clean:
 .PHONY: build
 build:
 	./gradlew build publishToMavenLocal
+
+.PHONY: build-ci
+build-ci:
+	./gradlew build
