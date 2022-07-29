@@ -12,7 +12,7 @@ build:
 
 .PHONY: build-ci
 build-ci:
-	./gradlew check --build-cache
+	./gradlew check --build-cache --no-daemon
 
 .PHONY: tag-if-release
 tag-if-release:
