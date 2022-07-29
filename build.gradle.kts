@@ -3,14 +3,20 @@ import org.gradle.api.JavaVersion.VERSION_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "dev.kensa"
-version = project.properties["releaseVersion"] ?: "DEV-SNAPSHOT"
+version = project.properties["releaseVersion"] ?: "SNAPSHOT"
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.nodeGradle)
+    alias(libs.plugins.nexusStaging)
     antlr
     signing
     `maven-publish`
+}
+
+nexusStaging {
+    serverUrl = "https://s01.oss.sonatype.org/service/local/"
 }
 
 repositories {
@@ -45,6 +51,26 @@ node {
 }
 
 tasks {
+    javadoc {
+        options {
+            this as StandardJavadocDocletOptions
+            addBooleanOption("Xdoclint:none", true)
+            addStringOption("Xmaxwarns", "1")
+        }
+    }
+
+    register<Jar>("sourcesJar") {
+        archiveClassifier.set("sources")
+        from(project.the<SourceSetContainer>()["main"].allSource)
+        dependsOn(classes)
+    }
+
+    register<Jar>("javadocJar") {
+        archiveClassifier.set("javadoc")
+        javadoc.get().destinationDir
+        dependsOn(javadoc)
+    }
+
     withType<KotlinCompile> {
         dependsOn("generateGrammarSource")
             kotlinOptions {
@@ -93,57 +119,60 @@ tasks {
     }
 }
 
-//signing {
-//    val signingKey: String? by project
-//    val signingPassword: String? by project
-//    useInMemoryPgpKeys(signingKey, signingPassword)
-//    sign(publishing.publications)
-//}
+publishing {
+    val nexusUsername: String? by project
+    val nexusPassword: String? by project
 
-//publishing {
-//    val nexusUsername: String? by project
-//    val nexusPassword: String? by project
-//
-//    repositories {
-//        maven {
-//            name = "SonatypeStaging"
-//            setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-//            credentials {
-//                username = nexusUsername
-//                password = nexusPassword
-//            }
-//        }
-//        maven {
-//            name = "SonatypeSnapshot"
-//            setUrl("https://oss.sonatype.org/content/repositories/snapshots/")
-//            credentials {
-//                username = nexusUsername
-//                password = nexusPassword
-//            }
-//        }
-//    }
-//    publications {
-//        create<MavenPublication>("mavenJava") {
-//            artifactId = "kensa"
-//            pom.withXml {
-//                asNode().appendNode("name", "kensa")
-//                asNode().appendNode("description", description)
-//                asNode().appendNode("url", "https://kensa.dev")
-//                asNode().appendNode("developers")
-//                    .appendNode("developer").appendNode("name", "Paul Brooks").parent()
-//                    .appendNode("email", "paul@kensa.dev")
-//                asNode().appendNode("scm")
-//                    .appendNode("url", "git@github.com:kensa-dev/kensa.git").parent()
-//                    .appendNode("connection", "scm:git:git@github.com:kensa-dev/kensa.git").parent()
-//                    .appendNode("developerConnection", "scm:git:git@github.com:kensa-dev/kensa.git")
-//                asNode().appendNode("licenses").appendNode("license")
-//                    .appendNode("name", "Apache License, Version 2.0").parent()
-//                    .appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
-//            }
-//            from(components["java"])
-//
-////            artifact(tasks["sourcesJar"])
-////            artifact(tasks["testsJar"])
-//        }
-//    }
-//}
+    repositories {
+        maven {
+            name = "SonatypeStaging"
+            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = nexusUsername
+                password = nexusPassword
+            }
+        }
+        maven {
+            name = "SonatypeSnapshot"
+            setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            credentials {
+                username = nexusUsername
+                password = nexusPassword
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("mavenJava") {
+            artifactId = "kensa"
+            pom.withXml {
+                asNode().appendNode("name", "kensa")
+                asNode().appendNode("description", description)
+                asNode().appendNode("url", "https://kensa.dev")
+                asNode().appendNode("developers")
+                    .appendNode("developer").appendNode("name", "Paul Brooks").parent()
+                    .appendNode("email", "paul@kensa.dev")
+                asNode().appendNode("scm")
+                    .appendNode("url", "git@github.com:kensa-dev/kensa.git").parent()
+                    .appendNode("connection", "scm:git:git@github.com:kensa-dev/kensa.git").parent()
+                    .appendNode("developerConnection", "scm:git:git@github.com:kensa-dev/kensa.git")
+                asNode().appendNode("licenses").appendNode("license")
+                    .appendNode("name", "Apache License, Version 2.0").parent()
+                    .appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
+            }
+            from(components["java"])
+
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
+        }
+    }
+}
+
+if (project.findProperty("sign") == "true") {
+    signing {
+        val signingKeyId: String? by project
+        val signingKey: String? by project
+        val signingPassword: String? by project
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(publishing.publications["mavenJava"])
+    }
+}

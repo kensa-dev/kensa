@@ -1,0 +1,27 @@
+name: Create Github Release
+on:
+  repository_dispatch:
+    types: [kensa-release]
+permissions:
+  contents: read
+
+env:
+  GIT_TAG_NAME: ${{ github.event.client_payload.version }}
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: make create-release-note
+      - uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.client_payload.version }}
+          release_name: ${{ github.event.client_payload.version }}
+          body_path: RN.md
+          draft: false
+          prerelease: false
