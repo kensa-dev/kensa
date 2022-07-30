@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.6.10"
+kotlin = "1.7.10"
 node = "17.3.0"
 nodeGradle = "2.2.0"
 plantUml = "1.2022.6"
