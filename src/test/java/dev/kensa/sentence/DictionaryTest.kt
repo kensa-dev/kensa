@@ -39,7 +39,7 @@ internal class DictionaryTest {
     fun canPutKeywords() {
         dictionary.putKeyword("foo")
         dictionary.putKeywords("boo", "moo")
-        assertThat(dictionary.keywords).containsAll(listOf("foo", "boo", "moo"))
+        assertThat(dictionary.keywords).containsAll(listOf("foo", "boo", "moo").map { Keyword(it) })
     }
 
     @Test
@@ -62,9 +62,9 @@ internal class DictionaryTest {
         @JvmStatic
         fun arguments(): Stream<Arguments> {
             return Stream.of(
-//                    Arguments.of(""),
-//                    Arguments.of("   "),
-//                    Arguments.of("x"),
+                    Arguments.of(""),
+                    Arguments.of("   "),
+                    Arguments.of("x"),
                     Arguments.of("xx")
             )
         }

@@ -3,6 +3,8 @@ package dev.kensa.sentence
 import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.sentence.TokenType.Acronym
+import dev.kensa.sentence.TokenType.HighlightedIdentifier
+import dev.kensa.sentence.TokenType.Keyword
 
 object SentenceTokens {
 
@@ -11,6 +13,8 @@ object SentenceTokens {
     fun aLiteralOf(value: String) = SentenceToken(value, tokenTypes = setOf(Literal))
 
     fun anExpandableOf(value: String, tokens: List<List<SentenceToken>>): SentenceToken = SentenceToken(value, tokenTypes = setOf(), nestedTokens = tokens)
+
+    fun aHighlightedIdentifierOf(value: String, emphasisDescriptor: EmphasisDescriptor) : SentenceToken = SentenceToken(value = value, tokenTypes = setOf(HighlightedIdentifier), emphasis = emphasisDescriptor)
 
     fun aNewline() = SentenceToken("", tokenTypes = setOf(NewLine))
 

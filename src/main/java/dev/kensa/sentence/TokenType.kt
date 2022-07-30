@@ -17,7 +17,8 @@ enum class TokenType {
     ScenarioValue,
     BlankLine,
     StringLiteral,
-    Word;
+    Word,
+    HighlightedIdentifier;
 
     fun asCss(): String = "token-${name.unCamelToSeparated()}"
 }

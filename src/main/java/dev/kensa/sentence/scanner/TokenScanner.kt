@@ -2,21 +2,28 @@ package dev.kensa.sentence.scanner
 
 import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.TokenType.*
-import java.util.*
 
 class TokenScanner(private val dictionary: Dictionary) {
 
     fun scan(string: String): Pair<String, Indices> =
-            normaliseKeywords(string).let {
-                Pair(
-                        it,
-                        Indices().apply {
-                            scanForKeywords(it, this)
-                            scanForAcronyms(it, this)
-                            scanForWords(it, this)
-                        }
-                )
-            }
+        normaliseKeywords(string).let {
+            Pair(
+                it,
+                Indices().apply {
+                    if (!scanForHighlightedIdentifier(it, this)) {
+                        scanForKeywords(it, this)
+                        scanForAcronyms(it, this)
+                        scanForWords(it, this)
+                    }
+                }
+            )
+        }
+
+    private fun scanForHighlightedIdentifier(string: String, indices: Indices) =
+        dictionary.findInterestingIdentifierOrNull(string)?.let {
+            indices.put(HighlightedIdentifier, 0, string.length, it.emphasisDescriptor)
+            true
+        } ?: false
 
     private fun scanForWords(string: String, indices: Indices) {
         val wordList: MutableSet<Index> = HashSet()
@@ -62,8 +69,8 @@ class TokenScanner(private val dictionary: Dictionary) {
         val strings = camelCaseSplit(string)
         val word = strings[0]
 
-        if (dictionary.isKeyword(word)) {
-            indices.put(Keyword, string.indexOf(word), string.indexOf(word) + word.length)
+        dictionary.findKeywordOrNull(word)?.also {
+            indices.put(Keyword, string.indexOf(word), string.indexOf(word) + word.length, it.emphasisDescriptor)
         }
     }
 
