@@ -21,6 +21,16 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Cache Node Modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
