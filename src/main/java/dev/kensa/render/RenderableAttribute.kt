@@ -1,8 +1,8 @@
 package dev.kensa.render
 
+@JvmDefaultWithCompatibility
 interface RenderableAttribute<T, RA> {
-    @JvmDefault
-    fun showOnSequenceDiagram() : Boolean = false
+    fun showOnSequenceDiagram(): Boolean = false
     fun name(): String
     fun renderableFrom(value: T): RA
 }

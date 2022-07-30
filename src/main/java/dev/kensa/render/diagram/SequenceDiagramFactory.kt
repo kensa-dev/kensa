@@ -45,7 +45,7 @@ object SequenceDiagramFactory {
 
     private fun createSvg(plantUmlMarkup: String): SequenceDiagram =
         ByteArrayOutputStream().use { os ->
-            SourceStringReader(plantUmlMarkup).generateImage(os, FileFormatOption(SVG))
+            SourceStringReader(plantUmlMarkup).outputImage(os, FileFormatOption(SVG))
             SequenceDiagram(os.toString())
         }
 }

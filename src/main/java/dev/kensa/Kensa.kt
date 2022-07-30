@@ -13,6 +13,8 @@ import dev.kensa.render.Renderers
 import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
+import dev.kensa.sentence.HighlightedIdentifier
+import dev.kensa.sentence.Keyword
 import org.antlr.v4.runtime.atn.PredictionMode
 import java.net.MalformedURLException
 import java.net.URI
@@ -72,11 +74,19 @@ object Kensa {
         configuration.outputStyle = outputStyle
     }
 
+    fun withHighlightedIdentifier(vararg identifiers: HighlightedIdentifier) : Kensa = apply {
+        configuration.dictionary.putHighlightedIdentifiers(*identifiers)
+    }
+
     fun withAcronyms(vararg acronyms: Acronym): Kensa = apply {
         configuration.dictionary.putAcronyms(*acronyms)
     }
 
     fun withKeywords(vararg keywords: String): Kensa = apply {
+        configuration.dictionary.putKeywords(*keywords)
+    }
+
+    fun withKeywords(vararg keywords: Keyword): Kensa = apply {
         configuration.dictionary.putKeywords(*keywords)
     }
 
@@ -131,6 +141,9 @@ class Configuration(
 
     var acronyms: Set<Acronym> = emptySet()
         set(value) = dictionary.putAcronyms(value)
+
+    var highlightedIdentifiers: Set<HighlightedIdentifier> = emptySet()
+        set(value) = dictionary.putHighlightedIdentifiers(value)
 
     fun disableOutput() {
         isOutputEnabled = false

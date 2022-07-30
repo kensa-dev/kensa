@@ -1,44 +1,66 @@
 package dev.kensa.sentence
 
-import java.util.*
-
 class Dictionary {
+    private val highlightedIdentifiers: MutableSet<HighlightedIdentifier> = LinkedHashSet()
+
+    fun putHighlightedIdentifiers(vararg identifiers: HighlightedIdentifier) {
+        highlightedIdentifiers.addAll(identifiers)
+    }
+
+    fun putHighlightedIdentifiers(identifiers: Set<HighlightedIdentifier>) {
+        highlightedIdentifiers.addAll(identifiers)
+    }
+
     private val _acronyms: MutableSet<Acronym> = LinkedHashSet()
     val acronyms: Set<Acronym>
         get() = _acronyms
-    val acronymStrings: Set<String>
-        get() = _acronyms.map(Acronym::acronym).toSet()
 
     fun putAcronyms(vararg acronyms: Acronym) {
-        this._acronyms.addAll(acronyms)
+        _acronyms.addAll(acronyms)
     }
 
     fun putAcronyms(acronyms: Set<Acronym>) {
-        this._acronyms.addAll(acronyms)
+        _acronyms.addAll(acronyms)
     }
 
     fun clearAcronyms() {
         _acronyms.clear()
     }
 
-    private val _keywords: MutableSet<String> = linkedSetOf("given", "when", "whenever", "then", "and", "with", "that")
-    val keywords: Set<String>
+    private val _keywords: MutableSet<Keyword> = linkedSetOf(
+        Keyword("given"),
+        Keyword("when"),
+        Keyword("whenever"),
+        Keyword("then"),
+        Keyword("and"),
+        Keyword("with"),
+        Keyword("that")
+    )
+    val keywords: Set<Keyword>
         get() = _keywords
 
+    fun putKeyword(keyWord: Keyword) {
+        _keywords.add(keyWord)
+    }
+
     fun putKeyword(value: String) {
-        require(value.length > 2 && !value.contains(" ")) { "Invalid keyword [$value]" }
-        _keywords.add(value)
+        _keywords.add(Keyword(value))
     }
 
     fun putKeywords(vararg values: String) {
         values.forEach(this::putKeyword)
     }
 
+    fun putKeywords(vararg keywords: Keyword) {
+        keywords.forEach(this::putKeyword)
+    }
+
     fun putKeywords(values: Set<String>) {
         values.forEach(this::putKeyword)
     }
 
+    fun findInterestingIdentifierOrNull(value: String) = highlightedIdentifiers.firstOrNull { it.value == value }
     fun isAcronym(value: String) = acronyms.any { it.acronym.equals(value, ignoreCase = true) }
-    fun isKeyword(value: String) = keywords.any { it.equals(value, ignoreCase = true) }
+    fun findKeywordOrNull(value: String) = keywords.firstOrNull { it.value == value }
     fun isWhen(value: String) = value.equals("when", ignoreCase = true) || value.equals("whenever", ignoreCase = true)
 }
