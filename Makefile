@@ -59,5 +59,5 @@ publish-to-maven-central:
 .PHONY: create-release-note
 create-release-note:
 	@echo "Creating Release Note"
-	@echo "Changelog:\n" > RN.md
+	@echo "Changelog:" > RN.md
 	@sed -n "/^### v${GIT_TAG_NAME}$$/,/###/p" CHANGELOG.md | sed '1d' | sed '$$d' | sed '$$d' >> RN.md
