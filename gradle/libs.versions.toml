@@ -5,7 +5,7 @@ nodeGradle = "2.2.0"
 plantUml = "1.2022.6"
 pebble = "3.0.8"
 mockito = "4.0.0"
-kotest = "5.1.0"
+kotest = "5.4.1"
 junitPlatform = "1.8.2"
 junitJupiter = "5.8.2"
 assertJ = "3.22.0"
@@ -25,7 +25,7 @@ awaitilityKotlin = { module = "org.awaitility:awaitility-kotlin", version.ref = 
 minimalJson = { module = "com.eclipsesource.minimal-json:minimal-json", version.ref = "minimalJson" }
 plantuml = { module = "net.sourceforge.plantuml:plantuml", version.ref = "plantUml" }
 pebble = { module = "io.pebbletemplates:pebble", version.ref = "pebble" }
-kotestAssertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
+kotestAssertionsCoreJvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
 junitJupiterParams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiter" }
 junitJupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiter" }
 junitJupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiter" }

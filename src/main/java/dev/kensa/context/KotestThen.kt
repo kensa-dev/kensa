@@ -1,7 +1,7 @@
 package dev.kensa.context
 
 import dev.kensa.StateExtractor
-import io.kotest.framework.concurrency.eventually
+import io.kotest.assertions.timing.eventually
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.invokeMatcher
 import kotlin.time.Duration

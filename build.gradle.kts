@@ -38,7 +38,7 @@ dependencies {
     implementation(libs.minimalJson)
     implementation(libs.plantuml)
     implementation(libs.pebble)
-    implementation(libs.kotestAssertions)
+    implementation(libs.kotestAssertionsCoreJvm)
 
     testImplementation(libs.junitPlatformLauncher)
     testImplementation(libs.junitPlatformTestKit)
@@ -75,7 +75,7 @@ tasks {
         dependsOn("generateGrammarSource")
             kotlinOptions {
             jvmTarget = "11"
-            freeCompilerArgs += listOf("-Xjvm-default=compatibility", "-Xopt-in=kotlin.contracts.ExperimentalContracts")
+            freeCompilerArgs += listOf("-Xjvm-default=all", "-Xopt-in=kotlin.contracts.ExperimentalContracts")
         }
     }
 

@@ -8,6 +8,8 @@ import dev.kensa.sentence.TokenType.Acronym
 import dev.kensa.sentence.TokenType.Keyword
 import dev.kensa.sentence.scanner.Index
 import dev.kensa.sentence.scanner.TokenScanner
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictionary) {
     private val tokens: MutableList<SentenceToken> = ArrayList()
@@ -86,9 +88,9 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
 
     private fun tokenValueFor(index: Index, rawToken: String): String =
         when (index.type) {
-            Acronym -> rawToken.toUpperCase()
-            Keyword -> rawToken.capitalize()
-            Word -> if (rawToken.length > 1 && rawToken.matches(ALPHANUMERIC_UNDERSCORE)) rawToken else rawToken.decapitalize()
+            Acronym -> rawToken.uppercase(Locale.getDefault())
+            Keyword -> rawToken.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            Word -> if (rawToken.length > 1 && rawToken.matches(ALPHANUMERIC_UNDERSCORE)) rawToken else rawToken.replaceFirstChar { it.lowercase(Locale.getDefault()) }
 
             else -> rawToken
         }
