@@ -1,10 +1,7 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.Kensa.konfigure
-import dev.kensa.acceptance.example.JavaTestFromInterface
-import dev.kensa.acceptance.example.KotlinTestFromInterface
-import dev.kensa.acceptance.example.KotlinTestWithExpressionFunction
-import dev.kensa.acceptance.example.KotlinTestWithVariousParameterCombinations
+import dev.kensa.acceptance.example.*
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
 import dev.kensa.parse.Accessor
@@ -40,6 +37,27 @@ internal class KotlinFunctionParserTest {
     internal fun setUp() {
         konfigure {
             antlrPredicationMode = PredictionMode.LL
+        }
+    }
+
+    @Test
+    internal fun `recognises when keyword properly`() {
+        val javaClass = KotlinTestWithSimpleAction::class.java
+        val method = javaClass.findMethod("simpleTest")
+        val parsedMethod = parser.parse(method)
+
+        val expectedSentence = Sentence(
+            listOf(
+                aKeywordOf("When"),
+                aWordOf("some"),
+                aWordOf("action"),
+                aWordOf("is"),
+                aWordOf("performed")
+            )
+        )
+
+        with(parsedMethod) {
+            sentences.first().tokens.shouldBe(expectedSentence.tokens)
         }
     }
 

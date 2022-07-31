@@ -42,7 +42,7 @@ internal class TokenScannerTest {
     @Test
     internal fun normalisesKotlinWheneverToWhen() {
         val string = "wheneverAThingHappens"
-        val expected = listOf("When", "A", "Thing", "Happens")
+        val expected = listOf("when", "A", "Thing", "Happens")
         val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
 
         assertThat(transformed(scanned, indices)).isEqualTo(expected)

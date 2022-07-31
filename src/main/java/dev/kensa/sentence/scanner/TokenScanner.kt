@@ -61,7 +61,7 @@ class TokenScanner(private val dictionary: Dictionary) {
         val word = strings[0]
 
         return if (dictionary.isWhen(word)) {
-            "When" + strings.drop(1).joinToString("")
+            "when" + strings.drop(1).joinToString("")
         } else string
     }
 
