@@ -34,11 +34,11 @@
     "webpack-visualizer-plugin": "^0.1.11"
   },
   "dependencies": {
-    "jump.js": "1.0.2",
     "bulma": "^0.9.3",
     "bulma-divider": "^0.2.0",
     "bulma-tooltip": "^3.0.2",
     "highlight.js": "^11.4.0",
+    "jump.js": "1.0.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-lowlight": "^3.0.0"
