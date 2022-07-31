@@ -52,6 +52,7 @@ abstract class KensaMap<M : KensaMap<M>> {
 
     fun entrySet(): Set<Entry> = LinkedHashSet(values.values)
 
+    @Suppress("UNCHECKED_CAST")
     private fun self(): M = this as M
 
     class Entry constructor(val key: String, val value: Any?, val attributes: Attributes = emptyAttributes())

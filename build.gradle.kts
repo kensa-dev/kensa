@@ -75,7 +75,7 @@ tasks {
         dependsOn("generateGrammarSource")
             kotlinOptions {
             jvmTarget = "11"
-            freeCompilerArgs += listOf("-Xjvm-default=all", "-Xopt-in=kotlin.contracts.ExperimentalContracts")
+            freeCompilerArgs += listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts")
         }
     }
 

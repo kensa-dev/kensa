@@ -8,6 +8,9 @@ import net.sourceforge.plantuml.FileFormat.SVG
 import net.sourceforge.plantuml.FileFormatOption
 import net.sourceforge.plantuml.SourceStringReader
 import java.io.ByteArrayOutputStream
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 
 private val keyPattern = "(.*) from (\\w+) to (\\w+)".toRegex()
 private val valuePatterns = listOf(
@@ -52,7 +55,7 @@ object SequenceDiagramFactory {
 
 object IsSvgCompatible : (KensaMap.Entry) -> Boolean {
     override fun invoke(entry: KensaMap.Entry) =
-        (keyPattern.matches(entry.key.toLowerCase()) || valuePatterns.any { p -> p.matches(entry.value.toString()) })
+        (keyPattern.matches(entry.key.lowercase(Locale.getDefault())) || valuePatterns.any { p -> p.matches(entry.value.toString()) })
 
 }
 
