@@ -1,7 +1,6 @@
 package dev.kensa.acceptance
 
 import dev.kensa.Kensa.konfigure
-import dev.kensa.output.OutputStyle.MultiFile
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
@@ -17,7 +16,6 @@ internal abstract class KensaAcceptanceTest {
 
             konfigure {
                 outputDir = kensaOutputDir
-                outputStyle = MultiFile
                 isOutputEnabled = true
             }
         }

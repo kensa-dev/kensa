@@ -23,11 +23,11 @@ import com.eclipsesource.json.Json.`object` as jsonObject
 
 class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL, sectionOrder: List<Section>) {
     enum class Mode {
-        SingleFile, MultiFile, TestFile, Site
+        MultiFile, TestFile,
     }
 
     private val indices: MutableList<Index> = ArrayList()
-    private val template: PebbleTemplate
+    private val template: PebbleTemplate = pebbleEngine.getTemplate("pebble-index.html")
     private val scripts: MutableList<JsonScript> = ArrayList()
     private var indexCounter = 1
 
@@ -93,7 +93,6 @@ class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL, s
     }
 
     init {
-        template = pebbleEngine.getTemplate("pebble-index.html")
         scripts.add(configurationJson(mode, issueTrackerUrl, sectionOrder))
     }
 }

@@ -5,7 +5,6 @@ import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
 import dev.kensa.output.DefaultResultWriter
-import dev.kensa.output.OutputStyle
 import dev.kensa.output.ResultWriter
 import dev.kensa.output.template.Template
 import dev.kensa.render.Renderer
@@ -70,10 +69,6 @@ object Kensa {
         configuration.renderers.add(kClass, renderer)
     }
 
-    fun withOutputStyle(outputStyle: OutputStyle): Kensa = apply {
-        configuration.outputStyle = outputStyle
-    }
-
     fun withHighlightedIdentifier(vararg identifiers: HighlightedIdentifier) : Kensa = apply {
         configuration.dictionary.putHighlightedIdentifiers(*identifiers)
     }
@@ -122,7 +117,6 @@ class Configuration(
     var antlrPredicationMode: PredictionMode = PredictionMode.SLL,
     var antlrErrorListenerDisabled: Boolean = true,
     var umlDirectives: List<UmlDirective> = ArrayList(),
-    var outputStyle: OutputStyle = OutputStyle.MultiFile,
     var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
     var tabSize: Int = 5,
     var resultWriter: ResultWriter = DefaultResultWriter()

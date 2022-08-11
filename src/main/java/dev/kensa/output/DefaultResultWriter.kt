@@ -8,10 +8,9 @@ class DefaultResultWriter : ResultWriter {
     override fun write(containers: Set<TestContainer>) {
         val configuration = Kensa.configuration
         val outputDir = configuration.outputDir
-        val outputStyle = configuration.outputStyle
 
         IoUtil.recreate(outputDir)
-        outputStyle.write(containers, configuration)
+        MultiFileWriter()(containers, configuration)
         IoUtil.copyResource("/kensa.js", outputDir)
         IoUtil.copyResource("/favicon.ico", outputDir)
 
