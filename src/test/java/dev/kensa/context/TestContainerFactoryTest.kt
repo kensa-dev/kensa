@@ -23,13 +23,14 @@ internal class TestContainerFactoryTest {
     internal fun createsTestContainerWithPredictableIterationOrderOfInvocationData() {
         val testClass: Class<*> = TestClass::class.java
         val expected = listOf(
-                TestClass::test1.javaMethod,
-                TestClass::test2.javaMethod,
-                TestClass::test3.javaMethod,
-                TestClass::test4.javaMethod,
-                TestClass::test5.javaMethod,
-                TestClass::test6.javaMethod,
-                TestClass::test7.javaMethod
+            TestClass::test1.javaMethod,
+            TestClass::test2.javaMethod,
+            TestClass::test3.javaMethod,
+            TestClass::test4.javaMethod,
+            TestClass::test5.javaMethod,
+            TestClass::test6.javaMethod,
+            TestClass::test7.javaMethod,
+            TestInterface::interfaceTest.javaMethod
         )
         whenever(extensionContext.requiredTestClass).thenReturn(testClass)
         val result = factory.createFor(extensionContext)
@@ -49,8 +50,14 @@ internal class TestContainerFactoryTest {
         }
     }
 
+    private interface TestInterface {
+        @Test
+        fun interfaceTest() {
+        }
+    }
+
     @Suppress("UNUSED_PARAMETER")
-    private class TestClass {
+    private class TestClass : TestInterface {
         @Test
         fun test1() {
         }
@@ -66,6 +73,7 @@ internal class TestContainerFactoryTest {
         @Test
         fun test4() {
         }
+
         @ParameterizedTest
         fun test5(foo: String?) {
         }
