@@ -23,7 +23,7 @@ import com.eclipsesource.json.Json.`object` as jsonObject
 
 class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL, sectionOrder: List<Section>) {
     enum class Mode {
-        MultiFile, TestFile,
+        IndexFile, TestFile,
     }
 
     private val indices: MutableList<Index> = ArrayList()

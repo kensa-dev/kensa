@@ -12,14 +12,15 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
 class TestContainerFactory {
-    fun createFor(context: ExtensionContext): TestContainer {
+    fun createFor(context: ExtensionContext, testFileWriter: (TestContainer) -> Unit): TestContainer {
         return context.requiredTestClass.let { testClass ->
             TestContainer(
                 testClass,
                 deriveDisplayNameFor(testClass) { testClass.simpleName.unCamel() },
                 invocationDataFor(testClass),
                 notesFor(testClass),
-                issuesFor(testClass)
+                issuesFor(testClass),
+                testFileWriter
             )
         }
     }

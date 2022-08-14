@@ -4,7 +4,6 @@ import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
-import dev.kensa.output.template.Template
 import dev.kensa.render.Renderer
 import dev.kensa.render.Renderers
 import dev.kensa.render.diagram.directive.UmlDirective
@@ -135,9 +134,6 @@ class Configuration(
     fun disableOutput() {
         isOutputEnabled = false
     }
-
-    fun createTemplate(path: String, mode: Template.Mode): Template =
-        Template(outputDir.resolve(path), mode, issueTrackerUrl, sectionOrder)
 
     companion object {
         private fun defaultIssueTrackerUrl(): URL = try {

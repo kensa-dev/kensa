@@ -6,7 +6,9 @@ import dev.kensa.context.TestContainer
 import dev.kensa.context.TestContainerFactory
 import dev.kensa.context.TestContext
 import dev.kensa.context.TestContextHolder
+import dev.kensa.output.IndexFileWriter
 import dev.kensa.output.ResultWriter
+import dev.kensa.output.TestFileWriter
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
 import dev.kensa.parse.kotlin.KotlinFunctionParser
@@ -34,7 +36,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
         if (Kensa.configuration.isOutputEnabled) {
             with(context.getStore(KENSA)) {
                 val executionContext = bindToRootContextOf(context)
-                val container = testContainerFactory.createFor(context)
+                val container = testContainerFactory.createFor(context, TestFileWriter(Kensa.configuration))
                 put(TEST_CONTAINER_KEY, container)
                 executionContext.register(container)
             }
@@ -123,7 +125,9 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     companion object {
         val KENSA: ExtensionContext.Namespace = ExtensionContext.Namespace.create("dev", "kensa")
         const val TEST_CONTEXT_KEY = "TestContext"
-        private val EXECUTION_CONTEXT_FACTORY = { _: String -> KensaExecutionContext(ResultWriter()) }
+        private val EXECUTION_CONTEXT_FACTORY = { _: String ->
+            KensaExecutionContext(ResultWriter(Kensa.configuration.outputDir, IndexFileWriter(Kensa.configuration)))
+        }
         private const val TEST_START_TIME_KEY = "StartTime"
         private const val TEST_CONTAINER_KEY = "TestContainer"
         private const val TEST_INVOCATION_CONTEXT_KEY = "TestArguments"

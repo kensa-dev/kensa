@@ -4,10 +4,8 @@ import TestWrapper from "./Test";
 import Indices from "./IndexPage";
 
 const Mode = {
-    SingleFile: 'SingleFile',
-    MultiFile: 'MultiFile',
-    TestFile: 'TestFile',
-    Site: 'Site'
+    IndexFile: 'IndexFile',
+    TestFile: 'TestFile'
 };
 
 export const Section = {
@@ -95,9 +93,7 @@ export default class App extends Component {
             case Mode.TestFile:
                 data = JSON.parse(document.querySelector("script[id^='test-result']").textContent);
                 break;
-            case Mode.SingleFile:
-            case Mode.MultiFile:
-            case Mode.Site:
+            case Mode.IndexFile:
                 let indexNode = document.querySelector("script[id='indices']");
                 let indexJson = JSON.parse(indexNode.textContent);
                 indices = indexJson.indices;
@@ -114,11 +110,7 @@ export default class App extends Component {
         });
     }
 
-    renderSingleFile() {
-
-    }
-
-    renderMultiFile() {
+    renderIndexFile() {
         return (
                 <div>
                     <section className="hero test-passed">
@@ -193,10 +185,8 @@ export default class App extends Component {
     render() {
         if (this.state.isLoaded) {
             switch (this.state.mode) {
-                case Mode.SingleFile:
-                    return this.renderSingleFile();
-                case Mode.MultiFile:
-                    return this.renderMultiFile();
+                case Mode.IndexFile:
+                    return this.renderIndexFile();
                 case Mode.TestFile:
                     return this.renderTestFile();
             }
