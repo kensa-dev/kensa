@@ -15,6 +15,24 @@ plugins {
     `maven-publish`
 }
 
+fun createSourceSet(name: String) {
+    sourceSets {
+        create(name) {
+            compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+            runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+        }
+    }
+}
+
+createSourceSet("junitIntegrationTest")
+val junitIntegrationTestImplementation: Configuration by configurations.getting { extendsFrom(configurations.implementation.get()) }
+
+createSourceSet("javaExampleTest")
+val javaExampleTestImplementation: Configuration by configurations.getting { extendsFrom(configurations.implementation.get()) }
+
+createSourceSet("kotlinExampleTest")
+val kotlinExampleTestImplementation: Configuration by configurations.getting { extendsFrom(configurations.implementation.get()) }
+
 nexusStaging {
     serverUrl = "https://s01.oss.sonatype.org/service/local/"
 }
@@ -40,9 +58,14 @@ dependencies {
     implementation(libs.pebble)
     implementation(libs.kotestAssertionsCoreJvm)
 
-    testImplementation(libs.junitPlatformLauncher)
-    testImplementation(libs.junitPlatformTestKit)
     testImplementation(libs.mockitoKotlin)
+
+    junitIntegrationTestImplementation(libs.junitPlatformTestKit)
+    junitIntegrationTestImplementation(libs.junitPlatformLauncher)
+    javaExampleTestImplementation(libs.junitPlatformTestKit)
+    javaExampleTestImplementation(libs.junitPlatformLauncher)
+    kotlinExampleTestImplementation(libs.junitPlatformTestKit)
+    kotlinExampleTestImplementation(libs.junitPlatformLauncher)
 }
 
 node {
@@ -73,7 +96,7 @@ tasks {
 
     withType<KotlinCompile> {
         dependsOn("generateGrammarSource")
-            kotlinOptions {
+        kotlinOptions {
             jvmTarget = "11"
             freeCompilerArgs += listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts")
         }
@@ -84,14 +107,53 @@ tasks {
         targetCompatibility = VERSION_11
     }
 
-    withType(AntlrTask::class) {
+    withType<AntlrTask> {
         outputDirectory = file("$outputDirectory/dev/kensa/parse")
         arguments = arguments + listOf("-listener", "-no-visitor", "-package", "dev.kensa.parse")
     }
 
-    withType(Test::class) {
+    register<Test>("junitIntegrationTest") {
         useJUnitPlatform {
-            exclude("dev/kensa/acceptance/example/**")
+            exclude("dev/kensa/example/**")
+        }
+        description = "Runs JUnit integration tests."
+        group = "verification"
+
+        testClassesDirs = sourceSets["junitIntegrationTest"].output.classesDirs
+        classpath = sourceSets["junitIntegrationTest"].runtimeClasspath
+        shouldRunAfter("test")
+    }
+
+
+    register<Test>("kotlinExampleTest") {
+        useJUnitPlatform {
+            exclude("dev/kensa/example/**")
+        }
+        description = "Runs Kotlin example tests."
+        group = "verification"
+
+        testClassesDirs = sourceSets["kotlinExampleTest"].output.classesDirs
+        classpath = sourceSets["kotlinExampleTest"].runtimeClasspath
+        shouldRunAfter("junitIntegrationTest")
+    }
+
+    register<Test>("javaExampleTest") {
+        useJUnitPlatform {
+            exclude("dev/kensa/example/**")
+        }
+        description = "Runs Java example tests."
+        group = "verification"
+
+        testClassesDirs = sourceSets["javaExampleTest"].output.classesDirs
+        classpath = sourceSets["javaExampleTest"].runtimeClasspath
+        shouldRunAfter("junitIntegrationTest")
+    }
+
+    check { dependsOn("junitIntegrationTest", "kotlinExampleTest", "javaExampleTest") }
+
+    withType<Test> {
+        useJUnitPlatform {
+            exclude("dev/kensa/example/**")
         }
     }
 

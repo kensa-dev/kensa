@@ -1,4 +1,4 @@
-package dev.kensa.acceptance.example;
+package dev.kensa.example;
 
 import dev.kensa.java.JavaKensaTest;
 import org.junit.jupiter.api.Test;

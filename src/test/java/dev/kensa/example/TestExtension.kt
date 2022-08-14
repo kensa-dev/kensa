@@ -1,4 +1,4 @@
-package dev.kensa.acceptance.example
+package dev.kensa.example
 
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext

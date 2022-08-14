@@ -1,4 +1,4 @@
-package dev.kensa.acceptance;
+package dev.kensa;
 
 import org.junit.jupiter.engine.Constants;
 import org.junit.platform.engine.DiscoverySelector;

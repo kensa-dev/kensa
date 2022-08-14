@@ -1,4 +1,4 @@
-package dev.kensa.acceptance
+package dev.kensa
 
 import dev.kensa.Kensa.konfigure
 import org.junit.jupiter.api.BeforeAll
@@ -16,7 +16,6 @@ internal abstract class KensaAcceptanceTest {
 
             konfigure {
                 outputDir = kensaOutputDir
-                isOutputEnabled = true
             }
         }
     }

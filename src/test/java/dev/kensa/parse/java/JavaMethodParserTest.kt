@@ -1,7 +1,7 @@
 package dev.kensa.parse.java
 
-import dev.kensa.acceptance.example.JavaTestFromInterface
-import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations
+import dev.kensa.example.JavaTestFromInterface
+import dev.kensa.example.JavaTestWithVariousParameterCombinations
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
 import dev.kensa.parse.Accessor
@@ -44,7 +44,7 @@ internal class JavaMethodParserTest {
             )
         )
 
-        val method = JavaTestFromInterface::class.java.findMethod("interfaceTestMethod")
+        val method = dev.kensa.example.JavaTestFromInterface::class.java.findMethod("interfaceTestMethod")
         val parsedMethod = parser.parse(method)
 
         with(parsedMethod) {
@@ -54,15 +54,15 @@ internal class JavaMethodParserTest {
             with(properties) {
                 assertSoftly(get("field4")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field4"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field4"))) }
                 }
                 assertSoftly(get("field5")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field5"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field5"))) }
                 }
                 assertSoftly(get("field6")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field6"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field6"))) }
                 }
             }
 
@@ -87,7 +87,7 @@ internal class JavaMethodParserTest {
             )
         )
 
-        val method = JavaTestFromInterface::class.java.findMethod("classTestMethod")
+        val method = dev.kensa.example.JavaTestFromInterface::class.java.findMethod("classTestMethod")
         val parsedMethod = parser.parse(method)
 
         with(parsedMethod) {
@@ -97,15 +97,15 @@ internal class JavaMethodParserTest {
             with(properties) {
                 assertSoftly(get("field1")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field1"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field1"))) }
                 }
                 assertSoftly(get("field2")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field2"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field2"))) }
                 }
                 assertSoftly(get("field3")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field3"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field3"))) }
                 }
             }
 
@@ -149,14 +149,14 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(JavaTestWithVariousParameterCombinations::class.java.findMethod("similarNameTest1"))
+            parser.parse(dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java.findMethod("similarNameTest1"))
 
         with(parsedMethod) {
             name.shouldBe("similarNameTest1")
             parameters.descriptors.shouldBeEmpty()
 
-            assertPropertyDescriptors(properties, JavaTestWithVariousParameterCombinations::class.java)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
+            assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
 
             assertSoftly(nestedSentences["nested1"]) {
                 shouldNotBeNull()
@@ -182,14 +182,14 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(JavaTestWithVariousParameterCombinations::class.java.findMethod("testWithNoParameters"))
+            parser.parse(dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java.findMethod("testWithNoParameters"))
 
         with(parsedMethod) {
             name.shouldBe("testWithNoParameters")
             parameters.descriptors.shouldBeEmpty()
 
-            assertPropertyDescriptors(properties, JavaTestWithVariousParameterCombinations::class.java)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
+            assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
 
             nestedSentences.shouldContainKey("nested1")
             sentences.first().tokens.shouldBe(expectedSentence.tokens)
@@ -212,7 +212,7 @@ internal class JavaMethodParserTest {
             )
         )
 
-        val method = JavaTestWithVariousParameterCombinations::class.java.findMethod("testWithExtensionParameter")
+        val method = dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java.findMethod("testWithExtensionParameter")
         val firstParameter = method.parameters.first()
         val parsedMethod = parser.parse(method)
 
@@ -225,8 +225,8 @@ internal class JavaMethodParserTest {
                 asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
             }
 
-            assertPropertyDescriptors(properties, JavaTestWithVariousParameterCombinations::class.java)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
+            assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
 
             nestedSentences.shouldContainKey("nested1")
             sentences.first().tokens.shouldBe(expectedSentence.tokens)
@@ -247,7 +247,7 @@ internal class JavaMethodParserTest {
             )
         )
 
-        val method = JavaTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTest")
+        val method = dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTest")
         val firstParameter = method.parameters.first()
         val parsedMethod = parser.parse(method)
 
@@ -258,8 +258,8 @@ internal class JavaMethodParserTest {
                 asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
             }
 
-            assertPropertyDescriptors(properties, JavaTestWithVariousParameterCombinations::class.java)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
+            assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
 
             nestedSentences.shouldContainKey("nested1")
             sentences.first().tokens.shouldBe(expectedSentence1.tokens)
@@ -293,7 +293,7 @@ internal class JavaMethodParserTest {
             )
         )
 
-        val method = JavaTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTestWithExtensionParameter")
+        val method = dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTestWithExtensionParameter")
         val firstParameter = method.parameters.first()
         val secondParameter = method.parameters.last()
         val parsedMethod = parser.parse(method)
@@ -310,8 +310,8 @@ internal class JavaMethodParserTest {
                 asClue { shouldBe(Accessor.ParameterAccessor(secondParameter, "second", 1, true)) }
             }
 
-            assertPropertyDescriptors(properties, JavaTestWithVariousParameterCombinations::class.java)
-            assertMethodDescriptors(methods, JavaTestWithVariousParameterCombinations::class.java)
+            assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
+            assertMethodDescriptors(methods, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
 
             nestedSentences.shouldContainKey("nested1")
             sentences.first().tokens.shouldBe(expectedSentence1.tokens)

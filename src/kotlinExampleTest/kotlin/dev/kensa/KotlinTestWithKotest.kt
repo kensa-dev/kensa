@@ -2,8 +2,8 @@ package dev.kensa
 
 import dev.kensa.Colour.BackgroundDanger
 import dev.kensa.Colour.TextLight
-import dev.kensa.KAssertionStyleTest.Parrty.A
-import dev.kensa.KAssertionStyleTest.Parrty.B
+import dev.kensa.AssertionStyleTest.Parrty.A
+import dev.kensa.AssertionStyleTest.Parrty.B
 import dev.kensa.TextStyle.*
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithKotest

@@ -1,4 +1,4 @@
-package dev.kensa.acceptance.example;
+package dev.kensa.example;
 
 import dev.kensa.ActionUnderTest;
 import dev.kensa.GivensBuilder;
@@ -6,8 +6,8 @@ import dev.kensa.java.JavaKensaTest;
 import dev.kensa.state.Party;
 import org.junit.jupiter.api.Test;
 
-import static dev.kensa.acceptance.example.TestWithSequenceDiagram.TestParty.Kiki;
-import static dev.kensa.acceptance.example.TestWithSequenceDiagram.TestParty.Openreach;
+import static dev.kensa.example.TestWithSequenceDiagram.TestParty.Kiki;
+import static dev.kensa.example.TestWithSequenceDiagram.TestParty.Openreach;
 import static dev.kensa.state.CapturedInteractionBuilder.from;
 
 class TestWithSequenceDiagram implements JavaKensaTest {

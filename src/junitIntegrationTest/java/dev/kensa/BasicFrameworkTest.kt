@@ -1,10 +1,7 @@
-package dev.kensa.acceptance
+package dev.kensa
 
-import dev.kensa.acceptance.KensaTestExecutor.executeTests
-import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations
-import dev.kensa.acceptance.example.KotlinTestWithVariousParameterCombinations
-import dev.kensa.acceptance.example.TestWithMultiplePassingTests
-import dev.kensa.acceptance.example.TestWithSinglePassingTest
+import dev.kensa.KensaTestExecutor.executeTests
+import dev.kensa.example.KotlinTestWithVariousParameterCombinations
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.platform.engine.TestExecutionResult
@@ -16,7 +13,7 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
     @Test
     internal fun createsOutputFilesWhenMultipleTestClassesExecuted() {
         val testClasses =
-            arrayOf<Class<*>>(TestWithSinglePassingTest::class.java, TestWithMultiplePassingTests::class.java)
+            arrayOf<Class<*>>(dev.kensa.example.TestWithSinglePassingTest::class.java, dev.kensa.example.TestWithMultiplePassingTests::class.java)
 
         executeTests(*testClasses)
 
@@ -33,7 +30,7 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
 
     @Test
     internal fun handlesJavaTestsWithVariousParameterCombinations() {
-        val results = executeTests(JavaTestWithVariousParameterCombinations::class.java)
+        val results = executeTests(dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
 
         val failedTests = results.testEvents().failed()
             .map { it.getPayload(TestExecutionResult::class.java).orElseThrow() }

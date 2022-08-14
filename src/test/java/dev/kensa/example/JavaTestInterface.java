@@ -1,4 +1,4 @@
-package dev.kensa.acceptance.example;
+package dev.kensa.example;
 
 import dev.kensa.Highlight;
 import dev.kensa.Scenario;

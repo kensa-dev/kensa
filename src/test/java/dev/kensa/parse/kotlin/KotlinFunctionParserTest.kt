@@ -1,7 +1,7 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.Kensa.konfigure
-import dev.kensa.acceptance.example.*
+import dev.kensa.example.*
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
 import dev.kensa.parse.Accessor
@@ -165,15 +165,15 @@ internal class KotlinFunctionParserTest {
             with(properties) {
                 assertSoftly(get("field1")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field1"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field1"))) }
                 }
                 assertSoftly(get("field2")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field2"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field2"))) }
                 }
                 assertSoftly(get("field3")) {
                     shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaTestFromInterface::class.propertyNamed("field3"))) }
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestFromInterface::class.propertyNamed("field3"))) }
                 }
             }
 

@@ -1,6 +1,6 @@
 package dev.kensa;
 
-import dev.kensa.acceptance.example.JavaTestInterface;
+import dev.kensa.example.JavaTestInterface;
 import dev.kensa.java.JavaKensaTest;
 import dev.kensa.java.WithAssertJ;
 import dev.kensa.java.WithHamcrest;

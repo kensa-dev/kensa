@@ -1,8 +1,8 @@
-package dev.kensa.acceptance.example
+package dev.kensa.example
 
 import dev.kensa.*
-import dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations.SomeBuilder.someBuilder
-import dev.kensa.acceptance.example.TestExtension.Companion.MY_PARAMETER_VALUE
+import dev.kensa.example.JavaTestWithVariousParameterCombinations.SomeBuilder.someBuilder
+import dev.kensa.example.TestExtension.Companion.MY_PARAMETER_VALUE
 import dev.kensa.kotlin.KotlinKensaTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

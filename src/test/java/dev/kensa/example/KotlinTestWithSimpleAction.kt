@@ -1,4 +1,4 @@
-package dev.kensa.acceptance.example
+package dev.kensa.example
 
 import dev.kensa.ActionUnderTest
 import dev.kensa.kotlin.KotlinKensaTest

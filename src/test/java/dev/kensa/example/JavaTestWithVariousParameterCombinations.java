@@ -1,4 +1,4 @@
-package dev.kensa.acceptance.example;
+package dev.kensa.example;
 
 import dev.kensa.*;
 import dev.kensa.java.JavaKensaTest;
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static dev.kensa.acceptance.example.JavaTestWithVariousParameterCombinations.SomeBuilder.someBuilder;
-import static dev.kensa.acceptance.example.TestExtension.MY_PARAMETER_VALUE;
+import static dev.kensa.example.JavaTestWithVariousParameterCombinations.SomeBuilder.someBuilder;
+import static dev.kensa.example.TestExtension.MY_PARAMETER_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith({TestExtension.class})

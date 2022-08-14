@@ -5,7 +5,7 @@ import dev.kensa.Colour.TextLight
 import dev.kensa.Kensa.konfigure
 import dev.kensa.Section.*
 import dev.kensa.TextStyle.*
-import dev.kensa.acceptance.example.KotlinTestInterface
+import dev.kensa.example.KotlinTestInterface
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithAssertJ
 import dev.kensa.kotlin.WithHamcrest
@@ -14,7 +14,6 @@ import dev.kensa.render.diagram.directive.UmlParticipant.Companion.actor
 import dev.kensa.sentence.Acronym
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.state.Party
-import org.antlr.v4.runtime.atn.PredictionMode
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,7 +24,7 @@ import java.util.stream.Stream
 
 @Notes("Class Level Notes")
 @Issue("ISS-007")
-class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTestInterface {
+class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTestInterface {
     private val actionName = "ACTION1"
 
     @get:SentenceValue
@@ -41,7 +40,6 @@ class KAssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTe
         konfigure {
             keywords = setOf("that")
             acronyms = setOf(Acronym.of("ACTION1", ""))
-            antlrPredicationMode = PredictionMode.LL
             sectionOrder = listOf(Sentences, Buttons, Exception)
             umlDirectives = listOf(actor("A"), actor("B"))
         }
