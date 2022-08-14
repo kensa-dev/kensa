@@ -4,8 +4,6 @@ import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
-import dev.kensa.output.DefaultResultWriter
-import dev.kensa.output.ResultWriter
 import dev.kensa.output.template.Template
 import dev.kensa.render.Renderer
 import dev.kensa.render.Renderers
@@ -92,10 +90,6 @@ object Kensa {
     fun withTabSize(tabSize: Int): Kensa = apply {
         configuration.tabSize = tabSize
     }
-
-    fun withResultWriter(resultWriter: ResultWriter): Kensa = apply {
-        configuration.resultWriter = resultWriter
-    }
 }
 
 enum class Section {
@@ -119,7 +113,6 @@ class Configuration(
     var umlDirectives: List<UmlDirective> = ArrayList(),
     var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
     var tabSize: Int = 5,
-    var resultWriter: ResultWriter = DefaultResultWriter()
 ) {
 
     var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
