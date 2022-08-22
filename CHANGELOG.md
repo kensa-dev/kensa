@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.2.4
+- #2 : Reinstate transparent background & white group box in sequence diagram 
+
 ### v0.2.3
 - #3 : Improve total output rendering time by making individual test containers render their output when JUnit closes their context 
 
