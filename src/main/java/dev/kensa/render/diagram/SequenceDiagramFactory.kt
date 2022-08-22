@@ -26,7 +26,18 @@ object SequenceDiagramFactory {
         eventsFrom(interactions).takeUnless { it.isEmpty() }?.let { events ->
             createSvg(
                 (participants + events)
-                    .joinToString("\n", "@startuml\n", "\n@enduml")
+                    .joinToString("\n",
+                        """
+                           @startuml
+                           
+                           skinparam BackgroundColor transparent
+                           skinparam SequenceGroupBackgroundColor lightgray
+                           skinparam SequenceGroupBodyBackGroundColor white
+                           
+                        """.trimIndent(),
+                        "\n@enduml").also {
+                        println(it)
+                    }
             )
         }
 

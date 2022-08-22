@@ -12,7 +12,6 @@ import kotlin.io.path.absolutePathString
 class ResultWriter(private val outputDir: Path, private val writeIndexFile: (Set<TestContainer>) -> Unit) {
 
     init {
-        println("Recreating: ${outputDir.absolutePathString()}")
         IoUtil.recreate(outputDir)
     }
 
