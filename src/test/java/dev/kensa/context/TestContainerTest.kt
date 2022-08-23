@@ -1,5 +1,6 @@
 package dev.kensa.context
 
+import dev.kensa.output.TestWriter
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -7,7 +8,7 @@ import org.mockito.kotlin.verify
 class TestContainerTest {
     @Test
     fun `writes test file on close`() {
-        val writer = mock<(TestContainer) -> Unit>()
+        val writer = mock<TestWriter>()
 
         val container = TestContainer(
             javaClass,
@@ -20,6 +21,6 @@ class TestContainerTest {
 
         container.close()
 
-        verify(writer).invoke(container)
+        verify(writer).write(container)
     }
 }

@@ -1,7 +1,7 @@
 package dev.kensa.context
 
 import dev.kensa.Kensa
-import dev.kensa.output.TestFileWriter
+import dev.kensa.output.DefaultTestWriter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,7 +35,7 @@ internal class TestContainerFactoryTest {
             TestInterface::interfaceTest.javaMethod
         )
         whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-        val result = factory.createFor(extensionContext, TestFileWriter(Kensa.configuration))
+        val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
 
         assertThat(result.invocations.values.toList()).extracting("method").containsAll(expected)
     }
@@ -45,7 +45,7 @@ internal class TestContainerFactoryTest {
         val testClass: Class<*> = TestClass::class.java
 
         whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-        val result = factory.createFor(extensionContext, TestFileWriter(Kensa.configuration))
+        val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
 
         assertThat(result.invocations).anySatisfy { _, value ->
             assertThat(value.displayName).isEqualTo("Test 7")

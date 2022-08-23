@@ -2,6 +2,7 @@ package dev.kensa.context
 
 import dev.kensa.Issue
 import dev.kensa.Notes
+import dev.kensa.output.TestWriter
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.state.TestState.*
 import dev.kensa.util.*
@@ -12,7 +13,7 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
 class TestContainerFactory {
-    fun createFor(context: ExtensionContext, testFileWriter: (TestContainer) -> Unit): TestContainer {
+    fun createFor(context: ExtensionContext, testWriter: TestWriter): TestContainer {
         return context.requiredTestClass.let { testClass ->
             TestContainer(
                 testClass,
@@ -20,7 +21,7 @@ class TestContainerFactory {
                 invocationDataFor(testClass),
                 notesFor(testClass),
                 issuesFor(testClass),
-                testFileWriter
+                testWriter
             )
         }
     }

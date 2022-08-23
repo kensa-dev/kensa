@@ -1,5 +1,6 @@
 package dev.kensa.context
 
+import dev.kensa.output.TestWriter
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.state.TestState
 import dev.kensa.state.TestState.NotExecuted
@@ -12,7 +13,7 @@ class TestContainer(
     val invocations: Map<Method, TestMethodInvocation>,
     val notes: String?,
     val issues: List<String>,
-    private val writeTestFile: (TestContainer) -> Unit
+    private val testWriter: TestWriter
 ) : CloseableResource {
     val state: TestState
         get() = invocations.values
@@ -25,6 +26,6 @@ class TestContainer(
     fun <T> transform(transformer: (TestContainer) -> T): T = transformer(this)
 
     override fun close() {
-        writeTestFile(this)
+        testWriter.write(this)
     }
 }

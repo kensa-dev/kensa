@@ -4,6 +4,7 @@ import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
+import dev.kensa.output.*
 import dev.kensa.render.Renderer
 import dev.kensa.render.Renderers
 import dev.kensa.render.diagram.directive.UmlDirective
@@ -66,7 +67,7 @@ object Kensa {
         configuration.renderers.add(kClass, renderer)
     }
 
-    fun withHighlightedIdentifier(vararg identifiers: HighlightedIdentifier) : Kensa = apply {
+    fun withHighlightedIdentifier(vararg identifiers: HighlightedIdentifier): Kensa = apply {
         configuration.dictionary.putHighlightedIdentifiers(*identifiers)
     }
 
@@ -88,6 +89,14 @@ object Kensa {
 
     fun withTabSize(tabSize: Int): Kensa = apply {
         configuration.tabSize = tabSize
+    }
+
+    fun withIndexWriter(writer: IndexWriter): Kensa = apply {
+        configuration.indexWriter = writer
+    }
+
+    fun withTestWriter(writer: TestWriter): Kensa = apply {
+        configuration.testWriter = writer
     }
 }
 
@@ -111,8 +120,11 @@ class Configuration(
     var antlrErrorListenerDisabled: Boolean = true,
     var umlDirectives: List<UmlDirective> = ArrayList(),
     var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
-    var tabSize: Int = 5,
+    var tabSize: Int = 5
 ) {
+
+    var indexWriter: IndexWriter = DefaultIndexWriter(this)
+    var testWriter: TestWriter = DefaultTestWriter(this)
 
     var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
         set(order) {
