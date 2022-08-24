@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.2.6
+- Clean up 
+
 ### v0.2.5
 - #3 : Reintroduce some capability of customising the test output via `TestWriter` & `IndexWriter` interfaces 
 
