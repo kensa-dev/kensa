@@ -35,9 +35,7 @@ object SequenceDiagramFactory {
                            skinparam SequenceGroupBodyBackGroundColor white
                            
                         """.trimIndent(),
-                        "\n@enduml").also {
-                        println(it)
-                    }
+                        "\n@enduml")
             )
         }
 
