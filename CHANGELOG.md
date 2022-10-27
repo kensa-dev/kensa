@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.3.0
+- #4 : Allow Java AssertJ tests to specify own assertion 
+- #5 : No longer exposing Kotlin's Function1 via Java api in WithAssertJ.java 
+
 ### v0.2.6
 - Clean up 
 
