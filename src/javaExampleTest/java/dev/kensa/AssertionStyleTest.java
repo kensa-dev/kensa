@@ -5,6 +5,8 @@ import dev.kensa.java.JavaKensaTest;
 import dev.kensa.java.WithAssertJ;
 import dev.kensa.java.WithHamcrest;
 import dev.kensa.sentence.Acronym;
+import org.assertj.core.api.IntegerAssert;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static dev.kensa.Colour.BackgroundDanger;
@@ -58,7 +61,15 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ, Ja
                     .hasSameClassAs("888");
         then(foo())
                 .isEqualTo(666);
+
+        then(foo(), usingIntegerAssert()).isEqualTo(666);
     }
+
+    @NotNull
+    private Function<Integer, IntegerAssert> usingIntegerAssert() {
+        return IntegerAssert::new;
+    }
+
 
     private StateExtractor<Integer> foo() {
         return interactions -> 666;

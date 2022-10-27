@@ -2,26 +2,26 @@ package dev.kensa.java;
 
 import dev.kensa.StateExtractor;
 import dev.kensa.context.AssertJThen;
-import kotlin.jvm.functions.Function1;
 import org.assertj.core.api.*;
 
 import java.time.temporal.ChronoUnit;
+import java.util.function.Function;
 
 import static dev.kensa.context.TestContextHolder.testContext;
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 public interface WithAssertJ {
 
-    private <T, A> A then(StateExtractor<T> extractor, Function1<T, A> assertProvider) {
-        return AssertJThen.then(testContext(), extractor, assertProvider);
+    default <T, A> A then(StateExtractor<T> extractor, Function<T, A> assertProvider) {
+        return AssertJThen.then(testContext(), extractor, assertProvider::apply);
     }
 
-    default <T, A> A thenEventually(StateExtractor<T> extractor, Function1<T, A> assertProvider) {
+    default <T, A> A thenEventually(StateExtractor<T> extractor, Function<T, A> assertProvider) {
         return thenEventually(10L, SECONDS, extractor, assertProvider);
     }
 
-    default <T, A> A thenEventually(Long timeout, ChronoUnit timeUnit, StateExtractor<T> extractor, Function1<T, A> assertProvider) {
-        return AssertJThen.thenEventually(timeout, timeUnit, testContext(), extractor, assertProvider);
+    default <T, A> A thenEventually(Long timeout, ChronoUnit timeUnit, StateExtractor<T> extractor, Function<T, A> assertProvider) {
+        return AssertJThen.thenEventually(timeout, timeUnit, testContext(), extractor, assertProvider::apply);
     }
 
     default <T> OptionalAssert<T> then(OptionalStateExtractor<T> extractor) {
