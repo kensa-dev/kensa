@@ -43,14 +43,16 @@ abstract class KensaMap<M : KensaMap<M>> {
     }
 
     operator fun <T> get(key: String): T? =
-            values[key]?.let { entry ->
-                @Suppress("UNCHECKED_CAST")
-                entry.value as T
+            synchronized(lock) {
+                values[key]?.let { entry ->
+                    @Suppress("UNCHECKED_CAST")
+                    entry.value as T
+                }
             }
 
-    fun containsKey(key: String): Boolean = values.containsKey(key)
+    fun containsKey(key: String): Boolean = synchronized(lock) { values.containsKey(key) }
 
-    fun entrySet(): Set<Entry> = LinkedHashSet(values.values)
+    fun entrySet(): Set<Entry> = synchronized(lock) { LinkedHashSet(values.values) }
 
     @Suppress("UNCHECKED_CAST")
     private fun self(): M = this as M
