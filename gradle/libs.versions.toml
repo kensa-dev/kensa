@@ -1,11 +1,11 @@
 [versions]
-kotlin = "1.7.10"
+kotlin = "1.7.21"
 node = "17.3.0"
 nodeGradle = "2.2.0"
 plantUml = "1.2022.6"
 pebble = "3.1.6"
 mockito = "4.0.0"
-kotest = "5.4.1"
+kotest = "5.5.4"
 junitPlatform = "1.8.2"
 junitJupiter = "5.8.2"
 assertJ = "3.22.0"
