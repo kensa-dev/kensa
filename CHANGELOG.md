@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.3.1
+- #6 : Synchronise read access for KensaMap.
+- Bump Kotlin & Kotest versions
+
 ### v0.3.0
 - #4 : Allow Java AssertJ tests to specify own assertion 
 - #5 : No longer exposing Kotlin's Function1 via Java api in WithAssertJ.java 
