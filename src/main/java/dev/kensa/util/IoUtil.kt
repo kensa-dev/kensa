@@ -42,7 +42,7 @@ object IoUtil {
 
         override fun postVisitDirectory(directory: Path?, exc: IOException?): FileVisitResult {
             directory?.let {
-                Files.delete(directory)
+                Files.delete(it)
             }
             return CONTINUE
         }
