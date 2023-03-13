@@ -10,7 +10,7 @@ import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anAcronymOf
 import dev.kensa.sentence.SentenceTokens.anIdentifierOf
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.collections.shouldContainExactly
 import org.junit.jupiter.api.Test
 
 internal class SentenceTest {
@@ -31,7 +31,7 @@ internal class SentenceTest {
                 )
         )
 
-        assertThat(sentence.squashedTokens).containsExactlyElementsOf(expected)
+        sentence.squashedTokens shouldContainExactly expected
     }
 
     @Test
@@ -46,7 +46,7 @@ internal class SentenceTest {
                 )
         )
 
-        assertThat(sentence.squashedTokens).containsExactlyElementsOf(expected)
+        sentence.squashedTokens shouldContainExactly expected
     }
 
     @Test
@@ -83,6 +83,6 @@ internal class SentenceTest {
                         aLiteralOf("true")
                 ))
 
-        assertThat(sentence.squashedTokens).containsExactlyElementsOf(expected)
+        sentence.squashedTokens shouldContainExactly expected
     }
 }

@@ -1,8 +1,9 @@
 package dev.kensa.sentence
 
 import dev.kensa.sentence.Acronym.Companion.of
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,30 +33,28 @@ internal class DictionaryTest {
                 of("moo", "means moo")
         )
         dictionary.putAcronyms(*acronyms)
-        assertThat(dictionary.acronyms).containsAll(acronyms.toList())
+        dictionary.acronyms shouldContainAll acronyms.toList()
     }
 
     @Test
     fun canPutKeywords() {
         dictionary.putKeyword("foo")
         dictionary.putKeywords("boo", "moo")
-        assertThat(dictionary.keywords).containsAll(listOf("foo", "boo", "moo").map { Keyword(it) })
+        dictionary.keywords shouldContainAll listOf("foo", "boo", "moo").map { Keyword(it) }
     }
 
     @Test
     fun canClearAcronyms() {
         dictionary.putAcronyms(of("foo", "foo"))
         dictionary.clearAcronyms()
-        assertThat(dictionary.acronyms).isEmpty()
+        dictionary.acronyms.shouldBeEmpty()
     }
 
     @ParameterizedTest
     @MethodSource("arguments")
     fun throwsOnAttemptToAddInvalidKeyword(keyword: String) {
-        assertThatThrownBy { dictionary.putKeyword(keyword) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-        assertThatThrownBy { dictionary.putKeywords("foo", keyword) }
-                .isInstanceOf(IllegalArgumentException::class.java)
+        shouldThrowExactly<IllegalArgumentException> { dictionary.putKeyword(keyword) }
+        shouldThrowExactly<IllegalArgumentException> { dictionary.putKeywords("foo", keyword) }
     }
 
     companion object {

@@ -3,6 +3,7 @@ package dev.kensa.kotest
 import dev.kensa.parse.Accessor.ParameterAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
+import dev.kensa.sentence.scanner.Index
 import io.kotest.assertions.withClue
 import io.kotest.matchers.*
 
@@ -39,3 +40,12 @@ private fun be(expected: ParameterAccessor): Matcher<ParameterAccessor> =
         .and(parameterAccessorHas("isCaptured", ParameterAccessor::isCaptured, be(expected.isCaptured)))
 
 private fun <R> parameterAccessorHas(name: String, extractValue: (ParameterAccessor) -> R, match: Matcher<R>) = extractingMatcher(name, extractValue, match)
+
+infix fun Index.shouldBe(expected: Index) = this should be(expected)
+
+private fun be(expected: Index) : Matcher<Index> =
+    (indexHas("Type", Index::type, be(expected.type)))
+        .and(indexHas("Start Index", Index::start, be(expected.start)))
+        .and(indexHas("End Index", Index::end, be(expected.end)))
+
+private fun <R> indexHas(name: String, extractValue: (Index) -> R, match: Matcher<R>) = extractingMatcher(name, extractValue, match)

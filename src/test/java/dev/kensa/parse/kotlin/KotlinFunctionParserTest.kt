@@ -57,7 +57,7 @@ internal class KotlinFunctionParserTest {
         )
 
         with(parsedMethod) {
-            sentences.first().tokens.shouldBe(expectedSentence.tokens)
+            sentences.first().tokens shouldBe expectedSentence.tokens
         }
     }
 

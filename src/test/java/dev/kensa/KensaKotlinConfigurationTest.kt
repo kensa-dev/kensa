@@ -3,8 +3,11 @@ package dev.kensa
 import dev.kensa.Kensa.configuration
 import dev.kensa.Kensa.configure
 import dev.kensa.Kensa.konfigure
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.throwable.shouldHaveMessage
 import org.junit.jupiter.api.Test
 import java.nio.file.Paths
 
@@ -14,7 +17,7 @@ internal class KensaKotlinConfigurationTest {
     internal fun outIsEnabledByDefault() {
         val configuration = Configuration()
 
-        assertThat(configuration.isOutputEnabled).isTrue
+        configuration.isOutputEnabled.shouldBeTrue()
     }
 
     @Test
@@ -23,7 +26,7 @@ internal class KensaKotlinConfigurationTest {
             disableOutput()
         }
 
-        assertThat(configuration.isOutputEnabled).isFalse
+        configuration.isOutputEnabled.shouldBeFalse()
     }
 
     @Test
@@ -31,7 +34,7 @@ internal class KensaKotlinConfigurationTest {
         System.setProperty("kensa.disable.output", "true")
 
         val configuration = Configuration()
-        assertThat(configuration.isOutputEnabled).isFalse
+        configuration.isOutputEnabled.shouldBeFalse()
 
         System.clearProperty("kensa.disable.output")
     }
@@ -41,7 +44,7 @@ internal class KensaKotlinConfigurationTest {
         System.setProperty("kensa.disable.output", "false")
 
         val configuration = Configuration()
-        assertThat(configuration.isOutputEnabled).isTrue
+        configuration.isOutputEnabled.shouldBeTrue()
 
         System.clearProperty("kensa.disable.output")
     }
@@ -51,7 +54,7 @@ internal class KensaKotlinConfigurationTest {
         System.setProperty("kensa.disable.output", "blah")
 
         val configuration = Configuration()
-        assertThat(configuration.isOutputEnabled).isTrue
+        configuration.isOutputEnabled.shouldBeTrue()
 
         System.clearProperty("kensa.disable.output")
     }
@@ -61,34 +64,32 @@ internal class KensaKotlinConfigurationTest {
         System.setProperty("kensa.disable.output", "")
 
         val configuration = Configuration()
-        assertThat(configuration.isOutputEnabled).isFalse
+        configuration.isOutputEnabled.shouldBeFalse()
 
         System.clearProperty("kensa.disable.output")
     }
 
     @Test
     fun throwsWhenIssueTrackerUrlInvalid() {
-        assertThatThrownBy { configure().withIssueTrackerUrl("foo") }
-            .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("Invalid Issue Tracker URL specified.")
+        shouldThrowExactly<IllegalArgumentException> { configure().withIssueTrackerUrl("foo") }
+            .shouldHaveMessage("Invalid Issue Tracker URL specified.")
     }
 
     @Test
     fun throwsWhenKensaOutputDirNotAbsolute() {
-        assertThatThrownBy { configure().withOutputDir("foo") }
-            .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("OutputDir must be absolute.")
+        shouldThrowExactly<IllegalArgumentException> { configure().withOutputDir("foo") }
+            .shouldHaveMessage("OutputDir must be absolute.")
     }
 
     @Test
     fun canSetKensaOutputDir() {
         configure().withOutputDir("/foo/kensa-output")
-        assertThat(configuration.outputDir).isEqualTo(Paths.get("/foo/kensa-output"))
+        configuration.outputDir shouldBe Paths.get("/foo/kensa-output")
     }
 
     @Test
     fun appendsKensaOutputDirWithDirectoryWhenMissing() {
         configure().withOutputDir("/foo")
-        assertThat(configuration.outputDir).isEqualTo(Paths.get("/foo/kensa-output"))
+        configuration.outputDir shouldBe Paths.get("/foo/kensa-output")
     }
 }

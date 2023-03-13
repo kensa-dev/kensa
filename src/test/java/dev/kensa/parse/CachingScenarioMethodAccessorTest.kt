@@ -1,6 +1,7 @@
 package dev.kensa.parse
 
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -15,15 +16,15 @@ internal class CachingScenarioMethodAccessorTest {
 
     @Test
     internal fun `can access scenarios`() {
-        assertThat(accessor.valueOf("scenario", "aValue")).isEqualTo("FooBoo!!")
-        assertThat(accessor.valueOf("scenario", "aNullValue")).isNull()
-        assertThat(accessor.valueOf("nullScenario", "aValue")).isNull()
-        assertThat(accessor.valueOf("scenarioDoesNotExist", "foo")).isNull()
+        accessor.valueOf("scenario", "aValue") shouldBe "FooBoo!!"
+        accessor.valueOf("scenario", "aNullValue").shouldBeNull()
+        accessor.valueOf("nullScenario", "aValue").shouldBeNull()
+        accessor.valueOf("scenarioDoesNotExist", "foo").shouldBeNull()
     }
 
     @Test
     internal fun `caches return values`() {
-        assertThat(accessor.valueOf("scenario", "aValue")).isEqualTo("FooBoo!!");
-        assertThat(accessor.valueOf("scenario", "aValue")).isEqualTo("FooBoo!!");
+        accessor.valueOf("scenario", "aValue") shouldBe "FooBoo!!"
+        accessor.valueOf("scenario", "aValue") shouldBe "FooBoo!!"
     }
 }

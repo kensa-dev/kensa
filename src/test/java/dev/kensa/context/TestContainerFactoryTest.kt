@@ -2,7 +2,8 @@ package dev.kensa.context
 
 import dev.kensa.Kensa
 import dev.kensa.output.DefaultTestWriter
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.maps.shouldNotBeEmpty
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -37,7 +38,7 @@ internal class TestContainerFactoryTest {
         whenever(extensionContext.requiredTestClass).thenReturn(testClass)
         val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
 
-        assertThat(result.invocations.values.toList()).extracting("method").containsAll(expected)
+        result.invocations.values.map { it.method } shouldContainAll expected
     }
 
     @Test
@@ -47,9 +48,7 @@ internal class TestContainerFactoryTest {
         whenever(extensionContext.requiredTestClass).thenReturn(testClass)
         val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
 
-        assertThat(result.invocations).anySatisfy { _, value ->
-            assertThat(value.displayName).isEqualTo("Test 7")
-        }
+        result.invocations.filterValues { it.displayName == "Test 7" }.shouldNotBeEmpty()
     }
 
     private interface TestInterface {

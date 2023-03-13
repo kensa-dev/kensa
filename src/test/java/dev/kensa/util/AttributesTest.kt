@@ -4,21 +4,23 @@ import dev.kensa.render.diagram.directive.ArrowStyle.UmlSynchronous
 import dev.kensa.render.diagram.directive.ArrowStyle.UmlSynchronousDelete
 import dev.kensa.util.Attributes.Key.Arrow
 import dev.kensa.util.Attributes.Key.Group
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class AttributesTest {
 
     @Test
     internal fun `can get group attribute`() {
-        assertThat(Attributes.of(Group, "Test").group).isEqualTo("Test")
-        assertThat(Attributes.emptyAttributes().group).isNull()
+        Attributes.of(Group, "Test").group shouldBe "Test"
+        Attributes.emptyAttributes().group.shouldBeNull()
     }
 
     @Test
     internal fun `can get line type attribute`() {
-        assertThat(Attributes.of(Arrow, UmlSynchronousDelete).arrowStyle).isEqualTo(UmlSynchronousDelete)
-        assertThat(Attributes.emptyAttributes().arrowStyle).isEqualTo(UmlSynchronous)
+        Attributes.of(Arrow, UmlSynchronousDelete).arrowStyle shouldBe UmlSynchronousDelete
+        Attributes.emptyAttributes().arrowStyle shouldBe UmlSynchronous
     }
 
     @Test
@@ -28,7 +30,7 @@ internal class AttributesTest {
 
         val result = a1.merge(a2)
 
-        assertThat(result.toList().map { Pair(it.key, it.value) }).containsExactly(
+        result.toList().map { Pair(it.key, it.value) }.shouldContainExactly(
                 Pair("key1", "val1"),
                 Pair("key2", "val2"),
                 Pair("key3", "val3"),

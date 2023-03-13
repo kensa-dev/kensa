@@ -4,8 +4,9 @@ import dev.kensa.util.Attributes.Companion.emptyAttributes
 import dev.kensa.util.Attributes.Companion.of
 import dev.kensa.util.KensaMap
 import dev.kensa.util.NamedValue
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.concurrent.Executors
@@ -16,7 +17,7 @@ internal class KensaMapTest {
     @ParameterizedTest
     @MethodSource("mapInstances")
     internal fun <M : KensaMap<M>> throwsWhenPutWithUniqueKeyDoesNotContainPlaceholder(map: M) {
-        assertThatThrownBy { map.putWithUniqueKey("foo", "foo", emptyAttributes()) }.isInstanceOf(IllegalArgumentException::class.java)
+        shouldThrowExactly<IllegalArgumentException> { map.putWithUniqueKey("foo", "foo", emptyAttributes()) }
     }
 
     @ParameterizedTest
@@ -32,10 +33,10 @@ internal class KensaMapTest {
             awaitTermination(5, TimeUnit.SECONDS)
         }
 
-        assertThat(map.entrySet().size).isEqualTo(threadCount)
+        map.entrySet().size shouldBe threadCount
         repeat(threadCount) {
             val expectedKey = "Foo" + if (it == 0) "" else " $it"
-            assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue
+            map.containsKey(expectedKey).shouldBe(true)
         }
     }
 
@@ -52,10 +53,10 @@ internal class KensaMapTest {
             awaitTermination(5, TimeUnit.SECONDS)
         }
 
-        assertThat(map.entrySet().size).isEqualTo(threadCount)
+        map.entrySet().size shouldBe threadCount
         repeat(threadCount) {
             val expectedKey = "String" + if (it == 0) "" else it
-            assertThat(map.containsKey(expectedKey)).describedAs("Expected key [%s] not found in map", expectedKey).isTrue
+            map.containsKey(expectedKey).shouldBeTrue()
         }
     }
 
@@ -65,7 +66,7 @@ internal class KensaMapTest {
         val key = "foo"
         val value = "FOO!"
         map.put(key, value)
-        assertThat(map.get<String>(key)).isEqualTo(value)
+        map.get<String>(key) shouldBe value
     }
 
     @ParameterizedTest
@@ -76,13 +77,13 @@ internal class KensaMapTest {
         val attributeName = "language"
         val attributeValue = "xml"
         map.put(key, value, of(attributeName, attributeValue))
-        assertThat(map.get<String>(key)).isEqualTo(value)
+        map.get<String>(key) shouldBe value
 
         // Attributes currently only required to be Iterable to allow serialization into Json
         map.entrySet().forEach { entry: KensaMap.Entry ->
             entry.attributes.forEach { (name, value) ->
-                assertThat(name).isEqualTo(attributeName)
-                assertThat(value).isEqualTo(attributeValue)
+                name shouldBe attributeName
+                value shouldBe attributeValue
             }
         }
     }
@@ -97,7 +98,7 @@ internal class KensaMapTest {
 
         repeat(size) { index ->
             val key = if (index == 0) "Object" else "Object$index"
-            assertThat(map.get<Any>(key)).isEqualTo(values[index])
+            map.get<Any>(key) shouldBe values[index]
         }
     }
 
@@ -111,7 +112,7 @@ internal class KensaMapTest {
 
         repeat(size) { index ->
             val key = if (index == 0) "Object" else "Object$index"
-            assertThat(map.get<Any>(key)).isEqualTo(values[index])
+            map.get<Any>(key) shouldBe values[index]
         }
     }
 
@@ -124,7 +125,7 @@ internal class KensaMapTest {
         map.putAll(values)
 
         val result = map.entrySet().map(KensaMap.Entry::value).toList()
-        assertThat(result).isEqualTo(values)
+        result shouldBe values
     }
 
     @ParameterizedTest
@@ -136,7 +137,7 @@ internal class KensaMapTest {
         map.putNamedValues(values)
 
         (0..size).forEach { index ->
-            assertThat(map.get<String>(index.toString())).isEqualTo(values[index].value)
+            map.get<String>(index.toString()) shouldBe values[index].value
         }
     }
 
