@@ -3,8 +3,8 @@ package dev.kensa.parse.state
 import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
 import dev.kensa.parse.state.StateMachineTest.Event.*
 import dev.kensa.parse.state.StateMachineTest.State.*
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -72,36 +72,36 @@ internal class StateMachineTest {
 
     @Test
     internal fun `can transition states within legal definitions and capture events`() {
-        assertThat(stateMachine.state).isEqualTo(State1)
+        stateMachine.state shouldBe State1
 
         stateMachine.transition(Event2)
-        assertThat(stateMachine.state).isEqualTo(State2)
-        assertThat(lastState).isEqualTo(State1)
-        assertThat(lastEvent).isEqualTo(Event2)
+        stateMachine.state shouldBe State2
+        lastState shouldBe State1
+        lastEvent shouldBe Event2
 
         stateMachine.transition(Event4)
-        assertThat(stateMachine.state).isEqualTo(State3)
-        assertThat(lastState).isEqualTo(State2)
-        assertThat(lastEvent).isEqualTo(Event4)
+        stateMachine.state shouldBe State3
+        lastState shouldBe State2
+        lastEvent shouldBe Event4
     }
 
     @Test
     internal fun `can ignore events from certain states`() {
         stateMachine.transition(Event2)
-        assertThat(stateMachine.state).isEqualTo(State2)
+        stateMachine.state shouldBe State2
 
         stateMachine.transition(Event1)
-        assertThat(stateMachine.state).isEqualTo(State2)
+        stateMachine.state shouldBe State2
 
         stateMachine.transition(Event3)
-        assertThat(stateMachine.state).isEqualTo(State3)
+        stateMachine.state shouldBe State3
 
         stateMachine.transition(Event1)
-        assertThat(stateMachine.state).isEqualTo(State3)
+        stateMachine.state shouldBe State3
     }
 
     @Test
     internal fun `throws on illegal transitions`() {
-        assertThatThrownBy { stateMachine.transition(Event4) }.isInstanceOf(IllegalStateException::class.java)
+        shouldThrowExactly<IllegalStateException> { stateMachine.transition(Event4) }
     }
 }

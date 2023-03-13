@@ -1,17 +1,17 @@
 package dev.kensa.sentence
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class AcronymTest {
     @Test
     internal fun throwsExceptionWhenAcronymIsTooShort() {
-        assertThatThrownBy { Acronym.of("A", "Too Short") }.isInstanceOf(IllegalArgumentException::class.java)
+        shouldThrowExactly<IllegalArgumentException> { Acronym.of("A", "Too Short") }
     }
 
     @Test
     internal fun createsShortAcronym() {
-        assertThat( Acronym.of("AB", "Just Right").meaning).isEqualTo("Just Right")
+        Acronym.of("AB", "Just Right").meaning shouldBe "Just Right"
     }
 }

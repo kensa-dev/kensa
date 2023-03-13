@@ -16,7 +16,7 @@ import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anAcronymOf
 import dev.kensa.sentence.SentenceTokens.anIndent
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.collections.shouldContainExactly
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -53,32 +53,31 @@ internal class SentenceBuilderTest {
             appendIdentifier(Location(5, 0), value = "highlightedIdentifier")
         }
 
-        assertThat(builder.build().tokens)
-            .containsExactly(
-                aKeywordOf("Given"),
-                anAcronymOf("FOO"),
-                aWordOf("moo"),
-                anAcronymOf("BAR"),
-                aWordOf("ZOO"),
-                aStringLiteralOf("stringLiteral1"),
-                aLiteralOf("10"),
-                aScenarioIdentifierOf("scenario.call"),
-                aFieldIdentifierOf("fieldName"),
-                aMethodIdentifierOf("methodName"),
-                aParameterValueOf("parameterName"),
-                aNewline(),
-                anIndent(),
-                anIndent(),
-                anIndent(),
-                anIndent(),
-                anIndent(),
-                aWordOf("sends"),
-                aWordOf("a"),
-                aWordOf("thing"),
-                aWordOf("something"),
-                aWordOf("A_CONSTANT_019"),
-                aHighlightedIdentifierOf("highlightedIdentifier", EmphasisDescriptor(textColour = TextDanger))
-            )
+        builder.build().tokens.shouldContainExactly(
+            aKeywordOf("Given"),
+            anAcronymOf("FOO"),
+            aWordOf("moo"),
+            anAcronymOf("BAR"),
+            aWordOf("ZOO"),
+            aStringLiteralOf("stringLiteral1"),
+            aLiteralOf("10"),
+            aScenarioIdentifierOf("scenario.call"),
+            aFieldIdentifierOf("fieldName"),
+            aMethodIdentifierOf("methodName"),
+            aParameterValueOf("parameterName"),
+            aNewline(),
+            anIndent(),
+            anIndent(),
+            anIndent(),
+            anIndent(),
+            anIndent(),
+            aWordOf("sends"),
+            aWordOf("a"),
+            aWordOf("thing"),
+            aWordOf("something"),
+            aWordOf("A_CONSTANT_019"),
+            aHighlightedIdentifierOf("highlightedIdentifier", EmphasisDescriptor(textColour = TextDanger))
+        )
     }
 
     private fun simpleAcronymOf(acronym: String) = of(acronym, "")
