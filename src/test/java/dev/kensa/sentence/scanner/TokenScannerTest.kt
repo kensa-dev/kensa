@@ -4,7 +4,7 @@ import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.HighlightedIdentifier
 import dev.kensa.sentence.TokenType.Keyword
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -26,8 +26,8 @@ internal class TokenScannerTest {
 
         val (actual, indices) = tokenScannerWith(emptySet(), setOf(HighlightedIdentifier("MyIdentifier"))).scan(identifier)
 
-        assertThat(actual).isEqualTo(identifier)
-        assertThat(transformed(actual, indices)).isEqualTo(listOf(identifier))
+        actual shouldBe identifier
+        transformed(actual, indices) shouldBe listOf(identifier)
     }
 
     @Test
@@ -36,7 +36,7 @@ internal class TokenScannerTest {
         val (_, indices) = tokenScannerWith(emptySet()).scan(string)
 
         indices.filter { index -> index.type === Keyword }
-            .forEach { index -> assertThat(index.start).isEqualTo(0) }
+            .forEach { index -> index.start shouldBe 0 }
     }
 
     @Test
@@ -45,7 +45,7 @@ internal class TokenScannerTest {
         val expected = listOf("when", "A", "Thing", "Happens")
         val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -54,7 +54,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -63,7 +63,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -72,7 +72,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -81,7 +81,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     // Kensa#6
@@ -91,7 +91,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -100,7 +100,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -109,7 +109,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -118,7 +118,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @ParameterizedTest
@@ -127,7 +127,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -136,7 +136,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     @Test
@@ -145,7 +145,7 @@ internal class TokenScannerTest {
         val string = expected.joinToString("")
         val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
 
-        assertThat(transformed(scanned, indices)).isEqualTo(expected)
+        transformed(scanned, indices) shouldBe expected
     }
 
     private fun transformed(string: String, indices: Indices): List<String> =

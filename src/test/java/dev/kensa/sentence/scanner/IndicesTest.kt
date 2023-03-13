@@ -1,8 +1,8 @@
 package dev.kensa.sentence.scanner
 
-import dev.kensa.matcher.IndexMatcher.theSameAs
+import dev.kensa.kotest.shouldBe
 import dev.kensa.sentence.TokenType.Acronym
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.collections.shouldHaveSize
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
@@ -18,9 +18,9 @@ internal class IndicesTest {
             toList()
         }
 
-        assertThat(result).hasSize(expected.size)
+        result shouldHaveSize expected.size
         for (index in result.indices) {
-            assertThat(result[index]).`is`(theSameAs(expected[index]))
+            result[index] shouldBe expected[index]
         }
     }
 

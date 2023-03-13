@@ -1,7 +1,7 @@
 package dev.kensa.render
 
 import dev.kensa.util.*
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -16,12 +16,12 @@ internal class RenderersTest {
 
     @Test
     internal fun `handles null`() {
-        assertThat(renderers.renderValueOnly(null)).isEqualTo("NULL")
+        renderers.renderValueOnly(null) shouldBe "NULL"
     }
 
     @Test
     internal fun `defaults to object renderer if no specific renderer exists`() {
-        assertThat(renderers.renderValueOnly(100)).isEqualTo("100")
+        renderers.renderValueOnly(100) shouldBe "100"
     }
 
     @Test
@@ -37,8 +37,8 @@ internal class RenderersTest {
             }
         })
 
-        assertThat(renderers.renderValueOnly(100)).isEqualTo("<100>")
-        assertThat(renderers.renderValueOnly(true)).isEqualTo("<<true>>")
+        renderers.renderValueOnly(100) shouldBe "<100>"
+        renderers.renderValueOnly(true) shouldBe "<<true>>"
     }
 
     @Test
@@ -54,8 +54,8 @@ internal class RenderersTest {
             }
         })
 
-        assertThat(renderers.renderValueOnly(100)).isEqualTo("<100>")
-        assertThat(renderers.renderValueOnly(true)).isEqualTo("<<true>>")
+        renderers.renderValueOnly(100) shouldBe "<100>"
+        renderers.renderValueOnly(true) shouldBe "<<true>>"
     }
 
     @Test
@@ -66,7 +66,7 @@ internal class RenderersTest {
             }
         })
 
-        assertThat(renderers.renderValueOnly(SomeKotlinSubClass(field1 = "foo"))).isEqualTo("<foo>")
+        renderers.renderValueOnly(SomeKotlinSubClass(field1 = "foo")) shouldBe "<foo>"
     }
 
     @Test
@@ -77,7 +77,7 @@ internal class RenderersTest {
             }
         })
 
-        assertThat(renderers.renderValueOnly(SomeJavaSubClass(10, "foo"))).isEqualTo("<foo>")
+        renderers.renderValueOnly(SomeJavaSubClass(10, "foo")) shouldBe "<foo>"
     }
 
     @Test
@@ -88,7 +88,7 @@ internal class RenderersTest {
             }
         })
 
-        assertThat(renderers.renderValueOnly(SomeKotlinSubClass(666, ""))).isEqualTo("<666>")
+        renderers.renderValueOnly(SomeKotlinSubClass(666, "")) shouldBe "<666>"
     }
 
     @Test
@@ -99,7 +99,7 @@ internal class RenderersTest {
             }
         })
 
-        assertThat(renderers.renderValueOnly(SomeJavaSubClass(666, ""))).isEqualTo("<666>")
+        renderers.renderValueOnly(SomeJavaSubClass(666, "")) shouldBe "<666>"
     }
 
     @Test
@@ -121,7 +121,7 @@ internal class RenderersTest {
                 }
             })
 
-            assertThat(renderValueOnly(SomeKotlinSubClass(10, "boo"))).isEqualTo("<<<boo>>>")
+            renderValueOnly(SomeKotlinSubClass(10, "boo")) shouldBe "<<<boo>>>"
         }
     }
 
@@ -144,7 +144,7 @@ internal class RenderersTest {
                 }
             })
 
-            assertThat(renderValueOnly(SomeJavaSubClass(10, "boo"))).isEqualTo("<<<boo>>>")
+            renderValueOnly(SomeJavaSubClass(10, "boo")) shouldBe "<<<boo>>>"
         }
     }
 }

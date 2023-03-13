@@ -1,7 +1,5 @@
 package dev.kensa.parse.java
 
-import dev.kensa.example.JavaTestFromInterface
-import dev.kensa.example.JavaTestWithVariousParameterCombinations
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
 import dev.kensa.parse.Accessor
@@ -25,7 +23,6 @@ import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldContainKey
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class JavaMethodParserTest {
@@ -71,7 +68,7 @@ internal class JavaMethodParserTest {
                 asClue { shouldBe(MethodAccessor(method)) }
             }
 
-            assertThat(sentences.first().tokens).isEqualTo(expectedSentence.tokens)
+            sentences.first().tokens shouldBe expectedSentence.tokens
         }
     }
 

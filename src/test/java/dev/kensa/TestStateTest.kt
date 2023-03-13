@@ -1,24 +1,24 @@
 package dev.kensa
 
 import dev.kensa.state.TestState.*
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class TestStateTest {
     @Test
     internal fun canDeriveOverallState() {
-        assertThat(Passed.overallStateFrom(Failed)).isEqualTo(Failed)
-        assertThat(Failed.overallStateFrom(Passed)).isEqualTo(Failed)
-        assertThat(NotExecuted.overallStateFrom(Failed)).isEqualTo(Failed)
-        assertThat(NotExecuted.overallStateFrom(Passed)).isEqualTo(Passed)
+        Passed.overallStateFrom(Failed) shouldBe Failed
+        Failed.overallStateFrom(Passed) shouldBe Failed
+        NotExecuted.overallStateFrom(Failed) shouldBe Failed
+        NotExecuted.overallStateFrom(Passed) shouldBe Passed
 
         // Following should not change overall state
-        assertThat(Failed.overallStateFrom(Failed)).isEqualTo(Failed)
-        assertThat(Passed.overallStateFrom(Passed)).isEqualTo(Passed)
-        assertThat(NotExecuted.overallStateFrom(NotExecuted)).isEqualTo(NotExecuted)
-        assertThat(NotExecuted.overallStateFrom(Disabled)).isEqualTo(NotExecuted)
-        assertThat(Disabled.overallStateFrom(Disabled)).isEqualTo(Disabled)
-        assertThat(Disabled.overallStateFrom(Failed)).isEqualTo(Disabled)
-        assertThat(Disabled.overallStateFrom(Passed)).isEqualTo(Disabled)
+        Failed.overallStateFrom(Failed) shouldBe Failed
+        Passed.overallStateFrom(Passed) shouldBe Passed
+        NotExecuted.overallStateFrom(NotExecuted) shouldBe NotExecuted
+        NotExecuted.overallStateFrom(Disabled) shouldBe NotExecuted
+        Disabled.overallStateFrom(Disabled) shouldBe Disabled
+        Disabled.overallStateFrom(Failed) shouldBe Disabled
+        Disabled.overallStateFrom(Passed) shouldBe Disabled
     }
 }
