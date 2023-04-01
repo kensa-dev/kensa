@@ -5,7 +5,8 @@ import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
 import dev.kensa.output.*
-import dev.kensa.render.Renderer
+import dev.kensa.render.InteractionRenderer
+import dev.kensa.render.ValueRenderer
 import dev.kensa.render.Renderers
 import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.sentence.Acronym
@@ -59,12 +60,20 @@ object Kensa {
         configuration.isOutputEnabled = false
     }
 
-    fun <T : Any> withRenderer(klass: Class<T>, renderer: Renderer<out T>): Kensa = apply {
-        configuration.renderers.add(klass, renderer)
+    fun <T : Any> withValueRenderer(klass: Class<T>, renderer: ValueRenderer<out T>): Kensa = apply {
+        configuration.renderers.addValueRenderer(klass, renderer)
     }
 
-    fun <T : Any> withRenderer(kClass: KClass<T>, renderer: Renderer<out T>): Kensa = apply {
-        configuration.renderers.add(kClass, renderer)
+    fun <T : Any> withValueRenderer(kClass: KClass<T>, renderer: ValueRenderer<out T>): Kensa = apply {
+        configuration.renderers.addValueRenderer(kClass, renderer)
+    }
+
+    fun <T : Any> withInteractionRenderer(klass: Class<T>, renderer: InteractionRenderer<out T>): Kensa = apply {
+        configuration.renderers.addInteractionRenderer(klass, renderer)
+    }
+
+    fun <T : Any> withInteractionRenderer(kClass: KClass<T>, renderer: InteractionRenderer<out T>): Kensa = apply {
+        configuration.renderers.addInteractionRenderer(kClass, renderer)
     }
 
     fun withHighlightedIdentifier(vararg identifiers: HighlightedIdentifier): Kensa = apply {

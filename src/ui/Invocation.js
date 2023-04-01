@@ -103,7 +103,7 @@ export class Invocation extends Component {
 
     exceptionBlock(executionException) {
         if (executionException["message"]) {
-            return (<div className="message-body has-text-black test-failed">
+            return (<div key={2} className="message-body has-text-black test-failed">
                 <ExecutionException executionException={executionException}/>
             </div>)
         }
@@ -124,7 +124,7 @@ export class Invocation extends Component {
                 this.hasElements('parameters') ||
                 this.hasElements('capturedInteractions') ||
                 this.hasElements('sequenceDiagram')) {
-            return <div className="message-body">
+            return <div key={1} className="message-body">
                 <div className="buttons has-addons">
                     {this.buttonFor('givens', 'Givens')}
                     {this.buttonFor('parameters', 'Parameters')}
@@ -134,9 +134,10 @@ export class Invocation extends Component {
                 {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable highlights={highlights} namedValues={invocation.givens}/></div>)}
                 {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable highlights={highlights} namedValues={invocation.parameters}/></div>)}
                 {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
-                        capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
+                        invocationState={this.state.invocation.state} capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
                 {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}
                                                                                                                                   capturedInteractions={invocation.capturedInteractions}
+                                                                                                                                  invocationState={invocation.state}
                                                                                                                                   highlights={invocation.highlights}/>
                 </div>)}
             </div>
@@ -147,7 +148,7 @@ export class Invocation extends Component {
 
     sentences(invocation, testStateClass) {
         return (
-                <div className="message-body has-text-black">
+                <div key={3} className="message-body has-text-black">
                     {invocation.sentences.map((sentence, index) => <Sentence key={index} expanded={false} sentence={sentence} acronyms={invocation.acronyms}/>)}
                     <span className={"tag is-pulled-right " + testStateClass}>Executed in: {invocation.elapsedTime}</span>
                 </div>

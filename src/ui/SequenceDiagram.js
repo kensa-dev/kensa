@@ -1,70 +1,16 @@
 import React, {Component} from "react";
-import Lowlight from 'react-lowlight';
-import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {joinForRegex} from "./Util";
-
-class RenderableAttributes extends Component {
-
-    setCodeRef(wrappingDiv) {
-        if (wrappingDiv) {
-            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
-            if (highlightRegexp) {
-                highlightPlainText(wrappingDiv, highlightRegexp)
-            }
-        }
-    }
-
-    render() {
-        const attributes = this.props.attributes;
-        return (
-            <div>
-                <table className="table pairs is-borderless is-narrow">
-                    <tbody>
-                    {attributes
-                        .map((attribute) => {
-                                if (attribute["showOnSequenceDiagram"]) {
-                                    let attributeName = Object.keys(attribute)[1];
-                                    return attribute[attributeName].map((item, index) => {
-                                        let itemName = Object.keys(item)[0];
-                                        let value = item[itemName];
-                                        return (<tr key={index}>
-                                            <td  className="name">{itemName}</td>
-                                            <td>
-                                                <div ref={this.setCodeRef.bind(this)}>{value}</div>
-                                            </td>
-                                        </tr>);
-                                    })
-
-                                }
-                            }
-                        )}
-                    </tbody>
-                </table>
-                {attributes.length > 0 ? <div className="is-divider"/> : null}
-            </div>
-        );
-    }
-}
+import {RenderableValues} from "./RenderableValues";
+import {RenderableAttributes} from "./RenderableAttributes";
 
 class Popup extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            language: this.deriveLanguage()
-        };
+        this.state = {};
 
         this.onKeyDown = this.onKeyDown.bind(this)
-    }
-
-    deriveLanguage() {
-        let languageAttr;
-        if (this.props.interaction) {
-            languageAttr = this.props.interaction.attributes.find(attr => attr.hasOwnProperty("language"));
-        }
-        return languageAttr ? languageAttr["language"] : "plainText";
     }
 
     onKeyDown(event) {
@@ -81,24 +27,11 @@ class Popup extends Component {
         document.removeEventListener("keydown", this.onKeyDown, false);
     }
 
-    setCodeRef(wrappingDiv) {
-        if (wrappingDiv && this.props.interaction) {
-            let highlightRegexp = this.props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
-            if (highlightRegexp) {
-                let codeNode = wrappingDiv.firstElementChild.firstElementChild;
-                if (this.state.language === 'xml') {
-                    highlightXml(codeNode, highlightRegexp);
-                } else if (this.state.language === 'json') {
-                    highlightJson(codeNode, highlightRegexp);
-                } else {
-                    highlightPlainText(codeNode, highlightRegexp)
-                }
-            }
-        }
-    }
-
     render() {
         if (this.props.interaction) {
+            let renderedAttributes = this.props.interaction["rendered"]["attributes"]
+            let renderedValues = this.props.interaction["rendered"]["values"]
+
             return (
                 <div className={"modal is-active"}>
                     <div className="modal-background" onClick={this.props.onHide}/>
@@ -109,10 +42,15 @@ class Popup extends Component {
                         </header>
                         <section className="modal-card-body">
                             <RenderableAttributes highlights={this.props.highlights}
-                                                                 attributes={this.props.interaction.renderableAttributes}/>
-                            <div ref={this.setCodeRef.bind(this)}>
-                                <Lowlight language={this.state.language} value={this.props.interaction.value}/>
-                            </div>
+                                                  attributes={renderedAttributes}
+                                                  invocationState={this.props.invocationState}
+                                                  isSequenceDiagram={true}/>
+                            <RenderableValues highlights={this.props.highlights}
+                                              values={renderedValues}
+                                              invocationState={this.props.invocationState}
+                                              interaction={this.state.capturedInteraction}
+                                              interactionRef={this.interactionRef}
+                                              isSequenceDiagram={true}/>
                         </section>
                     </div>
                 </div>
@@ -190,7 +128,9 @@ export class SequenceDiagram extends Component {
 
     popup() {
         if (this.state.popupActive) {
-            return <Popup onHide={this.hidePopup} interaction={this.state.interaction}
+            return <Popup onHide={this.hidePopup}
+                          invocationState={this.props.invocationState}
+                          interaction={this.state.interaction}
                           highlights={this.props.highlights}/>
         }
     }

@@ -1,50 +1,51 @@
 package dev.kensa.render
 
-import dev.kensa.util.NamedValue
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 
 class Renderers {
-    private val renderers: SortedMap<KClass<*>, Renderer<Any>> = TreeMap(SubclassFirstComparator())
+    private val valueRenderers: SortedMap<KClass<*>, ValueRenderer<Any>> = TreeMap(SubclassFirstComparator())
+    private val interactionRenderers: SortedMap<KClass<*>, InteractionRenderer<Any>> = TreeMap(SubclassFirstComparator())
 
-    fun <T : Any> add(klass: Class<T>, renderer: Renderer<out T>) {
-        add(klass.kotlin, renderer)
+    fun <T : Any> addValueRenderer(klass: Class<T>, renderer: ValueRenderer<out T>) {
+        addValueRenderer(klass.kotlin, renderer)
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Any> add(klass: KClass<T>, renderer: Renderer<out T>) {
-        renderers[klass] = renderer as Renderer<Any>
+    fun <T : Any> addValueRenderer(klass: KClass<T>, renderer: ValueRenderer<out T>) {
+        valueRenderers[klass] = renderer as ValueRenderer<Any>
     }
 
-    fun renderValueOnly(value: Any?): String = render(value)
-
-    fun renderAll(value: Any?): Set<Pair<Boolean, NamedValue>> {
-        return LinkedHashSet<Pair<Boolean,NamedValue>>().apply {
-            value?.let {
-                rendererFor(it::class)?.let { renderer ->
-                    if (renderer is RendererWithAttributes<Any>) {
-                        for (attribute in renderer.attributes()) {
-                            when (val attr = attribute.renderableFrom(it)) {
-                                is Map<*, *> -> {
-                                    add(Pair(attribute.showOnSequenceDiagram(), NamedValue(attribute.name(), attr.entries.map { entry -> NamedValue(entry.key as String, entry.value ?: "NULL") }.toSet())))
-                                }
-                                else -> add(Pair(attribute.showOnSequenceDiagram(), NamedValue(attribute.name(), render(attr))))
-                            }
-                        }
-                    }
-                } ?: value.toString()
-            } ?: add(Pair(false, NamedValue("value", "NULL")))
-        }
+    fun <T : Any> addInteractionRenderer(klass: Class<T>, renderer: InteractionRenderer<out T>) {
+        addInteractionRenderer(klass.kotlin, renderer)
     }
 
-    private fun render(value: Any?): String = value?.let { rendererFor(value::class)?.render(value) ?: value.toString() } ?: "NULL"
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> addInteractionRenderer(klass: KClass<T>, renderer: InteractionRenderer<out T>) {
+        interactionRenderers[klass] = renderer as InteractionRenderer<Any>
+    }
 
-    private fun rendererFor(kClass: KClass<*>): Renderer<Any>? {
-        return renderers.entries
-                .filter { entry -> entry.key.isSuperclassOf(kClass) }
-                .map { entry -> entry.value }
-                .firstOrNull()
+    fun renderValue(value: Any?): String = value?.let { valueRendererFor(value::class)?.render(value) ?: value.toString() } ?: "NULL"
+
+    private fun valueRendererFor(kClass: KClass<*>): ValueRenderer<Any>? {
+        return valueRenderers.entries
+            .filter { entry -> entry.key.isSuperclassOf(kClass) }
+            .map { entry -> entry.value }
+            .firstOrNull()
+    }
+
+    fun renderInteraction(value: Any): List<RenderedInteraction> =
+        interactionRendererFor(value::class)?.render(value) ?: listOf(RenderedInteraction("Undefined Value", value.toString()))
+
+    fun renderInteractionAttributes(value: Any): List<RenderedAttributes> =
+        interactionRendererFor(value::class)?.renderAttributes(value) ?: emptyList()
+
+    private fun interactionRendererFor(kClass: KClass<*>): InteractionRenderer<Any>? {
+        return interactionRenderers.entries
+            .filter { entry -> entry.key.isSuperclassOf(kClass) }
+            .map { entry -> entry.value }
+            .firstOrNull()
     }
 
     private class SubclassFirstComparator : Comparator<KClass<*>?> {

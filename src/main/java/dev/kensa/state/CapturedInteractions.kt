@@ -5,11 +5,13 @@ import dev.kensa.util.Attributes.Companion.emptyAttributes
 import dev.kensa.util.Attributes.Key.Group
 import dev.kensa.util.KensaMap
 
+class CapturedInteraction(val key: String, )
+
 class CapturedInteractions : KensaMap<CapturedInteractions>() {
 
     var isUnderTestEnabled = true
-
     var isUnderTest = false
+
     fun capture(builder: CapturedInteractionBuilder) {
         with(builder) {
             if (isUnderTestEnabled) {

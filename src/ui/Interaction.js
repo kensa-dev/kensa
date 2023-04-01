@@ -1,58 +1,24 @@
 import React, {Component} from "react";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
-import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import Lowlight from 'react-lowlight';
-import {NamedValueTable} from "./NamedValueTable";
-import {joinForRegex} from "./Util";
+import {RenderableValues} from "./RenderableValues";
+import {RenderableAttributes} from "./RenderableAttributes";
 
 export class CapturedInteractions extends Component {
     render() {
-        const capturedInteractions = this.props.capturedInteractions;
-        const highlights = this.props.highlights;
         return (
-                <div>
-                    {
-                        capturedInteractions.map((interaction, index) =>
-                                <Interaction key={index} capturedInteraction={interaction} highlights={highlights}/>
-                        )
-                    }
-                </div>
+            <div>
+                {
+                    this.props.capturedInteractions.map((interaction, index) =>
+                        <Interaction key={index}
+                                     invocationState={this.props.invocationState}
+                                     capturedInteraction={interaction}
+                                     highlights={this.props.highlights}/>
+                    )
+                }
+            </div>
         );
-    }
-}
-
-export class RenderableAttribute extends Component {
-    render() {
-        const attribute = this.props.attribute;
-        const highlights = this.props.highlights;
-        let name = Object.keys(attribute)[1];
-
-        return (
-                <div className="box renderable-attribute">
-                    <div className="subtitle is-5">{name}</div>
-                    <NamedValueTable highlights={highlights} namedValues={attribute[name]}/>
-                </div>
-        )
-    }
-}
-
-export class RenderableAttributes extends Component {
-    render() {
-        const attributes = this.props.attributes;
-        const highlights = this.props.highlights;
-
-        return (
-                <div>
-                    {
-                        attributes.map((attribute) => {
-                                    return <RenderableAttribute highlights={highlights} attribute={attribute}/>
-                                }
-                        )
-                    }
-                </div>
-        )
     }
 }
 
@@ -60,24 +26,23 @@ export class Interaction extends Component {
     constructor(props) {
         super(props);
 
+        let invocationState = props.invocationState;
         let capturedInteraction = props.capturedInteraction;
-        let highlightRegexp = props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
-        let languageAttr = capturedInteraction.attributes.find(attr => attr.hasOwnProperty("language"));
-        let language = languageAttr ? languageAttr["language"] : "plainText";
 
-        let renderableAttributes = capturedInteraction["renderableAttributes"];
+        let renderedAttributes = capturedInteraction["rendered"]["attributes"];
+        let renderedValues = capturedInteraction["rendered"]["values"];
 
         this.state = {
+            invocationState: invocationState,
             capturedInteraction: capturedInteraction,
-            renderableAttributes: renderableAttributes,
-            highlightRegexp: highlightRegexp,
-            language: language,
-            isCollapsed: true
+            renderedAttributes: renderedAttributes,
+            renderedValues: renderedValues,
+            isCollapsed: true,
+            selectedTab: null,
+            selectedValueTab: null
         };
 
         this.toggle = this.toggle.bind(this);
-
-        this.interactionRef = React.createRef();
     }
 
     toggle() {
@@ -102,22 +67,9 @@ export class Interaction extends Component {
         return faAngleUp;
     }
 
-    componentDidMount() {
-        let highlightRegexp = this.state.highlightRegexp;
-        if (highlightRegexp) {
-            let codeNode = this.interactionRef.current.children[0].firstChild
-            if (this.state.language === 'xml') {
-                highlightXml(codeNode, highlightRegexp);
-            } else if (this.state.language === 'json') {
-                highlightJson(codeNode, highlightRegexp);
-            } else {
-                highlightPlainText(codeNode, highlightRegexp);
-            }
-        }
-    }
-
     render() {
         let capturedInteraction = this.state.capturedInteraction;
+
         return (
             <div className="captured-interaction card is-fullwidth">
                 <header className="card-header" onClick={this.toggle}>
@@ -128,10 +80,13 @@ export class Interaction extends Component {
                 </header>
                 <div className={this.contentClass()}>
                     <RenderableAttributes highlights={this.props.highlights}
-                                          attributes={this.state.renderableAttributes}/>
-                    <div ref={this.interactionRef} className="box">
-                        <Lowlight language={this.state.language} value={capturedInteraction['value']}/>
-                    </div>
+                                          attributes={this.state.renderedAttributes}
+                                          invocationState={this.state.invocationState}/>
+                    <RenderableValues highlights={this.props.highlights}
+                                      values={this.state.renderedValues}
+                                      invocationState={this.state.invocationState}
+                                      interaction={this.state.capturedInteraction}
+                                      interactionRef={this.interactionRef}/>
                 </div>
             </div>
         )
