@@ -15,28 +15,27 @@ export class NamedValueTable extends Component {
     render() {
         const namedValues = this.props.namedValues;
         return (
-                <table className="table is-striped is-fullwidth">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Value</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {namedValues
-                            .map((item, index) => {
-                                        let name = Object.keys(item)[0];
-                                        let value = item[name];
-                                        return <tr key={index}>
-                                            <td>{name}</td>
-                                            <td>
-                                                <div ref={this.setCodeRef.bind(this)}>{value}</div>
-                                            </td>
-                                        </tr>
-                                    }
-                            )}
-                    </tbody>
-                </table>
+            <table className="table is-bordered is-striped is-fullwidth">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                {namedValues.map((item, index) => {
+                        let name = Object.keys(item)[0];
+                        let value = item[name];
+                        return <tr key={index}>
+                            <td>{name}</td>
+                            <td>
+                                <div ref={this.setCodeRef.bind(this)}>{value}</div>
+                            </td>
+                        </tr>
+                    }
+                )}
+                </tbody>
+            </table>
         );
     }
 }

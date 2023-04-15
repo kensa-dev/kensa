@@ -23,7 +23,7 @@ class SentenceTokenFactory(
 ) {
 
     fun scenarioValueTokenFrom(token: SentenceToken) = token.value.split(".").let { split ->
-        renderers.renderValueOnly(scenarioAccessor.valueOf(split[0], split[1])).let { value ->
+        renderers.renderValue(scenarioAccessor.valueOf(split[0], split[1])).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(ScenarioValue)
                 takeIf { valueIsHighlighted(value) }?.add(Highlighted)
@@ -32,7 +32,7 @@ class SentenceTokenFactory(
     }
 
     fun fieldValueTokenFrom(token: SentenceToken) = properties[token.value]?.let { pd ->
-        renderers.renderValueOnly(pd.valueOfIn(testInstance)).let { value ->
+        renderers.renderValue(pd.valueOfIn(testInstance)).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(FieldValue)
                 takeIf { pd.isHighlight }?.add(Highlighted)
@@ -42,7 +42,7 @@ class SentenceTokenFactory(
     } ?: throw KensaException("Token with type FieldValue did not refer to an actual field")
 
     fun methodValueTokenFrom(token: SentenceToken) = methods[token.value]?.let { md ->
-        renderers.renderValueOnly(testInstance.invokeMethod<Any>(md.method)).let { value ->
+        renderers.renderValue(testInstance.invokeMethod<Any>(md.method)).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(MethodValue)
                 takeIf { md.isHighlight }?.add(Highlighted)
@@ -52,7 +52,7 @@ class SentenceTokenFactory(
     } ?: throw KensaException("Token with type MethodValue did not refer to an actual method")
 
     fun parameterValueTokenFrom(token: SentenceToken) = parameters[token.value]?.let { pd ->
-        renderers.renderValueOnly(arguments[pd.index]).let { value ->
+        renderers.renderValue(arguments[pd.index]).let { value ->
             SentenceToken(value, HashSet<TokenType>().apply {
                 add(ParameterValue)
                 takeIf { pd.isHighlight }?.add(Highlighted)

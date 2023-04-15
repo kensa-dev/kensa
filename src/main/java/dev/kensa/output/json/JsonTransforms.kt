@@ -23,36 +23,34 @@ import com.eclipsesource.json.Json.`object` as jsonObject
 
 object JsonTransforms {
 
-    fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue {
-        return { container: TestContainer ->
-            jsonObject()
-                    .add("testClass", container.testClass.name)
-                    .add("displayName", container.displayName)
-                    .add("state", container.state.description)
-                    .add("notes", container.notes)
-                    .add("issue", asJsonArray(container.issues))
-                    .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
+    fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue = { container: TestContainer ->
+        jsonObject()
+            .add("testClass", container.testClass.name)
+            .add("displayName", container.displayName)
+            .add("state", container.state.description)
+            .add("notes", container.notes)
+            .add("issue", asJsonArray(container.issues))
+            .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
+                jsonObject()
+                    .add("testMethod", invocation.method.name)
+                    .add("displayName", invocation.displayName)
+                    .add("notes", invocation.notes)
+                    .add("issue", asJsonArray(invocation.issues))
+                    .add("state", invocation.state.description)
+                    .add("invocations", asJsonArray(invocation.invocations) { i ->
                         jsonObject()
-                                .add("testMethod", invocation.method.name)
-                                .add("displayName", invocation.displayName)
-                                .add("notes", invocation.notes)
-                                .add("issue", asJsonArray(invocation.issues))
-                                .add("state", invocation.state.description)
-                                .add("invocations", asJsonArray(invocation.invocations) { i ->
-                                    jsonObject()
-                                            .add("elapsedTime", DurationFormatter.format(i.elapsed))
-                                            .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
-                                            .add("acronyms", acronymsAsJson(i.acronyms))
-                                            .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
-                                            .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
-                                            .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
-                                            .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
-                                            .add("sequenceDiagram", if (i.sequenceDiagram == null) null else i.sequenceDiagram.toString())
-                                            .add("state", i.state.description)
-                                            .add("executionException", executionExceptionFrom(i))
-                                })
+                            .add("elapsedTime", DurationFormatter.format(i.elapsed))
+                            .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
+                            .add("acronyms", acronymsAsJson(i.acronyms))
+                            .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
+                            .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
+                            .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
+                            .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
+                            .add("sequenceDiagram", if (i.sequenceDiagram == null) null else i.sequenceDiagram.toString())
+                            .add("state", i.state.description)
+                            .add("executionException", executionExceptionFrom(i))
                     })
-        }
+            })
     }
 
     // Overload rangeTo to allow chaining of function calls
@@ -60,116 +58,117 @@ object JsonTransforms {
         other(this(it))
     }
 
-    fun toIndexJson(id: String): (TestContainer) -> JsonValue {
-        return { container: TestContainer ->
-            jsonObject()
-                    .add("id", id)
-                    .add("testClass", container.testClass.name)
-                    .add("displayName", container.displayName)
-                    .add("state", container.state.description)
-                    .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
-                        jsonObject()
-                                .add("testMethod", invocation.method.name)
-                                .add("displayName", invocation.displayName)
-                                .add("state", invocation.state.description)
-                    })
-        }
-    }
-
-    fun toJsonString(): (JsonValue) -> String {
-        return { jv: JsonValue ->
-            try {
-                StringWriter().let {
-                    jv.writeTo(it, WriterConfig.MINIMAL)
-                    it.toString()
-                }
-            } catch (e: IOException) {
-                throw KensaException("Unable to write Json string", e)
-            }
-        }
-    }
-
-    private fun sentenceAsJson(): (Sentence) -> JsonValue {
-        return { sentence: Sentence ->
-            asJsonArray(sentence.squashedTokens) { token: SentenceToken ->
+    fun toIndexJson(id: String): (TestContainer) -> JsonValue = { container: TestContainer ->
+        jsonObject()
+            .add("id", id)
+            .add("testClass", container.testClass.name)
+            .add("displayName", container.displayName)
+            .add("state", container.state.description)
+            .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
                 jsonObject()
-                        .add("types", asJsonArray(token.cssClasses))
-                        .add("value", token.value)
-                        .add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<SentenceToken> ->
-                            asJsonArray(sentenceTokens) { sentenceToken ->
-                                jsonObject()
-                                        .add("types", asJsonArray(sentenceToken.cssClasses))
-                                        .add("value", sentenceToken.value)
-                            }
-                        })
+                    .add("testMethod", invocation.method.name)
+                    .add("displayName", invocation.displayName)
+                    .add("state", invocation.state.description)
+            })
+    }
+
+    fun toJsonString(): (JsonValue) -> String = { jv: JsonValue ->
+        try {
+            StringWriter().let {
+                jv.writeTo(it, WriterConfig.MINIMAL)
+                it.toString()
             }
+        } catch (e: IOException) {
+            throw KensaException("Unable to write Json string", e)
+        }
+    }
+
+    private fun sentenceAsJson(): (Sentence) -> JsonValue = { sentence: Sentence ->
+        asJsonArray(sentence.squashedTokens) { token: SentenceToken ->
+            jsonObject()
+                .add("types", asJsonArray(token.cssClasses))
+                .add("value", token.value)
+                .add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<SentenceToken> ->
+                    asJsonArray(sentenceTokens) { sentenceToken ->
+                        jsonObject()
+                            .add("types", asJsonArray(sentenceToken.cssClasses))
+                            .add("value", sentenceToken.value)
+                    }
+                })
         }
     }
 
     private fun asJsonArray(collection: Collection<String>) = asJsonArray(collection) { string: String -> Json.value(string) }
 
-    private fun acronymsAsJson(collection: Collection<Acronym>) =
-            jsonObject().apply {
-                collection.forEach {
-                    add(it.acronym, it.meaning)
-                }
-            }
-
-    private fun <T> asJsonArray(collection: Collection<T>, transformer: (T) -> JsonValue?): JsonArray {
-        return Json.array().apply {
-            collection.mapNotNull(transformer)
-                    .forEach { add(it) }
+    private fun acronymsAsJson(collection: Collection<Acronym>) = jsonObject().apply {
+        collection.forEach {
+            add(it.acronym, it.meaning)
         }
     }
 
-    private fun <T> asJsonArray(sequence: Sequence<T>, transformer: (T) -> JsonValue?): JsonArray {
-        return Json.array().apply {
-            sequence.mapNotNull(transformer)
-                    .forEach { add(it) }
+    private fun <T> asJsonArray(collection: Collection<T>, transformer: (T) -> JsonValue?): JsonArray = Json.array().apply {
+        collection.mapNotNull(transformer)
+            .forEach { add(it) }
+    }
+
+    private fun <T> asJsonArray(sequence: Sequence<T>, transformer: (T) -> JsonValue?): JsonArray = Json.array().apply {
+        sequence.mapNotNull(transformer)
+            .forEach { add(it) }
+    }
+
+    private fun givensEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue = { entry: KensaMap.Entry -> jsonObject().add(entry.key, renderers.renderValue(entry.value)) }
+
+    private fun interactionEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue? = { entry ->
+        entry.takeUnless {
+            it.key.matches("^\\{.+}.*$".toRegex())
+        }?.let {
+            jsonObject()
+                .add("id", it.key.hashCode().toString())
+                .add("name", it.key)
+                .add("rendered", renderedInteractionAsJson(it.value!!, renderers))
+                .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))
         }
     }
 
-    private fun givensEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue = { entry: KensaMap.Entry -> jsonObject().add(entry.key, renderers.renderValueOnly(entry.value)) }
+    private fun renderedInteractionAsJson(value: Any, renderers: Renderers): JsonValue =
+        jsonObject()
+            .add("values", renderedInteractionValuesAsJson(value, renderers))
+            .add("attributes", renderedInteractionAttributesAsJson(value, renderers))
 
-    private fun interactionEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue? =
-            { entry ->
-                entry.takeUnless {
-                    it.key.matches("^\\{.+}.*$".toRegex())
-                }?.let {
-                    jsonObject()
-                            .add("id", it.key.hashCode().toString())
-                            .add("name", it.key)
-                            .add("value", renderers.renderValueOnly(it.value))
-                            .add("renderableAttributes", asJsonArray(renderers.renderAll(it.value), renderableAttributeAsJson()))
-                            .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))
-                }
-            }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun renderableAttributeAsJson(): (Pair<Boolean, NamedValue>) -> JsonValue {
-        return { pair: Pair<Boolean, NamedValue> ->
-            when (val value = pair.second.value) {
-                is Set<*> -> jsonObject()
-                        .add("showOnSequenceDiagram", pair.first)
-                        .add(pair.second.name, asJsonArray(value as Set<NamedValue>) { nv -> jsonObject().add(nv.name, nv.value.toString()) })
-
-                else -> jsonObject().add(pair.second.name, pair.second.value.toString())
-            }
+    private fun renderedInteractionValuesAsJson(value: Any, renderers: Renderers): JsonArray =
+        renderers.renderInteraction(value).fold(Json.array()) { parent, ri ->
+            parent.add(
+                jsonObject().add("name", ri.name)
+                    .add("value", ri.value)
+                    .add("showOnSequenceDiagram", ri.showOnSequenceDiagram)
+                    .add("language", ri.language.value)
+            )
         }
-    }
 
-    private fun nvValueAsJson(renderers: Renderers) = { nv: NamedValue -> Json.value(renderers.renderValueOnly(nv.value)) }
+    private fun renderedInteractionAttributesAsJson(value: Any, renderers: Renderers): JsonArray =
+        renderers.renderInteractionAttributes(value).fold(Json.array()) { parent, ra ->
+            parent.add(
+                jsonObject().add("name", ra.name)
+                    .add("attributes", ra.attributes.fold(Json.array()) { array, nv ->
+                        array.add(nv.asJson(renderers))
+                    })
+                    .add("showOnSequenceDiagram", ra.showOnSequenceDiagram)
+            )
+        }
 
-    private fun nvAsJson(renderers: Renderers) = { nv: NamedValue -> jsonObject().add(nv.name, renderers.renderValueOnly(nv.value)) }
+    private fun nvValueAsJson(renderers: Renderers) = { nv: NamedValue -> Json.value(renderers.renderValue(nv.value)) }
 
-    private fun entryAsJson(renderers: Renderers) = { e: Map.Entry<String, *> -> jsonObject().add(e.key, renderers.renderValueOnly(e.value)) }
+    private fun NamedValue.asJson(renderers: Renderers) = jsonObject().add(name, renderers.renderValue(value))
+    private fun nvAsJson(renderers: Renderers) = { nv: NamedValue -> jsonObject().add(nv.name, renderers.renderValue(nv.value)) }
+
+    private fun entryAsJson(renderers: Renderers) = { e: Map.Entry<String, *> -> jsonObject().add(e.key, renderers.renderValue(e.value)) }
 
     private fun executionExceptionFrom(invocation: TestInvocation) =
-            invocation.executionException?.let {
-                jsonObject()
-                        .add("message", it.message)
-                        .add("stackTrace", toString(it))
-            } ?: jsonObject()
+        invocation.executionException?.let {
+            jsonObject()
+                .add("message", it.message)
+                .add("stackTrace", toString(it))
+        } ?: jsonObject()
 
     private fun toString(throwable: Throwable) = StringWriter().let { out ->
         throwable.printStackTrace(PrintWriter(out))

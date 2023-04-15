@@ -19,7 +19,7 @@ class TestInvocationParser {
             val namedParameterValues = parsedMethod.parameters.descriptors
                 .filterValues { it.isCaptured }
                 .map { entry ->
-                    NamedValue(entry.key, configuration.renderers.renderValueOnly(context.arguments[entry.value.index]))
+                    NamedValue(entry.key, configuration.renderers.renderValue(context.arguments[entry.value.index]))
                 }
 
             val highlightedParameterValues = namedParameterValues.filter { namedValue: NamedValue ->
@@ -67,7 +67,7 @@ class TestInvocationParser {
 
     private fun highlightedPropertyValues(fields: Map<String, ValueAccessor>, testInstance: Any) = fields.values
         .filter(ValueAccessor::isHighlight)
-        .map { NamedValue(highlightOrFieldNameFor(it), configuration.renderers.renderValueOnly(it.valueOfIn(testInstance))) }
+        .map { NamedValue(highlightOrFieldNameFor(it), configuration.renderers.renderValue(it.valueOfIn(testInstance))) }
         .toSet()
 
     private fun highlightOrFieldNameFor(accessor: ValueAccessor): String =

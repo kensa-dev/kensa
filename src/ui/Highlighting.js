@@ -27,15 +27,15 @@ const searchElementContent = (parent, child, regExp) => {
 
         if (index === 0) {
             // debugger;
-            restOfLine = restOfLine.substr(index + token.length);
+            restOfLine = restOfLine.substring(index + token.length);
             textNode = textNodeOf(restOfLine);
             parent.replaceChild(textNode, lastChild);
             parent.insertBefore(createSpan(token), textNode);
         } else {
-            lastChild.textContent = restOfLine.substr(0, result.index);
+            lastChild.textContent = restOfLine.substring(0, result.index);
             let span = createSpan(token);
             parent.insertBefore(span, lastChild.nextSibling);
-            restOfLine = restOfLine.substr(index + token.length);
+            restOfLine = restOfLine.substring(index + token.length);
             textNode = textNodeOf(restOfLine);
             parent.insertBefore(textNode, span.nextSibling);
         }
@@ -52,10 +52,10 @@ const searchAttributeContent = (parent, regExp) => {
     while (result = regExp.exec(restOfLine)) {
         let token = result[0];
         let index = result.index;
-        let textNode = textNodeOf(restOfLine.substr(0, result.index));
+        let textNode = textNodeOf(restOfLine.substring(0, result.index));
         parent.replaceChild(textNode, lastChild);
         parent.appendChild(createSpan(token));
-        restOfLine = restOfLine.substr(index + token.length);
+        restOfLine = restOfLine.substring(index + token.length);
         textNode = textNodeOf(restOfLine);
         parent.appendChild(textNode);
         lastChild = textNode;
@@ -100,11 +100,11 @@ export const highlightPlainText = (parent, regExp) => {
             while (result = regExp.exec(restOfLine)) {
                 let token = result[0];
                 let index = result.index;
-                let textNode = textNodeOf(restOfLine.substr(0, result.index));
+                let textNode = textNodeOf(restOfLine.substring(0, result.index));
                 lastChild.replaceChild(textNode, child);
                 lastChild.appendChild(createSpan(token));
 
-                restOfLine = restOfLine.substr(index + token.length);
+                restOfLine = restOfLine.substring(index + token.length);
                 textNode = textNodeOf(restOfLine);
                 lastChild.appendChild(textNode);
                 child = textNode;
