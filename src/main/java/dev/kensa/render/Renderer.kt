@@ -9,7 +9,7 @@ enum class Language(val value: String) {
     Xml("xml");
 }
 
-interface ValueRenderer<T> {
+fun interface ValueRenderer<T> {
     fun render(value: T) : String
 }
 
