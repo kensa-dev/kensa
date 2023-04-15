@@ -18,7 +18,7 @@ private fun be(expected: PropertyAccessor): Matcher<PropertyAccessor> =
 private fun <R> propertyAccessorHas(name: String, extractValue: (PropertyAccessor) -> R, match: Matcher<R>) = extractingMatcher(name, extractValue, match)
 
 fun <R> PropertyAccessor.asClue(block: (PropertyAccessor) -> R) =
-    withClue(lazy { "PropertyAccessor :: [ name: $name,  isSentenceValue: $isSentenceValue, isHighlight: $isHighlight, isScenario: $isScenario]" }) { block(this) }
+    withClue({ lazy { "PropertyAccessor :: [ name: $name,  isSentenceValue: $isSentenceValue, isHighlight: $isHighlight, isScenario: $isScenario]" }.value }) { block(this) }
 
 infix fun MethodAccessor.shouldBe(expected: MethodAccessor) = this should be(expected)
 

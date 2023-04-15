@@ -26,16 +26,8 @@ internal class ValueRenderersTest {
 
     @Test
     internal fun `can find value renderer for simple kotlin type`() {
-        renderers.addValueRenderer(Int::class, object : ValueRenderer<Int> {
-            override fun render(value: Int): String {
-                return "<$value>"
-            }
-        })
-        renderers.addValueRenderer(Boolean::class, object : ValueRenderer<Boolean> {
-            override fun render(value: Boolean): String {
-                return "<<$value>>"
-            }
-        })
+        renderers.addValueRenderer(Int::class) { value -> "<$value>" }
+        renderers.addValueRenderer(Boolean::class) { value -> "<<$value>>" }
 
         renderers.renderValue(100) shouldBe "<100>"
         renderers.renderValue(true) shouldBe "<<true>>"
@@ -43,16 +35,8 @@ internal class ValueRenderersTest {
 
     @Test
     internal fun `can find value renderer for simple java type`() {
-        renderers.addValueRenderer(Integer::class.java, object : ValueRenderer<Integer> {
-            override fun render(value: Integer): String {
-                return "<$value>"
-            }
-        })
-        renderers.addValueRenderer(java.lang.Boolean::class.java, object : ValueRenderer<java.lang.Boolean> {
-            override fun render(value: java.lang.Boolean): String {
-                return "<<$value>>"
-            }
-        })
+        renderers.addValueRenderer(Integer::class.java) { value -> "<$value>" }
+        renderers.addValueRenderer(java.lang.Boolean::class.java) { value -> "<<$value>>" }
 
         renderers.renderValue(100) shouldBe "<100>"
         renderers.renderValue(true) shouldBe "<<true>>"
@@ -60,66 +44,67 @@ internal class ValueRenderersTest {
 
     @Test
     internal fun `can find value renderer for kotlin object specified by interface`() {
-        renderers.addValueRenderer(SomeKotlinInterface::class, object : ValueRenderer<SomeKotlinInterface> {
-            override fun render(value: SomeKotlinInterface): String {
-                return "<${value.renderMe()}>"
-            }
-        })
+        renderers.addValueRenderer(SomeKotlinInterface::class) { value -> "<${value.renderMe()}>" }
 
         renderers.renderValue(SomeKotlinSubClass(field1 = "foo")) shouldBe "<foo>"
     }
 
     @Test
     internal fun `can find value renderer for java object specified by interface`() {
-        renderers.addValueRenderer(SomeJavaInterface::class, object : ValueRenderer<SomeJavaInterface> {
-            override fun render(value: SomeJavaInterface): String {
-                return "<${value.renderMe()}>"
-            }
-        })
+        renderers.addValueRenderer(SomeJavaInterface::class) { value -> "<${value.renderMe()}>" }
 
         renderers.renderValue(SomeJavaSubClass(10, "foo")) shouldBe "<foo>"
     }
 
     @Test
     internal fun `can find value renderer for kotlin object specified by superclass`() {
-        renderers.addValueRenderer(SomeKotlinSuperClass::class, object : ValueRenderer<SomeKotlinSuperClass> {
-            override fun render(value: SomeKotlinSuperClass): String {
-                return "<${value.superRenderMe()}>"
-            }
-        })
+        renderers.addValueRenderer(SomeKotlinSuperClass::class) { value -> "<${value.superRenderMe()}>" }
 
         renderers.renderValue(SomeKotlinSubClass(666, "")) shouldBe "<666>"
     }
 
     @Test
     internal fun `can find renderer for java object specified by superclass`() {
-        renderers.addValueRenderer(SomeJavaSuperClass::class, object : ValueRenderer<SomeJavaSuperClass> {
-            override fun render(value: SomeJavaSuperClass): String {
-                return "<${value.superRenderMe()}>"
-            }
-        })
+        renderers.addValueRenderer(SomeJavaSuperClass::class) { value -> "<${value.superRenderMe()}>" }
 
         renderers.renderValue(SomeJavaSubClass(666, "")) shouldBe "<666>"
     }
 
     @Test
+    fun `can render a list using default list renderer`() {
+        val list = listOf("1", "2", "3", "4", "5", null)
+
+        renderers.addValueRenderer(String::class) { value -> "<$value>" }
+
+        renderers.renderValue(list) shouldBe "[<1>, <2>, <3>, <4>, <5>, NULL]"
+    }
+
+    @Test
+    fun `can render a list using default list renderer with custom format`() {
+        val list = listOf("1", "2", "3", "4", "5")
+
+        renderers.setListRendererFormat(ListRendererFormat(",", "(", ")"))
+        renderers.addValueRenderer(String::class) { value -> "<$value>" }
+
+        renderers.renderValue(list) shouldBe "(<1>,<2>,<3>,<4>,<5>)"
+    }
+
+    @Test
+    fun `can render a list using custom list renderer`() {
+        val list = listOf("1", "2", "3", "4", "5")
+
+        renderers.setListRenderer { theList -> theList.joinToString { "*$it*" } }
+        renderers.addValueRenderer(String::class) { value -> "<$value>" }
+
+        renderers.renderValue(list) shouldBe "*1*, *2*, *3*, *4*, *5*"
+    }
+
+    @Test
     internal fun `uses most specific value renderer when multiple value renderers for kotlin hierarchy specified`() {
         with(renderers) {
-            addValueRenderer(SomeKotlinSuperClass::class, object : ValueRenderer<SomeKotlinSuperClass> {
-                override fun render(value: SomeKotlinSuperClass): String {
-                    return "<${value.superRenderMe()}>"
-                }
-            })
-            addValueRenderer(SomeKotlinSubClass::class, object : ValueRenderer<SomeKotlinSubClass> {
-                override fun render(value: SomeKotlinSubClass): String {
-                    return "<<<${value.renderMe()}>>>"
-                }
-            })
-            addValueRenderer(SomeKotlinInterface::class, object : ValueRenderer<SomeKotlinInterface> {
-                override fun render(value: SomeKotlinInterface): String {
-                    return "<<$value>>"
-                }
-            })
+            addValueRenderer(SomeKotlinSuperClass::class) { value -> "<${value.superRenderMe()}>" }
+            addValueRenderer(SomeKotlinSubClass::class) { value -> "<<<${value.renderMe()}>>>" }
+            addValueRenderer(SomeKotlinInterface::class) { value -> "<<$value>>" }
 
             renderValue(SomeKotlinSubClass(10, "boo")) shouldBe "<<<boo>>>"
         }
@@ -128,21 +113,9 @@ internal class ValueRenderersTest {
     @Test
     internal fun `uses most specific value renderer when multiple value renderers for java hierarchy specified`() {
         with(renderers) {
-            addValueRenderer(SomeJavaSuperClass::class, object : ValueRenderer<SomeJavaSuperClass> {
-                override fun render(value: SomeJavaSuperClass): String {
-                    return "<${value.superRenderMe()}>"
-                }
-            })
-            addValueRenderer(SomeJavaSubClass::class, object : ValueRenderer<SomeJavaSubClass> {
-                override fun render(value: SomeJavaSubClass): String {
-                    return "<<<${value.renderMe()}>>>"
-                }
-            })
-            addValueRenderer(SomeJavaInterface::class, object : ValueRenderer<SomeJavaInterface> {
-                override fun render(value: SomeJavaInterface): String {
-                    return "<<$value>>"
-                }
-            })
+            addValueRenderer(SomeJavaSuperClass::class) { value -> "<${value.superRenderMe()}>" }
+            addValueRenderer(SomeJavaSubClass::class) { value -> "<<<${value.renderMe()}>>>" }
+            addValueRenderer(SomeJavaInterface::class) { value -> "<<$value>>" }
 
             renderValue(SomeJavaSubClass(10, "boo")) shouldBe "<<<boo>>>"
         }
