@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.0
+- #10 : Allow rendering of collections using the registered renderer of the content objects
+- #8  : Improve rendering of attributes and values
+
 ### v0.3.1
 - #6 : Synchronise read access for KensaMap.
 - Bump Kotlin & Kotest versions
