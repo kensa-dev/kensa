@@ -131,8 +131,8 @@ export class Invocation extends Component {
                     {this.buttonFor('capturedInteractions', 'Captured Interactions')}
                     {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
                 </div>
-                {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable highlights={highlights} namedValues={invocation.givens}/></div>)}
-                {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable highlights={highlights} namedValues={invocation.parameters}/></div>)}
+                {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable showHeader={true} highlights={highlights} namedValues={invocation.givens}/></div>)}
+                {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable showHeader={true} highlights={highlights} namedValues={invocation.parameters}/></div>)}
                 {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
                         invocationState={this.state.invocation.state} capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
                 {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}

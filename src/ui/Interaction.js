@@ -32,6 +32,8 @@ export class Interaction extends Component {
         let renderedAttributes = capturedInteraction["rendered"]["attributes"];
         let renderedValues = capturedInteraction["rendered"]["values"];
 
+        this.fontSizes = ["font-normal", "font-large"]
+
         this.state = {
             invocationState: invocationState,
             capturedInteraction: capturedInteraction,
@@ -39,10 +41,19 @@ export class Interaction extends Component {
             renderedValues: renderedValues,
             isCollapsed: true,
             selectedTab: null,
-            selectedValueTab: null
+            selectedValueTab: null,
+            fontSizeIdx: 0
         };
 
         this.toggle = this.toggle.bind(this);
+        this.togglePresentationSize = this.togglePresentationSize.bind(this)
+    }
+
+    togglePresentationSize(e) {
+        e.stopPropagation()
+        this.setState((prevState) => ({
+            fontSizeIdx: prevState.fontSizeIdx === 0 ? 1 : 0
+        }))
     }
 
     toggle() {
@@ -56,7 +67,16 @@ export class Interaction extends Component {
             return "card-content is-hidden"
         }
 
-        return "card-content";
+        return "card-content " + this.fontSizes[this.state.fontSizeIdx];
+    }
+
+    demoButtonClass() {
+        let cls = "card-header-icon button is-info is-small"
+        if(this.state.isCollapsed) {
+            cls = cls + " is-hidden"
+        }
+
+        return cls
     }
 
     icon() {
@@ -74,9 +94,8 @@ export class Interaction extends Component {
             <div className="captured-interaction card is-fullwidth">
                 <header className="card-header" onClick={this.toggle}>
                     <p className="card-header-title">{capturedInteraction.name}</p>
-                    <a className="card-header-icon">
-                        <FontAwesomeIcon icon={this.icon()}/>
-                    </a>
+                    <button className={this.demoButtonClass()} onClick={this.togglePresentationSize}>Demo</button>
+                    <a className="card-header-icon"><FontAwesomeIcon icon={this.icon()}/></a>
                 </header>
                 <div className={this.contentClass()}>
                     <RenderableAttributes highlights={this.props.highlights}

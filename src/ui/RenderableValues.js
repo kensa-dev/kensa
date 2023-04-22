@@ -1,9 +1,5 @@
 import React, {Component} from "react";
-import App from "./App";
 import Lowlight from "react-lowlight";
-import {faMinus} from "@fortawesome/free-solid-svg-icons/faMinus";
-import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {joinForRegex} from "./Util";
 import {highlightJson, highlightPlainText, highlightXml} from "./Highlighting";
 
@@ -12,16 +8,11 @@ export class RenderableValue extends Component {
     constructor(props) {
         super(props)
 
-        this.fontSizes = ["font-small", "font-normal", "font-medium", "font-large"]
         let highlightRegexp = props.highlights.length > 0 ? new RegExp(`(${joinForRegex(this.props.highlights)})`) : null;
 
         this.state = {
-            fontSizeIdx: 0,
             highlightRegexp: highlightRegexp,
         }
-
-        this.grow = this.grow.bind(this)
-        this.shrink = this.shrink.bind(this)
 
         this.interactionRef = React.createRef();
     }
@@ -40,43 +31,20 @@ export class RenderableValue extends Component {
         }
     }
 
-    grow() {
-        this.setState(prevState => ({
-            fontSizeIdx: Math.min(prevState.fontSizeIdx + 1, 3)
-        }));
-    }
-
-    shrink() {
-        this.setState(prevState => ({
-            fontSizeIdx: Math.max(prevState.fontSizeIdx - 1, 0)
-        }));
-    }
-
     render() {
         const value = this.props.value;
         const language = value.language ? value.language : "plainText";
         let className = "renderable-value " + this.props.className
 
         return <div className={className}>
-            <div className="buttons has-addons">
-                <p className="control">
-                    <button className="button is-tiny" onClick={this.grow}>
-                        <span className="icon"><FontAwesomeIcon icon={faPlus}/></span>
-                    </button>
-                    <button className="button is-tiny" onClick={this.shrink}>
-                        <span className="icon"><FontAwesomeIcon icon={faMinus}/></span>
-                    </button>
-                </p>
-            </div>
-            <div ref={this.interactionRef} className={this.fontSizes[this.state.fontSizeIdx]}>
-                <Lowlight language={language} value={value.value}/>
+            <div ref={this.interactionRef}>
+                <Lowlight className={"scrollable-value"} language={language} value={value.value}/>
             </div>
         </div>
     }
 }
 
 export class RenderableValues extends Component {
-
 
     constructor(props) {
         super(props)
@@ -97,10 +65,10 @@ export class RenderableValues extends Component {
         this.setState({selectedTab: tabName});
     }
 
-    classForButton(buttonName, testStateClass) {
+    classForButton(buttonName) {
         let c = "button ";
         if (this.state.selectedTab === buttonName) {
-            c += "is-selected " + testStateClass;
+            c += "is-selected has-background-grey-lighter";
         } else if (this.state.selectedTab !== null && this.state.selectedTab !== undefined) {
             c += " has-selected"
         }
@@ -119,7 +87,7 @@ export class RenderableValues extends Component {
     buttonFor(text, idx) {
         return <button
             key={idx}
-            className={this.classForButton(text, App.stateClassFor(this.props.invocationState))}
+            className={this.classForButton(text)}
             onClick={() => this.selectTab(text)}>{text}
         </button>;
     }
@@ -128,7 +96,8 @@ export class RenderableValues extends Component {
         const values = this.props.values;
 
         if (values.length > 0) {
-            return values.filter(this.shouldShow)[0].name
+            let showable = values.filter(this.shouldShow);
+            return showable.length > 0 ? showable[0].name : null
         }
 
         return null
@@ -138,7 +107,7 @@ export class RenderableValues extends Component {
         const values = this.props.values;
         const highlights = this.props.highlights;
 
-        return <div className="is-small">
+        return <div>
             <div className="buttons has-addons are-small">
                 <p className="control">
                     {

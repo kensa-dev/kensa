@@ -8,9 +8,19 @@ class Popup extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.fontSizes = ["font-normal", "font-large"]
+        this.state = {
+            fontSizeIdx: 0,
+        };
 
         this.onKeyDown = this.onKeyDown.bind(this)
+        this.togglePresentationSize = this.togglePresentationSize.bind(this)
+    }
+
+    togglePresentationSize() {
+        this.setState((prevState) => ({
+            fontSizeIdx: prevState.fontSizeIdx === 0 ? 1 : 0
+        }))
     }
 
     onKeyDown(event) {
@@ -38,9 +48,10 @@ class Popup extends Component {
                     <div className="modal-card">
                         <header className="modal-card-head">
                             <p className="modal-card-title">{this.props.interaction.name}</p>
+                            <button className={"button is-info is-small mr-5"} onClick={this.togglePresentationSize}>Demo</button>
                             <a onClick={this.props.onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
                         </header>
-                        <section className="modal-card-body">
+                        <section className={"modal-card-body " + this.fontSizes[this.state.fontSizeIdx]}>
                             <RenderableAttributes highlights={this.props.highlights}
                                                   attributes={renderedAttributes}
                                                   invocationState={this.props.invocationState}

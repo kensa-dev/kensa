@@ -1,16 +1,15 @@
 import React, {Component} from "react";
-import App from "./App";
 import {NamedValueTable} from "./NamedValueTable";
 
 export class RenderableAttribute extends Component {
     render() {
         const attribute = this.props.attribute;
         const highlights = this.props.highlights;
-        let className = "renderable-attribute font-small " + this.props.className
+        let className = "renderable-attribute " + this.props.className
 
         return (
             <div className={className}>
-                <NamedValueTable highlights={highlights} namedValues={attribute.attributes}/>
+                <NamedValueTable showHeader={false} highlights={highlights} namedValues={attribute.attributes}/>
             </div>
         )
     }
@@ -36,10 +35,10 @@ export class RenderableAttributes extends Component {
         this.setState({selectedTab: tabName});
     }
 
-    classForButton(buttonName, testStateClass) {
+    classForButton(buttonName) {
         let c = "button ";
         if (this.state.selectedTab === buttonName) {
-            c += "is-selected " + testStateClass;
+            c += "is-selected has-background-grey-lighter";
         } else if (this.state.selectedTab !== null && this.state.selectedTab !== undefined) {
             c += " has-selected"
         }
@@ -58,7 +57,7 @@ export class RenderableAttributes extends Component {
     buttonForAttribute(text, idx) {
         return <button
             key={idx}
-            className={this.classForButton(text, App.stateClassFor(this.props.invocationState))}
+            className={this.classForButton(text)}
             onClick={() => this.selectTab(text)}>{text}
         </button>;
     }
@@ -67,7 +66,8 @@ export class RenderableAttributes extends Component {
         const attributes = this.props.attributes
 
         if (attributes.length > 0) {
-            return attributes.filter(this.shouldShow)[0].name
+            let showable = attributes.filter(this.shouldShow);
+            return showable.length > 0 ? showable[0].name : null
         }
 
         return null

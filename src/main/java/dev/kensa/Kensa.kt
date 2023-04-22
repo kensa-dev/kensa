@@ -6,6 +6,7 @@ import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
 import dev.kensa.output.*
 import dev.kensa.render.InteractionRenderer
+import dev.kensa.render.ListRendererFormat
 import dev.kensa.render.ValueRenderer
 import dev.kensa.render.Renderers
 import dev.kensa.render.diagram.directive.UmlDirective
@@ -58,6 +59,10 @@ object Kensa {
 
     fun withOutputDisabled(): Kensa = apply {
         configuration.isOutputEnabled = false
+    }
+
+    fun <T : Any> withListRendererFormat(format: ListRendererFormat): Kensa = apply {
+        configuration.renderers.setListRendererFormat(format)
     }
 
     fun <T : Any> withValueRenderer(klass: Class<T>, renderer: ValueRenderer<out T>): Kensa = apply {

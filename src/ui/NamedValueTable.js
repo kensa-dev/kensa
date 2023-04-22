@@ -16,12 +16,15 @@ export class NamedValueTable extends Component {
         const namedValues = this.props.namedValues;
         return (
             <table className="table is-bordered is-striped is-fullwidth">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                </tr>
-                </thead>
+                {
+                    this.props.showHeader &&
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                    </thead>
+                }
                 <tbody>
                 {namedValues.map((item, index) => {
                         let name = Object.keys(item)[0];
