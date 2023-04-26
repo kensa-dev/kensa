@@ -5,10 +5,7 @@ import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
 import dev.kensa.output.*
-import dev.kensa.render.InteractionRenderer
-import dev.kensa.render.ListRendererFormat
-import dev.kensa.render.ValueRenderer
-import dev.kensa.render.Renderers
+import dev.kensa.render.*
 import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
@@ -61,6 +58,16 @@ object Kensa {
         configuration.isOutputEnabled = false
     }
 
+    @Deprecated("Deprecated", ReplaceWith("withValueRenderer(klass, renderer)", "dev.kensa"))
+    fun <T : Any> withRenderer(klass: Class<T>, renderer: Renderer<out T>): Kensa = apply {
+        withValueRenderer(klass, renderer)
+    }
+
+    @Deprecated("Deprecated", ReplaceWith("withValueRenderer(klass, renderer)", "dev.kensa"))
+    fun <T : Any> withRenderer(klass: KClass<T>, renderer: Renderer<out T>): Kensa = apply {
+        withValueRenderer(klass, renderer)
+    }
+
     fun <T : Any> withListRendererFormat(format: ListRendererFormat): Kensa = apply {
         configuration.renderers.setListRendererFormat(format)
     }
@@ -69,16 +76,16 @@ object Kensa {
         configuration.renderers.addValueRenderer(klass, renderer)
     }
 
-    fun <T : Any> withValueRenderer(kClass: KClass<T>, renderer: ValueRenderer<out T>): Kensa = apply {
-        configuration.renderers.addValueRenderer(kClass, renderer)
+    fun <T : Any> withValueRenderer(klass: KClass<T>, renderer: ValueRenderer<out T>): Kensa = apply {
+        configuration.renderers.addValueRenderer(klass, renderer)
     }
 
     fun <T : Any> withInteractionRenderer(klass: Class<T>, renderer: InteractionRenderer<out T>): Kensa = apply {
         configuration.renderers.addInteractionRenderer(klass, renderer)
     }
 
-    fun <T : Any> withInteractionRenderer(kClass: KClass<T>, renderer: InteractionRenderer<out T>): Kensa = apply {
-        configuration.renderers.addInteractionRenderer(kClass, renderer)
+    fun <T : Any> withInteractionRenderer(klass: KClass<T>, renderer: InteractionRenderer<out T>): Kensa = apply {
+        configuration.renderers.addInteractionRenderer(klass, renderer)
     }
 
     fun withHighlightedIdentifier(vararg identifiers: HighlightedIdentifier): Kensa = apply {

@@ -9,6 +9,9 @@ enum class Language(val value: String) {
     Xml("xml");
 }
 
+@Deprecated("Deprecated", replaceWith = ReplaceWith("ValueRenderer<T>", "dev.kensa.render"))
+fun interface Renderer<T> : ValueRenderer<T>
+
 fun interface ValueRenderer<T> {
     fun render(value: T) : String
 }
