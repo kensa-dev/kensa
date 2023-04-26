@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.1
+- #8  : Improve rendering of attributes and values - changes after feedback
+
 ### v0.4.0
 - #10 : Allow rendering of collections using the registered renderer of the content objects
 - #8  : Improve rendering of attributes and values
