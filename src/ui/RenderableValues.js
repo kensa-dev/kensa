@@ -46,6 +46,8 @@ export class RenderableValue extends Component {
 
 export class RenderableValues extends Component {
 
+    useTabs = this.props.values.length > 1
+
     constructor(props) {
         super(props)
 
@@ -58,7 +60,8 @@ export class RenderableValues extends Component {
     }
 
     componentDidMount() {
-        this.selectTab(this.firstNameOrNull())
+        if (this.useTabs)
+            this.selectTab(this.firstNameOrNull())
     }
 
     selectTab(tabName) {
@@ -77,7 +80,7 @@ export class RenderableValues extends Component {
     }
 
     classForBody(name) {
-        if (this.state.selectedTab === name) {
+        if (!this.useTabs || this.state.selectedTab === name) {
             return "";
         }
 
@@ -103,31 +106,42 @@ export class RenderableValues extends Component {
         return null
     }
 
-    render() {
-        const values = this.props.values;
-        const highlights = this.props.highlights;
-
+    withTabs() {
         return <div>
             <div className="buttons has-addons are-small">
                 <p className="control">
                     {
-                        values
+                        this.props.values
                             .filter(this.shouldShow)
                             .map((value, idx) => this.buttonFor(value.name, idx))
                     }
                 </p>
             </div>
             {
-                values
+                this.props.values
                     .filter(this.shouldShow)
                     .map((value, idx) => {
                         return <RenderableValue key={idx}
                                                 className={this.classForBody(value.name)}
                                                 value={value}
-                                                highlights={highlights}
+                                                highlights={this.props.highlights}
                                                 interactionRef={this.props.interactionRef}/>;
                     })
             }
         </div>
+    }
+
+    noTabs() {
+        const value = this.props.values[0]
+        // debugger
+        return <RenderableValue key={1}
+                                className={this.classForBody(value.name)}
+                                value={value}
+                                highlights={this.props.highlights}
+                                interactionRef={this.props.interactionRef}/>;
+    }
+
+    render() {
+        return this.useTabs ? this.withTabs() : this.noTabs()
     }
 }

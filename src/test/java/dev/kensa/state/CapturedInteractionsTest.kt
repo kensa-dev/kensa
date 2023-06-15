@@ -1,5 +1,6 @@
 package dev.kensa.state
 
+import dev.kensa.render.Language
 import dev.kensa.render.diagram.directive.ArrowStyle
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.state.CapturedInteractionsTest.GOTParty.*
@@ -57,7 +58,7 @@ internal class CapturedInteractionsTest {
             entrySet().forEach { entry: KensaMap.Entry ->
                 with(entry.attributes) {
                     arrowStyle shouldBe ArrowStyle.UmlSynchronous
-                    this["language"] shouldBe "bolshy"
+                    get<String>("language") shouldBe "bolshy"
                 }
             }
         }

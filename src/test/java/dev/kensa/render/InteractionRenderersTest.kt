@@ -1,6 +1,9 @@
 package dev.kensa.render
 
 import dev.kensa.render.Language.PlainText
+import dev.kensa.render.Language.Xml
+import dev.kensa.util.Attributes
+import dev.kensa.util.Attributes.Companion.emptyAttributes
 import dev.kensa.util.NamedValue
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
@@ -20,7 +23,7 @@ internal class InteractionRenderersTest {
 
     @Test
     fun `defaults to object renderer if no specific renderer exists`() {
-        renderers.renderInteraction(100)
+        renderers.renderInteraction(100, emptyAttributes())
             .shouldHaveSize(1)
             .first().should {
                 it.name shouldBe "Undefined Value"
@@ -32,8 +35,8 @@ internal class InteractionRenderersTest {
     @Test
     fun `renders interaction and attributes with specified renderer`() {
         renderers.addInteractionRenderer(Long::class, object : InteractionRenderer<Long> {
-            override fun render(value: Long): List<RenderedInteraction> = listOf(
-                RenderedInteraction("Normal", value.toString(), language = PlainText),
+            override fun render(value: Long, attributes: Attributes): List<RenderedInteraction> = listOf(
+                RenderedInteraction("Normal", value.toString(), language = attributes.get<Language>("language")!!),
                 RenderedInteraction("Formatted", DecimalFormat("#,###").format(value))
             )
 
@@ -43,10 +46,11 @@ internal class InteractionRenderersTest {
             )
         })
 
-        renderers.renderInteraction(25L)
+        val language = Xml
+        renderers.renderInteraction(25L, Attributes.of("language", language))
             .shouldHaveSize(2)
             .shouldContainExactly(
-                RenderedInteraction("Normal", "25", language = PlainText),
+                RenderedInteraction("Normal", "25", language = language),
                 RenderedInteraction("Formatted", DecimalFormat("#,###").format(25))
             )
 

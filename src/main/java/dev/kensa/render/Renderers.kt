@@ -1,5 +1,6 @@
 package dev.kensa.render
 
+import dev.kensa.util.Attributes
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
@@ -63,7 +64,7 @@ class Renderers {
             .map { entry -> entry.value }
             .firstOrNull()
 
-    fun renderInteraction(value: Any): List<RenderedInteraction> = interactionRendererFor(value::class)?.render(value) ?: listOf(RenderedInteraction("Undefined Value", value.toString()))
+    fun renderInteraction(value: Any, attributes: Attributes): List<RenderedInteraction> = interactionRendererFor(value::class)?.render(value, attributes) ?: listOf(RenderedInteraction("Undefined Value", value.toString()))
 
     fun renderInteractionAttributes(value: Any): List<RenderedAttributes> = interactionRendererFor(value::class)?.renderAttributes(value) ?: emptyList()
 

@@ -1,6 +1,7 @@
 package dev.kensa.render
 
 import dev.kensa.render.Language.PlainText
+import dev.kensa.util.Attributes
 import dev.kensa.util.NamedValue
 
 enum class Language(val value: String) {
@@ -17,7 +18,7 @@ fun interface ValueRenderer<T> {
 }
 
 interface InteractionRenderer<T> {
-    fun render(value: T) : List<RenderedInteraction>
+    fun render(value: T, attributes: Attributes) : List<RenderedInteraction>
     fun renderAttributes(value: T): List<RenderedAttributes>
 }
 

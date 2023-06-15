@@ -61,10 +61,18 @@
 
 .renderable-attribute {
   margin-bottom: 10px !important;
+  overflow-x: scroll;
+  max-height: 150px;
+  min-height: 150px;
 }
 
 .renderable-value {
   margin-bottom: 10px !important;
+}
+
+.renderable-value .scrollable-value {
+  padding: 0;
+  background-color: #fcfcfc;
 }
 
 .captured-interaction {
@@ -127,16 +135,8 @@ pre.lowlight {
   content: ':'
 }
 
-.font-small {
-  font-size: 0.75rem
-}
-
 .font-normal {
   font-size: 1rem !important;
-}
-
-.font-medium {
-  font-size: 1.25rem
 }
 
 .font-large {

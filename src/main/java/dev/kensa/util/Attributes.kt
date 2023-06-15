@@ -1,6 +1,7 @@
 package dev.kensa.util
 
 import dev.kensa.render.diagram.directive.ArrowStyle
+import dev.kensa.render.diagram.directive.ArrowStyle.UmlSynchronous
 import dev.kensa.util.Attributes.Key.Arrow
 import dev.kensa.util.Attributes.Key.Group
 
@@ -13,13 +14,18 @@ class Attributes private constructor(private val attributes: Map<String, Any?>) 
     val isEmpty: Boolean
         get() = attributes.isEmpty()
 
-    operator fun get(key: String): Any? = attributes[key]
+    @PublishedApi
+    internal fun doGet(key: String): Any? = attributes[key]
+
+    inline fun <reified T> get(key: String) : T? = doGet(key) as T?
+
+    inline fun <reified T> getOrDefault(key: String, default: T) : T = get<T>(key) ?: default
 
     val group: String?
-        get() = attributes[Group] as? String
+        get() = get<String>(Group)
 
     val arrowStyle: ArrowStyle
-        get() = (attributes[Arrow] ?: ArrowStyle.UmlSynchronous) as ArrowStyle
+        get() = getOrDefault(Arrow, UmlSynchronous)
 
     fun merge(other: Attributes): Attributes =
             Attributes(

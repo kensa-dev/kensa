@@ -13,6 +13,7 @@ import dev.kensa.sentence.SentenceToken
 import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
 import dev.kensa.state.TestInvocation
 import dev.kensa.state.TestMethodInvocation
+import dev.kensa.util.Attributes
 import dev.kensa.util.DurationFormatter
 import dev.kensa.util.KensaMap
 import dev.kensa.util.NamedValue
@@ -125,18 +126,18 @@ object JsonTransforms {
             jsonObject()
                 .add("id", it.key.hashCode().toString())
                 .add("name", it.key)
-                .add("rendered", renderedInteractionAsJson(it.value!!, renderers))
+                .add("rendered", renderedInteractionAsJson(it.value!!, it.attributes, renderers))
                 .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))
         }
     }
 
-    private fun renderedInteractionAsJson(value: Any, renderers: Renderers): JsonValue =
+    private fun renderedInteractionAsJson(value: Any, attributes: Attributes, renderers: Renderers): JsonValue =
         jsonObject()
-            .add("values", renderedInteractionValuesAsJson(value, renderers))
+            .add("values", renderedInteractionValuesAsJson(value, attributes, renderers))
             .add("attributes", renderedInteractionAttributesAsJson(value, renderers))
 
-    private fun renderedInteractionValuesAsJson(value: Any, renderers: Renderers): JsonArray =
-        renderers.renderInteraction(value).fold(Json.array()) { parent, ri ->
+    private fun renderedInteractionValuesAsJson(value: Any, attributes: Attributes, renderers: Renderers): JsonArray =
+        renderers.renderInteraction(value, attributes).fold(Json.array()) { parent, ri ->
             parent.add(
                 jsonObject().add("name", ri.name)
                     .add("value", ri.value)
