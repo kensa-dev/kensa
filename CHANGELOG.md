@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.2
+- #8  : Improve rendering of attributes and values - changes after feedback
+
 ### v0.4.1
 - #8  : Improve rendering of attributes and values - changes after feedback
 
