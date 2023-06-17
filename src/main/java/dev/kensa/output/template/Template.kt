@@ -1,9 +1,9 @@
 package dev.kensa.output.template
 
 import com.eclipsesource.json.Json
-import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.loader.ClasspathLoader
-import com.mitchellbosecke.pebble.template.PebbleTemplate
+import io.pebbletemplates.pebble.PebbleEngine
+import io.pebbletemplates.pebble.loader.ClasspathLoader
+import io.pebbletemplates.pebble.template.PebbleTemplate
 import dev.kensa.KensaException
 import dev.kensa.Section
 import dev.kensa.context.TestContainer
