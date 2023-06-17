@@ -38,6 +38,11 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
         }
     }
 
+    fun appendOperator(location: Location, value: String) {
+        checkLineAndIndent(location)
+        append(value, Operator)
+    }
+
     fun appendScenarioIdentifier(location: Location, value: String) {
         checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = setOf(ScenarioValue)))

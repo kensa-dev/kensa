@@ -4,21 +4,22 @@ import dev.kensa.util.unCamelToSeparated
 
 enum class TokenType {
     Acronym,
+    BlankLine,
     Expandable,
     FieldValue,
     Highlighted,
+    HighlightedIdentifier,
     Identifier,
+    Indent,
     Keyword,
     Literal,
     MethodValue,
     NewLine,
-    Indent,
+    Operator,
     ParameterValue,
     ScenarioValue,
-    BlankLine,
     StringLiteral,
-    Word,
-    HighlightedIdentifier;
+    Word;
 
     fun asCss(): String = "token-${name.unCamelToSeparated()}"
 }

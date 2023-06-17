@@ -83,6 +83,10 @@ class ParserStateMachine(
                     if (it is InMethodCall && it.didBegin) finishSentence()
                 }
             }
+            on<OperatorEvent> { currentState, event ->
+                sentenceBuilder.appendOperator(event.location, event.parseTree.text)
+                currentState
+            }
             on<StringLiteralEvent> { currentState, event ->
                 sentenceBuilder.appendStringLiteral(event.location, event.value)
                 currentState

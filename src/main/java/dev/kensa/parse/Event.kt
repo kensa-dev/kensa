@@ -37,6 +37,8 @@ sealed class Event<PT : ParseTree>(val parseTree: PT) {
     class EnterExpressionEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class ExitExpressionEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
 
+    class OperatorEvent(parseTree: ParseTree, val value: String) : Event<ParseTree>(parseTree)
+
     sealed class LiteralEvent(parseTree: ParseTree, val value: String) : Event<ParseTree>(parseTree) {
         class StringLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
         class NumberLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)

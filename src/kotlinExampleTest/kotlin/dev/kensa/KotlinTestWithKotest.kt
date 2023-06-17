@@ -1,16 +1,19 @@
 package dev.kensa
 
-import dev.kensa.Colour.BackgroundDanger
-import dev.kensa.Colour.TextLight
 import dev.kensa.AssertionStyleTest.Parrty.A
 import dev.kensa.AssertionStyleTest.Parrty.B
+import dev.kensa.Colour.BackgroundDanger
+import dev.kensa.Colour.TextLight
 import dev.kensa.TextStyle.*
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithKotest
 import dev.kensa.render.diagram.directive.ArrowStyle.UmlAsynchronousDelete
 import dev.kensa.state.CapturedInteractionBuilder
-import io.kotest.matchers.*
+import io.kotest.matchers.and
+import io.kotest.matchers.be
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.startWith
 import org.junit.jupiter.api.Test
 
