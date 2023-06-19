@@ -58,6 +58,9 @@ class ParserStateMachine(
                 beginSentence(event.location)
                 InMethodCall(event.parseTree, currentState, didBegin = true)
             }
+            on<OperatorEvent> { currentState, _ ->
+                currentState
+            }
             ignoreAll<Event<*>> {
                 add(Matcher.any<TerminalNodeEvent>())
             }
