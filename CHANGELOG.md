@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.4
+- #13  : Add rendering of equals & arrow operator to Kotlin tests
+
 ### v0.4.3
 - #13  : Add rendering of equals & arrow operator to Kotlin tests
 
