@@ -17,7 +17,7 @@ internal class KensaMapTest {
     @ParameterizedTest
     @MethodSource("mapInstances")
     internal fun <M : KensaMap<M>> throwsWhenPutWithUniqueKeyDoesNotContainPlaceholder(map: M) {
-        shouldThrowExactly<IllegalArgumentException> { map.putWithUniqueKey("foo", "foo", emptyAttributes()) }
+        shouldThrowExactly<IllegalArgumentException> { map.putWithUniqueKey("foo", "foo") }
     }
 
     @ParameterizedTest
@@ -27,7 +27,7 @@ internal class KensaMapTest {
         val threadCount = 15
         Executors.newFixedThreadPool(threadCount).apply {
             repeat(threadCount) {
-                submit { map.putWithUniqueKey("Foo__ idx __", Any(), emptyAttributes()) }
+                submit { map.putWithUniqueKey("Foo__ idx __", Any()) }
             }
             shutdown()
             awaitTermination(5, TimeUnit.SECONDS)
@@ -76,7 +76,7 @@ internal class KensaMapTest {
         val value = "FOO!"
         val attributeName = "language"
         val attributeValue = "xml"
-        map.put(key, value, of(attributeName, attributeValue))
+        map.put(key, value, attributes = of(attributeName, attributeValue))
         map.get<String>(key) shouldBe value
 
         // Attributes currently only required to be Iterable to allow serialization into Json
@@ -130,6 +130,18 @@ internal class KensaMapTest {
 
     @ParameterizedTest
     @MethodSource("mapInstances")
+    internal fun <M : KensaMap<M>> iteratesInTimestampOrder(map: M) {
+        val now = System.currentTimeMillis() - 1
+
+        map.putAll(listOf(2, 3, 4, 5))
+        map.put(1, now)
+
+        val result = map.entrySet().map(KensaMap.Entry::value).toList()
+        result shouldBe listOf(1, 2, 3, 4, 5)
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapInstances")
     internal fun <M : KensaMap<M>> canPutCollectionOfNamedValues(map: M) {
         val size = 10
         val values = (0..size).map { NamedValue(it.toString(), "VALUE:$it") }.toList()
@@ -145,8 +157,8 @@ internal class KensaMapTest {
         @JvmStatic
         fun mapInstances(): Stream<out KensaMap<*>?> {
             return Stream.of(
-                    Givens(),
-                    CapturedInteractions()
+                Givens(),
+                CapturedInteractions()
             )
         }
     }

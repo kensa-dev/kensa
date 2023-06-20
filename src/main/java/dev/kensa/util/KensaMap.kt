@@ -8,14 +8,14 @@ abstract class KensaMap<M : KensaMap<M>> {
     private val lock = Any()
     private val values: MutableMap<String, Entry> = LinkedHashMap()
 
-    fun put(value: Any): M = putWithUniqueKey(value.javaClass.simpleName + "__idx__", value, emptyAttributes())
+    fun put(value: Any, timestamp: Long = System.currentTimeMillis()): M = putWithUniqueKey(value.javaClass.simpleName + "__idx__", value,timestamp, emptyAttributes())
 
     @JvmOverloads
-    fun put(key: String, value: Any?, attributes: Attributes = emptyAttributes()): M = self().apply {
-        synchronized(lock) { values[key] = Entry(key, value, attributes) }
+    fun put(key: String, value: Any?, timestamp: Long = System.currentTimeMillis(), attributes: Attributes = emptyAttributes()): M = self().apply {
+        synchronized(lock) { values[key] = Entry(key, value, timestamp, attributes) }
     }
 
-    internal fun putWithUniqueKey(key: String, value: Any?, attributes: Attributes): M = self().apply {
+    internal fun putWithUniqueKey(key: String, value: Any?, timestamp: Long = System.currentTimeMillis(), attributes: Attributes = emptyAttributes()): M = self().apply {
         fun baseKeyFrom(result: MatchResult) = result.groups["prefix"]?.value + result.groups["suffix"]?.value
         fun indexedKeyFrom(result: MatchResult, index: Int) = (result.groups["prefix"]?.value + (result.groups["prekey"]?.value + index +
                 if (result.groups["suffix"]?.value?.isNotBlank() == true) result.groups["postkey"]?.value else "") + result.groups["suffix"]?.value)
@@ -29,7 +29,7 @@ abstract class KensaMap<M : KensaMap<M>> {
                         realKey = indexedKeyFrom(result, i++)
                     } while (values.containsKey(realKey))
                 }
-                values[realKey] = Entry(realKey, value, attributes)
+                values[realKey] = Entry(realKey, value, timestamp, attributes)
             }
         } ?: throw IllegalArgumentException("Must specify __key__ placeholder")
     }
@@ -52,12 +52,12 @@ abstract class KensaMap<M : KensaMap<M>> {
 
     fun containsKey(key: String): Boolean = synchronized(lock) { values.containsKey(key) }
 
-    fun entrySet(): Set<Entry> = synchronized(lock) { LinkedHashSet(values.values) }
+    fun entrySet(): Set<Entry> = synchronized(lock) { LinkedHashSet(values.values.sortedBy(Entry::timestamp)) }
 
     @Suppress("UNCHECKED_CAST")
     private fun self(): M = this as M
 
-    class Entry constructor(val key: String, val value: Any?, val attributes: Attributes = emptyAttributes())
+    class Entry(val key: String, val value: Any?, val timestamp: Long, val attributes: Attributes = emptyAttributes())
 
     companion object {
         private val KEY_REGEX = "(?<prefix>.*)(?<key>__(?<prekey>[ ]*)idx(?<postkey>[ ]*)__)(?<suffix>.*)".toRegex()

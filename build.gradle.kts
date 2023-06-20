@@ -47,6 +47,7 @@ dependencies {
     api(libs.kotlinStdLib)
     api(libs.kotlinReflect)
 
+    implementation(libs.kotlinCoroutines)
     implementation(libs.junitJupiterParams)
     implementation(libs.junitJupiterApi)
     implementation(libs.junitJupiterEngine)

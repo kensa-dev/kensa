@@ -20,11 +20,11 @@ class CapturedInteractions : KensaMap<CapturedInteractions>() {
     }
 
     fun captureTimePassing(message: String = "Some Time Later") {
-        put(sdMarkerKey, "...$message...", if (isUnderTest) Attributes.of(Group, "Test") else emptyAttributes())
+        put(sdMarkerKey, "...$message...", attributes = if (isUnderTest) Attributes.of(Group, "Test") else emptyAttributes())
     }
 
     fun divider(message: String = "") {
-        put(sdMarkerKey, "==$message==", if (isUnderTest) Attributes.of(Group, "Test") else emptyAttributes())
+        put(sdMarkerKey, "==$message==", attributes = if (isUnderTest) Attributes.of(Group, "Test") else emptyAttributes())
     }
 
     fun disableUnderTest() {

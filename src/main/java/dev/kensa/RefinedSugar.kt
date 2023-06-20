@@ -1,5 +1,7 @@
 package dev.kensa
 
+import kotlin.time.Duration
+
 object RefinedSugar {
     @JvmStatic
     fun <T> has(t: T): T = t
@@ -48,4 +50,10 @@ object RefinedSugar {
 
     @JvmStatic
     fun <T> with(t: T): T = t
+
+    @JvmStatic
+    fun with(duration: Duration) = duration
+
+    @JvmStatic
+    fun with(duration: java.time.Duration) = duration
 }
