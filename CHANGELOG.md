@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.5
+- #15  : Add timestamp to KensaMap entries to ease sequence diagram order issues
+- #14  : Complete thenEventually for Kotest
+
 ### v0.4.4
 - #13  : Add rendering of equals & arrow operator to Kotlin tests
 
