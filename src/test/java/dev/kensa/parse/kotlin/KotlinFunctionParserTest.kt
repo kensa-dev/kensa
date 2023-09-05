@@ -247,7 +247,7 @@ internal class KotlinFunctionParserTest {
             )
         )
 
-        val method = KotlinTestWithVariousParameterCombinations::class.java.findMethod("internalTest\$kensa")
+        val method = KotlinTestWithVariousParameterCombinations::class.java.findMethod("internalTest\$kensa_test")
         val parsedMethod = parser.parse(method)
 
         with(parsedMethod) {
