@@ -1,5 +1,6 @@
 [versions]
 kotlin = "1.9.10"
+coroutines = "1.7.3"
 node = "17.3.0"
 nodeGradle = "2.2.0"
 plantUml = "1.2022.6"
