@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.6
+- #18  : Improve handling of expression function tests
+- #17  : Introduce ScenarioHolder
+
 ### v0.4.5
 - #15  : Add timestamp to KensaMap entries to ease sequence diagram order issues
 - #14  : Complete thenEventually for Kotest
