@@ -14,6 +14,7 @@ import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
+import dev.kensa.sentence.SentenceTokens.aScenarioValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anIndent
@@ -37,6 +38,27 @@ internal class KotlinFunctionParserTest {
     internal fun setUp() {
         konfigure {
             antlrPredicationMode = PredictionMode.LL
+        }
+    }
+
+    @Test
+    fun `replaces scenario value in sentence when using scenario holder`() {
+        val javaClass = KotlinTestWithScenarioHolder::class.java
+        val method = javaClass.findMethod("simpleTest")
+        val parsedMethod = parser.parse(method)
+
+        val expectedSentence = Sentence(
+            listOf(
+                aWordOf("test"),
+                aKeywordOf("When"),
+                aWordOf("action"),
+                aWordOf("with"),
+                aScenarioValueOf("myScenario.value")
+            )
+        )
+
+        with(parsedMethod) {
+            sentences.first().tokens shouldBe expectedSentence.tokens
         }
     }
 

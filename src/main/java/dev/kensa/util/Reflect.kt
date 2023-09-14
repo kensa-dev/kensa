@@ -1,7 +1,6 @@
 package dev.kensa.util
 
 import dev.kensa.Scenario
-import dev.kensa.parse.CachingScenarioMethodAccessor
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import java.lang.reflect.AnnotatedElement
@@ -141,8 +140,6 @@ internal inline fun <reified T : Annotation> KProperty<*>.hasKotlinOrJavaAnnotat
 internal inline fun <reified T : Annotation> KProperty<*>.javaElementHasAnnotation() = javaField?.findAnnotation<T>() != null || javaGetter?.findAnnotation<T>() != null
 internal inline fun <reified T : Annotation> AnnotatedElement.hasAnnotation() = findAnnotation<T>() != null
 internal inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? = annotations?.firstOrNull { it is T } as T?
-
-internal fun Any.scenarioAccessor() = CachingScenarioMethodAccessor(this, findFields(annotatedAsScenario, this::class.java).map { it.name }.toSet())
 
 private fun findField(predicate: FieldPredicate, clazz: Class<*>?): Field? =
     clazz?.takeUnless { it == Any::class.java }?.run {

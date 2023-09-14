@@ -1,10 +1,13 @@
 package dev.kensa.parse;
 
+import dev.kensa.Scenario;
+
 public class JavaTestInstance {
+    @Scenario
     private TestScenario scenario = new TestScenario();
     private TestScenario nullScenario = null;
 
-    private static class TestScenario {
+    static class TestScenario {
         private String value = "FooBoo!!";
 
         public String aValue() {

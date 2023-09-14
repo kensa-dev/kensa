@@ -22,16 +22,22 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
+data class MyContext(
+    @field:Scenario
+    val scenario: AssertionStyleTest.ScenarioFoo = AssertionStyleTest.ScenarioFoo()
+)
+
 @Notes("Class Level Notes")
 @Issue("ISS-007")
 class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTestInterface {
+
+    @ScenarioHolder
+    private val myContext = MyContext()
+
     private val actionName = "ACTION1"
 
     @get:SentenceValue
     private val theExpectedResult get() = "Performed: ACTION1"
-
-    @Scenario
-    private val scenario = ScenarioFoo()
 
     private val performer = ActionPerformer()
 
@@ -56,24 +62,28 @@ class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTes
     @Notes("Method Notes {@link AssertionStyleTest#canUseAssertJStyle}")
     @Issue("ISS-007")
     fun `can Use AssertJStyle`() {
-        given(someActionNameIsAddedToGivens())
+        with (myContext) {
+            given(someActionNameIsAddedToGivens())
 
-        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
+            whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
 
-        then(theResultStoredInCapturedInteractions()).isEqualTo(theExpectedResult)
-        withAllTheNestedThings()
-        then(foo()).isEqualTo(scenario.thing())
-        then(foo1())
+            then(theResultStoredInCapturedInteractions()).isEqualTo(theExpectedResult)
+            withAllTheNestedThings()
+            then(foo()).isEqualTo(scenario.thing())
+            then(foo1())
                 .isEqualTo("777")
                 .hasSameClassAs("888")
 
-        then(foo())
+            then(foo())
                 .isEqualTo(666)
+        }
     }
 
     @NestedSentence
     private fun withAllTheNestedThings() {
-        then(foo()).isEqualTo(scenario.thing())
+        with (myContext) {
+            then(foo()).isEqualTo(scenario.thing())
+        }
     }
 
     private fun foo(): StateExtractor<Int?> {

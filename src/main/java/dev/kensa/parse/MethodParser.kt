@@ -6,10 +6,11 @@ import dev.kensa.Kensa
 import dev.kensa.KensaException
 import dev.kensa.parse.Accessor.ParameterAccessor
 import dev.kensa.parse.Accessor.ValueAccessor
-import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.*
 import dev.kensa.util.*
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import kotlin.reflect.KClass
 
 val greedyGenericPattern = "<.*>".toRegex()
 
@@ -82,10 +83,10 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     fun matchingDeclarationFor(method: Method) = { dc: MethodDeclarationContext ->
         method.normalisedName == dc.name &&
-                // Only match on parameter simple type name - saves having to go looking in the imports
-                dc.parameterNamesAndTypes.map {
-                    it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
-                } == method.parameterTypes.map(toSimpleTypeName)
+            // Only match on parameter simple type name - saves having to go looking in the imports
+            dc.parameterNamesAndTypes.map {
+                it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
+            } == method.parameterTypes.map(toSimpleTypeName)
     }
 
     val toSimpleTypeName: (Class<*>) -> String
@@ -120,7 +121,7 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     fun shouldRender(parameter: Parameter) =
         parameter.type.findAnnotation<CapturedParameter>()?.value ?: true ||
-                parameter.type.findAnnotation<CapturedParameter>()?.value ?: true
+            parameter.type.findAnnotation<CapturedParameter>()?.value ?: true
 
     private fun prepareMethodsFor(clazz: Class<*>) =
         clazz.allMethods
@@ -129,6 +130,17 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     private fun preparePropertiesFor(clazz: Class<*>) =
         clazz.allProperties
-            .map { ValueAccessor(it) }
+            .flatMap { property ->
+                val valueAccessor = PropertyAccessor(property)
+
+                if (valueAccessor.isScenarioHolder) {
+                    listOf(valueAccessor) + when (val classifier = property.returnType.classifier) {
+                        is KClass<*> -> classifier.allProperties.map { ScenarioHolderAccessor(property, it) }.filter { it.isScenario }
+                        else -> emptyList()
+                    }
+                } else {
+                    listOf(valueAccessor)
+                }
+            }
             .associateBy(ValueAccessor::name)
 }

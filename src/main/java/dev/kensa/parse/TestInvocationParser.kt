@@ -8,7 +8,6 @@ import dev.kensa.sentence.SentenceToken
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.state.TestInvocationContext
 import dev.kensa.util.NamedValue
-import dev.kensa.util.scenarioAccessor
 
 class TestInvocationParser {
 
@@ -30,11 +29,13 @@ class TestInvocationParser {
                 .plus(highlightedPropertyValues(parsedMethod.properties, context.instance))
                 .plus(highlightedParameterValues)
 
+            val scenarioProperties = parsedMethod.properties.filter { it.value.isScenario }
+
             val tokenFactory = SentenceTokenFactory(
                 context.instance,
                 context.arguments,
                 configuration.renderers,
-                context.instance.scenarioAccessor(),
+                CachingScenarioMethodAccessor(context.instance, scenarioProperties),
                 parsedMethod.parameters.descriptors,
                 parsedMethod.properties,
                 parsedMethod.methods,

@@ -1,5 +1,7 @@
 package dev.kensa.parse
 
+import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
+import dev.kensa.util.allProperties
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
@@ -11,7 +13,8 @@ internal class CachingScenarioMethodAccessorTest {
 
     @BeforeEach
     internal fun setUp() {
-        accessor = CachingScenarioMethodAccessor(JavaTestInstance(), setOf("scenario"))
+        accessor = CachingScenarioMethodAccessor(JavaTestInstance(),
+            JavaTestInstance::class.allProperties.map { PropertyAccessor(it) }.associateBy { it.name })
     }
 
     @Test

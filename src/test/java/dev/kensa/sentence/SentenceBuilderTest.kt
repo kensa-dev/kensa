@@ -11,7 +11,7 @@ import dev.kensa.sentence.SentenceTokens.aLiteralOf
 import dev.kensa.sentence.SentenceTokens.aMethodIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
-import dev.kensa.sentence.SentenceTokens.aScenarioIdentifierOf
+import dev.kensa.sentence.SentenceTokens.aScenarioValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anAcronymOf
@@ -61,7 +61,7 @@ internal class SentenceBuilderTest {
             aWordOf("ZOO"),
             aStringLiteralOf("stringLiteral1"),
             aLiteralOf("10"),
-            aScenarioIdentifierOf("scenario.call"),
+            aScenarioValueOf("scenario.call"),
             aFieldIdentifierOf("fieldName"),
             aMethodIdentifierOf("methodName"),
             aParameterValueOf("parameterName"),

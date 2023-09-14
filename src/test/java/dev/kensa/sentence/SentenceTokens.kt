@@ -30,7 +30,7 @@ object SentenceTokens {
 
     fun anIdentifierOf(value: String) = SentenceToken(value, tokenTypes = setOf(Identifier))
 
-    fun aScenarioIdentifierOf(value: String) = SentenceToken(value, tokenTypes = setOf(ScenarioValue))
+    fun aScenarioValueOf(value: String) = SentenceToken(value, tokenTypes = setOf(ScenarioValue))
 
     fun aFieldIdentifierOf(value: String) = SentenceToken(value, tokenTypes = setOf(FieldValue))
 
