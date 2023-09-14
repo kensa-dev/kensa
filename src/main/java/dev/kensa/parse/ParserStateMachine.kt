@@ -13,6 +13,8 @@ import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
 import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceBuilder
+import org.antlr.v4.runtime.tree.ParseTree
+import org.antlr.v4.runtime.tree.TerminalNode
 
 class ParserStateMachine(
     private val dictionary: Dictionary,
@@ -45,7 +47,7 @@ class ParserStateMachine(
 
         state<Start> {
             on<EnterTestMethodEvent> { _, event ->
-                InTestMethod(event.parseTree)
+                InTestMethod(event.parseTree, isExpressionFunction(event))
             }
         }
         state<InTestMethod> {
@@ -55,20 +57,27 @@ class ParserStateMachine(
                 InStatement(event.parseTree, currentState)
             }
             on<EnterMethodInvocationEvent> { currentState, event ->
-                beginSentence(event.location)
-                InMethodCall(event.parseTree, currentState, didBegin = true)
+                when {
+                    currentState.isExpressionFunction -> currentState
+                    else -> {
+                        beginSentence(event.location)
+                        InMethodCall(event.parseTree, currentState, didBegin = true)
+                    }
+                }
             }
             on<OperatorEvent> { currentState, _ ->
                 currentState
             }
             ignoreAll<Event<*>> {
                 add(Matcher.any<TerminalNodeEvent>())
+                add(Matcher.any<IdentifierEvent>())
+                add(Matcher.any<ExitMethodInvocationEvent>())
             }
         }
         state<InStatement> {
             on<ExitStatementEvent> { _, event ->
                 finishSentence()
-                InTestMethod(event.parseTree)
+                InTestMethod(event.parseTree, false)
             }
             on<EnterMethodInvocationEvent> { currentState, event ->
                 InMethodCall(event.parseTree, currentState)
@@ -108,21 +117,26 @@ class ParserStateMachine(
                             )
                             currentState
                         }
+
                         isScenarioIdentifier(text) -> {
                             InScenarioCall(this, currentState.parentState, text)
                         }
+
                         isFieldIdentifier(text) -> {
                             sentenceBuilder.appendFieldIdentifier(event.location, text)
                             currentState
                         }
+
                         isMethodIdentifier(text) -> {
                             sentenceBuilder.appendMethodIdentifier(event.location, text)
                             currentState
                         }
+
                         isParameterIdentifier(text) -> {
                             sentenceBuilder.appendParameterIdentifier(event.location, text)
                             currentState
                         }
+
                         else -> {
                             sentenceBuilder.appendIdentifier(
                                 event.location, text, emphasisedMethods[text]
@@ -163,6 +177,8 @@ class ParserStateMachine(
         stateMachine.transition(event)
     }
 
+    private fun isExpressionFunction(event: EnterTestMethodEvent) = event.parseTree.firstChildOrNull()?.startsExpressionFunction() ?: false
+
     private fun isNestedMethodCall(value: String) = nestedMethods.containsKey(value)
 
     private fun isScenarioIdentifier(value: String) = properties[value]?.isScenario ?: false
@@ -173,4 +189,6 @@ class ParserStateMachine(
 
     private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlight } ?: false
 
+    private fun ParseTree.firstChildOrNull() = getChild(0)
+    private fun ParseTree.startsExpressionFunction() = this is TerminalNode && text == "="
 }
