@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.7
+- #19  : Starting some work on `thenEventually` improvements for Kotlin/Kotest
+
 ### v0.4.6
 - #18  : Improve handling of expression function tests
 - #17  : Introduce ScenarioHolder
