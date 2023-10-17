@@ -33,9 +33,9 @@ interface WithKotest {
         }
     }
 
-    fun <T> thenEventually(extractor: StateExtractor<T>, block: T.() -> Unit) = thenEventually(10.seconds, extractor, block)
+    fun <T> thenEventually(extractor: StateExtractor<T>, block: T.() -> Unit = {}) = thenEventually(10.seconds, extractor, block)
 
-    fun <T> thenEventually(duration: Duration, extractor: StateExtractor<T>, block: T.() -> Unit) {
+    fun <T> thenEventually(duration: Duration, extractor: StateExtractor<T>, block: T.() -> Unit = {}) {
         runBlocking {
             KotestThen.thenEventually(duration, testContext(), extractor, block)
         }
