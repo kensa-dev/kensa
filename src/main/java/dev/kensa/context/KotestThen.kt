@@ -1,6 +1,7 @@
 package dev.kensa.context
 
 import dev.kensa.StateExtractor
+import io.kotest.assertions.timing.continually
 import io.kotest.assertions.timing.eventually
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.invokeMatcher
@@ -14,6 +15,12 @@ object KotestThen {
 
     fun <T> then(testContext: TestContext, extractor: StateExtractor<T>, match: Matcher<T>) {
         invokeMatcher(extractor.execute(testContext.interactions), match)
+    }
+
+    suspend fun <T> thenContinually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateExtractor<T>, match: Matcher<T>) {
+        continually(duration) {
+            invokeMatcher(extractor.execute(testContext.interactions), match)
+        }
     }
 
     suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateExtractor<T>, match: Matcher<T>) {
