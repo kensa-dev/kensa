@@ -13,12 +13,12 @@ class Test extends Component {
         let test = this.props.test;
         let state = test.state;
         let testMethod = test.testMethod;
-        let isCollapsed = true;
+        let isCollapsed;
 
         if (window.location.hash) {
             isCollapsed = window.location.hash.substring(1) !== testMethod
         } else {
-            isCollapsed = state !== "Failed" && state !== "Disabled"
+            isCollapsed = state !== "Failed"
         }
 
         this.state = {
@@ -57,7 +57,7 @@ class Test extends Component {
 
         if (issue.length > 0 || notes) {
             return (
-                <div className="message-body is-info">
+                <div className="test-information">
                     {issueContent}
                     {notesContent}
                 </div>
@@ -92,11 +92,14 @@ class Test extends Component {
     render() {
         const test = this.props.test;
         const state = test.state;
-        if (state === 'Disabled') {
+        if (state === 'Disabled' || state === 'Not Executed') {
             return (
                 <div className={"message " + App.stateClassFor(state)}>
-                    <div className="message-header">{test.displayName}</div>
-                    <div className="message-body">
+                    <div onClick={this.toggle} className="message-header">
+                        <span className={"limited-width"}>{test.displayName}</span>
+                        <a><FontAwesomeIcon icon={this.icon()}/></a>
+                    </div>
+                    <div className={"message-body " + this.contentClass()}>
                         Test was not executed.
                     </div>
                 </div>
@@ -104,13 +107,16 @@ class Test extends Component {
         } else {
 
             let expandedIndex = test.invocations.findIndex((invocation) => invocation.state === 'Failed')
-            if(expandedIndex === -1) expandedIndex = 0
+            if (expandedIndex === -1) expandedIndex = 0
 
             return (
                 <div className={"message " + App.stateClassFor(state)}>
                     <div onClick={this.toggle} className="message-header">
-                        {test.displayName}
-                        <a><FontAwesomeIcon icon={this.icon()}/></a>
+                        <span className={"limited-width"}>{test.displayName}</span>
+                        <div>
+                            <span className={"elapsed-time"}>Elapsed time: {test.elapsedTime}</span>
+                            <a><FontAwesomeIcon icon={this.icon()}/></a>
+                        </div>
                     </div>
                     <div className={this.contentClass()}>
                         {this.renderInformation(test.issue, test.notes)}

@@ -1,18 +1,18 @@
 package dev.kensa.sentence
 
-enum class TokenType(private val css: String) {
+enum class TokenType(private val css: String, val isWhitespace : Boolean = false) {
     Acronym("ac"),
-    BlankLine("bl"),
-    Expandable("ex"),
+    BlankLine("bl", true),
+    Expandable("ex", true),
     FieldValue("fv"),
     Highlighted("hl"),
     HighlightedIdentifier("hlid"),
     Identifier("id"),
-    Indent("in"),
+    Indent("in", true),
     Keyword("kw"),
     Literal("li"),
     MethodValue("mv"),
-    NewLine("nl"),
+    NewLine("nl", true),
     Operator("op"),
     ParameterValue("pv"),
     ScenarioValue("sv"),

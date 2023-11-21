@@ -41,24 +41,30 @@ internal class SentenceBuilderTest {
     @Test
     fun canConstructASentenceFromVariousValueTypes() {
         builder.apply {
-            appendIdentifier(Location(1, 0), value = "givenFOOMooBarZOO")
-            appendStringLiteral(Location(1, 0), "stringLiteral1")
-            appendLiteral(Location(1, 0), "10")
-            appendScenarioIdentifier(Location(2, 0), "scenario.call")
-            appendFieldIdentifier(Location(2, 0), "fieldName")
-            appendMethodIdentifier(Location(2, 0), "methodName")
-            appendParameterIdentifier(Location(2, 0), "parameterName")
-            appendIdentifier(Location(3, 25), value = "sendsAThing")
-            appendIdentifier(Location(4, 0), value = "somethingA_CONSTANT_019")
-            appendIdentifier(Location(5, 0), value = "highlightedIdentifier")
+            appendIdentifier(Location(1, 0), value = "")
+            appendIdentifier(Location(2, 5), value = "givenFOOMooBarZOO")
+            appendIdentifier(Location(2, 0), value = "andFOO")
+            appendStringLiteral(Location(2, 0), "stringLiteral1")
+            appendLiteral(Location(2, 0), "10")
+            appendScenarioIdentifier(Location(3, 0), "scenario.call")
+            appendFieldIdentifier(Location(3, 0), "fieldName")
+            appendMethodIdentifier(Location(3, 0), "methodName")
+            appendParameterIdentifier(Location(3, 0), "parameterName")
+            appendIdentifier(Location(4, 25), value = "sendsAThing")
+            appendIdentifier(Location(5, 0), value = "somethingA_CONSTANT_019")
+            appendIdentifier(Location(6, 0), value = "highlightedIdentifier")
         }
 
         builder.build().tokens.shouldContainExactly(
+            aNewline(),
+            anIndent(),
             aKeywordOf("Given"),
             anAcronymOf("FOO"),
             aWordOf("moo"),
             anAcronymOf("BAR"),
             aWordOf("ZOO"),
+            aWordOf("and"),
+            anAcronymOf("FOO"),
             aStringLiteralOf("stringLiteral1"),
             aLiteralOf("10"),
             aScenarioValueOf("scenario.call"),

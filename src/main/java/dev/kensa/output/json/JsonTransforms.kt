@@ -20,6 +20,9 @@ import dev.kensa.util.NamedValue
 import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 import com.eclipsesource.json.Json.`object` as jsonObject
 
 object JsonTransforms {
@@ -32,26 +35,33 @@ object JsonTransforms {
             .add("notes", container.notes)
             .add("issue", asJsonArray(container.issues))
             .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
+                var totalElapsed : Duration = Duration.ZERO
+
+                val invocations = asJsonArray(invocation.invocations) { i ->
+                    totalElapsed += i.elapsed
+
+                    jsonObject()
+                        .add("elapsedTime", DurationFormatter.format(i.elapsed))
+                        .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
+                        .add("acronyms", acronymsAsJson(i.acronyms))
+                        .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
+                        .add("parameterizedTestDescription", i.parameterizedTestDescription)
+                        .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
+                        .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
+                        .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
+                        .add("sequenceDiagram", if (i.sequenceDiagram == null) null else i.sequenceDiagram.toString())
+                        .add("state", i.state.description)
+                        .add("executionException", executionExceptionFrom(i))
+                }
+
                 jsonObject()
+                    .add("elapsedTime", DurationFormatter.format(totalElapsed))
                     .add("testMethod", invocation.method.name)
                     .add("displayName", invocation.displayName)
                     .add("notes", invocation.notes)
                     .add("issue", asJsonArray(invocation.issues))
                     .add("state", invocation.state.description)
-                    .add("invocations", asJsonArray(invocation.invocations) { i ->
-                        jsonObject()
-                            .add("elapsedTime", DurationFormatter.format(i.elapsed))
-                            .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
-                            .add("acronyms", acronymsAsJson(i.acronyms))
-                            .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
-                            .add("parameterizedTestDescription", i.parameterizedTestDescription)
-                            .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
-                            .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
-                            .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
-                            .add("sequenceDiagram", if (i.sequenceDiagram == null) null else i.sequenceDiagram.toString())
-                            .add("state", i.state.description)
-                            .add("executionException", executionExceptionFrom(i))
-                    })
+                    .add("invocations", invocations)
             })
     }
 

@@ -4,6 +4,7 @@ import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.HighlightedIdentifier
 import dev.kensa.sentence.TokenType.Keyword
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -24,7 +25,7 @@ internal class TokenScannerTest {
     internal fun recognisesHighlightedIdentifiers() {
         val identifier = "MyIdentifier"
 
-        val (actual, indices) = tokenScannerWith(emptySet(), setOf(HighlightedIdentifier("MyIdentifier"))).scan(identifier)
+        val (actual, indices) = tokenScannerWith(emptySet(), setOf(HighlightedIdentifier("MyIdentifier"))).scan(identifier, false)
 
         actual shouldBe identifier
         transformed(actual, indices) shouldBe listOf(identifier)
@@ -33,17 +34,21 @@ internal class TokenScannerTest {
     @Test
     fun recognisesKeywordsAtStartOfSentenceOnly() {
         val string = "givenSomethingWasGivenWhenThen"
-        val (_, indices) = tokenScannerWith(emptySet()).scan(string)
+        val scanner = tokenScannerWith(emptySet())
 
-        indices.filter { index -> index.type === Keyword }
+        val (_, indices1) = scanner.scan(string, true)
+        indices1.filter { index -> index.type === Keyword }
             .forEach { index -> index.start shouldBe 0 }
+
+        val (_, indices2) = scanner.scan(string, false)
+        indices2.filter { index -> index.type === Keyword }.shouldBeEmpty()
     }
 
     @Test
     internal fun normalisesKotlinWheneverToWhen() {
         val string = "wheneverAThingHappens"
         val expected = listOf("when", "A", "Thing", "Happens")
-        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
+        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -52,7 +57,7 @@ internal class TokenScannerTest {
     fun splitsInternalNumbersToSeparateTokens() {
         val expected = listOf("last", "24", "Hours")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
+        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -61,7 +66,7 @@ internal class TokenScannerTest {
     fun splitsTrailingNumbersToSeparateTokens() {
         val expected = listOf("last", "24")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
+        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -70,7 +75,7 @@ internal class TokenScannerTest {
     fun scansSimpleStringWithNoAcronyms() {
         val expected = listOf("given", "This", "And", "That")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string)
+        val (scanned, indices) = tokenScannerWith(emptySet()).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -79,7 +84,7 @@ internal class TokenScannerTest {
     fun scansStringWithSingleAcronymInMiddle() {
         val expected = listOf("given", "FTTC", "And", "This", "And", "That")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -89,7 +94,7 @@ internal class TokenScannerTest {
     fun scansStringWithSingleCharacterFollowedByAcronym() {
         val expected = listOf("a", "FTTC", "And", "This", "And", "That")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -98,7 +103,7 @@ internal class TokenScannerTest {
     fun scansStringWithSingleAcronymAtEnd() {
         val expected = listOf("given", "And", "This", "And", "That", "FTTC")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -107,7 +112,7 @@ internal class TokenScannerTest {
     fun scansStringWithMultipleAcronyms() {
         val expected = listOf("given", "And", "FTTP", "This", "And", "That", "FTTC")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -116,7 +121,7 @@ internal class TokenScannerTest {
     fun choosesLongestMatchingAcronym() {
         val expected = listOf("given", "FT", "And", "FTTP", "This", "And", "That", "FTTC")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -125,7 +130,7 @@ internal class TokenScannerTest {
     @MethodSource("mixedCaseExamples")
     fun scansAcronymsCorrectlyWhenMixedCase(expected: List<String>) {
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -134,7 +139,7 @@ internal class TokenScannerTest {
     fun scansStringWithAcronymSpanningCamelWords() {
         val expected = listOf("a", "Notification", "Type", "Of")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }
@@ -143,7 +148,7 @@ internal class TokenScannerTest {
     fun scansStringWithAcronymSpanningCamelWords_afterInitialCap() {
         val expected = listOf("a", "Contact")
         val string = expected.joinToString("")
-        val (scanned, indices) = tokenScannerWith(acronyms).scan(string)
+        val (scanned, indices) = tokenScannerWith(acronyms).scan(string, false)
 
         transformed(scanned, indices) shouldBe expected
     }

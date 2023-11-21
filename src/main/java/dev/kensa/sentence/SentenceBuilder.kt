@@ -18,7 +18,7 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
     fun appendNested(location: Location, placeholder: String, sentences: List<Sentence>) {
         checkLineAndIndent(location)
 
-        val (scanned, indices) = scanner.scan(placeholder)
+        val (scanned, indices) = scanner.scan(placeholder, false)
         val scannedPlaceholder = indices.joinToString(separator = " ") { index -> scanned.substring(index.start, index.end) }
 
         tokens.add(SentenceToken(scannedPlaceholder, setOf(Expandable), nestedTokens = sentences.map { it.tokens }))
@@ -66,13 +66,16 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
     fun appendIdentifier(location: Location, value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {
         checkLineAndIndent(location)
 
-        val (scanned, indices) = scanner.scan(value)
+        val (scanned, indices) = scanner.scan(value, isFirstInSentence())
         indices.forEach { index: Index ->
             append(tokenValueFor(index, scanned.substring(index.start, index.end)), index.type, emphasis = index.emphasisDescriptor ?: emphasisDescriptor)
         }
     }
 
     fun build(): Sentence = Sentence(tokens)
+
+    private fun isFirstInSentence() =
+        tokens.find { it.tokenTypes.any { !it.isWhitespace } } == null
 
     private fun checkLineAndIndent(location: Location) {
         if (location.lineNumber - lastLocation.lineNumber > 1) {

@@ -123,7 +123,7 @@ export class Invocation extends Component {
     }
 
 
-    buttons(invocation, testStateClass) {
+    buttons(invocation) {
         let highlights = invocation.highlights;
 
         if (this.hasElements('givens') ||
@@ -131,7 +131,6 @@ export class Invocation extends Component {
             this.hasElements('capturedInteractions') ||
             this.hasElements('sequenceDiagram')) {
             return <div>
-                <span className={"tag is-pulled-right " + testStateClass}>Executed in: {invocation.elapsedTime}</span>
                 <div className="buttons has-addons">
                     {this.buttonFor('givens', 'Givens')}
                     {this.buttonFor('parameters', 'Parameters')}
@@ -193,7 +192,7 @@ export class Invocation extends Component {
         return null
     }
 
-    foopy(testBody) {
+    lazyBody(testBody) {
         if(!this.state.isCollapsed) {
             return (<div className={"message-body " + this.contentClass()}>
                 {testBody}
@@ -206,10 +205,13 @@ export class Invocation extends Component {
             return (
                 <div className={"message " + testStateClass}>
                     <div onClick={this.toggle} className={"message-header"}>
-                        {invocation.parameterizedTestDescription}
-                        <a><FontAwesomeIcon icon={this.icon()}/></a>
+                        <span className={"limited-width"}>{invocation.parameterizedTestDescription}</span>
+                        <div>
+                            <span className={"elapsed-time"}>Elapsed time: {invocation.elapsedTime}</span>
+                            <a><FontAwesomeIcon icon={this.icon()}/></a>
+                        </div>
                     </div>
-                    { this.foopy(testBody) }
+                    { this.lazyBody(testBody) }
                 </div>
             )
         }
@@ -225,7 +227,7 @@ export class Invocation extends Component {
                 this.props.sectionOrder.map((section) => {
                         switch (section) {
                             case Section.Buttons:
-                                return this.buttons(invocation, testStateClass)
+                                return this.buttons(invocation)
                             case Section.Exception:
                                 return this.exceptionBlock(invocation.executionException)
                             case Section.Sentences:

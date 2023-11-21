@@ -37,7 +37,6 @@ private fun be(expected: ParameterAccessor): Matcher<ParameterAccessor> =
         .and(parameterAccessorHas("index", ParameterAccessor::index, be(expected.index)))
         .and(parameterAccessorHas("isSentenceValue", ParameterAccessor::isSentenceValue, be(expected.isSentenceValue)))
         .and(parameterAccessorHas("isHighlight", ParameterAccessor::isHighlight, be(expected.isHighlight)))
-        .and(parameterAccessorHas("isCaptured", ParameterAccessor::isCaptured, be(expected.isCaptured)))
 
 private fun <R> parameterAccessorHas(name: String, extractValue: (ParameterAccessor) -> R, match: Matcher<R>) = extractingMatcher(name, extractValue, match)
 

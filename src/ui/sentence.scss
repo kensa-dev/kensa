@@ -9,6 +9,7 @@
 
 .tk-kw {
   font-weight: bold;
+  text-transform: capitalize;
 }
 
 .tk-wd {
@@ -38,6 +39,7 @@
 
 .tk-ac {
   text-decoration: underline;
+  text-transform: uppercase;
 }
 
 .tk-sv, .tk-fv, .tk-mv, .tk-pv {

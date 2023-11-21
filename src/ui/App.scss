@@ -53,6 +53,13 @@
   border-style: none !important;
 }
 
+.limited-width {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 2400px;
+}
+
 .message.test-passed > .message-header {
   background-color: $success;
   border-color: $success;
@@ -160,4 +167,18 @@ pre.lowlight {
 .scrollable-value {
   min-height: 600px;
   max-height: 600px;
+}
+
+.elapsed-time {
+  font-size: 0.75rem;
+  font-weight: 400;
+  padding-right: 15px
+}
+
+.test-information {
+  @extend .is-info;
+  padding: 10px;
+  background-color: $info-light;
+  color: $info-dark;
+  margin-bottom: 5px;
 }

@@ -5,13 +5,15 @@ import dev.kensa.sentence.TokenType.*
 
 class TokenScanner(private val dictionary: Dictionary) {
 
-    fun scan(string: String): Pair<String, Indices> =
+    fun scan(string: String, isFirstInSentence: Boolean): Pair<String, Indices> =
         normaliseKeywords(string).let {
             Pair(
                 it,
                 Indices().apply {
                     if (!scanForHighlightedIdentifier(it, this)) {
-                        scanForKeywords(it, this)
+                        if(isFirstInSentence)
+                            scanForKeywords(it, this)
+
                         scanForAcronyms(it, this)
                         scanForWords(it, this)
                     }
@@ -58,7 +60,7 @@ class TokenScanner(private val dictionary: Dictionary) {
 
     private fun normaliseKeywords(string: String): String {
         val strings = camelCaseSplit(string)
-        val word = strings[0]
+        val word = strings.first()
 
         return if (dictionary.isWhen(word)) {
             "when" + strings.drop(1).joinToString("")
@@ -67,7 +69,7 @@ class TokenScanner(private val dictionary: Dictionary) {
 
     private fun scanForKeywords(string: String, indices: Indices) {
         val strings = camelCaseSplit(string)
-        val word = strings[0]
+        val word = strings.first()
 
         dictionary.findKeywordOrNull(word)?.also {
             indices.put(Keyword, string.indexOf(word), string.indexOf(word) + word.length, it.emphasisDescriptor)

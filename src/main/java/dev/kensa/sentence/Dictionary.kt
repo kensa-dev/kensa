@@ -30,11 +30,8 @@ class Dictionary {
     private val _keywords: MutableSet<Keyword> = linkedSetOf(
         Keyword("given"),
         Keyword("when"),
-        Keyword("whenever"),
         Keyword("then"),
-        Keyword("and"),
-        Keyword("with"),
-        Keyword("that")
+        Keyword("and")
     )
     val keywords: Set<Keyword>
         get() = _keywords
