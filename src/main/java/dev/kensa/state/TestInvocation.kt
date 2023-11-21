@@ -21,6 +21,7 @@ class TestInvocation(
 ) {
     val sentences: List<Sentence> = parsedTestInvocation.sentences
     val parameters: Collection<NamedValue> = parsedTestInvocation.namedParameterValues
+    val parameterizedTestDescription: String = parsedTestInvocation.parameterizedTestDescription
     val highlightedValues: Collection<NamedValue> = parsedTestInvocation.highlightedValues
     val state: TestState
 

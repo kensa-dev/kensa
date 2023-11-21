@@ -102,6 +102,10 @@ class Test extends Component {
                 </div>
             );
         } else {
+
+            let expandedIndex = test.invocations.findIndex((invocation) => invocation.state === 'Failed')
+            if(expandedIndex === -1) expandedIndex = 0
+
             return (
                 <div className={"message " + App.stateClassFor(state)}>
                     <div onClick={this.toggle} className="message-header">
@@ -110,7 +114,11 @@ class Test extends Component {
                     </div>
                     <div className={this.contentClass()}>
                         {this.renderInformation(test.issue, test.notes)}
-                        {test.invocations.map((invocation, index) => <Invocation key={index} sectionOrder={this.props.sectionOrder} testMethod={test.testMethod} invocation={invocation}
+                        {test.invocations.map((invocation, index) => <Invocation key={index}
+                                                                                 sectionOrder={this.props.sectionOrder}
+                                                                                 testMethod={test.testMethod}
+                                                                                 isCollapsed={index !== expandedIndex}
+                                                                                 invocation={invocation}
                                                                                  invocationNumber={index}/>)}
                     </div>
                 </div>

@@ -16,7 +16,7 @@ interface WithKotest {
         with(spec) {
             KotestThen.then(testContext(), extractor) {
                 invokeMatcher(this, matcher)
-                onPass(this)
+                onMatch(this)
             }
         }
     }
@@ -37,21 +37,27 @@ interface WithKotest {
         then(extractor, match)
     }
 
-    fun <T> thenEventually(spec: ThenSpec<T>) = thenEventually(10.seconds, spec)
-    fun <T> andEventually(spec: ThenSpec<T>) = thenEventually(10.seconds, spec)
+    fun <T> thenEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
+    fun <T> andEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
 
     fun <T> thenEventually(duration: Duration, spec: ThenSpec<T>) {
         runBlocking {
             with(spec) {
                 KotestThen.thenEventually(duration, testContext(), extractor) {
                     invokeMatcher(this, matcher)
-                    onPass(this)
+                    onMatch(this)
                 }
             }
         }
     }
 
-    fun <T> thenContinually(extractor: StateExtractor<T>, match: Matcher<T>) = thenContinually(10.seconds, extractor, match)
+    fun <T> thenContinually(extractor: StateExtractor<T>, match: Matcher<T>): Unit = thenContinually(10.seconds, extractor, match)
+
+    fun <T> thenContinually(duration: Duration, extractor: StateExtractor<T>, block: T.() -> Unit) {
+        runBlocking {
+            KotestThen.thenContinually(duration, testContext(), extractor, block)
+        }
+    }
 
     fun <T> thenContinually(duration: Duration, extractor: StateExtractor<T>, match: Matcher<T>) {
         runBlocking {
@@ -59,7 +65,7 @@ interface WithKotest {
         }
     }
 
-    fun <T> thenEventually(extractor: StateExtractor<T>, match: Matcher<T>) = thenEventually(10.seconds, extractor, match)
+    fun <T> thenEventually(extractor: StateExtractor<T>, match: Matcher<T>): Unit = thenEventually(10.seconds, extractor, match)
 
     fun <T> thenEventually(duration: Duration, extractor: StateExtractor<T>, match: Matcher<T>) {
         runBlocking {
@@ -67,7 +73,7 @@ interface WithKotest {
         }
     }
 
-    fun <T> thenEventually(extractor: StateExtractor<T>, block: T.() -> Unit = {}) = thenEventually(10.seconds, extractor, block)
+    fun <T> thenEventually(extractor: StateExtractor<T>, block: T.() -> Unit = {}): Unit = thenEventually(10.seconds, extractor, block)
 
     fun <T> thenEventually(duration: Duration, extractor: StateExtractor<T>, block: T.() -> Unit = {}) {
         runBlocking {

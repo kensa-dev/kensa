@@ -49,14 +49,23 @@
   height: 250px;
 }
 
-.message .test-passed .message-body {
-  border-color: $success !important;
-  color: $black !important;
+.message-body {
+  border-style: none !important;
 }
 
-.message .test-failed .message-body {
-  border-color: $danger !important;
-  color: $black !important;
+.message.test-passed > .message-header {
+  background-color: $success;
+  border-color: $success;
+}
+
+.message.test-failed > .message-header {
+  background-color: $danger;
+  border-color: $danger;
+}
+
+.sentences {
+  @extend .has-text-black;
+  padding: 1.25em 0 0 0;
 }
 
 .renderable-attribute {

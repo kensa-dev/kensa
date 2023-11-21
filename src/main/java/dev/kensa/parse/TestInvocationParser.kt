@@ -16,9 +16,9 @@ class TestInvocationParser {
             val parsedMethod = methodParser.parse(context.method)
 
             val namedParameterValues = parsedMethod.parameters.descriptors
-                .filterValues { it.isCaptured }
+                .filterValues { !it.isParameterizedTestDescription }
                 .map { entry ->
-                    NamedValue(entry.key, configuration.renderers.renderValue(context.arguments[entry.value.index]))
+                    NamedValue(entry.key, configuration.renderers.renderValue(entry.value.valueOfIn(context.arguments)))
                 }
 
             val highlightedParameterValues = namedParameterValues.filter { namedValue: NamedValue ->
@@ -46,7 +46,10 @@ class TestInvocationParser {
 
 //                sentences.forEach { println(it.squashedTokens) }
 
-            ParsedTestInvocation(parsedMethod.name, namedParameterValues, sentences, highlightedValues)
+            val parameterizedTestDescription: String = parsedMethod.parameters.descriptors.values.find { it.isParameterizedTestDescription }?.valueOfIn(context.arguments)?.toString()
+                ?: namedParameterValues.map { it.value }.joinToString(prefix = "[", postfix = "]")
+
+            ParsedTestInvocation(parsedMethod.name, namedParameterValues, sentences, highlightedValues, parameterizedTestDescription)
         } catch (e: Exception) {
             throw KensaException("Unable to parse test invocation ", e)
         }

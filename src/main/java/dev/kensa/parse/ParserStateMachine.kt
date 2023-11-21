@@ -1,6 +1,6 @@
 package dev.kensa.parse
 
-import dev.kensa.parse.Accessor.ParameterAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.ParameterAccessor
 import dev.kensa.parse.Accessor.ValueAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.parse.Event.*

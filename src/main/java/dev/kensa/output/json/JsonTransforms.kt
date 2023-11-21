@@ -44,6 +44,7 @@ object JsonTransforms {
                             .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
                             .add("acronyms", acronymsAsJson(i.acronyms))
                             .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
+                            .add("parameterizedTestDescription", i.parameterizedTestDescription)
                             .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
                             .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
                             .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))

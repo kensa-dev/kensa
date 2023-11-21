@@ -2,9 +2,7 @@ package dev.kensa.parse.java
 
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
-import dev.kensa.parse.Accessor
-import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
-import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.*
 import dev.kensa.parse.assertMethodDescriptors
 import dev.kensa.parse.assertPropertyDescriptors
 import dev.kensa.parse.propertyNamed
@@ -219,7 +217,7 @@ internal class JavaMethodParserTest {
 
             assertSoftly(parameters.descriptors["first"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
+                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
             }
 
             assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
@@ -252,7 +250,7 @@ internal class JavaMethodParserTest {
             name.shouldBe("parameterizedTest")
             assertSoftly(parameters.descriptors["first"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
+                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
             }
 
             assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)
@@ -300,11 +298,11 @@ internal class JavaMethodParserTest {
 
             assertSoftly(parameters.descriptors["first"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
+                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
             }
             assertSoftly(parameters.descriptors["second"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(secondParameter, "second", 1, true)) }
+                asClue { shouldBe(ParameterAccessor(secondParameter, "second", 1)) }
             }
 
             assertPropertyDescriptors(properties, dev.kensa.example.JavaTestWithVariousParameterCombinations::class.java)

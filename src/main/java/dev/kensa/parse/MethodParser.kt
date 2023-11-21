@@ -1,10 +1,9 @@
 package dev.kensa.parse
 
-import dev.kensa.CapturedParameter
 import dev.kensa.Emphasise
 import dev.kensa.Kensa
 import dev.kensa.KensaException
-import dev.kensa.parse.Accessor.ParameterAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.ParameterAccessor
 import dev.kensa.parse.Accessor.ValueAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.*
 import dev.kensa.util.*
@@ -114,14 +113,9 @@ interface MethodParser : ParserCache, ParserDelegate {
                     parameter,
                     parameterNamesAndTypes[index].first,
                     index,
-                    shouldRender(parameter),
                 )
             }.associateByTo(LinkedHashMap(), ParameterAccessor::name)
         )
-
-    fun shouldRender(parameter: Parameter) =
-        parameter.type.findAnnotation<CapturedParameter>()?.value ?: true ||
-            parameter.type.findAnnotation<CapturedParameter>()?.value ?: true
 
     private fun prepareMethodsFor(clazz: Class<*>) =
         clazz.allMethods

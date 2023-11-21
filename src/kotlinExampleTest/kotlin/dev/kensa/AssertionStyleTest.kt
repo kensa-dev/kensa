@@ -112,6 +112,14 @@ class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTes
         then(theResultStoredInCapturedInteractions(), `is`(theExpectedResult))
     }
 
+    @ParameterizedTest
+    @MethodSource("scenarioParameterProvider")
+    fun parameterizedTestWithDescriptor(@ParameterizedTestDescription descriptor: String, @SentenceValue actionName: String, @SentenceValue theExpectedResult: String) {
+        given(somethingIsDoneWith(actionName))
+        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
+        then(theResultStoredInCapturedInteractions(), `is`(theExpectedResult))
+    }
+
     private fun somethingIsDoneWith(actionName: String): GivensBuilder {
         return GivensBuilder { givens -> givens.put("actionName", actionName) }
     }
@@ -140,6 +148,14 @@ class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTes
             return Stream.of(
                     Arguments.arguments("ACTION2", "Performed: ACTION2"),
                     Arguments.arguments("ACTION3", "Performed: ACTION3")
+            )
+        }
+
+        @JvmStatic
+        fun scenarioParameterProvider(): Stream<Arguments> {
+            return Stream.of(
+                    Arguments.arguments("Description 1", "ACTION2", "Performed: ACTION2"),
+                    Arguments.arguments("Description 2", "ACTION3", "Performed: ACTION3")
             )
         }
     }

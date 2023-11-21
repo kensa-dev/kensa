@@ -4,9 +4,7 @@ import dev.kensa.Kensa.konfigure
 import dev.kensa.example.*
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
-import dev.kensa.parse.Accessor
-import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
-import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.*
 import dev.kensa.parse.assertMethodDescriptors
 import dev.kensa.parse.assertPropertyDescriptors
 import dev.kensa.parse.propertyNamed
@@ -335,7 +333,7 @@ internal class KotlinFunctionParserTest {
 
             assertSoftly(parameters.descriptors["first"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
+                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
             }
             assertPropertyDescriptors(properties, KotlinTestWithVariousParameterCombinations::class.java)
             assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class.java)
@@ -366,7 +364,7 @@ internal class KotlinFunctionParserTest {
             name.shouldBe("parameterizedTest")
             assertSoftly(parameters.descriptors["first"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
+                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
             }
             assertPropertyDescriptors(properties, KotlinTestWithVariousParameterCombinations::class.java)
             assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class.java)
@@ -410,11 +408,11 @@ internal class KotlinFunctionParserTest {
             name.shouldBe("parameterizedTestWithExtensionParameter")
             assertSoftly(parameters.descriptors["first"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(firstParameter, "first", 0, true)) }
+                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
             }
             assertSoftly(parameters.descriptors["second"]) {
                 shouldNotBeNull()
-                asClue { shouldBe(Accessor.ParameterAccessor(secondParameter, "second", 1, true)) }
+                asClue { shouldBe(ParameterAccessor(secondParameter, "second", 1)) }
             }
             assertPropertyDescriptors(properties, KotlinTestWithVariousParameterCombinations::class.java)
             assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class.java)

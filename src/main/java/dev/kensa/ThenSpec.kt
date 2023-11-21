@@ -5,6 +5,6 @@ import io.kotest.matchers.Matcher
 interface ThenSpec<T> {
     val extractor: StateExtractor<T>
     val matcher: Matcher<T>
-    val onPass: (T) -> Unit
+    val onMatch: (T) -> Unit
         get() = {}
 }
