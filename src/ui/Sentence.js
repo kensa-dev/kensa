@@ -14,7 +14,7 @@ export class Token extends Component {
     }
 
     acronymExpansion() {
-        if (this.props.types.includes("token-acronym")) {
+        if (this.props.types.includes("tk-ac")) {
             return this.props.acronyms[this.props.value];
         }
     }
@@ -32,11 +32,11 @@ export class Token extends Component {
             c += type;
         })
 
-        if (types.includes("token-acronym")) {
+        if (types.includes("tk-ac")) {
             c = "tooltip " + c;
         }
 
-        if (types.includes("token-expandable") && this.state.expanded) {
+        if (types.includes("tk-ex") && this.state.expanded) {
             c += " expanded"
         }
 
@@ -53,7 +53,7 @@ export class Token extends Component {
         let types = this.props.types;
         let value = this.props.value;
 
-        if (types.includes("token-expandable")) {
+        if (types.includes("tk-ex")) {
             return <>
                 <span onClick={this.toggle}
                       className={this.classes()}
@@ -96,7 +96,7 @@ export class Sentence extends Component {
 
     isNested() {
         if (this.props.nested) {
-            return "nested-sentence"
+            return "ns"
         }
     }
 

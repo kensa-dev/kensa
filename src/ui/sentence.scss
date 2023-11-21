@@ -1,80 +1,81 @@
 @import "bulma-custom";
 
-.nested-sentence {
+// Nested Sentence
+.ns {
   box-shadow: inset 0 0 2px #000000;
   padding: 10px 10px 10px 30px;
   border-radius: 5px;
 }
 
-.token-keyword {
+.tk-kw {
   font-weight: bold;
 }
 
-.token-word {
+.tk-wd {
   color: $grey-dark;
 }
 
-.token-highlighted {
+.tk-hl {
   background-color: yellow;
 }
 
-.token-identifier {
+.tk-id {
   font-weight: bold;
 }
 
-.token-expandable {
+.tk-ex {
   font-weight: bold;
 }
 
-.token-expandable.expanded::after {
+.tk-ex.expanded::after {
   content: ':'
 }
 
-.token-expandable:hover {
+.tk-ex:hover {
   font-weight: bold;
   text-decoration: underline;
 }
 
-.token-acronym {
+.tk-ac {
   text-decoration: underline;
 }
 
-.token-scenario-value, .token-field-value, .token-method-value, .token-parameter-value {
+.tk-sv, .tk-fv, .tk-mv, .tk-pv {
   font-weight: bold;
   color: $grey-dark
 }
 
-.token-string-literal {
+.tk-sl {
   font-weight: bold;
 }
 
-.token-literal {
+.tk-sl:before {
+  content: open-quote;
+}
+
+.tk-sl:after {
+  content: close-quote;
+}
+
+.tk-li {
   font-weight: bold;
 }
 
-.token-new-line {
+.tk-nl {
   display: table;
 }
 
-.token-blank-line {
+.tk-bl {
   white-space: pre;
 }
 
-.token-blank-line:after {
+.tk-bl:after {
   display: block;
   content: "\a";
 }
 
-.token-indent:after {
+.tk-in:after {
   content: "\2003";
-}
-
-.token-string-literal:before {
-  content: open-quote;
-}
-
-.token-string-literal:after {
-  content: close-quote;
 }
 
 .has-text-decoration-underline {

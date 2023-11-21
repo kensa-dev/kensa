@@ -1,25 +1,23 @@
 package dev.kensa.sentence
 
-import dev.kensa.util.unCamelToSeparated
+enum class TokenType(private val css: String) {
+    Acronym("ac"),
+    BlankLine("bl"),
+    Expandable("ex"),
+    FieldValue("fv"),
+    Highlighted("hl"),
+    HighlightedIdentifier("hlid"),
+    Identifier("id"),
+    Indent("in"),
+    Keyword("kw"),
+    Literal("li"),
+    MethodValue("mv"),
+    NewLine("nl"),
+    Operator("op"),
+    ParameterValue("pv"),
+    ScenarioValue("sv"),
+    StringLiteral("sl"),
+    Word("wd");
 
-enum class TokenType {
-    Acronym,
-    BlankLine,
-    Expandable,
-    FieldValue,
-    Highlighted,
-    HighlightedIdentifier,
-    Identifier,
-    Indent,
-    Keyword,
-    Literal,
-    MethodValue,
-    NewLine,
-    Operator,
-    ParameterValue,
-    ScenarioValue,
-    StringLiteral,
-    Word;
-
-    fun asCss(): String = "token-${name.unCamelToSeparated()}"
+    fun asCss(): String = "tk-$css"
 }
