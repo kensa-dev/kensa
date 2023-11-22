@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.10
+- #21  : Fix stacktrace overflow issues.
+
 ### v0.4.9
 - #20  : Introduce `ParameterizedTestDescription` annotation. Tidy.
 
