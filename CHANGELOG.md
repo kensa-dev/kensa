@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.9
+- #20  : Introduce `ParameterizedTestDescription` annotation. Tidy.
+
 ### v0.4.8
 - #19  : More experimentation with Kotest.  Support `thenContinuously`. Introduce `ThenSpec`
 
