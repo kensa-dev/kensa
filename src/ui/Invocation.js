@@ -7,42 +7,49 @@ import {CapturedInteractions} from "./Interaction";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
+import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 
-class ExecutionException extends Component {
-
+class StackTracePopup extends Component {
     constructor(props) {
         super(props);
 
+        this.fontSizes = ["font-normal", "font-large"]
         this.state = {
-            showingStacktrace: false,
-            buttonText: 'Show Stacktrace'
+            fontSizeIdx: 0,
         };
 
-        this.toggleStacktrace = this.toggleStacktrace.bind(this);
-
+        this.onKeyDown = this.onKeyDown.bind(this)
     }
 
-    toggleStacktrace() {
-        this.setState(prevState => ({
-            showingStacktrace: !prevState.showingStacktrace,
-            buttonText: prevState.showingStacktrace ? "Show Stacktrace" : "Hide Stacktrace"
-        }));
+    onKeyDown(event) {
+        if (event.keyCode === 27) {
+            this.props.onHide();
+        }
     }
 
-    isHidden() {
-        return this.state.showingStacktrace ? "" : "is-hidden";
+    componentDidMount() {
+        document.addEventListener("keydown", this.onKeyDown, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.onKeyDown, false);
     }
 
     render() {
-        let executionException = this.props.executionException;
-
         return (
-            <div className="execution-exception">
-                <div className="button is-outlined test-failed" onClick={this.toggleStacktrace}>{this.state.buttonText}</div>
-                <div className="exception-message">{executionException.message}</div>
-                <textarea readOnly className={"test-failed textarea exception-stacktrace " + this.isHidden()}>{executionException.stackTrace}</textarea>
+            <div className={"modal is-active"}>
+                <div className="modal-background" onClick={this.props.onHide}/>
+                <div className="modal-card">
+                    <header className="modal-card-head">
+                        <p className="modal-card-title">Stacktrace</p>
+                        <a onClick={this.props.onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
+                    </header>
+                    <section className={"modal-card-body " + this.fontSizes[this.state.fontSizeIdx]}>
+                        <div className="stack-trace">{this.props.stackTrace}</div>
+                    </section>
+                </div>
             </div>
-        );
+        )
     }
 }
 
@@ -56,7 +63,8 @@ export class Invocation extends Component {
             invocation: props.invocation,
             invocationNumber: props.invocationNumber,
             testMethod: props.testMethod,
-            isCollapsed: props.isCollapsed
+            isCollapsed: props.isCollapsed,
+            stackTracePopupActive: false,
         };
 
         this.toggle = this.toggle.bind(this);
@@ -64,6 +72,7 @@ export class Invocation extends Component {
         this.classForButton = this.classForButton.bind(this);
         this.classForContentBody = this.classForContentBody.bind(this);
         this.isDisabled = this.isDisabled.bind(this);
+        this.hideStackTracePopup = this.hideStackTracePopup.bind(this)
     }
 
     selectTab(tabName) {
@@ -107,10 +116,11 @@ export class Invocation extends Component {
         }
     }
 
-    exceptionBlock(executionException) {
+    failureMessageBlock(executionException) {
         if (executionException["message"]) {
-            return (<div key={2} className="message-body has-text-black test-failed">
-                <ExecutionException executionException={executionException}/>
+            return (<div key={2} >
+                <div className="failure-message">{executionException.message}</div>
+                <button className="button is-danger is-small" onClick={() => this.showStackTracePopup()}>Stacktrace...</button>
             </div>)
         }
 
@@ -193,7 +203,7 @@ export class Invocation extends Component {
     }
 
     lazyBody(testBody) {
-        if(!this.state.isCollapsed) {
+        if (!this.state.isCollapsed) {
             return (<div className={"message-body " + this.contentClass()}>
                 {testBody}
             </div>)
@@ -211,12 +221,30 @@ export class Invocation extends Component {
                             <a><FontAwesomeIcon icon={this.icon()}/></a>
                         </div>
                     </div>
-                    { this.lazyBody(testBody) }
+                    {this.lazyBody(testBody)}
                 </div>
             )
         }
 
         return null
+    }
+
+    showStackTracePopup(e) {
+        this.setState({
+            stackTracePopupActive: true
+        })
+    }
+
+    hideStackTracePopup() {
+        this.setState({
+            stackTracePopupActive: false
+        })
+    }
+
+    renderStackTracePopup(stackTrace) {
+        if (this.state.stackTracePopupActive) {
+            return <StackTracePopup onHide={this.hideStackTracePopup} stackTrace={stackTrace}/>
+        }
     }
 
     render() {
@@ -229,7 +257,7 @@ export class Invocation extends Component {
                             case Section.Buttons:
                                 return this.buttons(invocation)
                             case Section.Exception:
-                                return this.exceptionBlock(invocation.executionException)
+                                return this.failureMessageBlock(invocation.executionException)
                             case Section.Sentences:
                                 return this.sentences(invocation)
                         }
@@ -241,6 +269,7 @@ export class Invocation extends Component {
         return <React.Fragment>
             {this.renderParameterizedTestInvocation(testBody, invocation, testStateClass)}
             {this.renderTestInvocation(testBody)}
+            {this.renderStackTracePopup(invocation.executionException.stackTrace)}
         </React.Fragment>
     }
 }

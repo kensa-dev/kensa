@@ -27,26 +27,40 @@
   color: $grey-dark
 }
 
-.execution-exception {
-  color: $danger;
-  max-height: 435px;
-}
-
-.execution-exception .exception-message {
-  padding: 15px;
-  white-space: pre-line;
+//.execution-exception {
+//  color: $danger;
+//  max-height: 435px;
+//}
+//
+//.execution-exception .exception-message {
+//  overflow: scroll;
+//  max-height: 200px;
+//  padding: 15px;
+//  white-space: pre-line;
+//  font-family: monospace;
+//  font-size: 15px;
+//  font-weight: bold;
+//}
+//
+.failure-message {
+  margin: 20px 0 20px 0;
+  overflow: scroll;
+  max-height: 200px;
   font-family: monospace;
   font-size: 15px;
   font-weight: bold;
 }
 
-.execution-exception .exception-stacktrace {
+.stack-trace {
   resize: none;
+  overflow: scroll;
   color: $danger;
+  white-space: pre;
   font-family: monospace;
   font-size: 15px;
   font-weight: bold;
-  height: 250px;
+  //min-height: 75%;
+  //max-height: 75%;
 }
 
 .message-body {
