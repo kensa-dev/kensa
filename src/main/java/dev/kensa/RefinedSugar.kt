@@ -54,6 +54,10 @@ object RefinedSugar {
     @JvmStatic
     fun with(duration: Duration) = duration
 
+    fun within(duration: Duration) = duration
+
+    fun over(duration: Duration) = duration
+
     @JvmStatic
     fun with(duration: java.time.Duration) = duration
 }
