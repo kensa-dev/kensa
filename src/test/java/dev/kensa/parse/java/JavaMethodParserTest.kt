@@ -133,7 +133,7 @@ internal class JavaMethodParserTest {
                 anIndent(),
                 anIndent(),
                 anIndent(),
-                aKeywordOf("With"),
+                aWordOf("with"),
                 aWordOf("something"),
                 aNewline(),
                 anIndent(),

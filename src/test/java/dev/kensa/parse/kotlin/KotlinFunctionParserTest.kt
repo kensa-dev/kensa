@@ -48,7 +48,7 @@ internal class KotlinFunctionParserTest {
         val expectedSentence = Sentence(
             listOf(
                 aWordOf("test"),
-                aKeywordOf("When"),
+                aWordOf("when"),
                 aWordOf("action"),
                 aWordOf("with"),
                 aScenarioValueOf("myScenario.value")
@@ -226,7 +226,7 @@ internal class KotlinFunctionParserTest {
                 aNewline(),
                 anIndent(),
                 anIndent(),
-                aKeywordOf("With"),
+                aWordOf("with"),
                 aWordOf("something"),
                 aNewline(),
                 anIndent(),
