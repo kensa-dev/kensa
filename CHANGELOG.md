@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.12
+- #23  : UmlDirective to hide unlinked participants
+
 ### v0.4.11
 - #22  : Fix stacktrace overflow issues.
 
