@@ -30,7 +30,6 @@ object SequenceDiagramFactory {
                         """
                            @startuml
                            
-                           hide unlinked
                            skinparam BackgroundColor transparent
                            skinparam SequenceGroupBackgroundColor lightgray
                            skinparam SequenceGroupBodyBackGroundColor white
