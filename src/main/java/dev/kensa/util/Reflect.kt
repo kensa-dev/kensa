@@ -19,26 +19,22 @@ val KClass<*>.isKotlinClass get() = java.isKotlinClass
 
 val Method.normalisedName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
 
-fun interface MethodPredicate {
-    operator fun invoke(method: Method): Boolean
+fun interface ReflectPredicate<T> {
+    operator fun invoke(target: T): Boolean
 
-    fun and(other: MethodPredicate): MethodPredicate = MethodPredicate { m -> invoke(m) && other.invoke(m) }
+    fun and(other: ReflectPredicate<T>): ReflectPredicate<T> = ReflectPredicate { m -> invoke(m) && other.invoke(m) }
 }
 
-private val annotatedAsTests = MethodPredicate { it.hasAnnotation<Test>() || it.hasAnnotation<ParameterizedTest>() }
-private val allTheMethods = MethodPredicate { true }
-private fun notDeclaredIn(clazz: Class<*>) = MethodPredicate { it.declaringClass != clazz }
-private fun withMethodName(name: String) = MethodPredicate { it.name == name }
-private fun noParameters() = MethodPredicate { it.parameters.isEmpty() }
+private val annotatedAsTests = ReflectPredicate<Method> { it.hasAnnotation<Test>() || it.hasAnnotation<ParameterizedTest>() }
+private val allTheMethods = ReflectPredicate<Method> { true }
+private fun notDeclaredIn(clazz: Class<*>) = ReflectPredicate<Method> { it.declaringClass != clazz }
+private fun withMethodName(name: String) = ReflectPredicate<Method> { it.name == name }
+private fun noParameters() = ReflectPredicate<Method> { it.parameters.isEmpty() }
 private fun withPropertyName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
 
-fun interface FieldPredicate {
-    operator fun invoke(field: Field): Boolean
-}
-
-private val allTheFields = FieldPredicate { true }
-private val annotatedAsScenario = FieldPredicate { it.hasAnnotation<Scenario>() }
-private fun withFieldName(name: String) = FieldPredicate { it.name == name }
+private val allTheFields = ReflectPredicate<Field> { true }
+private val annotatedAsScenario = ReflectPredicate<Field> { it.hasAnnotation<Scenario>() }
+private fun withFieldName(name: String) = ReflectPredicate<Field> { it.name == name }
 
 internal val Method.actualDeclaringClass: Class<*>
     get() = findMethods(withMethodName(name).and(notDeclaredIn(declaringClass)), declaringClass).firstOrNull()?.run {
@@ -90,7 +86,7 @@ private fun KClass<*>.allStaticProperties(results: MutableSet<KProperty<*>> = Li
         }
     }
 
-private fun findFields(predicate: FieldPredicate, clazz: Class<*>, results: MutableSet<Field> = LinkedHashSet()): Set<Field> =
+private fun findFields(predicate: ReflectPredicate<Field>, clazz: Class<*>, results: MutableSet<Field> = LinkedHashSet()): Set<Field> =
     results.also {
         clazz.takeUnless { it == Any::class.java }?.apply {
             it.addAll(declaredFields.filter { predicate.invoke(it) })
@@ -141,7 +137,7 @@ internal inline fun <reified T : Annotation> KProperty<*>.javaElementHasAnnotati
 internal inline fun <reified T : Annotation> AnnotatedElement.hasAnnotation() = findAnnotation<T>() != null
 internal inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? = annotations?.firstOrNull { it is T } as T?
 
-private fun findField(predicate: FieldPredicate, clazz: Class<*>?): Field? =
+private fun findField(predicate: ReflectPredicate<Field>, clazz: Class<*>?): Field? =
     clazz?.takeUnless { it == Any::class.java }?.run {
         declaredFields.singleOrNull { predicate.invoke(it) }
             ?: findField(predicate, clazz.superclass)
@@ -159,7 +155,7 @@ private fun findKotlinProperties(
         }
     }
 
-private fun findMethods(predicate: MethodPredicate, clazz: Class<*>?, results: MutableSet<Method> = LinkedHashSet()): Set<Method> =
+private fun findMethods(predicate: ReflectPredicate<Method>, clazz: Class<*>?, results: MutableSet<Method> = LinkedHashSet()): Set<Method> =
     results.also {
         clazz?.takeUnless { it == Any::class.java }?.apply {
             declaredMethods.filterTo(it) { predicate.invoke(it) }
