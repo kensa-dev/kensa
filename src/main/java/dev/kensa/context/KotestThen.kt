@@ -11,7 +11,7 @@ import kotlin.time.Duration.Companion.seconds
 object KotestThen {
     fun <T> then(testContext: TestContext, extractor: StateExtractor<T>, match: Matcher<T>) {
         then(testContext, extractor) {
-            invokeMatcher(extractor.execute(testContext.interactions), match)
+            invokeMatcher(this, match)
         }
     }
 

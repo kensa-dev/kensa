@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.13
+- #24  : Ensure extractor is called only once in KotestThen#then
+
 ### v0.4.12
 - #23  : UmlDirective to hide unlinked participants
 
