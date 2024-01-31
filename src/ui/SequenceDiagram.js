@@ -150,7 +150,7 @@ export class SequenceDiagram extends Component {
         const sequenceDiagram = this.props.sequenceDiagram;
         return (
             <div>
-                <div ref={this.sequenceDiagramRef} dangerouslySetInnerHTML={{__html: sequenceDiagram}}/>
+                <div ref={this.sequenceDiagramRef} className="sequence-diagram" dangerouslySetInnerHTML={{__html: sequenceDiagram}}/>
                 {this.popup()}
             </div>
         )
