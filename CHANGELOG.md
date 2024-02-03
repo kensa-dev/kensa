@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.14
+- #25  : Wide sequence diagrams now scrollable (thanks to **michaelomichael**)
+
 ### v0.4.13
 - #24  : Ensure extractor is called only once in KotestThen#then
 
