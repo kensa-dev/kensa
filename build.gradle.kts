@@ -1,4 +1,4 @@
-import com.moowork.gradle.node.task.NodeTask
+import com.github.gradle.node.task.NodeTask
 import org.gradle.api.JavaVersion.VERSION_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -169,7 +169,7 @@ tasks {
 
     register<NodeTask>("startUiDevServer") {
         script = project.file("node_modules/.bin/webpack-dev-server")
-        setArgs(listOf("--mode", "development"))
+        args = listOf("--mode", "development")
         inputs.file("webpack.config.js")
         inputs.file("package-lock.json")
         inputs.dir("src/ui")

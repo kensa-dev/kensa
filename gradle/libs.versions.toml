@@ -1,8 +1,8 @@
 [versions]
-kotlin = "1.9.20"
+kotlin = "1.9.23"
 coroutines = "1.7.3"
-node = "17.3.0"
-nodeGradle = "2.2.0"
+node = "18.12.1"
+nodeGradle = "7.0.2"
 plantUml = "1.2023.12"
 pebble = "3.2.1"
 mockito = "5.2.1"
