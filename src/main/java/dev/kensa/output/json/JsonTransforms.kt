@@ -21,8 +21,6 @@ import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.time.Duration
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 import com.eclipsesource.json.Json.`object` as jsonObject
 
 object JsonTransforms {
@@ -30,6 +28,7 @@ object JsonTransforms {
     fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue = { container: TestContainer ->
         jsonObject()
             .add("testClass", container.testClass.name)
+            .add("issues", asJsonArray(container.issues))
             .add("displayName", container.displayName)
             .add("state", container.state.description)
             .add("notes", container.notes)
@@ -59,7 +58,7 @@ object JsonTransforms {
                     .add("testMethod", invocation.method.name)
                     .add("displayName", invocation.displayName)
                     .add("notes", invocation.notes)
-                    .add("issue", asJsonArray(invocation.issues))
+                    .add("issues", asJsonArray(invocation.issues))
                     .add("state", invocation.state.description)
                     .add("invocations", invocations)
             })
@@ -74,11 +73,13 @@ object JsonTransforms {
         jsonObject()
             .add("id", id)
             .add("testClass", container.testClass.name)
+            .add("issues", asJsonArray(container.issues))
             .add("displayName", container.displayName)
             .add("state", container.state.description)
             .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
                 jsonObject()
                     .add("testMethod", invocation.method.name)
+                    .add("issues", asJsonArray(invocation.issues))
                     .add("displayName", invocation.displayName)
                     .add("state", invocation.state.description)
             })

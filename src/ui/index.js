@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import './index.scss';
 import App from './App';
 import Lowlight from 'react-lowlight';
@@ -11,4 +11,4 @@ Lowlight.registerLanguage('json', json);
 Lowlight.registerLanguage('xml', xml);
 Lowlight.registerLanguage('plaintext', plainText);
 
-ReactDOM.render(<App />, document.getElementById('root'));
+createRoot(document.getElementById('root')).render(<App />);

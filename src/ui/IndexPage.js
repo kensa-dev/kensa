@@ -7,6 +7,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const KENSA_FILTER_TYPE_KEY = "KensaFilterType";
 const KENSA_FILTER_VALUE_KEY = "KensaFilterValue";
+const KENSA_FILTER_ISSUE_KEY = "KensaFilterIssue";
+const KENSA_ISSUE_REGEXP = new RegExp(`^issue:([A-Za-z]{3,}-[0-9]+)$`, 'g')
 
 class Class extends Component {
 
@@ -198,6 +200,7 @@ export default class Indices extends Component {
         this.onStateFilterSelect = this.onStateFilterSelect.bind(this);
         this.stateFilter = this.stateFilter.bind(this);
         this.nameFilter = this.nameFilter.bind(this);
+        this.issueFilter = this.issueFilter.bind(this);
     }
 
     componentDidMount() {
@@ -220,9 +223,21 @@ export default class Indices extends Component {
         localStorage.setItem(KENSA_FILTER_VALUE_KEY, this.state.filterValue)
     }
 
+    getFirstGroup(regexp, str) {
+        const array = [...str.matchAll(regexp)];
+        return array.map(m => m[1]);
+    }
+
     onInputChanged(e) {
         let value = e.target.value;
-        if (value) {
+        let issueFilter = this.getFirstGroup(KENSA_ISSUE_REGEXP, value)
+
+        if (issueFilter.length) {
+            this.setState({
+                filterType: "Issue",
+                filterValue: value
+            }, () => this.updateLocalStorage());
+        } else if(value) {
             this.setState({
                 filterType: "Name",
                 filterValue: value
@@ -240,6 +255,8 @@ export default class Indices extends Component {
             this.setState({filterMatched: this.doApplyFilter(this.state.indices.packages, this.stateFilter)})
         } else if (this.state.filterType === "Name") {
             this.setState({filterMatched: this.doApplyFilter(this.state.indices.packages, this.nameFilter)})
+        } else if (this.state.filterType === "Issue") {
+            this.setState({filterMatched: this.doApplyFilter(this.state.indices.packages, this.issueFilter)})
         }
     }
 
@@ -249,6 +266,10 @@ export default class Indices extends Component {
 
     nameFilter(cls) {
         return cls.name.toLowerCase().includes(this.state.filterValue.toLowerCase());
+    }
+
+    issueFilter(cls) {
+        return cls.issues.includes(this.state.filterValue.split(':')[1]);
     }
 
     doApplyFilter(packages, filter) {
@@ -296,13 +317,15 @@ export default class Indices extends Component {
                 name: container.displayName,
                 expanded: false,
                 matched: false,
+                issues: container.issues,
                 tests: []
             };
             clsArray.push(c);
             container.tests.forEach((test) => {
                 c.tests.push({
                     name: test.displayName,
-                    method: test.testMethod
+                    method: test.testMethod,
+                    issues: test.issues
                 })
             })
         } else {

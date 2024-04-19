@@ -60,7 +60,7 @@ class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTes
 
     @Test
     @Notes("Method Notes {@link AssertionStyleTest#canUseAssertJStyle}")
-    @Issue("ISS-007")
+    @Issue("ISS-008")
     fun `can Use AssertJStyle`() {
         with (myContext) {
             given(someActionNameIsAddedToGivens())
