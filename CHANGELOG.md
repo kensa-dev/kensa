@@ -1,8 +1,10 @@
 <h2 class="github">Changelog</h2>
 
-### v0.4.17
+### v0.4.18
 - Bump some versions
 - #27  : Allow manual filtering of test classes by issue number
+
+### v0.4.17 - NOT PUBLISHED
 
 ### v0.4.16 - NOT PUBLISHED
 
