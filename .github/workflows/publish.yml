@@ -16,8 +16,8 @@ jobs:
   PublishToStaging:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: olegtarasov/get-tag@v2.1
+      - uses: actions/checkout@v4.1.1
+      - uses: olegtarasov/get-tag@v2.1.3
         id: tagName
       - name: Set up JDK 11
         uses: actions/setup-java@v3
@@ -30,9 +30,9 @@ jobs:
     needs: [PublishToStaging]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.1
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4.0.0
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -42,11 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [PublishToStaging]
     steps:
-      - uses: actions/checkout@v3
-      - uses: olegtarasov/get-tag@v2
+      - uses: actions/checkout@v4.1.1
+      - uses: olegtarasov/get-tag@v2.1.3
         id: tagName
       - name: Dispatch Release Event
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
           repository: kensa-dev/kensa
