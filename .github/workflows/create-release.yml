@@ -18,7 +18,7 @@ jobs:
       - run: make create-release-note
       - uses: softprops/action-gh-release@v2.0.4
         with:
-          with: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ github.event.client_payload.version }}
           name: ${{ github.event.client_payload.version }}
           body_path: RN.md
