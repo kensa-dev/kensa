@@ -2,18 +2,17 @@ import com.github.gradle.node.task.NodeTask
 import org.gradle.api.JavaVersion.VERSION_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "dev.kensa"
-version = project.properties["releaseVersion"] ?: "SNAPSHOT"
-
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.nodeGradle)
-    alias(libs.plugins.nexusStaging)
+    alias(libs.plugins.nexusPublish)
     antlr
     signing
     `maven-publish`
 }
+
+group = "dev.kensa"
+version = project.properties["releaseVersion"] ?: "SNAPSHOT"
 
 fun createSourceSet(name: String) {
     sourceSets {
@@ -33,8 +32,18 @@ val javaExampleTestImplementation: Configuration by configurations.getting { ext
 createSourceSet("kotlinExampleTest")
 val kotlinExampleTestImplementation: Configuration by configurations.getting { extendsFrom(configurations.implementation.get()) }
 
-nexusStaging {
-    serverUrl = "https://s01.oss.sonatype.org/service/local/"
+nexusPublishing {
+    val nexusUsername: String? by project
+    val nexusPassword: String? by project
+
+    repositories {
+        sonatype {
+            username = nexusUsername
+            password = nexusPassword
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
 }
 
 repositories {
@@ -183,27 +192,6 @@ tasks {
 }
 
 publishing {
-    val nexusUsername: String? by project
-    val nexusPassword: String? by project
-
-    repositories {
-        maven {
-            name = "SonatypeStaging"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = nexusUsername
-                password = nexusPassword
-            }
-        }
-        maven {
-            name = "SonatypeSnapshot"
-            setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            credentials {
-                username = nexusUsername
-                password = nexusPassword
-            }
-        }
-    }
     publications {
         create<MavenPublication>("mavenJava") {
             artifactId = "kensa"

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="11" />
+    <bytecodeTargetLevel target="11">
+      <module name="kensa.core" target="17" />
+      <module name="kensa.core.main" target="17" />
+      <module name="kensa.core.test" target="17" />
+      <module name="kensa.java" target="17" />
+      <module name="kensa.java.main" target="17" />
+      <module name="kensa.java.test" target="17" />
+      <module name="kensa.kotlin" target="17" />
+      <module name="kensa.kotlin.main" target="17" />
+      <module name="kensa.kotlin.test" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
