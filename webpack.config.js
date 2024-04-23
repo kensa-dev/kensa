@@ -16,6 +16,9 @@ module.exports = {
         filename: 'kensa.js'
     },
     devServer: {
+        static: {
+             directory: path.join(__dirname, 'src/ui/public')
+        }
     },
     module: {
         rules: [

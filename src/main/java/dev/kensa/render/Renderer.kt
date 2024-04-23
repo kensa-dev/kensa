@@ -14,13 +14,13 @@ enum class Language(val value: String) {
 fun interface Renderer<T> : ValueRenderer<T>
 
 fun interface ValueRenderer<T> {
-    fun render(value: T) : String
+    fun render(value: T): String
 }
 
 interface InteractionRenderer<T> {
-    fun render(value: T, attributes: Attributes) : List<RenderedInteraction>
+    fun render(value: T, attributes: Attributes): List<RenderedInteraction>
     fun renderAttributes(value: T): List<RenderedAttributes>
 }
 
-data class RenderedInteraction(val name: String, val value: String, val showOnSequenceDiagram: Boolean = true, val language: Language = PlainText)
-data class RenderedAttributes(val name: String, val attributes: Set<NamedValue>, val showOnSequenceDiagram: Boolean = true)
+data class RenderedInteraction(val name: String, val value: String, val language: Language = PlainText)
+data class RenderedAttributes(val name: String, val attributes: Set<NamedValue>)

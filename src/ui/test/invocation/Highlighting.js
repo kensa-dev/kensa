@@ -1,3 +1,9 @@
+const specials = /[-\/\\^$*+?.()|[\]{}]/g;
+
+export function joinForRegex(items) {
+    return items.map(it => '\\b' + it.replace(specials, '\\$&') + '\\b').join('|')
+}
+
 const createSpan = (value) => {
     let span = document.createElement('span');
     span.setAttribute('class', 'kensa-highlight');
@@ -62,7 +68,21 @@ const searchAttributeContent = (parent, regExp) => {
     }
 };
 
-export const highlightXml = (parent, regExp) => {
+export const highlight = (language, parent, highlights) => {
+    const highlightRegexp = highlights.length > 0 ? new RegExp(`(${joinForRegex(highlights)})`) : null;
+
+    if (highlightRegexp) {
+        if (language === 'xml') {
+            highlightXml(parent, highlightRegexp);
+        } else if (language === 'json') {
+            highlightJson(parent, highlightRegexp);
+        } else {
+            highlightPlainText(parent, highlightRegexp);
+        }
+    }
+}
+
+const highlightXml = (parent, regExp) => {
     Array.from(parent.childNodes).forEach(child => {
         if (child.classList) {
             if (child.classList.contains('hljs-tag')) {
@@ -76,7 +96,7 @@ export const highlightXml = (parent, regExp) => {
     });
 };
 
-export const highlightJson = (parent, regExp) => {
+const highlightJson = (parent, regExp) => {
     Array.from(parent.childNodes).forEach(child => {
         if (child.classList) {
             if (child.classList.contains('hljs-string') || child.classList.contains('hljs-number')) {
@@ -86,7 +106,7 @@ export const highlightJson = (parent, regExp) => {
     });
 };
 
-export const highlightPlainText = (parent, regExp) => {
+const highlightPlainText = (parent, regExp) => {
     Array.from(parent.childNodes).forEach(child => {
         if (child) {
             let parent = child.parentNode;

@@ -89,13 +89,11 @@ class MyTest : KotlinKensaTest, WithAssertJ {}
 ```
 @Emphasise(textStyles = {dev.kensa.TextStyle.TextWeightBold, dev.kensa.TextStyle.TextDecorationUnderline}, backgroundColor = dev.kensa.Colour.TextPrimaryDark)
 ```
+
 `For Kotlin:`
 ```
 @Emphasise(textStyles = [dev.kensa.TextStyle.TextWeightBold, dev.kensa.TextStyle.TextDecorationUnderline], backgroundColor = [dev.kensa.Colour.BackgroundWarningLight])
 ```
-
-### Request headers output
-```showOnSequenceDiagram()``` is a `RenderableAttribute` and is set to `false` by default. Override to `true` to display a minimised table of the request url and the request method above the response body inside the UML modal
 
 ### Specify 'Time Passing' for timeouts etc
 `interactions.captureTimePassing("Message")`<br />

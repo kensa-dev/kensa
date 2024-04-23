@@ -2,7 +2,6 @@ package dev.kensa.state
 
 import dev.kensa.parse.ParsedTestInvocation
 import dev.kensa.render.diagram.SequenceDiagram
-import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Sentence
 import dev.kensa.state.TestState.Failed
 import dev.kensa.state.TestState.Passed
@@ -12,7 +11,6 @@ import java.time.Duration
 
 class TestInvocation(
         val elapsed: Duration,
-        val acronyms: Set<Acronym>,
         val executionException: Throwable?,
         val sequenceDiagram: SequenceDiagram?,
         parsedTestInvocation: ParsedTestInvocation,
