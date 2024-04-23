@@ -1,5 +1,4 @@
-import React, {Component} from "react";
-import App, {Section} from './App';
+import React, {Component, useState} from "react";
 import {Sentence} from "./Sentence";
 import {SequenceDiagram} from "./SequenceDiagram";
 import {NamedValueTable} from "./NamedValueTable";
@@ -8,6 +7,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
+import {Section, stateClassFor} from "./App";
 
 class StackTracePopup extends Component {
     constructor(props) {
@@ -53,110 +53,100 @@ class StackTracePopup extends Component {
     }
 }
 
-export class Invocation extends Component {
+export default function Invocation({sectionOrder, testMethod, isParentCollapsed, invocation}) {
+    const [selectedTab, setSelectedTab] = useState(null)
+    const [isStackTracePopupActive, setStackTracePopupActive] = useState(false)
+    const [isCollapsed, setCollapsed] = useState(isParentCollapsed)
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            index: props.index,
-            invocation: props.invocation,
-            invocationNumber: props.invocationNumber,
-            testMethod: props.testMethod,
-            isCollapsed: props.isCollapsed,
-            stackTracePopupActive: false,
-        };
-
-        this.toggle = this.toggle.bind(this);
-        this.selectTab = this.selectTab.bind(this);
-        this.classForButton = this.classForButton.bind(this);
-        this.classForContentBody = this.classForContentBody.bind(this);
-        this.isDisabled = this.isDisabled.bind(this);
-        this.hideStackTracePopup = this.hideStackTracePopup.bind(this)
+    const selectTab = (tabName) => {
+        setSelectedTab(selectedTab === tabName ? null : tabName)
     }
 
-    selectTab(tabName) {
-        this.setState(prevState => ({
-            selectedTab: prevState.selectedTab === tabName ? null : tabName
-        }));
-    }
-
-    isDisabled(buttonName) {
-        return this.state.invocation[buttonName].length === 0;
-    }
-
-    classForButton(buttonName, testStateClass) {
+    const classForButton = (buttonName, testStateClass) => {
         let c = "button ";
-        if (this.state.selectedTab === buttonName) {
+        if (selectedTab === buttonName) {
             c += "is-selected " + testStateClass;
-        } else if (this.state.selectedTab !== null && this.state.selectedTab !== undefined) {
+        } else if (selectedTab !== null && selectedTab !== undefined) {
             c += " has-selected"
         }
 
         return c;
     }
 
-    classForContentBody(name) {
-        if (this.state.selectedTab === name) {
+    const classForContentBody = (name) => {
+        if (selectedTab === name) {
             return "";
         }
 
         return "is-hidden"
     }
 
-    buttonFor(name, text) {
-        if (this.hasElements(name)) {
-            return <button className={this.classForButton(name, App.stateClassFor(this.state.invocation.state))} onClick={() => this.selectTab(name)}>{text}</button>;
+    const hasElements = (name) => {
+        let invocationElement = invocation[name];
+        return invocationElement && invocationElement.length > 0;
+    }
+
+    const buttonFor = (key, name, text) => {
+        if (hasElements(name)) {
+            return <button key={key} className={classForButton(name, stateClassFor(invocation.state))} onClick={() => selectTab(name)}>{text}</button>;
         }
     }
 
-    contentFor(name, Component) {
-        if (this.hasElements(name)) {
-            return Component;
+    const contentFor = (name, component) => {
+        if (hasElements(name)) {
+            return component;
         }
     }
 
-    failureMessageBlock(executionException) {
+    const failureMessageBlock = (executionException) => {
         if (executionException["message"]) {
-            return (<div key={2} >
+            return (<div key={2}>
                 <div className="failure-message">{executionException.message}</div>
-                <button className="button is-danger is-small" onClick={() => this.showStackTracePopup()}>Stacktrace...</button>
+                <button className="button is-danger is-small" onClick={() => showStackTracePopup()}>Stacktrace...</button>
             </div>)
         }
 
         return null;
     }
 
-    hasElements(name) {
-        let invocationElement = this.state.invocation[name];
-        return invocationElement && invocationElement.length > 0;
+    const showStackTracePopup = () => {
+        setStackTracePopupActive(true)
     }
 
+    const hideStackTracePopup = () => {
+        setStackTracePopupActive(false)
+    }
 
-    buttons(invocation) {
+    const renderStackTracePopup = (stackTrace) => {
+        if (isStackTracePopupActive) {
+            return <StackTracePopup onHide={hideStackTracePopup} stackTrace={stackTrace}/>
+        }
+    }
+
+    const buttons = (index) => {
         let highlights = invocation.highlights;
 
-        if (this.hasElements('givens') ||
-            this.hasElements('parameters') ||
-            this.hasElements('capturedInteractions') ||
-            this.hasElements('sequenceDiagram')) {
+        if (hasElements('givens') ||
+            hasElements('parameters') ||
+            hasElements('capturedInteractions') ||
+            hasElements('sequenceDiagram')) {
             return <div>
-                <div className="buttons has-addons">
-                    {this.buttonFor('givens', 'Givens')}
-                    {this.buttonFor('parameters', 'Parameters')}
-                    {this.buttonFor('capturedInteractions', 'Captured Interactions')}
-                    {this.buttonFor('sequenceDiagram', 'Sequence Diagram')}
+                <div key={1} className="buttons has-addons">
+                    {buttonFor('b' + 1, 'givens', 'Givens')}
+                    {buttonFor('b' + 2, 'parameters', 'Parameters')}
+                    {buttonFor('b' + 3, 'capturedInteractions', 'Captured Interactions')}
+                    {buttonFor('b' + 4, 'sequenceDiagram', 'Sequence Diagram')}
                 </div>
-                {this.contentFor('givens', <div className={this.classForContentBody('givens')}><NamedValueTable showHeader={true} highlights={highlights}
-                                                                                                                namedValues={invocation.givens}/></div>)}
-                {this.contentFor('parameters', <div className={this.classForContentBody('parameters')}><NamedValueTable showHeader={true} highlights={highlights}
-                                                                                                                        namedValues={invocation.parameters}/></div>)}
-                {this.contentFor('capturedInteractions', <div className={this.classForContentBody('capturedInteractions')}><CapturedInteractions
-                    invocationState={this.state.invocation.state} capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
-                {this.contentFor('sequenceDiagram', <div className={this.classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}
-                                                                                                                                  capturedInteractions={invocation.capturedInteractions}
-                                                                                                                                  invocationState={invocation.state}
-                                                                                                                                  highlights={invocation.highlights}/>
+                {contentFor('givens', <div key={2} className={classForContentBody('givens')}><NamedValueTable showHeader={true} highlights={highlights}
+                                                                                                              namedValues={invocation.givens}/></div>)}
+                {contentFor('parameters', <div key={3} className={classForContentBody('parameters')}><NamedValueTable showHeader={true} highlights={highlights}
+                                                                                                                      namedValues={invocation.parameters}/></div>)}
+                {contentFor('capturedInteractions', <div key={4} className={classForContentBody('capturedInteractions')}><CapturedInteractions
+                    invocationState={invocation.state} capturedInteractions={invocation.capturedInteractions} highlights={highlights}/></div>)}
+                {contentFor('sequenceDiagram', <div key={5} className={classForContentBody('sequenceDiagram')}><SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}
+                                                                                                                                capturedInteractions={invocation.capturedInteractions}
+                                                                                                                                invocationState={invocation.state}
+                                                                                                                                highlights={invocation.highlights}/>
                 </div>)}
             </div>
         }
@@ -164,7 +154,7 @@ export class Invocation extends Component {
         return null;
     }
 
-    sentences(invocation) {
+    const sentences = (invocation) => {
         return (
             <div key={3} className="sentences">
                 {invocation.sentences.map((sentence, index) => <Sentence key={index} expanded={false} sentence={sentence} acronyms={invocation.acronyms}/>)}
@@ -172,56 +162,54 @@ export class Invocation extends Component {
         )
     }
 
-    toggle() {
-        this.setState(prevState => ({
-            isCollapsed: !prevState.isCollapsed
-        }));
+    const toggle = () => {
+        setCollapsed(!isCollapsed)
     }
 
-    icon() {
-        if (this.state.isCollapsed) {
+    const icon = () => {
+        if (isCollapsed) {
             return faAngleDown;
         }
 
         return faAngleUp;
     }
 
-    contentClass() {
-        if (this.state.isCollapsed) {
+    const contentClass = () => {
+        if (isCollapsed) {
             return " is-hidden"
         }
 
         return "";
     }
 
-    renderTestInvocation(testBody) {
-        if (!this.hasElements('parameters')) {
+    const renderTestInvocation = (testBody) => {
+        if (!hasElements('parameters')) {
             return testBody
         }
 
         return null
     }
 
-    lazyBody(testBody) {
-        if (!this.state.isCollapsed) {
-            return (<div className={"message-body " + this.contentClass()}>
+    const lazyBody = (testBody) => {
+        if (!isCollapsed) {
+            return (<div className={"message-body " + contentClass()}>
                 {testBody}
             </div>)
         } else return null
     }
 
-    renderParameterizedTestInvocation(testBody, invocation, testStateClass) {
-        if (this.hasElements('parameters')) {
+    const renderParameterizedTestInvocation = (testBody, invocation, testStateClass) => {
+        if (hasElements('parameters')) {
             return (
-                <div className={"message " + testStateClass}>
-                    <div onClick={this.toggle} className={"message-header"}>
+                <div key={1} className={"message " + testStateClass}>
+                    <div onClick={toggle} className={"message-header"}>
                         <span className={"limited-width"}>{invocation.parameterizedTestDescription}</span>
                         <div>
                             <span className={"elapsed-time"}>Elapsed time: {invocation.elapsedTime}</span>
-                            <a><FontAwesomeIcon icon={this.icon()}/></a>
+                            <a><FontAwesomeIcon icon={icon()}/></a>
                         </div>
                     </div>
-                    {this.lazyBody(testBody)}
+                    {lazyBody(testBody)}
                 </div>
             )
         }
@@ -229,48 +217,26 @@ export class Invocation extends Component {
         return null
     }
 
-    showStackTracePopup(e) {
-        this.setState({
-            stackTracePopupActive: true
-        })
-    }
-
-    hideStackTracePopup() {
-        this.setState({
-            stackTracePopupActive: false
-        })
-    }
-
-    renderStackTracePopup(stackTrace) {
-        if (this.state.stackTracePopupActive) {
-            return <StackTracePopup onHide={this.hideStackTracePopup} stackTrace={stackTrace}/>
-        }
-    }
-
-    render() {
-        let invocation = this.state.invocation;
-        let testStateClass = App.stateClassFor(invocation.state);
-        let testBody = <React.Fragment>
-            {
-                this.props.sectionOrder.map((section) => {
-                        switch (section) {
-                            case Section.Buttons:
-                                return this.buttons(invocation)
-                            case Section.Exception:
-                                return this.failureMessageBlock(invocation.executionException)
-                            case Section.Sentences:
-                                return this.sentences(invocation)
-                        }
+    let testStateClass = stateClassFor(invocation.state);
+    let testBody = <>
+        {
+            sectionOrder.map((section, index) => {
+                    switch (section) {
+                        case Section.Buttons:
+                            return buttons(invocation, index)
+                        case Section.Exception:
+                            return failureMessageBlock(invocation.executionException, index)
+                        case Section.Sentences:
+                            return sentences(invocation, index)
                     }
-                )
-            }
-        </React.Fragment>
+                }
+            )
+        }
+    </>
 
-        return <React.Fragment>
-            {this.renderParameterizedTestInvocation(testBody, invocation, testStateClass)}
-            {this.renderTestInvocation(testBody)}
-            {this.renderStackTracePopup(invocation.executionException.stackTrace)}
-        </React.Fragment>
-    }
+    return <>
+        {renderParameterizedTestInvocation(testBody, invocation, testStateClass)}
+        {renderTestInvocation(testBody)}
+        {renderStackTracePopup(invocation.executionException.stackTrace)}
+    </>
 }
-

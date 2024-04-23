@@ -1,58 +1,38 @@
-import React, {Component} from "react";
-import {Invocation} from "./Invocation";
-import App, {makeNotes} from "./App";
+import React, {useState} from "react";
 import {faAngleDown} from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import {faAngleUp} from "@fortawesome/free-solid-svg-icons/faAngleUp";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {makeNotes, stateClassFor} from "./App";
+import Invocation from "./Invocation";
 
-class Test extends Component {
+function Test({issueTrackerUrlFor, sectionOrder, test}) {
+    let testState = test.state
+    let testMethod = test.testMethod
+    let collapsed = false
+    if (window.location.hash) {
+        collapsed = window.location.hash.substring(1) !== testMethod
+    } else collapsed = testState !== "Failed"
 
-    constructor(props) {
-        super(props);
+    const [isCollapsed, setIsCollapsed] = useState(collapsed)
 
-        let test = this.props.test;
-        let state = test.state;
-        let testMethod = test.testMethod;
-        let isCollapsed;
-
-        if (window.location.hash) {
-            isCollapsed = window.location.hash.substring(1) !== testMethod
-        } else {
-            isCollapsed = state !== "Failed"
-        }
-
-        this.state = {
-            isCollapsed: isCollapsed
-        };
-
-        this.toggle = this.toggle.bind(this);
-
+    const toggle = () => {
+        setIsCollapsed(!isCollapsed);
     }
 
-    toggle() {
-        this.setState(prevState => ({
-            isCollapsed: !prevState.isCollapsed
-        }));
+    const icon = () => {
+        return isCollapsed ? faAngleDown : faAngleUp
     }
 
-    icon() {
-        if (this.state.isCollapsed) {
-            return faAngleDown;
-        }
-
-        return faAngleUp;
-    }
-
-    contentClass() {
-        if (this.state.isCollapsed) {
+    const contentClass = () => {
+        if (isCollapsed) {
             return "message-body is-hidden"
         }
 
-        return "message-body";
+        return "message-body"
     }
 
-    renderInformation(issues, notes) {
-        let issueContent = issues.length > 0 ? this.renderIssues(issues) : null;
+    const renderInformation = (issues, notes) => {
+        let issueContent = issues.length > 0 ? renderIssues(issues) : null;
         let notesContent = notes ? makeNotes(notes) : null;
 
         if (issues.length > 0 || notes) {
@@ -67,78 +47,61 @@ class Test extends Component {
         return null;
     }
 
-    renderIssues(issues) {
+    const renderIssues = (issues) => {
         return (
             <div className="tags">
                 {
                     issues.map(issue => {
-                        return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
+                        return <a href={issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
                     })
                 }
             </div>
         );
     }
 
-    issueTrackerUrlFor(issue) {
-        let issueTrackerUrl = this.props.issueTrackerUrl;
-
-        if (issueTrackerUrl.endsWith("/")) {
-            return issueTrackerUrl + issue;
-        }
-
-        return issueTrackerUrl + "/" + issue;
-    }
-
-    render() {
-        const test = this.props.test;
-        const state = test.state;
-        if (state === 'Disabled' || state === 'Not Executed') {
-            return (
-                <div className={"message " + App.stateClassFor(state)}>
-                    <div onClick={this.toggle} className="message-header">
-                        <span className={"limited-width"}>{test.displayName}</span>
-                        <a><FontAwesomeIcon icon={this.icon()}/></a>
-                    </div>
-                    <div className={"message-body " + this.contentClass()}>
-                        Test was not executed.
+    if (testState === 'Disabled' || testState === 'Not Executed') {
+        return (
+            <div className={"message " + stateClassFor(testState)}>
+                <div onClick={toggle} className="message-header">
+                    <span className={"limited-width"}>{test.displayName}</span>
+                    <a><FontAwesomeIcon icon={icon()}/></a>
+                </div>
+                <div className={"message-body " + contentClass()}>
+                    Test was not executed.
+                </div>
+            </div>
+        );
+    } else {
+        let expandedIndex = test.invocations.findIndex((invocation) => invocation.state === 'Failed')
+        if (expandedIndex === -1) expandedIndex = 0
+        return (
+            <div className={"message " + stateClassFor(testState)}>
+                <div onClick={toggle} className="message-header">
+                    <span className={"limited-width"}>{test.displayName}</span>
+                    <div>
+                        <span className={"elapsed-time"}>Elapsed time: {test.elapsedTime}</span>
+                        <a><FontAwesomeIcon icon={icon()}/></a>
                     </div>
                 </div>
-            );
-        } else {
-
-            let expandedIndex = test.invocations.findIndex((invocation) => invocation.state === 'Failed')
-            if (expandedIndex === -1) expandedIndex = 0
-
-            return (
-                <div className={"message " + App.stateClassFor(state)}>
-                    <div onClick={this.toggle} className="message-header">
-                        <span className={"limited-width"}>{test.displayName}</span>
-                        <div>
-                            <span className={"elapsed-time"}>Elapsed time: {test.elapsedTime}</span>
-                            <a><FontAwesomeIcon icon={this.icon()}/></a>
-                        </div>
-                    </div>
-                    <div className={this.contentClass()}>
-                        {this.renderInformation(test.issues, test.notes)}
-                        {test.invocations.map((invocation, index) => <Invocation key={index}
-                                                                                 sectionOrder={this.props.sectionOrder}
-                                                                                 testMethod={test.testMethod}
-                                                                                 isCollapsed={index !== expandedIndex}
-                                                                                 invocation={invocation}
-                                                                                 invocationNumber={index}/>)}
-                    </div>
+                <div className={contentClass()}>
+                    {renderInformation(test.issues, test.notes)}
+                    {test.invocations.map((invocation, index) => <Invocation sectionOrder={sectionOrder}
+                                                                             testMethod={test.testMethod}
+                                                                             isCollapsed={index !== expandedIndex}
+                                                                             invocation={invocation}
+                                                                             key={index}/>)}
                 </div>
-            );
-        }
+            </div>
+        );
     }
 }
 
-export default class TestWrapper extends Component {
-    render() {
-        return (
-            this.props.tests.map((test, index) =>
-                <Test issueTrackerUrl={this.props.issueTrackerUrl} sectionOrder={this.props.sectionOrder} key={index} test={test}/>
-            )
-        );
-    }
+export default function TestWrapper({issueTrackerUrlFor, sectionOrder, tests}) {
+    const components = tests.map((test, index) =>
+        <Test issueTrackerUrlFor={issueTrackerUrlFor} sectionOrder={sectionOrder} test={test} key={index}/>
+    )
+    // debugger;
+    return (
+        <>{components}</>
+    )
 }

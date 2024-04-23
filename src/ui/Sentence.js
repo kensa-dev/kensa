@@ -62,8 +62,8 @@ export class Token extends Component {
                 </span>
                 <span className={this.showWhenExpanded()}>
                    {
-                       this.props.tokens.map((tokens) => {
-                           return <Sentence nested={true} sentence={tokens} acronyms={this.props.acronyms}/>
+                       this.props.tokens.map((tokens, index) => {
+                           return <Sentence nested={true} sentence={tokens} acronyms={this.props.acronyms} key={index}/>
                        })
                    }
                 </span>

@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import './App.scss';
 import TestWrapper from "./Test";
 import Indices from "./IndexPage";
@@ -59,32 +59,31 @@ export function makeNotes(notes) {
     )
 }
 
-export default class App extends Component {
+export function stateClassFor(state) {
+    return "test-" + state.toLowerCase();
+}
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoaded: false
-        };
-    }
+function sectionOrderFrom(json) {
+    return json.sectionOrder.map((value) => Section[value])
+}
 
-    static stateClassFor(state) {
-        return "test-" + state.toLowerCase();
-    }
+function selectModeFrom(json) {
+    return Mode[json.mode];
+}
 
-    static sectionOrderFrom(json) {
-        return json.sectionOrder.map((value) => Section[value])
-    }
+export default function App() {
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [mode, setMode] = useState(null);
+    const [issueTrackerUrl, setIssueTrackerUrl] = useState("#");
+    const [sectionOrder, setSectionOrder] = useState([]);
+    const [data, setData] = useState(null);
+    const [indices, setIndices] = useState(null);
 
-    static selectModeFrom(json) {
-        return Mode[json.mode];
-    }
-
-    componentDidMount() {
+    useEffect(() => {
         let configNode = document.querySelector("script[id='config']");
         let configJson = JSON.parse(configNode.textContent);
-        let mode = App.selectModeFrom(configJson);
-        let sectionOrder = App.sectionOrderFrom(configJson)
+        let mode = selectModeFrom(configJson);
+        let sectionOrder = sectionOrderFrom(configJson)
 
         let indices = null;
         let data = null;
@@ -100,34 +99,15 @@ export default class App extends Component {
         }
 
         let issueTrackerUrl = configJson["issueTrackerUrl"];
-        this.setState({
-            issueTrackerUrl: issueTrackerUrl == null ? "#" : issueTrackerUrl,
-            mode: mode,
-            sectionOrder: sectionOrder,
-            data: data,
-            indices: indices,
-            isLoaded: true
-        });
-    }
+        setIssueTrackerUrl(issueTrackerUrl == null ? "#" : issueTrackerUrl);
+        setMode(mode);
+        setSectionOrder(sectionOrder);
+        setData(data);
+        setIndices(indices);
+        setIsLoaded(true);
+    }, []);
 
-    renderIndexFile() {
-        return (
-                <div>
-                    <section className="hero test-passed">
-                        <div className="hero-body">
-                            <h1 className="title">Index</h1>
-                        </div>
-                    </section>
-                    <section className="section">
-                        <Indices issueTrackerUrl={this.state.issueTrackerUrl} indices={this.state.indices}/>
-                    </section>
-                </div>
-        )
-    }
-
-    issueTrackerUrlFor(issue) {
-        let issueTrackerUrl = this.state.issueTrackerUrl;
-
+    const issueTrackerUrlFor = (issue) => {
         if (issueTrackerUrl.endsWith("/")) {
             return issueTrackerUrl + issue;
         }
@@ -135,63 +115,73 @@ export default class App extends Component {
         return issueTrackerUrl + "/" + issue;
     }
 
-    renderIssues(issues) {
+    const renderIndexFile = () => {
+        return (
+            <div>
+                <section className="hero test-passed">
+                    <div className="hero-body">
+                        <h1 className="title">Index</h1>
+                    </div>
+                </section>
+                <section className="section">
+                    <Indices issueTrackerUrl={issueTrackerUrl} indices={indices}/>
+                </section>
+            </div>
+        )
+    }
+
+    const renderIssues = (issues) => {
         return <div className="tags">
             {
                 issues.map(issue => {
-                    return <a href={this.issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
+                    return <a href={issueTrackerUrlFor(issue)} className={"tag is-small has-background-grey has-text-white"}>{issue}</a>
                 })
             }
         </div>;
     }
 
-    renderInformation(issues, notes, state) {
-        let issueContent = issues.length > 0 ? this.renderIssues(issues) : null;
+    const renderInformation = (issues, notes) => {
+        let issueContent = issues.length > 0 ? renderIssues(issues) : null;
         let notesContent = notes ? makeNotes(notes) : null;
 
         if (issues.length > 0 || notes) {
             return (
-                    <div className="message is-info">
-                        <div className="message-body">
-                            {issueContent}
-                            {notesContent}
-                        </div>
+                <div className="message is-info">
+                    <div className="message-body">
+                        {issueContent}
+                        {notesContent}
                     </div>
+                </div>
             )
         }
 
         return null;
     }
 
-    renderTestFile() {
-        const data = this.state.data;
-
-        let info = this.renderInformation(data.issues, data.notes, data.state)
+    const renderTestFile = () => {
         return (
-                <div>
-                    <section className={"hero " + App.stateClassFor(data.state)}>
-                        <div className="hero-body">
-                            <h1 className="title">{data.displayName}</h1>
-                        </div>
-                    </section>
-                    <section className="section">
-                        {info}
-                        <TestWrapper issueTrackerUrl={this.state.issueTrackerUrl} sectionOrder={this.state.sectionOrder} tests={data.tests}/>
-                    </section>
-                </div>
-        );
+            <div>
+                <section className={"hero " + stateClassFor(data.state)}>
+                    <div className="hero-body">
+                        <h1 className="title">{data.displayName}</h1>
+                    </div>
+                </section>
+                <section className="section">
+                    {renderInformation(data.issues, data.notes, data.state)}
+                    <TestWrapper issueTrackerUrlFor={issueTrackerUrlFor} sectionOrder={sectionOrder} tests={data.tests}/>
+                </section>
+            </div>
+        )
     }
 
-    render() {
-        if (this.state.isLoaded) {
-            switch (this.state.mode) {
-                case Mode.IndexFile:
-                    return this.renderIndexFile();
-                case Mode.TestFile:
-                    return this.renderTestFile();
-            }
-        } else {
-            return (<div>Loading...</div>)
+    if (isLoaded) {
+        switch (mode) {
+            case Mode.IndexFile:
+                return renderIndexFile();
+            case Mode.TestFile:
+                return renderTestFile();
         }
+    } else {
+        return (<div>Loading...</div>)
     }
 }
