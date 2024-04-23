@@ -145,11 +145,11 @@ export default class App extends Component {
         </div>;
     }
 
-    renderInformation(issue, notes, state) {
-        let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
+    renderInformation(issues, notes, state) {
+        let issueContent = issues.length > 0 ? this.renderIssues(issues) : null;
         let notesContent = notes ? makeNotes(notes) : null;
 
-        if (issue.length > 0 || notes) {
+        if (issues.length > 0 || notes) {
             return (
                     <div className="message is-info">
                         <div className="message-body">
@@ -166,7 +166,7 @@ export default class App extends Component {
     renderTestFile() {
         const data = this.state.data;
 
-        let info = this.renderInformation(data.issue, data.notes, data.state)
+        let info = this.renderInformation(data.issues, data.notes, data.state)
         return (
                 <div>
                     <section className={"hero " + App.stateClassFor(data.state)}>

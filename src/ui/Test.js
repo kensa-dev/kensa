@@ -51,11 +51,11 @@ class Test extends Component {
         return "message-body";
     }
 
-    renderInformation(issue, notes) {
-        let issueContent = issue.length > 0 ? this.renderIssues(issue) : null;
+    renderInformation(issues, notes) {
+        let issueContent = issues.length > 0 ? this.renderIssues(issues) : null;
         let notesContent = notes ? makeNotes(notes) : null;
 
-        if (issue.length > 0 || notes) {
+        if (issues.length > 0 || notes) {
             return (
                 <div className="test-information">
                     {issueContent}
@@ -119,7 +119,7 @@ class Test extends Component {
                         </div>
                     </div>
                     <div className={this.contentClass()}>
-                        {this.renderInformation(test.issue, test.notes)}
+                        {this.renderInformation(test.issues, test.notes)}
                         {test.invocations.map((invocation, index) => <Invocation key={index}
                                                                                  sectionOrder={this.props.sectionOrder}
                                                                                  testMethod={test.testMethod}

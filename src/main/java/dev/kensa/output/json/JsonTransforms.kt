@@ -28,11 +28,10 @@ object JsonTransforms {
     fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue = { container: TestContainer ->
         jsonObject()
             .add("testClass", container.testClass.name)
-            .add("issues", asJsonArray(container.issues))
             .add("displayName", container.displayName)
             .add("state", container.state.description)
             .add("notes", container.notes)
-            .add("issue", asJsonArray(container.issues))
+            .add("issues", asJsonArray(container.issues))
             .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
                 var totalElapsed : Duration = Duration.ZERO
 
