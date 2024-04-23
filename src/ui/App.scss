@@ -29,7 +29,6 @@
 
 .failure-message {
   margin: 20px 0 20px 0;
-  overflow: scroll;
   max-height: 200px;
   font-family: monospace;
   font-size: 15px;
@@ -44,8 +43,6 @@
   font-family: monospace;
   font-size: 15px;
   font-weight: bold;
-  //min-height: 75%;
-  //max-height: 75%;
 }
 
 .message-body {
