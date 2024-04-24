@@ -17,7 +17,7 @@ module.exports = {
     },
     devServer: {
         static: {
-            directory: path.join(__dirname, 'src/ui/public')
+            directory: path.join('/Users/tim/projects/src/git.bskyb.com/ukis-net-is/sonique/olive/olive/acceptance-tests/build/kensa-output')
         }
     },
     module: {
