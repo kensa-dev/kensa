@@ -24,6 +24,12 @@
   color: $warning
 }
 
+.idx-not-executed {
+  @extend .idx;
+
+  color: $warning
+}
+
 .idx-icon {
   font-size: 14px;
   height: 1em;

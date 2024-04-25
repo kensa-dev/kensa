@@ -15,20 +15,10 @@ const Package = ({pkg, parentIsExpanded, filter}) => {
 
     const deriveClassFor = (pkg) => {
         if (pkg.matched && parentIsExpanded) {
-            if (pkg.state === "Passed" || filter.type === "State" && filter.value === "Passed") {
-                return "idx-passed"
-            }
-
-            if (pkg.state === "Failed" || filter.type === "State" && filter.value === "Failed") {
-                return "idx-failed"
-            }
-
-            if (pkg.state === "Disabled" || filter.type === "State" && filter.value === "Disabled") {
-                return "idx-disabled"
-            }
+            return "idx-" + ((filter.type === "State" && filter.value !== "All") ? filter.value : pkg.state).toLowerCase().replaceAll(" ", "-")
+        } else {
+            return "is-hidden"
         }
-
-        return "is-hidden"
     }
 
     useEffect(() => {
@@ -43,17 +33,12 @@ const Package = ({pkg, parentIsExpanded, filter}) => {
         <dd>
             {
                 pkg.packages && pkg.packages.map((pkg, index) =>
-                    <Package key={index} pkg={pkg}
-                             filter={filter}
-                             parentIsExpanded={isExpanded}/>
+                    <Package key={index} pkg={pkg} parentIsExpanded={isExpanded} filter={filter} />
                 )
             }
             {
                 pkg.classes && pkg.classes.map((testClass, index) =>
-                    <Class key={index}
-                           testClass={testClass}
-                           filter={filter}
-                           parentIsExpanded={isExpanded}/>
+                    <Class key={index} testClass={testClass} parentIsExpanded={isExpanded}/>
                 )
             }
         </dd>

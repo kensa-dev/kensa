@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import './Indices.scss';
 import {faSearch} from "@fortawesome/free-solid-svg-icons/faSearch";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {createTree} from "./trees";
+import {createTree, filterTree} from "./trees";
 import Package from "./Package";
 
 const KENSA_FILTER_KEY = "KensaFilter";
@@ -10,15 +10,17 @@ const KENSA_ISSUE_REGEXP = new RegExp(`^issue:([A-Za-z]{3,}-[0-9]+)$`, 'g')
 const ALL_STATE_FILTER = {type: "State", value: "All"}
 
 export default function Indices({indices}) {
-    const [isFilterMatched, setFilterMatched] = useState(false);
+    const [isFilterMatched, setFilterMatched] = useState(true);
     const [filter, setFilter] = useState(JSON.parse(localStorage.getItem(KENSA_FILTER_KEY)) || ALL_STATE_FILTER);
-    const [indexTree, setIndexTree] = useState(createTree(indices));
+    const [indexTree, dispatch] = useReducer(filterTree, createTree(indices));
 
     useEffect(() => {
         localStorage.setItem(KENSA_FILTER_KEY, JSON.stringify(filter))
 
-        setFilterMatched(doApplyFilter(indexTree.packages, filterFor(filter)))
+        console.log("useEffect1", indexTree)
+        dispatch(filter)
 
+        console.log("useEffect2", indexTree)
     }, [filter]);
 
     const getFirstGroup = (regexp, str) => [...str.matchAll(regexp)].map(m => m[1])
@@ -34,37 +36,6 @@ export default function Indices({indices}) {
         } else {
             setFilter(ALL_STATE_FILTER)
         }
-    }
-
-    const filterFor = (filter) => {
-        switch (filter.type) {
-            case "State":
-                return (testClass) => (filter.type === "State" && filter.value === "All") || filter.value === testClass.state
-            case "Name":
-                return (testClass) => testClass.name.toLowerCase().includes(filter.value.toLowerCase())
-            case "Issue":
-                return (testClass) => testClass.issues.includes(filter.value.split(':')[1])
-        }
-    }
-
-    const doApplyFilter = (packages, filterFn) => {
-        let matched = false;
-
-        packages.forEach((pkg) => {
-            pkg.matched = false;
-            if (pkg.classes && pkg.classes.length > 0) {
-                pkg.classes.forEach((cls) => {
-                    pkg.matched = (cls.matched = filterFn(cls)) || pkg.matched;
-                })
-            }
-            if (pkg.packages && pkg.packages.length > 0) {
-                pkg.matched = doApplyFilter(pkg.packages, filterFn) || pkg.matched;
-            }
-            matched = matched || pkg.matched;
-            pkg.expanded = pkg.matched
-        });
-
-        return matched;
     }
 
     const StateFilterTab = ({value}) => {
@@ -93,17 +64,17 @@ export default function Indices({indices}) {
             </p>
             <div className={"panel-block"}>
                 {
-                    ((filter.type === "State" && filter.value === "All") || isFilterMatched) ?
-                    indexTree.packages && indexTree.packages.map((pkg, index) =>
-                    <Package key={index} pkg={pkg} filter={filter} parentIsExpanded={true}/>
-            )
-            :
-            <div className="has-text-danger">
-                No tests match the filter!
+                    (isFilterMatched) ?
+                        indexTree.packages && indexTree.packages.map((pkg, index) =>
+                            <Package key={index} pkg={pkg} parentIsExpanded={true} filter={filter}/>
+                        )
+                        :
+                        <div className="has-text-danger">
+                            No tests match the filter!
+                        </div>
+                }
             </div>
-            }
-        </div>
 
-</nav>
-)
+        </nav>
+    )
 }

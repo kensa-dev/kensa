@@ -1,5 +1,3 @@
-
-
 const applyState = (pkg, state) => {
     if (pkg.state === "Failed" || pkg.state === "Disabled" || state === "NotExecuted" || state === "Disabled") {
         return;
@@ -20,22 +18,21 @@ const mapResult = (indices, pkgArray, container) => {
             indices["classes"] = clsArray;
         }
         let c = {
-            container: container,
-            state: container.state,
             name: container.displayName,
+            state: container.state,
+            fullClassName: container.testClass,
             expanded: false,
             matched: false,
             issues: container.issues,
-            tests: []
-        };
-        clsArray.push(c);
-        container.tests.forEach((test) => {
-            c.tests.push({
-                name: test.displayName,
-                method: test.testMethod,
-                issues: test.issues
+            tests: container.tests.map((test) => {
+                return {
+                    name: test.displayName,
+                    method: test.testMethod,
+                    issues: test.issues
+                }
             })
-        })
+        }
+        clsArray.push(c);
     } else {
         // It's a package name
         let packages = indices["packages"];
@@ -54,16 +51,51 @@ const mapResult = (indices, pkgArray, container) => {
             };
             packages.push(pkg);
         } else {
-            applyState(pkg, container.state)
+            // applyState(pkg, container.state)
         }
         mapResult(pkg, pkgArray, container);
     }
 }
 
-export const createTree = (indices) => {
-    let localIndexTree = {}
-    indices.forEach((testResult) => {
-        mapResult(localIndexTree, testResult.testClass.split("."), testResult)
+const filterFor = (filter) => {
+    switch (filter.type) {
+        case "State":
+            return (testClass) => (filter.type === "State" && filter.value === "All") || filter.value === testClass.state
+        case "Name":
+            return (testClass) => testClass.name.toLowerCase().includes(filter.value.toLowerCase())
+        case "Issue":
+            return (testClass) => testClass.issues.includes(filter.value.split(':')[1])
+    }
+}
+
+const doApplyFilter = (packages, filterFn) => {
+    return packages.map((pkg) => {
+        pkg.matched = false;
+        if (pkg.classes && pkg.classes.length > 0) {
+            pkg.classes.forEach((cls) => {
+                pkg.matched = (cls.matched = filterFn(cls)) || pkg.matched;
+            })
+        }
+        if (pkg.packages && pkg.packages.length > 0) {
+            pkg.packages = doApplyFilter(pkg.packages, filterFn);
+        }
+        pkg.expanded = pkg.matched
     });
-    return localIndexTree
+
+}
+export const filterTree = (indexTree, filter) => {
+    const filterFn = filterFor(filter)
+
+    console.log("indexTree", indexTree)
+    let newTree = doApplyFilter(indexTree.packages, filterFn);
+    console.log("newTree", indexTree)
+    return newTree
+}
+
+export const createTree = (indices) => {
+    let indexTree = {}
+    indices.forEach((testResult) => {
+        mapResult(indexTree, testResult.testClass.split("."), testResult)
+    });
+    return indexTree
 }

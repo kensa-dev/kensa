@@ -3,13 +3,13 @@ import {faMinus} from "@fortawesome/free-solid-svg-icons/faMinus";
 import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-const Class = ({testClass, parentIsExpanded, filter}) => {
+const Class = ({testClass, parentIsExpanded}) => {
     const [isExpanded, setExpanded] = useState(false);
 
     const icon = () => isExpanded ? faMinus : faPlus
 
     const load = (anchor) => {
-        let url = "./" + testClass.container.testClass + ".html";
+        let url = "./" + testClass.fullClassName + ".html";
         if (anchor) {
             url += "#" + anchor;
         }
@@ -22,19 +22,8 @@ const Class = ({testClass, parentIsExpanded, filter}) => {
 
     const deriveClassFor = (testClass) => {
         if (testClass.matched && parentIsExpanded) {
-            if (testClass.state === "Passed" || filter.type === "State" && filter.value === "Passed") {
-                return "idx-passed"
-            }
-
-            if (testClass.state === "Failed" || filter.type === "State" && filter.value === "Failed") {
-                return "idx-failed"
-            }
-
-            if (testClass.state === "Disabled" || filter.type === "State" && filter.value === "Disabled") {
-                return "idx-disabled"
-            }
+            return "idx-" + testClass.state.toLowerCase().replaceAll(" ", "-")
         }
-
         return "is-hidden"
     }
 
