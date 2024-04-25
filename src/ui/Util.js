@@ -16,3 +16,9 @@ export const hasElements = (invocation, name) => {
 export const collapseIcon = (isCollapsed) => (isCollapsed) ? faAngleDown : faAngleUp
 
 export const stateClassFor = state => "test-" + state.toLowerCase();
+
+export const Section = {
+    Buttons: 'Buttons',
+    Exception: 'Exception',
+    Sentences: 'Sentences'
+}

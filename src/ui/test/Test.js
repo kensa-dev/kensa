@@ -5,7 +5,6 @@ import {collapseIcon, stateClassFor} from "../Util";
 import {Information} from "./Information";
 
 const Test = ({issueTrackerUrl, sectionOrder, test, startExpanded}) => {
-    console.log(startExpanded)
     const [isCollapsed, setCollapsed] = useState(!startExpanded);
 
     const toggle = () => setCollapsed(prev => !prev);

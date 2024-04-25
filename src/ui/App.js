@@ -2,19 +2,14 @@ import React, {useMemo} from 'react';
 import './App.scss';
 import TestClass from "./test/TestClass";
 import Index from "./index/Index";
-
-const Mode = {
-    IndexFile: 'IndexFile',
-    TestFile: 'TestFile'
-};
-
-export const Section = {
-    Buttons: 'Buttons',
-    Exception: 'Exception',
-    Sentences: 'Sentences'
-}
+import {Section} from "./Util";
 
 const App = () => {
+    const Mode = {
+        IndexFile: 'IndexFile',
+        TestFile: 'TestFile'
+    };
+
     const [sectionOrder, mode, issueTrackerUrl] = useMemo(() => {
         const json = JSON.parse(document.querySelector("script[id='config']").textContent);
         return [

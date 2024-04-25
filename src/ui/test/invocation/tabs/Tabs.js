@@ -6,24 +6,22 @@ import CapturedInteractions from "./CapturedInteractions";
 
 const splitAndCapitalize = (s) => (s.charAt(0).toUpperCase() + s.slice(1)).split(/(?=[A-Z])/).join(" ")
 
-const Button = ({name, deriveClass, doClick: setSelected}) =>
-    <button key={name} className={deriveClass(name)} onClick={() => setSelected(prev => (prev === name) ? "" : name)}>{splitAndCapitalize(name)}</button>
+const Button = ({name, deriveClass, onClick}) =>
+    <button key={name} className={"button " + deriveClass(name)} onClick={() => onClick(prev => (prev === name) ? "" : name)}>{splitAndCapitalize(name)}</button>
 
 const Tabs = ({invocation, testStateClass}) => {
     const [selected, setSelected] = useState()
 
     const deriveClass = (name) => {
-        let c = "button ";
+        let c = ""
         if (selected === name) {
             c += "is-selected " + testStateClass;
         } else if (selected !== null && selected !== undefined) {
-            c += " has-selected"
+            c += "has-selected"
         }
-
         if (!hasElements(invocation, name)) {
             c += " is-hidden"
         }
-
         return c;
     }
 
@@ -51,10 +49,10 @@ const Tabs = ({invocation, testStateClass}) => {
 
     return <>
         <div className="buttons has-addons">
-            <Button name={'givens'} deriveClass={deriveClass} selected={selected} doClick={setSelected}/>
-            <Button name={'parameters'} deriveClass={deriveClass} selected={selected} doClick={setSelected}/>
-            <Button name={'capturedInteractions'} deriveClass={deriveClass} selected={selected} doClick={setSelected}/>
-            <Button name={'sequenceDiagram'} deriveClass={deriveClass} selected={selected} doClick={setSelected}/>
+            <Button name={'givens'} deriveClass={deriveClass} onClick={setSelected}/>
+            <Button name={'parameters'} deriveClass={deriveClass} onClick={setSelected}/>
+            <Button name={'capturedInteractions'} deriveClass={deriveClass} onClick={setSelected}/>
+            <Button name={'sequenceDiagram'} deriveClass={deriveClass} onClick={setSelected}/>
         </div>
         <TabContent/>
     </>

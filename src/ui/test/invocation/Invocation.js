@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Section} from "../../App";
-import {collapseIcon, hasElements, stateClassFor} from "../../Util";
+import {collapseIcon, hasElements, Section, stateClassFor} from "../../Util";
 import Tabs from "./tabs/Tabs";
 import Sentences from "./sentence/Sentences";
 import FailureMessage from "./FailureMessage";

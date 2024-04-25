@@ -4,12 +4,13 @@ const applyState = (pkg, state) => {
     }
 
     if (state === "Failed" || state === "Passed") {
-        return pkg.state = state;
+        pkg.state = state;
     }
 }
 
 const mapResult = (indices, pkgArray, container) => {
     let name = pkgArray.shift();
+
     if (pkgArray.length === 0) {
         // It's a class name
         let clsArray = indices["classes"];
@@ -21,14 +22,15 @@ const mapResult = (indices, pkgArray, container) => {
             name: container.displayName,
             state: container.state,
             fullClassName: container.testClass,
-            expanded: false,
-            matched: false,
+            expanded: true,
+            matched: true,
             issues: container.issues,
             tests: container.tests.map((test) => {
                 return {
                     name: test.displayName,
                     method: test.testMethod,
-                    issues: test.issues
+                    issues: (test.issues.length > 0) ? test.issues : container.issues,
+                    state: test.state
                 }
             })
         }
@@ -42,58 +44,68 @@ const mapResult = (indices, pkgArray, container) => {
         }
 
         let pkg = packages.find(p => p.name === name);
-        if (!pkg) {
+        if (pkg === undefined) {
             pkg = {
                 name: name,
                 state: container.state,
-                expanded: false,
-                matched: false
+                expanded: true,
+                matched: true
             };
             packages.push(pkg);
         } else {
-            // applyState(pkg, container.state)
+            applyState(pkg, container.state)
         }
         mapResult(pkg, pkgArray, container);
     }
 }
 
-const filterFor = (filter) => {
-    switch (filter.type) {
-        case "State":
-            return (testClass) => (filter.type === "State" && filter.value === "All") || filter.value === testClass.state
-        case "Name":
-            return (testClass) => testClass.name.toLowerCase().includes(filter.value.toLowerCase())
-        case "Issue":
-            return (testClass) => testClass.issues.includes(filter.value.split(':')[1])
-    }
-}
+const arrayContainsArray = (superset, subset) => subset.some(value => superset.includes(value))
+const filterIssues = (testClass, issues) => issues?.length > 0 ? arrayContainsArray(testClass.issues, issues) : true
+const filterText = (testClass, filterText) => filterText ? testClass.name.toLowerCase().includes(filterText.toLowerCase()) : true
+const filterState = (testClass, filterState) => filterState === "All" || filterState === testClass.state
+const filterFor = (filter) => (testClass) =>
+    filterIssues(testClass, filter.issues) &&
+    filterText(testClass, filter.text) &&
+    filterState(testClass, filter.state)
 
-const doApplyFilter = (packages, filterFn) => {
-    return packages.map((pkg) => {
+
+const applyFilter = (packages, filterFn) => {
+    let matched = false;
+
+    packages.forEach((pkg) => {
         pkg.matched = false;
         if (pkg.classes && pkg.classes.length > 0) {
             pkg.classes.forEach((cls) => {
                 pkg.matched = (cls.matched = filterFn(cls)) || pkg.matched;
+                if (cls.tests && cls.tests.length > 0) {
+                    cls.tests.forEach((test) => {
+                        let tstMatched = test.matched = filterFn(test);
+                        cls.matched = tstMatched || cls.matched;
+                        pkg.matched = tstMatched || pkg.matched;
+                    })
+                }
             })
         }
         if (pkg.packages && pkg.packages.length > 0) {
-            pkg.packages = doApplyFilter(pkg.packages, filterFn);
+            pkg.matched = applyFilter(pkg.packages, filterFn) || pkg.matched;
         }
+        matched = matched || pkg.matched;
         pkg.expanded = pkg.matched
     });
 
+    return matched;
 }
-export const filterTree = (indexTree, filter) => {
+
+export const treeReducer = (indexTree, filter) => {
     const filterFn = filterFor(filter)
 
-    console.log("indexTree", indexTree)
-    let newTree = doApplyFilter(indexTree.packages, filterFn);
-    console.log("newTree", indexTree)
-    return newTree
+    const matches = applyFilter(indexTree.packages, filterFn);
+
+    return {...indexTree, matches: matches, packages: indexTree.packages}
 }
 
 export const createTree = (indices) => {
-    let indexTree = {}
+    let indexTree = {matches: true}
     indices.forEach((testResult) => {
         mapResult(indexTree, testResult.testClass.split("."), testResult)
     });

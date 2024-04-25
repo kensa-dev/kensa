@@ -17,7 +17,7 @@ module.exports = {
     },
     devServer: {
         static: {
-            directory: path.join(__dirname, 'src/ui/public')
+             directory: path.join(__dirname, 'src/ui/public')
         }
     },
     module: {

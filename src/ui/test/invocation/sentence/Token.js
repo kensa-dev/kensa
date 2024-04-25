@@ -27,18 +27,16 @@ export const Token = ({expanded, types, acronyms, value, tokens}) => {
         return c;
     }
 
-
     const NestedSentence = () => {
         const [isExpanded, setIsExpanded] = useState(expanded)
 
         return <>
             <span onClick={() => setIsExpanded(prev => !prev)} className={classes()} data-tooltip={acronymExpansion()}>{value}</span>
-            <span className={isExpanded ? "" : "is-hidden"}>
-                {
-                    tokens.map((tokens, index) =>
-                        <Sentence nested={true} sentence={tokens} acronyms={acronyms} key={index}/>)
-                }
-            </span>
+            {isExpanded ?
+                tokens.map((tokens, index) =>
+                    <Sentence nested={true} sentence={tokens} acronyms={acronyms} key={index}/>)
+                : null
+            }
         </>
     }
 

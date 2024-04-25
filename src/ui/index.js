@@ -6,9 +6,18 @@ import Lowlight from 'react-lowlight';
 import xml from 'highlight.js/lib/languages/xml';
 import json from 'highlight.js/lib/languages/json';
 import plainText from 'highlight.js/lib/languages/plaintext';
+import {createBrowserRouter, createHashRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
 
 Lowlight.registerLanguage('json', json);
 Lowlight.registerLanguage('xml', xml);
 Lowlight.registerLanguage('plaintext', plainText);
 
-createRoot(document.getElementById('root')).render(<App />);
+const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path="/*" exact={true} element={<App/>}/>
+    )
+)
+
+createRoot(document.getElementById('root')).render(
+    <RouterProvider router={router}/>
+)

@@ -13,36 +13,33 @@ const Package = ({pkg, parentIsExpanded, filter}) => {
         setExpanded(prev => !prev)
     }
 
-    const deriveClassFor = (pkg) => {
-        if (pkg.matched && parentIsExpanded) {
-            return "idx-" + ((filter.type === "State" && filter.value !== "All") ? filter.value : pkg.state).toLowerCase().replaceAll(" ", "-")
-        } else {
-            return "is-hidden"
-        }
-    }
+    const deriveClassFor = (pkg) =>
+        "idx-" + ((filter.state !== "All") ? filter.state : pkg.state).toLowerCase().replaceAll(" ", "-")
 
     useEffect(() => {
         setExpanded(pkg.expanded)
     }, [pkg.expanded]);
 
-    return <dl className={deriveClassFor(pkg)}>
-        <dt>
-            <span className="idx-icon" onClick={toggle}><FontAwesomeIcon icon={icon()}/></span>
-            {pkg.name}
-        </dt>
-        <dd>
-            {
-                pkg.packages && pkg.packages.map((pkg, index) =>
-                    <Package key={index} pkg={pkg} parentIsExpanded={isExpanded} filter={filter} />
-                )
-            }
-            {
-                pkg.classes && pkg.classes.map((testClass, index) =>
-                    <Class key={index} testClass={testClass} parentIsExpanded={isExpanded}/>
-                )
-            }
-        </dd>
-    </dl>
+    if (pkg.matched && parentIsExpanded) {
+        return <dl className={deriveClassFor(pkg)}>
+            <dt>
+                <span className="idx-icon" onClick={toggle}><FontAwesomeIcon icon={icon()}/></span>
+                {pkg.name}
+            </dt>
+            <dd>
+                {
+                    pkg.packages && pkg.packages.filter(p => p.matched).map((pkg, index) =>
+                        <Package key={index} pkg={pkg} parentIsExpanded={isExpanded} filter={filter}/>
+                    )
+                }
+                {
+                    pkg.classes && pkg.classes.filter(c => c.matched).map((testClass, index) =>
+                        <Class key={index} testClass={testClass} parentIsExpanded={isExpanded} filter={filter}/>
+                    )
+                }
+            </dd>
+        </dl>
+    }
 }
 
 export default Package
