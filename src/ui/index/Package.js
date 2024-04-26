@@ -14,7 +14,7 @@ const Package = ({pkg, parentIsExpanded, filter}) => {
     }
 
     const deriveClassFor = (pkg) =>
-        "idx-" + ((filter.state !== "All") ? filter.state : pkg.state).toLowerCase().replaceAll(" ", "-")
+        "idx-" + (filter.state || pkg.state).toLowerCase().replaceAll(" ", "-")
 
     useEffect(() => {
         setExpanded(pkg.expanded)

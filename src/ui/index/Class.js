@@ -21,7 +21,7 @@ const Class = ({testClass, parentIsExpanded, filter}) => {
     }
 
     const classForTestClass = (cls) =>
-        "idx-" + ((filter.state !== "All") ? filter.state : cls.state).toLowerCase().replaceAll(" ", "-")
+        "idx-" + (filter.state || cls.state).toLowerCase().replaceAll(" ", "-")
 
     const classForTestMethod = (test) => "idx-" + test.state.toLowerCase()
 

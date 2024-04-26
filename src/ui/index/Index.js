@@ -8,12 +8,11 @@ import Package from "./Package";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
 const KENSA_FILTER_TEXT_REGEX = /\bissue:(?<issue>\w+-\d+,?)\b|(?<text>\b\w+\b)/g
-const DEFAULT_FILTER = {issues: null, text: null, state: "All"}
 
 const Index = () => {
     const [searchParams] = useSearchParams()
     const [filterText, setFilterText] = useState("")
-    const [filter, setFilter] = useState(DEFAULT_FILTER);
+    const [filter, setFilter] = useState({});
     const [indexTree, applyFilter] = useReducer(treeReducer, {}, () => createTree(JSON.parse(document.querySelector("script[id='indices']").textContent).indices));
     const [isFilterValid, setFilterValid] = useState(true);
 
@@ -27,11 +26,11 @@ const Index = () => {
     useEffect(() => {
         const params = Object.fromEntries(searchParams);
         const issues = (params.issues?.length ? params.issues.split(",") : null)
-        setFilterText( (issues?.length ? "issue:" + issues.join(",") : "") + (params.text || ""))
+        setFilterText((issues?.length ? "issue:" + issues.join(",") : "") + (params.text || ""))
         setFilter({
             issues: (params.issues?.length ? params.issues.split(",") : null),
             text: (params.text?.length ? params.text : null),
-            state: params.state || "All"
+            state: params.state || null
         })
     }, [searchParams]);
 
@@ -39,7 +38,6 @@ const Index = () => {
     const asQueryParams = (filter) => {
         const params = new URLSearchParams();
         for (let key in filter) {
-
              if (filter[key]) {
                  if (key === "issues") {
                      params.set(key, filter[key].join(","));
@@ -86,14 +84,14 @@ const Index = () => {
     const updateFilterText = e => setFilterText(e.target.value);
 
     const clearFilter = () => {
-        navigate('?' + asQueryParams(DEFAULT_FILTER))
+        navigate('?' + asQueryParams({}))
         setFilterText("")
         setFilterValid(true)
     }
 
-    const StateFilterTab = ({value}) =>
-        <a className={filter.state === value ? "is-active" : ""}
-           onClick={() => navigate("?" + asQueryParams({...filter, state: value}))}>{value}</a>
+    const StateFilterTab = ({text, state}) =>
+        <a className={filter.state === state ? "is-active" : ""}
+           onClick={() => navigate("?" + asQueryParams({...filter, state: state}))}>{text}</a>
 
     return <>
         <section className="hero is-info is-light">
@@ -127,10 +125,10 @@ const Index = () => {
                     </p>
                 </div>
                 <p className="panel-tabs">
-                    <StateFilterTab value={"All"}/>
-                    <StateFilterTab value={"Passed"}/>
-                    <StateFilterTab value={"Failed"}/>
-                    <StateFilterTab value={"Disabled"}/>
+                    <StateFilterTab text={"All"} state={null}/>
+                    <StateFilterTab text={"Passed"} state={"Passed"}/>
+                    <StateFilterTab text={"Failed"} state={"Failed"}/>
+                    <StateFilterTab text={"Disabled"} state={"Disabled"}/>
                 </p>
                 <div>
                     {

@@ -59,10 +59,9 @@ const mapResult = (indices, pkgArray, container) => {
     }
 }
 
-const arrayContainsArray = (superset, subset) => subset.some(value => superset.includes(value))
-const filterIssues = (testClass, issues) => issues?.length > 0 ? arrayContainsArray(testClass.issues, issues) : true
-const filterText = (testClass, filterText) => filterText ? testClass.name.toLowerCase().includes(filterText.toLowerCase()) : true
-const filterState = (testClass, filterState) => filterState === "All" || filterState === testClass.state
+const filterIssues = (testClass, issues) => issues?.length > 0 ? issues.some(v => testClass.issues.includes(v)) : true
+const filterText = (testClass, text) => text ? testClass.name.toLowerCase().includes(text.toLowerCase()) : true
+const filterState = (testClass, state) => state ? state === testClass.state : true
 const filterFor = (filter) => (testClass) =>
     filterIssues(testClass, filter.issues) &&
     filterText(testClass, filter.text) &&
