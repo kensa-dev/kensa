@@ -71,34 +71,20 @@
   padding: 1.25em 0 0 0;
 }
 
-.renderable-attribute {
+.rendered-attribute {
   margin-bottom: 10px !important;
-  overflow-x: scroll;
+  overflow-x: hidden;
   max-height: 150px;
   min-height: 150px;
 }
 
-.renderable-value {
+.rendered-value {
   margin-bottom: 10px !important;
 }
 
-.renderable-value .scrollable-value {
+.rendered-value .scrollable-value {
   padding: 0;
   background-color: #fcfcfc;
-}
-
-.captured-interaction {
-  background-color: transparent;
-}
-
-.captured-interaction .card-content {
-  //padding: 5px;
-  background-color: transparent;
-  font-size: 15px;
-}
-
-.captured-interaction .card-content .lowlight {
-  //background-color: #2b2b2b;
 }
 
 .sequence-diagram {

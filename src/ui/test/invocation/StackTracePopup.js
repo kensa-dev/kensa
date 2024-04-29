@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 
-const StackTracePopup = ({stackTrace, onHide, ...props}) => {
+const StackTracePopup = ({isActive, stackTrace, onHide}) => {
     const onKeyDown = (event) => {
-        if (event.keyCode === 27) {
+        if (event.key === "Escape") {
             onHide();
         }
     }
@@ -17,8 +17,8 @@ const StackTracePopup = ({stackTrace, onHide, ...props}) => {
         }
     })
 
-    return (
-        <div className={"modal " +( props.isActive ? "is-active" : "")}>
+    return isActive &&
+        <div className={"modal is-active"}>
             <div className="modal-background" onClick={onHide}/>
             <div className="modal-card">
                 <header className="modal-card-head">
@@ -30,7 +30,6 @@ const StackTracePopup = ({stackTrace, onHide, ...props}) => {
                 </section>
             </div>
         </div>
-    )
 }
 
 export default StackTracePopup

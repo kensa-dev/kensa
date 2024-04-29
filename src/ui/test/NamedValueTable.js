@@ -24,17 +24,18 @@ export function NamedValueTable({showHeader, highlights, namedValues}) {
                 </thead>
             }
             <tbody>
-            {namedValues.map((item, index) => {
-                    let name = Object.keys(item)[0];
-                    let value = item[name];
-                    return <tr key={index}>
-                        <td>{name}</td>
-                        <td>
-                            <div ref={setCodeRef.bind(this)}>{value}</div>
-                        </td>
-                    </tr>
-                }
-            )}
+            {
+                namedValues.map((item, index) =>
+                    Object.entries(item).map(([name, value]) =>
+                        <tr key={index}>
+                            <td>{name}</td>
+                            <td>
+                                <div ref={setCodeRef.bind(this)}>{value}</div>
+                            </td>
+                        </tr>
+                    )
+                )
+            }
             </tbody>
         </table>
     );

@@ -34,19 +34,14 @@ const Index = () => {
         })
     }, [searchParams]);
 
-
-    const asQueryParams = (filter) => {
+    const setUrl = (filter) => {
         const params = new URLSearchParams();
         for (let key in filter) {
-             if (filter[key]) {
-                 if (key === "issues") {
-                     params.set(key, filter[key].join(","));
-                 } else {
-                     params.set(key, filter[key]);
-                 }
+            if (filter[key]) {
+                params.set(key, (key === "issues") ? filter[key].join(",") : filter[key])
             }
         }
-        return params.toString();
+        navigate({search: params.toString()});
     }
 
     function doFilter() {
@@ -66,7 +61,7 @@ const Index = () => {
         setFilterValid(isValid)
 
         if (isValid) {
-            navigate('?' + asQueryParams({...filter, issues: (issues.length > 0 ? issues : null), text: texts[0]}))
+            setUrl({...filter, issues: (issues.length > 0 ? issues : null), text: texts[0]})
         }
     }
 
@@ -84,14 +79,14 @@ const Index = () => {
     const updateFilterText = e => setFilterText(e.target.value);
 
     const clearFilter = () => {
-        navigate('?' + asQueryParams({}))
+        setUrl({})
         setFilterText("")
         setFilterValid(true)
     }
 
     const StateFilterTab = ({text, state}) =>
         <a className={filter.state === state ? "is-active" : ""}
-           onClick={() => navigate("?" + asQueryParams({...filter, state: state}))}>{text}</a>
+           onClick={() => setUrl({...filter, state: state})}>{text}</a>
 
     return <>
         <section className="hero is-info is-light">
