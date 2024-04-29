@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import {hasElements} from "../../../Util";
 import {NamedValueTable} from "../../NamedValueTable";
 import {SequenceDiagram} from "./SequenceDiagram";
 import CapturedInteractions from "./CapturedInteractions";
@@ -42,7 +41,7 @@ const Tabs = ({invocation, testStateClass}) => {
         <div className="buttons has-addons">
             {
                 buttons
-                    .filter(b => hasElements(invocation, b))
+                    .filter(b => invocation[b]?.length)
                     .map((name, idx) =>
                         <Button key={idx} name={name} deriveClass={btnClass} onClick={btnClick(name)}/>
                     )

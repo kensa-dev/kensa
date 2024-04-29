@@ -1,7 +1,10 @@
 import Notes from "./Notes";
-import React from "react";
+import React, {useContext} from "react";
+import {TrackingUrlContext} from "../Util";
 
-export const Information = ({issueTrackerUrl, issues, notes}) => {
+export const Information = ({issues, notes}) => {
+    const issueTrackerUrl = useContext(TrackingUrlContext)
+
     const issueTrackerUrlFor = (issue) => issueTrackerUrl.endsWith("/") ? issueTrackerUrl + issue : issueTrackerUrl + "/" + issue
 
     const Issues = () => {

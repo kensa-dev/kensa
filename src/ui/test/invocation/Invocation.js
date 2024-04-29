@@ -1,11 +1,11 @@
-import React, {useState} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {collapseIcon, hasElements, Section, stateClassFor} from "../../Util";
+import React, {useContext, useState} from "react";
+import {CollapseIcon, Section, SectionOrderContext, stateClassFor} from "../../Util";
 import Tabs from "./tabs/Tabs";
 import Sentences from "./sentence/Sentences";
 import FailureMessage from "./FailureMessage";
 
-const TestBody = ({sectionOrder, invocation, testStateClass}) => {
+const TestBody = ({invocation, testStateClass}) => {
+    const sectionOrder = useContext(SectionOrderContext)
     return <>
         {
             sectionOrder.map((section, index) => {
@@ -34,27 +34,20 @@ const ParameterizedTestBody = ({invocation, testStateClass, ...props}) => {
                 <span className={"limited-width"}>{invocation.parameterizedTestDescription}</span>
                 <div>
                     <span className={"elapsed-time"}>Elapsed time: {invocation.elapsedTime}</span>
-                    <a><FontAwesomeIcon icon={collapseIcon(isCollapsed)}/></a>
+                    <CollapseIcon isCollapsed={isCollapsed}/>
                 </div>
             </div>
-            {
-                (!isCollapsed) ?
-                    <div className={"message-body"}>
-                        {props.children}
-                    </div>
-                    : null
-            }
+            {isCollapsed || <div className={"message-body"}>{props.children}</div>}
         </div>
     )
 }
 
-
-const Invocation = ({sectionOrder, invocation}) => {
+const Invocation = ({invocation}) => {
     const testStateClass = stateClassFor(invocation.state);
 
-    const testBody = <TestBody sectionOrder={sectionOrder} invocation={invocation} testStateClass={testStateClass}/>
+    const testBody = <TestBody invocation={invocation} testStateClass={testStateClass}/>
 
-    return hasElements(invocation, 'parameters')
+    return (invocation['parameters']?.length)
         ? <ParameterizedTestBody invocation={invocation} testStateClass={testStateClass}>{testBody}</ParameterizedTestBody>
         : testBody
 }

@@ -1,56 +1,40 @@
-import React, {useEffect, useState} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import React, {useState} from "react";
 import Invocation from "./invocation/Invocation";
-import {collapseIcon, stateClassFor} from "../Util";
+import {CollapseIcon, stateClassFor} from "../Util";
 import {Information} from "./Information";
 
-const Test = ({issueTrackerUrl, sectionOrder, test, startExpanded}) => {
+const isDisabled = (test) => ['Disabled', 'Not Executed'].includes(test.state)
+
+const TestContent = ({test}) =>
+    (isDisabled(test)) ?
+        <div className={"message-body"}>
+            Test was not executed.
+        </div>
+        :
+        <div className={"message-body"}>
+            <Information notes={test.notes} issues={test.issues}/>
+            {
+                test.invocations.map((invocation, index) =>
+                    <Invocation key={index} invocation={invocation}/>
+                )
+            }
+        </div>
+
+const Test = ({test, startExpanded}) => {
     const [isCollapsed, setCollapsed] = useState(!startExpanded);
 
     const toggle = () => setCollapsed(prev => !prev);
 
-    if (test.state === 'Disabled' || test.state === 'Not Executed') {
-        return (
-            <div className={"message " + stateClassFor(test.state)}>
-                <div onClick={toggle} className="message-header">
-                    <span className={"limited-width"}>{test.displayName}</span>
-                    <a><FontAwesomeIcon icon={collapseIcon(isCollapsed)}/></a>
-                </div>
-                {
-                    !isCollapsed ?
-                        <div className={"message-body"}>
-                            Test was not executed.
-                        </div>
-                        : null
-                }
+    return <div className={"message " + stateClassFor(test.state)}>
+        <div onClick={toggle} className="message-header">
+            <span className={"limited-width"}>{test.displayName}</span>
+            <div>
+                {isDisabled(test) || <span className={"elapsed-time"}>Elapsed time: {test.elapsedTime}</span>}
+                <CollapseIcon isCollapsed={isCollapsed}/>
             </div>
-        );
-    } else {
-        return (
-            <div className={"message " + stateClassFor(test.state)}>
-                <div onClick={toggle} className="message-header">
-                    <span className={"limited-width"}>{test.displayName}</span>
-                    <div>
-                        <span className={"elapsed-time"}>Elapsed time: {test.elapsedTime}</span>
-                        <a><FontAwesomeIcon icon={collapseIcon(isCollapsed)}/></a>
-                    </div>
-                </div>
-                {!isCollapsed ?
-                    <div className={"message-body"}>
-                        <Information issueTrackerUrl={issueTrackerUrl} notes={test.notes} issues={test.issues}/>
-                        {
-                            test.invocations.map((invocation, index) =>
-                                <Invocation key={index}
-                                            sectionOrder={sectionOrder}
-                                            invocation={invocation}/>
-                            )
-                        }
-                    </div>
-                    : null
-                }
-            </div>
-        );
-    }
+        </div>
+        {isCollapsed || <TestContent test={test}/>}
+    </div>
 };
 
 export default Test

@@ -1,19 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {faMinus} from "@fortawesome/free-solid-svg-icons/faMinus";
-import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Class from "./Class";
+import {ExpandIcon} from "../Util";
 
 const Package = ({pkg, parentIsExpanded, filter}) => {
     const [isExpanded, setExpanded] = useState(pkg.expanded);
 
-    const icon = () => isExpanded ? faMinus : faPlus
+    const toggle = () => setExpanded(prev => !prev)
 
-    const toggle = () => {
-        setExpanded(prev => !prev)
-    }
-
-    const deriveClassFor = (pkg) =>
+    const classForPackage = (pkg) =>
         "idx-" + (filter.state || pkg.state).toLowerCase().replaceAll(" ", "-")
 
     useEffect(() => {
@@ -21,9 +15,9 @@ const Package = ({pkg, parentIsExpanded, filter}) => {
     }, [pkg.expanded]);
 
     if (pkg.matched && parentIsExpanded) {
-        return <dl className={deriveClassFor(pkg)}>
+        return <dl className={classForPackage(pkg)}>
             <dt>
-                <span className="idx-icon" onClick={toggle}><FontAwesomeIcon icon={icon()}/></span>
+                <ExpandIcon isExpanded={isExpanded} onClick={toggle}/>
                 {pkg.name}
             </dt>
             <dd>

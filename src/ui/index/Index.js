@@ -26,7 +26,9 @@ const Index = () => {
     useEffect(() => {
         const params = Object.fromEntries(searchParams);
         const issues = (params.issues?.length ? params.issues.split(",") : null)
-        setFilterText((issues?.length ? "issue:" + issues.join(",") : "") + (params.text || ""))
+
+        setFilterText(((issues?.length ? "issue:" + issues.join(",") : "") + " " + (params.text || "")).trim())
+
         setFilter({
             issues: (params.issues?.length ? params.issues.split(",") : null),
             text: (params.text?.length ? params.text : null),

@@ -2,9 +2,8 @@ import RenderedAttributes from "./RenderedAttributes";
 import RenderedValues from "./RenderedValues";
 import React from "react";
 
-const InteractionContent = ({interaction, highlights, isSequenceDiagram}) => {
-
-    return <>
+const InteractionContent = ({interaction, highlights, isSequenceDiagram}) =>
+    <>
         <RenderedAttributes highlights={highlights}
                             attributes={interaction["attributes"]}
                             isSequenceDiagram={isSequenceDiagram}/>
@@ -12,6 +11,5 @@ const InteractionContent = ({interaction, highlights, isSequenceDiagram}) => {
                         values={interaction["values"]}
                         isSequenceDiagram={isSequenceDiagram}/>
     </>
-}
 
 export default InteractionContent

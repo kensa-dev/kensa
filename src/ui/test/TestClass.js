@@ -3,8 +3,7 @@ import {stateClassFor} from "../Util";
 import Test from "./Test";
 import {Information} from "./Information";
 
-
-const TestClass = ({sectionOrder, issueTrackerUrl}) => {
+const TestClass = () => {
     const [data, setData] = useState(null);
     const [startExpanded, setStartExpanded] = useState(0);
 
@@ -14,7 +13,7 @@ const TestClass = ({sectionOrder, issueTrackerUrl}) => {
         if (window.location.hash) {
             setStartExpanded(data.tests.findIndex(test => window.location.hash.substring(1) === test.testMethod))
         } else {
-            setStartExpanded(0)
+            setStartExpanded(data.tests.findIndex(test => test.state === "Failed"))
         }
 
         setData(data)
@@ -29,10 +28,10 @@ const TestClass = ({sectionOrder, issueTrackerUrl}) => {
                     </div>
                 </section>
                 <section className="section">
-                    <Information issueTrackerUrl={issueTrackerUrl} issues={data.issues} notes={data.notes}/>
+                    <Information issues={data.issues} notes={data.notes}/>
                     {
                         data.tests.map((test, index) =>
-                            <Test issueTrackerUrl={issueTrackerUrl} sectionOrder={sectionOrder} test={test} key={index} startExpanded={index === startExpanded}/>
+                            <Test test={test} key={index} startExpanded={index === startExpanded}/>
                         )
                     }
 
