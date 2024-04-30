@@ -3,7 +3,8 @@ import './Index.scss';
 import {faSearch} from "@fortawesome/free-solid-svg-icons/faSearch";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {createTree, treeReducer} from "./trees";
+import {treeReducer} from "./treeFilter";
+import {createTree} from "./treeBuilder";
 import Package from "./Package";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
