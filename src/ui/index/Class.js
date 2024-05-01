@@ -10,20 +10,15 @@ const Class = ({testClass, parentIsExpanded, filter}) => {
 
     const toggle = () => setExpanded(prev => !prev)
 
-    const classForTestClass = (cls) =>
-        "idx-" + (filter.state || cls.state).toLowerCase().replaceAll(" ", "-")
-
-    const classForTestMethod = (test) => "idx-" + test.state.toLowerCase()
-
-    if (parentIsExpanded && testClass.matched) {
+    if (parentIsExpanded && testClass.isVisible) {
         return (
-            <dl className={classForTestClass(testClass)}>
+            <dl className={testClass.cssCls}>
                 <dt>
                     <ExpandIcon isExpanded={isExpanded} onClick={toggle}/>
                     <a onClick={load()}>{testClass.name}</a>
                 </dt>
-                {isExpanded && testClass.tests.filter(e => e.matched).map((entry, index) =>
-                    <dd className={classForTestMethod(entry)} key={index}>
+                {isExpanded && testClass.tests.filter(e => e.isVisible).map((entry, index) =>
+                    <dd className={entry.cssCls} key={index}>
                         <a onClick={load(entry.method)}>{entry.name}</a>
                     </dd>)
                 }

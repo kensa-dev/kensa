@@ -4,14 +4,17 @@ const createClass = (container) => {
         state: container.state,
         fullClassName: container.testClass,
         expanded: true,
-        matched: true,
+        isVisible: true,
+        cssCls: "idx-"+ container.state.toLowerCase(),
         issues: container.issues,
         tests: container.tests.map((test) => {
             return {
                 name: test.displayName,
                 method: test.testMethod,
                 issues: (test.issues.length > 0) ? test.issues : container.issues,
-                state: test.state
+                state: test.state,
+                isVisible: true,
+                cssCls: "idx-"+ test.state.toLowerCase()
             }
         })
     }
@@ -21,7 +24,8 @@ const newPackage = (name, container) => {
         name: name,
         state: container.state,
         expanded: true,
-        matched: true
+        isVisible: true,
+        cssCls: "idx-"+ container.state.toLowerCase()
     }
 }
 

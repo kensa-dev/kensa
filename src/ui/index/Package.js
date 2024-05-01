@@ -7,27 +7,24 @@ const Package = ({pkg, parentIsExpanded, filter}) => {
 
     const toggle = () => setExpanded(prev => !prev)
 
-    const classForPackage = (pkg) =>
-        "idx-" + (filter.state || pkg.state).toLowerCase().replaceAll(" ", "-")
-
     useEffect(() => {
         setExpanded(pkg.expanded)
     }, [pkg.expanded]);
 
-    if (pkg.matched && parentIsExpanded) {
-        return <dl className={classForPackage(pkg)}>
+    if (parentIsExpanded && pkg.isVisible) {
+        return <dl className={pkg.cssCls}>
             <dt>
                 <ExpandIcon isExpanded={isExpanded} onClick={toggle}/>
                 {pkg.name}
             </dt>
             <dd>
                 {
-                    pkg.packages && pkg.packages.filter(p => p.matched).map((pkg, index) =>
+                    pkg.packages && pkg.packages.filter(p => p.isVisible).map((pkg, index) =>
                         <Package key={index} pkg={pkg} parentIsExpanded={isExpanded} filter={filter}/>
                     )
                 }
                 {
-                    pkg.classes && pkg.classes.filter(c => c.matched).map((testClass, index) =>
+                    pkg.classes && pkg.classes.filter(c => c.isVisible).map((testClass, index) =>
                         <Class key={index} testClass={testClass} parentIsExpanded={isExpanded} filter={filter}/>
                     )
                 }
