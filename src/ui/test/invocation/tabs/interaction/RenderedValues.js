@@ -21,46 +21,34 @@ const RenderedValue = ({highlights, value}) => {
         }
     }, []);
 
-    return <div className={"rendered-value"}>
-        <div ref={interactionRef}>
-            <Lowlight className={"scrollable-value"} language={language} value={value.value}/>
-        </div>
+    return <div className={"rendered-value"} ref={interactionRef}>
+        <Lowlight className={"scrollable-value"} language={language} value={value.value}/>
     </div>
 }
 
-const RenderedValues = ({isSequenceDiagram, values, highlights}) => {
-    const [selectedTab, selectTab] = useState(null);
-
-    useEffect(() => {
-        if (values.length > 1) {
-            selectTab(values.filter(shouldShow))
-        }
-    }, []);
-
-    const shouldShow = (item) => (isSequenceDiagram && item.showOnSequenceDiagram) || !isSequenceDiagram
-    const btnClass = (name) => "button " + (selectedTab === name ? "is-selected" : "has-selected")
-    const btnClick = (name) => () => selectTab(prev => (prev === name) ? "" : name)
+const RenderedValues = ({values, highlights}) => {
 
     const WithTabs = () => {
+        const [selectedTab, selectTab] = useState(values[0]);
+
+        const btnClass = (name) => "button " + (selectedTab === name ? "is-selected" : "has-selected")
+        const btnClick = (name) => () => selectTab(prev => (prev === name) ? "" : name)
+
         return <>
             <div className="buttons has-addons are-small">
                 {
-                    values
-                        .filter(shouldShow)
-                        .map((value, idx) =>
-                            <button key={idx} className={btnClass(value.name)} onClick={btnClick(value.name)}>name</button>
-                        )
+                    values.map((value, idx) =>
+                        <button key={idx} className={btnClass(value.name)} onClick={btnClick(value.name)}>{value.name}</button>
+                    )
                 }
             </div>
             {
-                values
-                    .filter(shouldShow)
-                    .map((value, idx) =>
-                        <RenderedValue key={idx}
-                                       value={value}
-                                       highlights={highlights}
-                        />
-                    )
+                values.map((value, idx) =>
+                    <RenderedValue key={idx}
+                                   value={value}
+                                   highlights={highlights}
+                    />
+                )
             }
         </>
     }

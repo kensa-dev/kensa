@@ -33,7 +33,7 @@ object JsonTransforms {
             .add("notes", container.notes)
             .add("issues", asJsonArray(container.issues))
             .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
-                var totalElapsed : Duration = Duration.ZERO
+                var totalElapsed: Duration = Duration.ZERO
 
                 val invocations = asJsonArray(invocation.invocations) { i ->
                     totalElapsed += i.elapsed
@@ -152,7 +152,6 @@ object JsonTransforms {
             parent.add(
                 jsonObject().add("name", ri.name)
                     .add("value", ri.value)
-                    .add("showOnSequenceDiagram", ri.showOnSequenceDiagram)
                     .add("language", ri.language.value)
             )
         }
@@ -164,7 +163,6 @@ object JsonTransforms {
                     .add("attributes", ra.attributes.fold(Json.array()) { array, nv ->
                         array.add(nv.asJson(renderers))
                     })
-                    .add("showOnSequenceDiagram", ra.showOnSequenceDiagram)
             )
         }
 

@@ -25,9 +25,9 @@ export function NamedValueTable({showHeader, highlights, namedValues}) {
             }
             <tbody>
             {
-                namedValues.map((item, index) =>
+                namedValues.map((item, idx) =>
                     Object.entries(item).map(([name, value]) =>
-                        <tr key={index}>
+                        <tr key={idx}>
                             <td>{name}</td>
                             <td>
                                 <div ref={setCodeRef.bind(this)}>{value}</div>

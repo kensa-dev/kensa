@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {ExpandIcon} from "../Util";
 
-const Class = ({testClass, parentIsExpanded, filter}) => {
+const Class = ({testClass, parentIsExpanded}) => {
     const [isExpanded, setExpanded] = useState(false);
 
     const load = (anchor) => () => {
@@ -17,10 +17,11 @@ const Class = ({testClass, parentIsExpanded, filter}) => {
                     <ExpandIcon isExpanded={isExpanded} onClick={toggle}/>
                     <a onClick={load()}>{testClass.name}</a>
                 </dt>
-                {isExpanded && testClass.tests.filter(e => e.isVisible).map((entry, index) =>
-                    <dd className={entry.cssCls} key={index}>
+                {isExpanded && testClass.tests.filter(e => e.isVisible).map((entry, idx) =>
+                    <dd className={entry.cssCls} key={idx}>
                         <a onClick={load(entry.method)}>{entry.name}</a>
-                    </dd>)
+                    </dd>
+                )
                 }
             </dl>
         )

@@ -3,9 +3,9 @@ import {CollapseIcon} from "../../../Util";
 import InteractionContent from "./interaction/InteractionContent";
 
 const Interaction = ({capturedInteraction, highlights}) => {
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setCollapsed] = useState(true);
 
-    const toggle = () => setIsCollapsed(!isCollapsed)
+    const toggle = () => setCollapsed(prev => !prev)
 
     return (
         <div className="card is-fullwidth">
@@ -23,10 +23,8 @@ const Interaction = ({capturedInteraction, highlights}) => {
 };
 
 const CapturedInteractions = ({capturedInteractions, highlights}) =>
-    capturedInteractions.map((interaction, index) =>
-        <Interaction key={index}
-                     capturedInteraction={interaction}
-                     highlights={highlights}/>
+    capturedInteractions.map((interaction, idx) =>
+        <Interaction key={idx} capturedInteraction={interaction} highlights={highlights}/>
     );
 
 export default CapturedInteractions

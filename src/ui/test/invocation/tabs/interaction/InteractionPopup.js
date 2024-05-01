@@ -8,11 +8,9 @@ export const InteractionPopup = ({onHide, capturedInteraction, highlights}) => {
     const [fontSizeIdx, setFontSizeIdx] = useState(0);
 
     useEffect(() => {
-        // Fired on component mount
         document.addEventListener("keydown", onKeyDown, false);
 
         return () => {
-            // Fired on component unmount
             document.removeEventListener("keydown", onKeyDown, false);
         }
     })
@@ -38,7 +36,7 @@ export const InteractionPopup = ({onHide, capturedInteraction, highlights}) => {
                         <a onClick={onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
                     </header>
                     <section className={"modal-card-body " + fontSizes[fontSizeIdx]}>
-                        <InteractionContent interaction={capturedInteraction["rendered"]} highlights={highlights} isSequenceDiagram={true}/>
+                        <InteractionContent interaction={capturedInteraction["rendered"]} highlights={highlights}/>
                     </section>
                 </div>
             </div>

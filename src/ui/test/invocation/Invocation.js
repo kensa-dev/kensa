@@ -8,14 +8,14 @@ const TestBody = ({invocation, testStateClass}) => {
     const sectionOrder = useContext(SectionOrderContext)
     return <>
         {
-            sectionOrder.map((section, index) => {
+            sectionOrder.map((section, idx) => {
                     switch (section) {
                         case Section.Buttons:
-                            return <Tabs key={index} invocation={invocation} testStateClass={testStateClass}/>
+                            return <Tabs key={idx} invocation={invocation} testStateClass={testStateClass}/>
                         case Section.Exception:
-                            return <FailureMessage key={index} invocation={invocation}/>
+                            return <FailureMessage key={idx} invocation={invocation}/>
                         case Section.Sentences:
-                            return <Sentences key={index} invocation={invocation}/>
+                            return <Sentences key={idx} invocation={invocation}/>
                     }
                 }
             )

@@ -5,14 +5,16 @@ export const SequenceDiagram = ({capturedInteractions, highlights, sequenceDiagr
     const sequenceDiagramRef = createRef();
     const [interaction, setInteraction] = useState(null);
 
-    const findClickableChildrenOf = (parent, clickableNodes) => {
+    const clickableChildrenOf = (parent) => {
+        const clickableNodes = []
         parent.childNodes.forEach(child => {
                 if (child.classList && child.classList.contains('sequence_diagram_clickable')) {
                     clickableNodes.push(child);
                 }
-                findClickableChildrenOf(child, clickableNodes);
+                clickableNodes.push(...clickableChildrenOf(child));
             }
         );
+        return clickableNodes
     }
 
     const onClick = (e) => {
@@ -22,14 +24,10 @@ export const SequenceDiagram = ({capturedInteractions, highlights, sequenceDiagr
         setInteraction(interaction)
     }
 
-    const hidePopup = () => {
-        setInteraction(null)
-    }
+    const hidePopup = () => setInteraction(null)
 
     useEffect(() => {
-        const svgNode = sequenceDiagramRef.current.firstElementChild;
-        const clickableNodes = []
-        findClickableChildrenOf(svgNode, clickableNodes);
+        const clickableNodes = clickableChildrenOf(sequenceDiagramRef.current.firstElementChild);
 
         clickableNodes.forEach(node => {
             node.addEventListener('click', onClick);

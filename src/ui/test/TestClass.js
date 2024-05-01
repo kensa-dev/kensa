@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {stateClassFor} from "../Util";
 import Test from "./Test";
-import {Information} from "./Information";
+import Information from "./information/Information";
 
 const TestClass = () => {
     const [data, setData] = useState(null);
@@ -30,8 +30,8 @@ const TestClass = () => {
                 <section className="section">
                     <Information issues={data.issues} notes={data.notes}/>
                     {
-                        data.tests.map((test, index) =>
-                            <Test test={test} key={index} startExpanded={index === startExpanded}/>
+                        data.tests.map((test, idx) =>
+                            <Test test={test} key={idx} startExpanded={idx === startExpanded}/>
                         )
                     }
 

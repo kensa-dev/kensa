@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Invocation from "./invocation/Invocation";
 import {CollapseIcon, stateClassFor} from "../Util";
-import {Information} from "./Information";
+import Information from "./information/Information";
 
 const isDisabled = (test) => ['Disabled', 'Not Executed'].includes(test.state)
 
@@ -14,8 +14,8 @@ const TestContent = ({test}) =>
         <div className={"message-body"}>
             <Information notes={test.notes} issues={test.issues}/>
             {
-                test.invocations.map((invocation, index) =>
-                    <Invocation key={index} invocation={invocation}/>
+                test.invocations.map((invocation, idx) =>
+                    <Invocation key={idx} invocation={invocation}/>
                 )
             }
         </div>

@@ -19,13 +19,13 @@ const Package = ({pkg, parentIsExpanded, filter}) => {
             </dt>
             <dd>
                 {
-                    pkg.packages && pkg.packages.filter(p => p.isVisible).map((pkg, index) =>
-                        <Package key={index} pkg={pkg} parentIsExpanded={isExpanded} filter={filter}/>
+                    pkg.packages && pkg.packages.filter(p => p.isVisible).map((pkg, idx) =>
+                        <Package key={idx} pkg={pkg} parentIsExpanded={isExpanded} filter={filter}/>
                     )
                 }
                 {
-                    pkg.classes && pkg.classes.filter(c => c.isVisible).map((testClass, index) =>
-                        <Class key={index} testClass={testClass} parentIsExpanded={isExpanded} filter={filter}/>
+                    pkg.classes && pkg.classes.filter(c => c.isVisible).map((testClass, idx) =>
+                        <Class key={idx} testClass={testClass} parentIsExpanded={isExpanded} filter={filter}/>
                     )
                 }
             </dd>

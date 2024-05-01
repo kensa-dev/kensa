@@ -9,12 +9,7 @@ export const Token = ({expanded, types, acronyms, value, tokens}) => {
     }
 
     const classes = () => {
-        let c = ""
-
-        types.forEach(type => {
-            if (c.length > 0) c += " "
-            c += type;
-        })
+        let c = types.join(" ")
 
         if (types.includes("tk-ac")) {
             c = "tooltip " + c;
@@ -30,12 +25,13 @@ export const Token = ({expanded, types, acronyms, value, tokens}) => {
     const NestedSentence = () => {
         const [isExpanded, setIsExpanded] = useState(expanded)
 
+        const toggle = () => setIsExpanded(prev => !prev)
+
         return <>
-            <span onClick={() => setIsExpanded(prev => !prev)} className={classes()} data-tooltip={acronymExpansion()}>{value}</span>
-            {isExpanded ?
-                tokens.map((tokens, index) =>
-                    <Sentence nested={true} sentence={tokens} acronyms={acronyms} key={index}/>)
-                : null
+            <span onClick={toggle} className={classes()} data-tooltip={acronymExpansion()}>{value}</span>
+            {
+                isExpanded && tokens.map((tokens, idx) =>
+                    <Sentence key={idx} nested={true} sentence={tokens} acronyms={acronyms}/>)
             }
         </>
     }
@@ -46,3 +42,5 @@ export const Token = ({expanded, types, acronyms, value, tokens}) => {
         return <span className={classes()} data-tooltip={acronymExpansion()}>{value}</span>
     }
 }
+
+export default Token

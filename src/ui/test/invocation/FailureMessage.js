@@ -5,17 +5,17 @@ const FailureMessage = ({invocation}) => {
     const [isActive, hideStackTrace] = useState(false)
 
     const executionException = invocation.executionException
-    const stackTrace = executionException.stackTrace
+
+    const hidePopup = () => hideStackTrace(false)
+    const showPopup = () => hideStackTrace(true)
 
     if (executionException["message"]) {
         return (<>
             <div className="failure-message">{executionException.message}</div>
-            <button className="button is-danger is-small" onClick={() => hideStackTrace(true)}>Stacktrace...</button>
-            <StackTracePopup isActive={isActive} onHide={() => hideStackTrace(false)} stackTrace={stackTrace}/>
+            <button className="button is-danger is-small" onClick={showPopup}>Stacktrace...</button>
+            <StackTracePopup isActive={isActive} onHide={hidePopup} stackTrace={executionException.stackTrace}/>
         </>)
     }
-
-    return null;
 }
 
 export default FailureMessage

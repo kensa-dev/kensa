@@ -131,8 +131,8 @@ const Index = () => {
                 <div>
                     {
                         (indexTree.matches) ?
-                            indexTree.packages && indexTree.packages.map((pkg, index) =>
-                                <Package key={index} pkg={pkg} parentIsExpanded={true} filter={filter}/>
+                            indexTree.packages && indexTree.packages.map((pkg, idx) =>
+                                <Package key={idx} pkg={pkg} parentIsExpanded={true} filter={filter}/>
                             )
                             :
                             <div className="has-text-danger">
