@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {NamedValueTable} from "../../../NamedValueTable";
+import {NamedValueTable} from "../NamedValueTable";
 
 const RenderedAttributes = ({attributes, highlights}) => {
     const [selectedTab, selectTab] = useState(attributes[0]?.name);

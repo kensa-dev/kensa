@@ -1,7 +1,7 @@
 import React, {createRef, useEffect, useState} from "react";
 import Lowlight from "react-lowlight";
 import {joinForRegex} from "../../../../Util";
-import {highlightJson, highlightPlainText, highlightXml} from "../../../Highlighting";
+import {highlightJson, highlightPlainText, highlightXml} from "../../Highlighting";
 
 const RenderedValue = ({highlights, value}) => {
     const highlightRegexp = highlights.length > 0 ? new RegExp(`(${joinForRegex(highlights)})`) : null;

@@ -1,6 +1,6 @@
 import React from "react";
-import {highlightPlainText} from "./Highlighting";
-import {joinForRegex} from "../Util";
+import {highlightPlainText} from "../Highlighting";
+import {joinForRegex} from "../../../Util";
 
 export function NamedValueTable({showHeader, highlights, namedValues}) {
     const setCodeRef = (wrappingDiv) => {

@@ -5,10 +5,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faMinus} from "@fortawesome/free-solid-svg-icons/faMinus";
 import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 
-const specials = /[-\/\\^$*+?.()|[\]{}]/g;
+export const ConfigContext = createContext({})
 
-export const ConfigContext = createContext()
-export const SectionOrderContext = createContext()
+const specials = /[-\/\\^$*+?.()|[\]{}]/g;
 
 export function joinForRegex(items) {
     return items.map(it => '\\b' + it.replace(specials, '\\$&') + '\\b').join('|')

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {NamedValueTable} from "../../NamedValueTable";
+import {NamedValueTable} from "./NamedValueTable";
 import {SequenceDiagram} from "./SequenceDiagram";
 import CapturedInteractions from "./CapturedInteractions";
 
