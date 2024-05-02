@@ -1,24 +1,15 @@
 import React, {createRef, useEffect, useState} from "react";
 import Lowlight from "react-lowlight";
-import {joinForRegex} from "../../../../Util";
-import {highlightJson, highlightPlainText, highlightXml} from "../../Highlighting";
+import {highlight} from "../../Highlighting";
 
 const RenderedValue = ({highlights, value}) => {
-    const highlightRegexp = highlights.length > 0 ? new RegExp(`(${joinForRegex(highlights)})`) : null;
     const interactionRef = createRef();
     const language = value.language ? value.language : "plainText";
 
     useEffect(() => {
-        if (highlightRegexp) {
-            let codeNode = interactionRef.current.children[0].firstChild
-            if (language === 'xml') {
-                highlightXml(codeNode, highlightRegexp);
-            } else if (language === 'json') {
-                highlightJson(codeNode, highlightRegexp);
-            } else {
-                highlightPlainText(codeNode, highlightRegexp);
-            }
-        }
+        const parent = interactionRef.current.children[0].firstChild
+
+        highlight(language, parent, highlights)
     }, []);
 
     return <div className={"rendered-value"} ref={interactionRef}>

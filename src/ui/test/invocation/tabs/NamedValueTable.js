@@ -1,14 +1,10 @@
 import React from "react";
-import {highlightPlainText} from "../Highlighting";
-import {joinForRegex} from "../../../Util";
+import {highlight} from "../Highlighting";
 
 export function NamedValueTable({showHeader, highlights, namedValues}) {
     const setCodeRef = (wrappingDiv) => {
-        if (wrappingDiv) {
-            let highlightRegexp = highlights.length > 0 ? new RegExp(`(${joinForRegex(highlights)})`) : null;
-            if (highlightRegexp) {
-                highlightPlainText(wrappingDiv, highlightRegexp)
-            }
+        if(wrappingDiv) {
+            highlight('plainText', wrappingDiv, highlights)
         }
     }
 

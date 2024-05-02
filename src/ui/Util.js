@@ -7,12 +7,6 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 
 export const ConfigContext = createContext({})
 
-const specials = /[-\/\\^$*+?.()|[\]{}]/g;
-
-export function joinForRegex(items) {
-    return items.map(it => '\\b' + it.replace(specials, '\\$&') + '\\b').join('|')
-}
-
 export const CollapseIcon = ({isCollapsed}) =>
     <FontAwesomeIcon icon={isCollapsed ? faAngleDown : faAngleUp}/>
 
