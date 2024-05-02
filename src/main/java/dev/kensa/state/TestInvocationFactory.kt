@@ -1,6 +1,5 @@
 package dev.kensa.state
 
-import dev.kensa.Kensa
 import dev.kensa.context.TestContext
 import dev.kensa.parse.ParsedTestInvocation
 import dev.kensa.parse.TestInvocationParser
@@ -19,7 +18,6 @@ class TestInvocationFactory(
     fun create(elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?): TestInvocation =
         TestInvocation(
             elapsedTime,
-            Kensa.configuration.dictionary.acronyms,
             throwable,
             sequenceDiagramFactory.create(testContext.interactions),
             parse(testInvocationContext),

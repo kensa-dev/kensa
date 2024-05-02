@@ -41,8 +41,8 @@ internal class InteractionRenderersTest {
             )
 
             override fun renderAttributes(value: Long): List<RenderedAttributes> = listOf(
-                RenderedAttributes("", setOf(NamedValue("Is greater than 5", value > 5)), false),
-                RenderedAttributes("", setOf(NamedValue("Is greater than 50", value > 50)), false)
+                RenderedAttributes("", setOf(NamedValue("Is greater than 5", value > 5))),
+                RenderedAttributes("", setOf(NamedValue("Is greater than 50", value > 50)))
             )
         })
 
@@ -57,8 +57,8 @@ internal class InteractionRenderersTest {
         renderers.renderInteractionAttributes(25L)
             .shouldHaveSize(2)
             .shouldContainExactly(
-                RenderedAttributes("", setOf(NamedValue("Is greater than 5", true)), false),
-                RenderedAttributes("", setOf(NamedValue("Is greater than 50", false)), false)
+                RenderedAttributes("", setOf(NamedValue("Is greater than 5", true))),
+                RenderedAttributes("", setOf(NamedValue("Is greater than 50", false)))
             )
     }
 }

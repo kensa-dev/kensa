@@ -7,7 +7,6 @@ import com.eclipsesource.json.WriterConfig
 import dev.kensa.KensaException
 import dev.kensa.context.TestContainer
 import dev.kensa.render.Renderers
-import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceToken
 import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
@@ -41,7 +40,6 @@ object JsonTransforms {
                     jsonObject()
                         .add("elapsedTime", DurationFormatter.format(i.elapsed))
                         .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
-                        .add("acronyms", acronymsAsJson(i.acronyms))
                         .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
                         .add("parameterizedTestDescription", i.parameterizedTestDescription)
                         .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
@@ -111,12 +109,6 @@ object JsonTransforms {
     }
 
     private fun asJsonArray(collection: Collection<String>) = asJsonArray(collection) { string: String -> Json.value(string) }
-
-    private fun acronymsAsJson(collection: Collection<Acronym>) = jsonObject().apply {
-        collection.forEach {
-            add(it.acronym, it.meaning)
-        }
-    }
 
     private fun <T> asJsonArray(collection: Collection<T>, transformer: (T) -> JsonValue?): JsonArray = Json.array().apply {
         collection.mapNotNull(transformer)

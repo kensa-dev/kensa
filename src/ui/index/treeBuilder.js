@@ -3,9 +3,9 @@ const createClass = (container) => {
         name: container.displayName,
         state: container.state,
         fullClassName: container.testClass,
-        expanded: true,
-        isVisible: true,
-        cssCls: "idx-"+ container.state.toLowerCase(),
+        isExpanded: false,
+        isVisible: false,
+        cssCls: null,
         issues: container.issues,
         tests: container.tests.map((test) => {
             return {
@@ -14,28 +14,19 @@ const createClass = (container) => {
                 issues: (test.issues.length > 0) ? test.issues : container.issues,
                 state: test.state,
                 isVisible: true,
-                cssCls: "idx-"+ test.state.toLowerCase()
+                cssCls: "idx-" + test.state.toLowerCase()
             }
         })
     }
 }
-const newPackage = (name, container) => {
+const newPackage = (name) => {
     return {
         name: name,
-        state: container.state,
-        expanded: true,
-        isVisible: true,
-        cssCls: "idx-"+ container.state.toLowerCase()
-    }
-}
-
-const applyState = (pkg, state) => {
-    if (pkg.state === "Failed" || pkg.state === "Disabled" || state === "NotExecuted" || state === "Disabled") {
-        return;
-    }
-
-    if (state === "Failed" || state === "Passed") {
-        pkg.state = state;
+        packages: [],
+        classes: [],
+        isExpanded: false,
+        isVisible: false,
+        cssCls: null
     }
 }
 
@@ -43,30 +34,20 @@ const mapResult = (indices, pkgArray, container) => {
     let name = pkgArray.shift();
 
     if (pkgArray.length === 0) {
-        // It's a class name
-        let c = createClass(container)
-        indices["classes"] ? indices["classes"].push(c) : indices["classes"] = [c]
+        indices["classes"].push(createClass(container))
     } else {
-        // It's a package name
-        let packages = indices["packages"]
-        if (!packages) {
-            packages = []
-            indices["packages"] = packages
-        }
-
+        const packages = indices["packages"]
         let pkg = packages.find(p => p.name === name)
         if (pkg === undefined) {
-            pkg = newPackage(name, container)
+            pkg = newPackage(name)
             packages.push(pkg);
-        } else {
-            applyState(pkg, container.state)
         }
         mapResult(pkg, pkgArray, container);
     }
 }
 
 export const createTree = (indices) => {
-    let indexTree = {matches: true}
+    let indexTree = {matches: true, packages: []}
     indices.forEach((testResult) => {
         mapResult(indexTree, testResult.testClass.split("."), testResult)
     });

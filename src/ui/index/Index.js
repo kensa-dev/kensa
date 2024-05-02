@@ -8,7 +8,7 @@ import {createTree} from "./treeBuilder";
 import Package from "./Package";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
-const KENSA_FILTER_TEXT_REGEX = /\bissue:(?<issue>\w+-\d+,?)\b|(?<text>\b\w+\b)/g
+const KENSA_FILTER_TEXT_REGEX = /\bissue:(?<issue>[0-9a-zA-Z\-]+,?)\b|(?<text>\b\w+\b)/g
 
 const Index = () => {
     const [searchParams] = useSearchParams()
@@ -28,7 +28,7 @@ const Index = () => {
         const params = Object.fromEntries(searchParams);
         const issues = (params.issues?.length ? params.issues.split(",") : null)
 
-        setFilterText(((issues?.length ? "issue:" + issues.join(",") : "") + " " + (params.text || "")).trim())
+        setFilterText(((issues?.map(i => "issue:" + i) || []).join(" ") + " " + (params.text || "")).trim())
 
         setFilter({
             issues: (params.issues?.length ? params.issues.split(",") : null),

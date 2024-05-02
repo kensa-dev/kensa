@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import Sentence from "./Sentence";
+import {ConfigContext} from "../../../Util";
 
-const NestedSentence = ({value, tokenCls, tokens, acronyms}) => {
+const NestedSentence = ({value, tokenCls, tokens}) => {
     const [isExpanded, setIsExpanded] = useState(false)
 
     const toggle = () => setIsExpanded(prev => !prev)
@@ -10,23 +11,28 @@ const NestedSentence = ({value, tokenCls, tokens, acronyms}) => {
         <span onClick={toggle} className={tokenCls}>{value}</span>
         {
             isExpanded && tokens.map((tokens, idx) =>
-                <Sentence key={idx} nested={true} sentence={tokens} acronyms={acronyms}/>)
+                <Sentence key={idx} nested={true} sentence={tokens}/>)
         }
     </>
 }
 
-const AcronymToken = ({tokenCls, acronym, value}) =>
-    <span className={"tooltip " + tokenCls} data-tooltip={acronym}>{value}</span>
+const AcronymToken = ({tokenCls, value}) => {
+    const {acronyms} = useContext(ConfigContext)
+    return <span className={"tooltip " + tokenCls} data-tooltip={acronyms[value]}>{value}</span>;
+}
 
-export const Token = ({types, acronyms, value, tokens}) => {
+const SimpleToken = ({tokenCls, value}) =>
+    <span className={tokenCls}>{value}</span>
+
+export const Token = ({types, value, tokens}) => {
     const tokenCls = types.join(" ")
 
     if (types.includes("tk-ex")) {
-        return <NestedSentence tokenCls={tokenCls} value={value} tokens={tokens} acronyms={acronyms}/>
+        return <NestedSentence tokenCls={tokenCls} value={value} tokens={tokens}/>
     } else if (types.includes("tk-ac")) {
-        return <AcronymToken tokenCls={tokenCls} acronym={acronyms[value]} value={value}/>
+        return <AcronymToken tokenCls={tokenCls} value={value}/>
     } else {
-        return <span className={tokenCls}>{value}</span>
+        return <SimpleToken tokenCls={tokenCls} value={value}/>
     }
 }
 

@@ -3,13 +3,13 @@ import Class from "./Class";
 import {ExpandIcon} from "../Util";
 
 const Package = ({pkg, parentIsExpanded, filter}) => {
-    const [isExpanded, setExpanded] = useState(pkg.expanded);
+    const [isExpanded, setExpanded] = useState(pkg.isExpanded);
 
     const toggle = () => setExpanded(prev => !prev)
 
     useEffect(() => {
-        setExpanded(pkg.expanded)
-    }, [pkg.expanded]);
+        setExpanded(pkg.isExpanded)
+    }, [pkg.isExpanded]);
 
     if (parentIsExpanded && pkg.isVisible) {
         return <dl className={pkg.cssCls}>

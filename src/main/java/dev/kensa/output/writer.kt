@@ -34,7 +34,7 @@ interface IndexWriter {
 
 class DefaultIndexWriter(private val configuration: Configuration) : IndexWriter {
     override fun write(containers: Set<TestContainer>) {
-        Template(configuration.outputDir.resolve("index.html"), Template.Mode.IndexFile, configuration.issueTrackerUrl, configuration.sectionOrder).apply {
+        Template(configuration.outputDir.resolve("index.html"), Template.Mode.IndexFile, configuration.issueTrackerUrl, configuration.sectionOrder, configuration.dictionary.acronyms).apply {
             containers.forEach { container ->
                 addIndex(container, Template.asIndex())
             }
@@ -49,7 +49,7 @@ interface TestWriter {
 
 class DefaultTestWriter(private val configuration: Configuration) : TestWriter {
     override fun write(container: TestContainer) {
-        Template(Kensa.configuration.outputDir.resolve("${container.testClass.name}.html"), TestFile, configuration.issueTrackerUrl, configuration.sectionOrder).apply {
+        Template(Kensa.configuration.outputDir.resolve("${container.testClass.name}.html"), TestFile, configuration.issueTrackerUrl, configuration.sectionOrder, configuration.dictionary.acronyms).apply {
             addJsonScript(container, Template.asJsonScript(Kensa.configuration.renderers))
             write()
         }
