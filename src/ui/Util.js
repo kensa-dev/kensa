@@ -7,7 +7,7 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 
 const specials = /[-\/\\^$*+?.()|[\]{}]/g;
 
-export const TrackingUrlContext = createContext()
+export const ConfigContext = createContext()
 export const SectionOrderContext = createContext()
 
 export function joinForRegex(items) {

@@ -1,11 +1,11 @@
 import React, {useContext, useState} from "react";
-import {CollapseIcon, Section, SectionOrderContext, stateClassFor} from "../../Util";
+import {CollapseIcon, ConfigContext, Section, stateClassFor} from "../../Util";
 import Tabs from "./tabs/Tabs";
 import Sentences from "./sentence/Sentences";
 import FailureMessage from "./FailureMessage";
 
 const TestBody = ({invocation, testStateClass}) => {
-    const sectionOrder = useContext(SectionOrderContext)
+    const {sectionOrder} = useContext(ConfigContext)
     return <>
         {
             sectionOrder.map((section, idx) => {

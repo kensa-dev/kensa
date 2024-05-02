@@ -1,17 +1,21 @@
 import React, {useContext} from "react";
-import {TrackingUrlContext} from "../../Util";
+import {ConfigContext} from "../../Util";
 
 const Issues = ({issues}) => {
-    const issueTrackerUrl = useContext(TrackingUrlContext)
 
-    const issueTrackerUrlFor = (issue) => issueTrackerUrl.replace(/\/?$/, "/") + issue
+    const IssueTag = ({issue}) => {
+        const {issueTrackerUrl} = useContext(ConfigContext)
+        const issueCls = "tag is-small has-background-grey has-text-white"
+
+        return issueTrackerUrl ?
+            <a className={issueCls} href={issueTrackerUrl.replace(/\/?$/, "/") + issue}>{issue}</a>
+            :
+            <span className={issueCls}>{issue}</span>;
+    }
 
     if (issues.length > 0) {
         return <div className="tags">
-            {
-                issues.map((issue, idx) =>
-                    <a key={idx} className={"tag is-small has-background-grey has-text-white"} href={issueTrackerUrlFor(issue)}>{issue}</a>)
-            }
+            {issues.map((issue, idx) => <IssueTag key={idx} issue={issue}/>)}
         </div>
     }
 }
