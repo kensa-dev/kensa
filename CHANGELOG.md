@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.20
+- #27  : Update UI to use modern ReactJS function components. Allow filtering by issue. Remove showOnSequenceDiagram for RenderedAttributes as they were legacy. 
+
 ### v0.4.19
 - #27  : Fixes for issue rendering 
 
