@@ -24,9 +24,24 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
         tokens.add(SentenceToken(scannedPlaceholder, setOf(Expandable), nestedTokens = sentences.map { it.tokens }))
     }
 
-    fun appendLiteral(location: Location, value: String) {
+    fun appendNumberLiteral(location: Location, value: String) {
         checkLineAndIndent(location)
-        append(value, Literal)
+        append(value, NumberLiteral)
+    }
+
+    fun appendNullLiteral(location: Location) {
+        checkLineAndIndent(location)
+        append("null", NullLiteral)
+    }
+
+    fun appendCharacterLiteral(location: Location, value: String) {
+        checkLineAndIndent(location)
+        append(value.trim('\''), CharacterLiteral)
+    }
+
+    fun appendBooleanLiteral(location: Location, value: String) {
+        checkLineAndIndent(location)
+        append(value, BooleanLiteral)
     }
 
     fun appendStringLiteral(location: Location, value: String) {

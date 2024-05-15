@@ -9,8 +9,12 @@ import dev.kensa.parse.assertMethodDescriptors
 import dev.kensa.parse.assertPropertyDescriptors
 import dev.kensa.parse.propertyNamed
 import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.SentenceTokens.aBooleanLiteralOf
+import dev.kensa.sentence.SentenceTokens.aCharacterLiteralOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aNewline
+import dev.kensa.sentence.SentenceTokens.aNullLiteral
+import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
 import dev.kensa.sentence.SentenceTokens.aScenarioValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
@@ -36,6 +40,24 @@ internal class KotlinFunctionParserTest {
     internal fun setUp() {
         konfigure {
             antlrPredicationMode = PredictionMode.LL
+        }
+    }
+
+    @Test
+    fun `recognises various literals`() {
+        val javaClass = KotlinTestWithVariousLiterals::class.java
+        val method = javaClass.findMethod("literalTest")
+        val parsedMethod = parser.parse(method)
+
+        val expectedSentences = listOf(
+            Sentence(listOf(aKeywordOf("Then"), aWordOf("the"), aWordOf("null"), aWordOf("result"), aWordOf("be"), aNullLiteral())),
+            Sentence(listOf(aKeywordOf("Then"), aWordOf("the"), aWordOf("hex"), aWordOf("result"), aWordOf("be"), aNumberLiteralOf("0x123"))),
+            Sentence(listOf(aKeywordOf("Then"), aWordOf("the"), aWordOf("boolean"), aWordOf("result"), aWordOf("be"), aBooleanLiteralOf(true))),
+            Sentence(listOf(aKeywordOf("Then"), aWordOf("the"), aWordOf("character"), aWordOf("result"), aWordOf("be"), aCharacterLiteralOf('a')))
+        )
+
+        parsedMethod.sentences.forEachIndexed {index, sentence ->
+            sentence.tokens shouldBe expectedSentences[index].tokens
         }
     }
 

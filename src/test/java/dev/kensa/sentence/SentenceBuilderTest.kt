@@ -7,7 +7,7 @@ import dev.kensa.sentence.Acronym.Companion.of
 import dev.kensa.sentence.SentenceTokens.aFieldIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aHighlightedIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
-import dev.kensa.sentence.SentenceTokens.aLiteralOf
+import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
 import dev.kensa.sentence.SentenceTokens.aMethodIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
@@ -45,7 +45,7 @@ internal class SentenceBuilderTest {
             appendIdentifier(Location(2, 5), value = "givenFOOMooBarZOO")
             appendIdentifier(Location(2, 0), value = "andFOO")
             appendStringLiteral(Location(2, 0), "stringLiteral1")
-            appendLiteral(Location(2, 0), "10")
+            appendNumberLiteral(Location(2, 0), "10")
             appendScenarioIdentifier(Location(3, 0), "scenario.call")
             appendFieldIdentifier(Location(3, 0), "fieldName")
             appendMethodIdentifier(Location(3, 0), "methodName")
@@ -66,7 +66,7 @@ internal class SentenceBuilderTest {
             aWordOf("and"),
             anAcronymOf("FOO"),
             aStringLiteralOf("stringLiteral1"),
-            aLiteralOf("10"),
+            aNumberLiteralOf("10"),
             aScenarioValueOf("scenario.call"),
             aFieldIdentifierOf("fieldName"),
             aMethodIdentifierOf("methodName"),

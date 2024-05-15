@@ -1,8 +1,7 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.Event.*
-import dev.kensa.parse.Event.LiteralEvent.NumberLiteralEvent
-import dev.kensa.parse.Event.LiteralEvent.StringLiteralEvent
+import dev.kensa.parse.Event.LiteralEvent.*
 import dev.kensa.parse.KotlinLexer.*
 import dev.kensa.parse.KotlinParser
 import dev.kensa.parse.KotlinParserBaseListener
@@ -55,9 +54,12 @@ class KotlinFunctionBodyParser(private val stateMachine: ParserStateMachine) : K
 //        println("Visit Terminal: ${node.text}")
         when (node.symbol.type) {
             ASSIGNMENT, ARROW -> stateMachine.transition(OperatorEvent(node, node.text))
+            BooleanLiteral -> stateMachine.transition(BooleanLiteralEvent(node, node.text))
+            CharacterLiteral -> stateMachine.transition(CharacterLiteralEvent(node, node.text))
             LineStrText -> stateMachine.transition(StringLiteralEvent(node, node.text))
-            RealLiteral, FloatLiteral, DoubleLiteral, IntegerLiteral, UnsignedLiteral, LongLiteral -> stateMachine.transition(NumberLiteralEvent(node, node.text))
+            DoubleLiteral, FloatLiteral, HexLiteral, LongLiteral, IntegerLiteral, RealLiteral, UnsignedLiteral -> stateMachine.transition(NumberLiteralEvent(node, node.text))
             Identifier, VALUE -> stateMachine.transition(IdentifierEvent(node))
+            NullLiteral -> stateMachine.transition(LiteralEvent.NullLiteralEvent(node, node.text))
 
             else -> stateMachine.transition(TerminalNodeEvent(node))
         }

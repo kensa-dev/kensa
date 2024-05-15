@@ -4,8 +4,7 @@ import dev.kensa.parse.Accessor.ValueAccessor.ParameterAccessor
 import dev.kensa.parse.Accessor.ValueAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.parse.Event.*
-import dev.kensa.parse.Event.LiteralEvent.NumberLiteralEvent
-import dev.kensa.parse.Event.LiteralEvent.StringLiteralEvent
+import dev.kensa.parse.Event.LiteralEvent.*
 import dev.kensa.parse.State.*
 import dev.kensa.parse.state.Matcher
 import dev.kensa.parse.state.StateMachine
@@ -99,12 +98,24 @@ class ParserStateMachine(
                 sentenceBuilder.appendOperator(event.location, event.parseTree.text)
                 currentState
             }
+            on<CharacterLiteralEvent> { currentState, event ->
+                sentenceBuilder.appendCharacterLiteral(event.location, event.value)
+                currentState
+            }
+            on<NullLiteralEvent> { currentState, event ->
+                sentenceBuilder.appendNullLiteral(event.location)
+                currentState
+            }
+            on<BooleanLiteralEvent> { currentState, event ->
+                sentenceBuilder.appendBooleanLiteral(event.location, event.value)
+                currentState
+            }
             on<StringLiteralEvent> { currentState, event ->
                 sentenceBuilder.appendStringLiteral(event.location, event.value)
                 currentState
             }
             on<NumberLiteralEvent> { currentState, event ->
-                sentenceBuilder.appendLiteral(event.location, event.parseTree.text)
+                sentenceBuilder.appendNumberLiteral(event.location, event.parseTree.text)
                 currentState
             }
             on<IdentifierEvent> { currentState, event ->

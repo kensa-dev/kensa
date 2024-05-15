@@ -39,6 +39,10 @@ class KotlinTestWithKotest : KotlinKensaTest, WithKotest {
         }
 
         then(theResultStoredInCapturedInteractions(), be(theExpectedResult))
+        then({ true }, be(true))
+        then({ 0x12 }, be(0x12))
+        then({ null }, be(null))
+        then({ 'a' }, be('a'))
     }
 
     @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase, TextDecorationUnderline], textColour = TextLight, backgroundColor = BackgroundDanger)

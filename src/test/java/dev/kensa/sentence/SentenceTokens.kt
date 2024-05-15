@@ -10,7 +10,13 @@ object SentenceTokens {
 
     fun aWordOf(value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) = SentenceToken(value, tokenTypes = setOf(Word), emphasis = emphasisDescriptor)
 
-    fun aLiteralOf(value: String) = SentenceToken(value, tokenTypes = setOf(Literal))
+    fun aNumberLiteralOf(value: String) = SentenceToken(value, tokenTypes = setOf(NumberLiteral))
+
+    fun aBooleanLiteralOf(value: Boolean) = SentenceToken(value.toString(), tokenTypes = setOf(BooleanLiteral))
+
+    fun aCharacterLiteralOf(value: Char) = SentenceToken(value.toString(), tokenTypes = setOf(CharacterLiteral))
+
+    fun aNullLiteral() = SentenceToken("null", tokenTypes = setOf(NullLiteral))
 
     fun anExpandableOf(value: String, tokens: List<List<SentenceToken>>): SentenceToken = SentenceToken(value, tokenTypes = setOf(), nestedTokens = tokens)
 

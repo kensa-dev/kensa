@@ -59,8 +59,12 @@
   content: close-quote;
 }
 
-.tk-li {
-  font-weight: bold;
+.tk-cl:before {
+  content: '‘';
+}
+
+.tk-cl:after {
+  content: '‘';
 }
 
 .tk-nl {

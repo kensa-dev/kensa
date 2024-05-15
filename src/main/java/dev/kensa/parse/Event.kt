@@ -40,7 +40,10 @@ sealed class Event<PT : ParseTree>(val parseTree: PT) {
     class OperatorEvent(parseTree: ParseTree, val value: String) : Event<ParseTree>(parseTree)
 
     sealed class LiteralEvent(parseTree: ParseTree, val value: String) : Event<ParseTree>(parseTree) {
+        class BooleanLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
+        class CharacterLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
         class StringLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
+        class NullLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
         class NumberLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
     }
 
