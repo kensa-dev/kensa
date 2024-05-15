@@ -5,7 +5,10 @@ import io.kotest.assertions.failure
 import io.kotest.assertions.nondeterministic.*
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.invokeMatcher
+import kotlinx.coroutines.delay
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 object KotestThen {
@@ -32,27 +35,55 @@ object KotestThen {
     }
 
     suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateExtractor<T>, match: Matcher<T>) {
-        thenEventually(duration, testContext, extractor) {
+        thenEventually(ZERO, duration, 25.milliseconds, testContext, extractor, match)
+    }
+
+    suspend fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, testContext: TestContext, extractor: StateExtractor<T>, match: Matcher<T>) {
+        thenEventually(initialDelay, duration, interval, testContext, extractor) {
             invokeMatcher(extractor.execute(testContext.interactions), match)
         }
     }
 
     suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateExtractor<T>, block: T.() -> Unit) {
-        var lastThrowable: Throwable? = null
-        val config = eventuallyConfig {
-            this.duration = duration
-            this.listener = { _, throwable -> lastThrowable = throwable }
-        }
+        thenEventually(ZERO, duration, testContext = testContext, extractor = extractor, block = block)
+    }
 
+    suspend fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, testContext: TestContext, extractor: StateExtractor<T>, block: T.() -> Unit) {
+        thenEventually(
+            eventuallyConfig {
+                this.duration = duration
+                this.initialDelay = initialDelay
+                this.interval = interval
+                listener = LastThrowableListener()
+            },
+            testContext,
+            extractor,
+            block
+        )
+    }
+
+    suspend fun <T> thenEventually(config: EventuallyConfiguration, testContext: TestContext, extractor: StateExtractor<T>, block: T.() -> Unit) {
         try {
             eventually(config) {
                 block(extractor.execute(testContext.interactions))
             }
         } catch (e: Throwable) {
-            lastThrowable?.let {
-                if (it is AssertionError) throw it
-                else throw failure(it.message ?: "eventually block failed", it)
-            } ?: throw e
+            val listener = config.listener
+            if (listener is LastThrowableListener) {
+                listener.lastThrowable?.let {
+                    if (it is AssertionError) throw it
+                    else throw failure(it.message ?: "eventually block failed", it)
+                } ?: throw e
+            }
         }
+    }
+}
+
+private class LastThrowableListener : EventuallyListener {
+    var lastThrowable: Throwable? = null
+        private set
+
+    override suspend fun invoke(iteration: Int, throwable: Throwable) {
+        lastThrowable = throwable
     }
 }

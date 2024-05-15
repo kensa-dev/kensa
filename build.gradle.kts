@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.kotestAssertionsCoreJvm)
 
     testImplementation(libs.mockitoKotlin)
+    testImplementation(libs.kotlinCoroutinesTest)
 
     junitIntegrationTestImplementation(libs.junitPlatformTestKit)
     junitIntegrationTestImplementation(libs.junitPlatformLauncher)

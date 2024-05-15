@@ -1,12 +1,12 @@
 [versions]
 kotlin = "1.9.23"
-coroutines = "1.7.3"
+coroutines = "1.8.1"
 node = "18.12.1"
 nodeGradle = "7.0.2"
 plantUml = "1.2023.12"
 pebble = "3.2.1"
 mockito = "5.2.1"
-kotest = "5.8.0"
+kotest = "5.9.0"
 junitPlatform = "1.8.2"
 junitJupiter = "5.10.1"
 assertJ = "3.22.0"
@@ -20,6 +20,7 @@ nexusPublish = "2.0.0"
 kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin"}
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
 kotlinCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines"}
+kotlinCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 antlr = { module = "org.antlr:antlr4", version.ref = "antlr"}
 assertJCore = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
 hamcrestCore = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrest" }

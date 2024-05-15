@@ -8,6 +8,8 @@ import io.kotest.matchers.Matcher
 import io.kotest.matchers.invokeMatcher
 import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 interface WithKotest {
@@ -68,16 +70,24 @@ interface WithKotest {
     fun <T> thenEventually(extractor: StateExtractor<T>, match: Matcher<T>): Unit = thenEventually(10.seconds, extractor, match)
 
     fun <T> thenEventually(duration: Duration, extractor: StateExtractor<T>, match: Matcher<T>) {
+        thenEventually(ZERO, duration, 25.milliseconds, extractor, match)
+    }
+
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, extractor: StateExtractor<T>, match: Matcher<T>) {
         runBlocking {
-            KotestThen.thenEventually(duration, testContext(), extractor, match)
+            KotestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, match)
         }
     }
 
     fun <T> thenEventually(extractor: StateExtractor<T>, block: T.() -> Unit = {}): Unit = thenEventually(10.seconds, extractor, block)
 
     fun <T> thenEventually(duration: Duration, extractor: StateExtractor<T>, block: T.() -> Unit = {}) {
+        thenEventually(ZERO, duration, 25.milliseconds, extractor, block)
+    }
+
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, extractor: StateExtractor<T>, block: T.() -> Unit = {}) {
         runBlocking {
-            KotestThen.thenEventually(duration, testContext(), extractor, block)
+            KotestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, block)
         }
     }
 }
