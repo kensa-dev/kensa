@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.21
+- #29  : Allow configuration of `initialDelay` & `interval` for `thenEventually` functions.
+- #30  : Add additional parsing events for Kotlin tokens (`Boolean`, `Char`, `null` & hexadecimal numbers)
+
 ### v0.4.20
 - #27  : Update UI to use modern ReactJS function components. Allow filtering by issue. Remove showOnSequenceDiagram for RenderedAttributes as they were legacy. 
 
