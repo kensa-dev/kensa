@@ -2,9 +2,11 @@ package dev.kensa.sentence
 
 import dev.kensa.TextStyle.Italic
 import dev.kensa.parse.EmphasisDescriptor
+import dev.kensa.sentence.SentenceTokens.aBooleanLiteralOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
 import dev.kensa.sentence.SentenceTokens.aNewline
+import dev.kensa.sentence.SentenceTokens.aNullLiteral
 import dev.kensa.sentence.SentenceTokens.aStringLiteralAcronymOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
@@ -55,7 +57,7 @@ internal class SentenceTest {
                 anIdentifierOf("P1"),
                 aWordOf("Word1 Word2", EmphasisDescriptor(setOf(Italic))),
                 aStringLiteralOf("L1"),
-//                aNumberLiteralOf("null"),
+                aNullLiteral(),
                 aKeywordOf("K1"),
                 aStringLiteralAcronymOf("LA1"),
                 aNewline(),
@@ -63,7 +65,7 @@ internal class SentenceTest {
                 aKeywordOf("K2"),
                 aWordOf("Word3 Word4"),
                 anAcronymOf("BOO"),
-//                aNumberLiteralOf("true")
+                aBooleanLiteralOf(true)
         )
         val sentence = Sentence(
                 listOf(
@@ -71,7 +73,7 @@ internal class SentenceTest {
                         aWordOf("Word1",EmphasisDescriptor(setOf(Italic))),
                         aWordOf("Word2",EmphasisDescriptor(setOf(Italic))),
                         aStringLiteralOf("L1"),
-//                        aNumberLiteralOf("null"),
+                        aNullLiteral(),
                         aKeywordOf("K1"),
                         aStringLiteralAcronymOf("LA1"),
                         aNewline(),
@@ -80,7 +82,7 @@ internal class SentenceTest {
                         aWordOf("Word3"),
                         aWordOf("Word4"),
                         anAcronymOf("BOO"),
-//                        aNumberLiteralOf("true")
+                        aBooleanLiteralOf(true)
                 ))
 
         sentence.squashedTokens shouldContainExactly expected
