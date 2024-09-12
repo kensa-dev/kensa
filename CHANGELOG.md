@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.22
+- #31  : Add floating headers to sequence diagrams
+
 ### v0.4.21
 - #29  : Allow configuration of `initialDelay` & `interval` for `thenEventually` functions.
 - #30  : Add additional parsing events for Kotlin tokens (`Boolean`, `Char`, `null` & hexadecimal numbers)
