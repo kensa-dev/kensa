@@ -20,3 +20,24 @@ export const Section = {
     Exception: 'Exception',
     Sentences: 'Sentences'
 }
+
+export const flash = (elem, numFlashes, flashingClassName = 'flashing', singleFlashDurationMillis = 150) => {
+    const restoreAppearanceAndRepeatIfNecessary = () => {
+        elem.classList.remove(flashingClassName);
+
+        if (numFlashes > 1) {
+            setTimeout(() => flash(elem, numFlashes-1, flashingClassName, singleFlashDurationMillis), singleFlashDurationMillis);
+        }
+    }
+
+    elem.classList.add(flashingClassName);
+    setTimeout(restoreAppearanceAndRepeatIfNecessary, singleFlashDurationMillis);
+}
+
+export const forAllCombinations = (arr, callback) => {
+    for (let i=0; i < arr.length-1; i++) {
+        for (let j=i+1; j < arr.length; j++) {
+            callback(arr[i], arr[j])
+        }
+    }
+}

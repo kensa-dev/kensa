@@ -1,8 +1,58 @@
 @import "../../../bulma-custom";
 
-.sequence-diagram-header {
-  opacity: 0.6;
-  position: absolute;
-  display: none;
-}
+$highlight-colour-1: #487913;
+$highlight-colour-2: #d6faae;
+$highlight-colour-3: #ffff33;
+$error-colour-1: #ffeeee;
+$error-colour-2: red;
 
+.sequence-diagram {
+  .sequence-diagram-header {
+    opacity: 0.6;
+    position: absolute;
+    display: none;
+  }
+
+  .actor {
+    cursor: pointer;
+  }
+
+  .sequence_diagram_clickable {
+    cursor: pointer;
+  }
+
+  &.filtered {
+    .msg:not(.filter-highlight) {
+      opacity: 0.2 !important;
+    }
+
+    &.no-matches {
+      rect.actor.filter-highlight  {
+        fill: $error-colour-2 !important;
+      }
+
+      text.actor.filter-highlight  {
+        fill: $error-colour-1 !important;
+      }
+    }
+
+    line.filter-highlight, polygon.filter-highlight {
+      stroke: $highlight-colour-1 !important;
+      stroke-width: 2.0 !important;
+    }
+
+    text.filter-highlight  {
+      fill: $highlight-colour-1 !important;
+      font-weight: bold !important;
+
+      &.flashing {
+        outline: 3px solid $highlight-colour-3;
+        outline-offset: 3px;
+      }
+    }
+
+    rect.filter-highlight  {
+      fill: $highlight-colour-2 !important;
+    }
+  }
+}
