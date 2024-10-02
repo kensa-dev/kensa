@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.24
+- #32  : Replace HighlightedIdentifier with ProtectedPhrase
+
 ### v0.4.23
 - #31  : Add floating headers to sequence diagrams
 
