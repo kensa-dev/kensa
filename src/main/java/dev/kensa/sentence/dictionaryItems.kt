@@ -6,7 +6,7 @@ sealed interface DictionaryItem {
     val emphasisDescriptor: EmphasisDescriptor
 }
 
-data class HighlightedIdentifier(val value: String, override val emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) : DictionaryItem
+data class ProtectedPhrase(val value: String, override val emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) : DictionaryItem
 
 data class Keyword(val value: String, override val emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) : DictionaryItem {
     init {

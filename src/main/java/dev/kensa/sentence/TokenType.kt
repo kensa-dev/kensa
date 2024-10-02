@@ -8,7 +8,7 @@ enum class TokenType(private val css: String, val isWhitespace : Boolean = false
     Expandable("ex", true),
     FieldValue("fv"),
     Highlighted("hl"),
-    HighlightedIdentifier("hlid"),
+    ProtectedPhrase("pph"),
     Identifier("id"),
     Indent("in", true),
     Keyword("kw"),

@@ -1,14 +1,16 @@
 package dev.kensa.sentence
 
-class Dictionary {
-    private val highlightedIdentifiers: MutableSet<HighlightedIdentifier> = LinkedHashSet()
+import dev.kensa.parse.EmphasisDescriptor
 
-    fun putHighlightedIdentifiers(vararg identifiers: HighlightedIdentifier) {
-        highlightedIdentifiers.addAll(identifiers)
+class Dictionary {
+    private val protectedPhrases: MutableSet<ProtectedPhrase> = LinkedHashSet()
+
+    fun putProtectedPhrases(vararg phrases: ProtectedPhrase) {
+        protectedPhrases.addAll(phrases)
     }
 
-    fun putHighlightedIdentifiers(identifiers: Set<HighlightedIdentifier>) {
-        highlightedIdentifiers.addAll(identifiers)
+    fun putProtectedPhrases(phrases: Set<ProtectedPhrase>) {
+        protectedPhrases.addAll(phrases)
     }
 
     private val _acronyms: MutableSet<Acronym> = LinkedHashSet()
@@ -56,7 +58,19 @@ class Dictionary {
         values.forEach(this::putKeyword)
     }
 
-    fun findInterestingIdentifierOrNull(value: String) = highlightedIdentifiers.firstOrNull { it.value == value }
+    fun indexProtectedPhrases(value: String): List<Triple<Int, Int, EmphasisDescriptor>> {
+        val indices = mutableListOf<Triple<Int, Int, EmphasisDescriptor>>()
+        protectedPhrases.forEach {
+            var result = Regex(Regex.escape(it.value)).find(value)
+            while (result != null) {
+                indices.add(Triple(result.range.first, result.range.last + 1, it.emphasisDescriptor))
+                result = result.next()
+            }
+        }
+
+        return indices
+    }
+
     fun isAcronym(value: String) = acronyms.any { it.acronym.equals(value, ignoreCase = true) }
     fun findKeywordOrNull(value: String) = keywords.firstOrNull { it.value == value }
     fun isWhen(value: String) = value.equals("when", ignoreCase = true) || value.equals("whenever", ignoreCase = true)

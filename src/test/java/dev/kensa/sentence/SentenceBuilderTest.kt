@@ -5,7 +5,7 @@ import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Event.Location
 import dev.kensa.sentence.Acronym.Companion.of
 import dev.kensa.sentence.SentenceTokens.aFieldIdentifierOf
-import dev.kensa.sentence.SentenceTokens.aHighlightedIdentifierOf
+import dev.kensa.sentence.SentenceTokens.aProtectedPhraseOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
 import dev.kensa.sentence.SentenceTokens.aMethodIdentifierOf
@@ -26,7 +26,7 @@ internal class SentenceBuilderTest {
     @BeforeEach
     fun setUp() {
         val dictionary = Dictionary().apply {
-            putHighlightedIdentifiers(HighlightedIdentifier("highlightedIdentifier", EmphasisDescriptor(textColour = TextDanger)))
+            putProtectedPhrases(ProtectedPhrase("protectedPhrase", EmphasisDescriptor(textColour = TextDanger)))
             putAcronyms(
                 simpleAcronymOf("FOO"),
                 simpleAcronymOf("BAR"),
@@ -52,7 +52,7 @@ internal class SentenceBuilderTest {
             appendParameterIdentifier(Location(3, 0), "parameterName")
             appendIdentifier(Location(4, 25), value = "sendsAThing")
             appendIdentifier(Location(5, 0), value = "somethingA_CONSTANT_019")
-            appendIdentifier(Location(6, 0), value = "highlightedIdentifier")
+            appendIdentifier(Location(6, 0), value = "protectedPhrase")
         }
 
         builder.build().tokens.shouldContainExactly(
@@ -82,7 +82,7 @@ internal class SentenceBuilderTest {
             aWordOf("thing"),
             aWordOf("something"),
             aWordOf("A_CONSTANT_019"),
-            aHighlightedIdentifierOf("highlightedIdentifier", EmphasisDescriptor(textColour = TextDanger))
+            aProtectedPhraseOf("protectedPhrase", EmphasisDescriptor(textColour = TextDanger))
         )
     }
 

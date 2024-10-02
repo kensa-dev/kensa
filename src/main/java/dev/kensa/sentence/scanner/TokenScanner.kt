@@ -10,22 +10,29 @@ class TokenScanner(private val dictionary: Dictionary) {
             Pair(
                 it,
                 Indices().apply {
-                    if (!scanForHighlightedIdentifier(it, this)) {
-                        if(isFirstInSentence)
-                            scanForKeywords(it, this)
+                    if (isFirstInSentence)
+                        scanForKeywords(it, this)
 
-                        scanForAcronyms(it, this)
-                        scanForWords(it, this)
-                    }
+                    scanForProtectedPhrases(it, this)
+                    scanForAcronyms(it, this)
+                    scanForWords(it, this)
                 }
             )
         }
 
-    private fun scanForHighlightedIdentifier(string: String, indices: Indices) =
-        dictionary.findInterestingIdentifierOrNull(string)?.let {
-            indices.put(HighlightedIdentifier, 0, string.length, it.emphasisDescriptor)
-            true
-        } ?: false
+    private fun scanForProtectedPhrases(string: String, indices: Indices) {
+        dictionary.indexProtectedPhrases(string).forEach {
+            indices.put(ProtectedPhrase, it.first, it.second, it.third)
+        }
+    }
+
+    private fun scanForAcronyms(string: String, indices: Indices) {
+        for (word in camelCaseSplit(string)) {
+            if (dictionary.isAcronym(word)) {
+                indices.put(Acronym, string.indexOf(word), string.indexOf(word) + word.length)
+            }
+        }
+    }
 
     private fun scanForWords(string: String, indices: Indices) {
         val wordList: MutableSet<Index> = HashSet()
@@ -47,14 +54,6 @@ class TokenScanner(private val dictionary: Dictionary) {
         for (word in camelCaseSplit(segment)) {
             words.add(Index(Word, offset + segmentOffset, offset + segmentOffset + word.length))
             segmentOffset += word.length
-        }
-    }
-
-    private fun scanForAcronyms(string: String, indices: Indices) {
-        for (word in camelCaseSplit(string)) {
-            if (dictionary.isAcronym(word)) {
-                indices.put(Acronym, string.indexOf(word), string.indexOf(word) + word.length)
-            }
         }
     }
 

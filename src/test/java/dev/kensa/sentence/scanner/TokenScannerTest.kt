@@ -2,7 +2,7 @@ package dev.kensa.sentence.scanner
 
 import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
-import dev.kensa.sentence.HighlightedIdentifier
+import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.TokenType.Keyword
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
@@ -22,13 +22,25 @@ internal class TokenScannerTest {
     )
 
     @Test
-    internal fun recognisesHighlightedIdentifiers() {
-        val identifier = "MyIdentifier"
+    internal fun recognisesProtectedPhrases() {
+        val phrase = "MyProtectedPhrase"
+        val sentence = "aSentenceWithMyProtectedPhraseInIt"
 
-        val (actual, indices) = tokenScannerWith(emptySet(), setOf(HighlightedIdentifier("MyIdentifier"))).scan(identifier, false)
+        val (actual, indices) = tokenScannerWith(emptySet(), setOf(ProtectedPhrase(phrase))).scan(sentence, false)
 
-        actual shouldBe identifier
-        transformed(actual, indices) shouldBe listOf(identifier)
+        actual shouldBe sentence
+        transformed(actual, indices) shouldBe listOf("a", "Sentence", "With", phrase, "In", "It")
+    }
+
+    @Test
+    internal fun recognisesProtectedPhrasesAmongstAcronyms() {
+        val phrase = "MyProtectedPhrase"
+        val sentence = "aSentenceWithFTTPMyProtectedPhraseInItAndFTTP"
+
+        val (actual, indices) = tokenScannerWith(setOf(Acronym.of("FTTP", "Fibre To The Premises")), setOf(ProtectedPhrase(phrase))).scan(sentence, false)
+
+        actual shouldBe sentence
+        transformed(actual, indices) shouldBe listOf("a", "Sentence", "With", "FTTP", phrase, "In", "It", "And", "FTTP")
     }
 
     @Test
@@ -156,10 +168,10 @@ internal class TokenScannerTest {
     private fun transformed(string: String, indices: Indices): List<String> =
         indices.map { index -> string.substring(index.start, index.end) }.toList()
 
-    private fun tokenScannerWith(acronyms: Set<Acronym>, highlightedIdentifiers: Set<HighlightedIdentifier> = emptySet()): TokenScanner = TokenScanner(
+    private fun tokenScannerWith(acronyms: Set<Acronym>, protectedPhrases: Set<ProtectedPhrase> = emptySet()): TokenScanner = TokenScanner(
         Dictionary().apply {
             putAcronyms(acronyms)
-            putHighlightedIdentifiers(highlightedIdentifiers)
+            putProtectedPhrases(protectedPhrases)
         }
     )
 

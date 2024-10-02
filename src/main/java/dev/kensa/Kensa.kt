@@ -9,7 +9,7 @@ import dev.kensa.render.*
 import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
-import dev.kensa.sentence.HighlightedIdentifier
+import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.Keyword
 import org.antlr.v4.runtime.atn.PredictionMode
 import java.net.MalformedURLException
@@ -88,8 +88,8 @@ object Kensa {
         configuration.renderers.addInteractionRenderer(klass, renderer)
     }
 
-    fun withHighlightedIdentifier(vararg identifiers: HighlightedIdentifier): Kensa = apply {
-        configuration.dictionary.putHighlightedIdentifiers(*identifiers)
+    fun withProtectedPhrases(vararg phrases: ProtectedPhrase): Kensa = apply {
+        configuration.dictionary.putProtectedPhrases(*phrases)
     }
 
     fun withAcronyms(vararg acronyms: Acronym): Kensa = apply {
@@ -161,8 +161,8 @@ class Configuration(
     var acronyms: Set<Acronym> = emptySet()
         set(value) = dictionary.putAcronyms(value)
 
-    var highlightedIdentifiers: Set<HighlightedIdentifier> = emptySet()
-        set(value) = dictionary.putHighlightedIdentifiers(value)
+    var protectedPhrases: Set<ProtectedPhrase> = emptySet()
+        set(value) = dictionary.putProtectedPhrases(value)
 
     fun disableOutput() {
         isOutputEnabled = false
