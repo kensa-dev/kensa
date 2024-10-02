@@ -1,10 +1,13 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.25
+- #33  : Add sequence diagram filtering via clickable actor names (thanks to Michael Orr)
+
 ### v0.4.24
 - #32  : Replace HighlightedIdentifier with ProtectedPhrase
 
 ### v0.4.23
-- #31  : Add floating headers to sequence diagrams
+- #31  : Add floating headers to sequence diagrams (thanks to Michael Orr)
 
 ### v0.4.22 - NOT PUBLISHED
 
