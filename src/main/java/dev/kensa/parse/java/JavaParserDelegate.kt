@@ -4,20 +4,20 @@ import dev.kensa.Kensa
 import dev.kensa.KensaException
 import dev.kensa.parse.*
 import dev.kensa.parse.ParserDelegate.Companion.testAnnotationNames
-import dev.kensa.util.SourceCodeIndex
+import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
 object JavaParserDelegate : ParserDelegate {
 
-    override fun findMethodDeclarationsIn(testClass: Class<out Any>): Triple<List<MethodDeclarationContext>, List<MethodDeclarationContext>, List<MethodDeclarationContext>> {
+    override fun findMethodDeclarationsIn(target: Class<out Any>): Triple<List<MethodDeclarationContext>, List<MethodDeclarationContext>, List<MethodDeclarationContext>> {
         val testMethodDeclarations = ArrayList<MethodDeclarationContext>()
         val nestedMethodDeclarations = ArrayList<MethodDeclarationContext>()
         val emphasisedMethodDeclarations = ArrayList<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
-        compilationUnitFor(testClass).ordinaryCompilationUnit().topLevelClassOrInterfaceDeclaration()
+        compilationUnitFor(target).ordinaryCompilationUnit().topLevelClassOrInterfaceDeclaration()
             .firstNotNullOfOrNull {
                 it.classDeclaration() ?: it.interfaceDeclaration()
             }?.apply {
@@ -30,7 +30,6 @@ object JavaParserDelegate : ParserDelegate {
                                 emphasisedMethodDeclarations.takeIf { isAnnotatedAsEmphasised(md) }?.add(JavaMethodDeclarationContext(md))
                             }
                         }
-
                     is Java20Parser.InterfaceDeclarationContext ->
                         normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
                             imd.interfaceMethodDeclaration()?.let { md ->
@@ -49,10 +48,10 @@ object JavaParserDelegate : ParserDelegate {
     private fun <T> isAnnotatedAsTest(l: List<T>, mmcProvider: (T) -> Java20Parser.AnnotationContext) =
         l.any { mmcProvider(it).isTestAnnotation() }
 
-    private fun compilationUnitFor(testClass: Class<out Any>): Java20Parser.CompilationUnitContext =
+    private fun compilationUnitFor(target: Class<out Any>): Java20Parser.CompilationUnitContext =
         Java20Parser(
             CommonTokenStream(
-                Java20Lexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
+                Java20Lexer(SourceCode.sourceStreamFor(target))
             )
         ).apply {
             takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
