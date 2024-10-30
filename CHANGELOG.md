@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.27
+- #34  : Support Java 20 Grammar (Fix noisy output)
+
 ### v0.4.26
 - #34  : Support Java 20 Grammar
 
