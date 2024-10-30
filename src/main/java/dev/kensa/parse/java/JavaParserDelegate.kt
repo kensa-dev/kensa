@@ -30,6 +30,7 @@ object JavaParserDelegate : ParserDelegate {
                                 emphasisedMethodDeclarations.takeIf { isAnnotatedAsEmphasised(md) }?.add(JavaMethodDeclarationContext(md))
                             }
                         }
+
                     is Java20Parser.InterfaceDeclarationContext ->
                         normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
                             imd.interfaceMethodDeclaration()?.let { md ->
@@ -37,6 +38,7 @@ object JavaParserDelegate : ParserDelegate {
                                     ?.add(JavaInterfaceDeclarationContext(md))
                             }
                         }
+
                     else -> throw KensaException("Cannot handle Parser Rule Contexts of type [${this::class.java}]")
                 }
             } ?: throw KensaException("Unable to find class declaration in source code")
@@ -53,8 +55,8 @@ object JavaParserDelegate : ParserDelegate {
                 Java20Lexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
             )
         ).apply {
-//            takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
-//            interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
+            takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
+            interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
         }.compilationUnit()
 
     private fun Java20Parser.AnnotationContext?.isTestAnnotation() =

@@ -137,7 +137,7 @@ class Configuration(
         System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
     } else true,
     val renderers: Renderers = Renderers(),
-    var antlrPredicationMode: PredictionMode = PredictionMode.SLL,
+    var antlrPredicationMode: PredictionMode = PredictionMode.LL,
     var antlrErrorListenerDisabled: Boolean = true,
     var umlDirectives: List<UmlDirective> = ArrayList(),
     var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
