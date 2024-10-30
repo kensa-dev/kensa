@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.26
+- #34  : Support Java 20 Grammar
+
 ### v0.4.25
 - #33  : Add sequence diagram filtering via clickable actor names (thanks to Michael Orr)
 
