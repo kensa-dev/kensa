@@ -17,23 +17,23 @@ object JavaParserDelegate : ParserDelegate {
         val emphasisedMethodDeclarations = ArrayList<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
-        compilationUnitFor(testClass).typeDeclaration()
+        compilationUnitFor(testClass).ordinaryCompilationUnit().topLevelClassOrInterfaceDeclaration()
             .firstNotNullOfOrNull {
                 it.classDeclaration() ?: it.interfaceDeclaration()
             }?.apply {
                 when (this) {
-                    is Java8Parser.ClassDeclarationContext ->
+                    is Java20Parser.ClassDeclarationContext ->
                         normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
                             cbd.classMemberDeclaration().methodDeclaration()?.let { md ->
-                                testMethodDeclarations.takeIf { isAnnotatedAsTest(md.methodModifier(), Java8Parser.MethodModifierContext::annotation) }?.add(JavaMethodDeclarationContext(md))
+                                testMethodDeclarations.takeIf { isAnnotatedAsTest(md.methodModifier(), Java20Parser.MethodModifierContext::annotation) }?.add(JavaMethodDeclarationContext(md))
                                 nestedMethodDeclarations.takeIf { isAnnotatedAsNested(md) }?.add(JavaMethodDeclarationContext(md))
                                 emphasisedMethodDeclarations.takeIf { isAnnotatedAsEmphasised(md) }?.add(JavaMethodDeclarationContext(md))
                             }
                         }
-                    is Java8Parser.InterfaceDeclarationContext ->
+                    is Java20Parser.InterfaceDeclarationContext ->
                         normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
                             imd.interfaceMethodDeclaration()?.let { md ->
-                                testMethodDeclarations.takeIf { isAnnotatedAsTest(md.interfaceMethodModifier(), Java8Parser.InterfaceMethodModifierContext::annotation) }
+                                testMethodDeclarations.takeIf { isAnnotatedAsTest(md.interfaceMethodModifier(), Java20Parser.InterfaceMethodModifierContext::annotation) }
                                     ?.add(JavaInterfaceDeclarationContext(md))
                             }
                         }
@@ -44,34 +44,34 @@ object JavaParserDelegate : ParserDelegate {
         return Triple(testMethodDeclarations, nestedMethodDeclarations, emphasisedMethodDeclarations)
     }
 
-    private fun <T> isAnnotatedAsTest(l: List<T>, mmcProvider: (T) -> Java8Parser.AnnotationContext) =
+    private fun <T> isAnnotatedAsTest(l: List<T>, mmcProvider: (T) -> Java20Parser.AnnotationContext) =
         l.any { mmcProvider(it).isTestAnnotation() }
 
-    private fun compilationUnitFor(testClass: Class<out Any>): Java8Parser.CompilationUnitContext =
-        Java8Parser(
+    private fun compilationUnitFor(testClass: Class<out Any>): Java20Parser.CompilationUnitContext =
+        Java20Parser(
             CommonTokenStream(
-                Java8Lexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
+                Java20Lexer(CharStreams.fromPath(SourceCodeIndex.locate(testClass)))
             )
         ).apply {
-            takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
-            interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
+//            takeIf { Kensa.configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
+//            interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
         }.compilationUnit()
 
-    private fun Java8Parser.AnnotationContext?.isTestAnnotation() =
+    private fun Java20Parser.AnnotationContext?.isTestAnnotation() =
         this?.markerAnnotation()?.typeName()?.text?.let {
             testAnnotationNames.contains(it)
         } ?: this?.normalAnnotation()?.typeName()?.text?.let {
             testAnnotationNames.contains(it)
         } ?: false
 
-    private fun isAnnotatedAsNested(md: Java8Parser.MethodDeclarationContext) =
+    private fun isAnnotatedAsNested(md: Java20Parser.MethodDeclarationContext) =
         md.methodModifier().any { mm ->
             mm.annotation()?.markerAnnotation()?.typeName()?.text?.let {
                 ParserDelegate.nestedSentenceAnnotationNames.contains(it)
             } ?: false
         }
 
-    private fun isAnnotatedAsEmphasised(md: Java8Parser.MethodDeclarationContext) =
+    private fun isAnnotatedAsEmphasised(md: Java20Parser.MethodDeclarationContext) =
         md.methodModifier().any { mm ->
             mm.annotation()?.normalAnnotation()?.typeName()?.text?.let {
                 ParserDelegate.emphasisedMethodAnnotationNames.contains(it)

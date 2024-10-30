@@ -20,6 +20,7 @@ enum class TokenType(private val css: String, val isWhitespace : Boolean = false
     ParameterValue("pv"),
     ScenarioValue("sv"),
     StringLiteral("sl"),
+    TextBlock("tb"),
     Word("wd");
 
     fun asCss(): String = "tk-$css"

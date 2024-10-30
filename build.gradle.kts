@@ -1,5 +1,5 @@
 import com.github.gradle.node.task.NodeTask
-import org.gradle.api.JavaVersion.VERSION_11
+import org.gradle.api.JavaVersion.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -108,14 +108,14 @@ tasks {
     withType<KotlinCompile> {
         dependsOn("generateGrammarSource")
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = "17"
             freeCompilerArgs += listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts")
         }
     }
 
     java {
-        sourceCompatibility = VERSION_11
-        targetCompatibility = VERSION_11
+        sourceCompatibility = VERSION_17
+        targetCompatibility = VERSION_17
     }
 
     withType<AntlrTask> {

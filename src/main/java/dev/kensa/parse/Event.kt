@@ -37,15 +37,30 @@ sealed class Event<PT : ParseTree>(val parseTree: PT) {
     class EnterExpressionEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class ExitExpressionEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
 
-    class OperatorEvent(parseTree: ParseTree, val value: String) : Event<ParseTree>(parseTree)
+    class OperatorEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree) {
+        val value: String = parseTree.text
+    }
 
     sealed class LiteralEvent(parseTree: ParseTree, val value: String) : Event<ParseTree>(parseTree) {
-        class BooleanLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
-        class CharacterLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
+        class BooleanLiteralEvent(parseTree: ParseTree) : LiteralEvent(parseTree, parseTree.text)
+        class CharacterLiteralEvent(parseTree: ParseTree) : LiteralEvent(parseTree, parseTree.text)
         class StringLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
-        class NullLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
-        class NumberLiteralEvent(parseTree: ParseTree, value: String) : LiteralEvent(parseTree, value)
+        class MultiLineStringEvent(parseTree: ParseTree) : LiteralEvent(parseTree, parseTextBlock(parseTree.text))
+        class NullLiteralEvent(parseTree: ParseTree) : LiteralEvent(parseTree, parseTree.text)
+        class NumberLiteralEvent(parseTree: ParseTree) : LiteralEvent(parseTree, parseTree.text)
     }
 
     data class Location(val lineNumber: Int, val linePosition: Int)
+
+    companion object {
+        fun parseTextBlock(input: String): String {
+            val strippedLines = input.lines().drop(1)
+            val blockIndent = input.lines().last().indexOf("\"\"\"")
+
+            return strippedLines.dropLast(1).joinToString("\n") { line ->
+                var count = blockIndent
+                line.dropWhile { c -> c.isWhitespace() && count-- > 0 }
+            }
+        }
+    }
 }

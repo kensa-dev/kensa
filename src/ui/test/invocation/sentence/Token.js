@@ -24,6 +24,9 @@ const AcronymToken = ({tokenCls, value}) => {
 const SimpleToken = ({tokenCls, value}) =>
     <span className={tokenCls}>{value}</span>
 
+const TextBlockToken = ({tokenCls, value}) =>
+    <div className={tokenCls}>{value}</div>
+
 export const Token = ({types, value, tokens}) => {
     const tokenCls = types.join(" ")
 
@@ -31,6 +34,8 @@ export const Token = ({types, value, tokens}) => {
         return <NestedSentence tokenCls={tokenCls} value={value} tokens={tokens}/>
     } else if (types.includes("tk-ac")) {
         return <AcronymToken tokenCls={tokenCls} value={value}/>
+    } else if (types.includes("tk-tb")) {
+        return <TextBlockToken tokenCls={tokenCls} value={value}/>
     } else {
         return <SimpleToken tokenCls={tokenCls} value={value}/>
     }

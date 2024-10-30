@@ -70,6 +70,7 @@ class ParserStateMachine(
             ignoreAll<Event<*>> {
                 add(Matcher.any<TerminalNodeEvent>())
                 add(Matcher.any<IdentifierEvent>())
+                add(Matcher.any<LiteralEvent>())
                 add(Matcher.any<ExitMethodInvocationEvent>())
             }
         }
@@ -80,6 +81,57 @@ class ParserStateMachine(
             }
             on<EnterMethodInvocationEvent> { currentState, event ->
                 InMethodCall(event.parseTree, currentState)
+            }
+            on<EnterExpressionEvent> { currentState, event ->
+                InExpression(event.parseTree, currentState)
+            }
+            ignoreAll<Event<*>> {
+                add(Matcher.any<TerminalNodeEvent>())
+            }
+        }
+        state<InExpression> {
+            on<IdentifierEvent> { currentState, event ->
+                event.parseTree.run {
+                    when {
+                        isNestedMethodCall(text) -> {
+                            sentenceBuilder.appendNested(
+                                event.location, text, nestedMethods[text]
+                                    ?: error("Expected nested method sentences to be present")
+                            )
+                            currentState
+                        }
+
+                        isScenarioIdentifier(text) -> {
+                            InScenarioCall(this, currentState.parentState, text)
+                        }
+
+                        isFieldIdentifier(text) -> {
+                            sentenceBuilder.appendFieldIdentifier(event.location, text)
+                            currentState
+                        }
+
+                        isMethodIdentifier(text) -> {
+                            sentenceBuilder.appendMethodIdentifier(event.location, text)
+                            currentState
+                        }
+
+                        isParameterIdentifier(text) -> {
+                            sentenceBuilder.appendParameterIdentifier(event.location, text)
+                            currentState
+                        }
+
+                        else -> {
+                            sentenceBuilder.appendIdentifier(
+                                event.location, text, emphasisedMethods[text]
+                                    ?: EmphasisDescriptor.Default
+                            )
+                            currentState
+                        }
+                    }
+                }
+            }
+            on<ExitExpressionEvent> { currentState, event ->
+                currentState.parentState
             }
             ignoreAll<Event<*>> {
                 add(Matcher.any<TerminalNodeEvent>())
@@ -112,6 +164,10 @@ class ParserStateMachine(
             }
             on<StringLiteralEvent> { currentState, event ->
                 sentenceBuilder.appendStringLiteral(event.location, event.value)
+                currentState
+            }
+            on<MultiLineStringEvent> { currentState, event ->
+                sentenceBuilder.appendTextBlock(event.value)
                 currentState
             }
             on<NumberLiteralEvent> { currentState, event ->
@@ -162,6 +218,8 @@ class ParserStateMachine(
                 add(Matcher.any<TerminalNodeEvent>())
                 add(Matcher.any<EnterStatementEvent>())
                 add(Matcher.any<ExitStatementEvent>())
+                add(Matcher.any<EnterExpressionEvent>())
+                add(Matcher.any<ExitExpressionEvent>())
             }
         }
         state<InScenarioCall> {
@@ -180,6 +238,7 @@ class ParserStateMachine(
             }
             ignoreAll<Event<*>> {
                 add(Matcher.any<TerminalNodeEvent>())
+                add(Matcher.any<ExitExpressionEvent>())
             }
         }
     }

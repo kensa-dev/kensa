@@ -9,7 +9,6 @@ import dev.kensa.sentence.TokenType.Keyword
 import dev.kensa.sentence.scanner.Index
 import dev.kensa.sentence.scanner.TokenScanner
 import java.util.*
-import kotlin.collections.ArrayList
 
 class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictionary) {
     private val tokens: MutableList<SentenceToken> = ArrayList()
@@ -53,6 +52,10 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
         }
     }
 
+    fun appendTextBlock(value: String) {
+        append(value, TextBlock)
+    }
+
     fun appendOperator(location: Location, value: String) {
         checkLineAndIndent(location)
         append(value, Operator)
@@ -90,7 +93,7 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
     fun build(): Sentence = Sentence(tokens)
 
     private fun isFirstInSentence() =
-        tokens.find { it.tokenTypes.any { !it.isWhitespace } } == null
+        tokens.find { token -> token.tokenTypes.any { !it.isWhitespace } } == null
 
     private fun checkLineAndIndent(location: Location) {
         if (location.lineNumber - lastLocation.lineNumber > 1) {

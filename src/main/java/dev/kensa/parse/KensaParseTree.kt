@@ -2,18 +2,11 @@ package dev.kensa.parse
 
 import org.antlr.v4.runtime.tree.ParseTree
 
-private fun Java8Parser.MethodHeaderContext.parameterNamesAndTypes() =
+private fun Java20Parser.MethodHeaderContext.parameterNamesAndTypes() =
     ArrayList<Pair<String, String>>().apply {
         methodDeclarator().formalParameterList()?.let { fpl ->
-            fpl.formalParameters()?.let { fps ->
-                fps.formalParameter()?.forEach { fp ->
-                    add(Pair(fp.variableDeclaratorId().text, fp.unannType().text))
-                }
-            }
-            fpl.lastFormalParameter().let { fps ->
-                fps.formalParameter()?.let { fp ->
-                    add(Pair(fp.variableDeclaratorId().text, fp.unannType().text))
-                }
+            fpl.formalParameter()?.forEach { fp ->
+                add(Pair(fp.variableDeclaratorId().text, fp.unannType().text))
             }
         }
     }
@@ -24,9 +17,9 @@ interface MethodDeclarationContext {
     val parameterNamesAndTypes: List<Pair<String, String>>
 }
 
-class JavaMethodDeclarationContext(private val delegate: Java8Parser.MethodDeclarationContext) : MethodDeclarationContext {
+class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDeclarationContext) : MethodDeclarationContext {
     override val name: String by lazy {
-        delegate.methodHeader().methodDeclarator().Identifier().text
+        delegate.methodHeader().methodDeclarator().identifier().text
     }
 
     override val body: ParseTree by lazy {
@@ -38,8 +31,10 @@ class JavaMethodDeclarationContext(private val delegate: Java8Parser.MethodDecla
     }
 }
 
-class JavaInterfaceDeclarationContext(private val delegate: Java8Parser.InterfaceMethodDeclarationContext) : MethodDeclarationContext {
-    override val name: String by lazy { delegate.methodHeader().methodDeclarator().Identifier().text }
+class JavaInterfaceDeclarationContext(private val delegate: Java20Parser.InterfaceMethodDeclarationContext) : MethodDeclarationContext {
+    override val name: String by lazy {
+        delegate.methodHeader().methodDeclarator().identifier().text
+    }
 
     override val body: ParseTree by lazy { delegate.methodBody() }
 
