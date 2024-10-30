@@ -50,7 +50,7 @@ class KotlinFunctionBodyParser(private val stateMachine: ParserStateMachine) : K
     }
 
     override fun visitTerminal(node: TerminalNode) {
-        println("Visit Terminal: ${node.text} ${node.symbol.type}")
+//        println("Visit Terminal: ${node.text} ${node.symbol.type}")
         when (node.symbol.type) {
             ASSIGNMENT, ARROW -> stateMachine.transition(OperatorEvent(node))
             BooleanLiteral -> stateMachine.transition(BooleanLiteralEvent(node))
