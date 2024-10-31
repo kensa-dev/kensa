@@ -15,10 +15,10 @@ interface InterfaceWithVariousInterestingFunctions {
     @NestedSentence
     fun function2() {}
 
-    @Emphasise
+    @Emphasise()
     fun emphasise1() {}
 
-    @Emphasise
+    @Emphasise()
     fun emphasise2() {}
 
     @Test

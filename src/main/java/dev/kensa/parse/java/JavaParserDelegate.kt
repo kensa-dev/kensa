@@ -3,18 +3,19 @@ package dev.kensa.parse.java
 import dev.kensa.Kensa
 import dev.kensa.KensaException
 import dev.kensa.parse.*
+import dev.kensa.parse.Java20Parser.ClassDeclarationContext
+import dev.kensa.parse.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.parse.ParserDelegate.Companion.testAnnotationNames
 import dev.kensa.util.SourceCode
-import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
 object JavaParserDelegate : ParserDelegate {
 
-    override fun findMethodDeclarationsIn(target: Class<out Any>): Triple<List<MethodDeclarationContext>, List<MethodDeclarationContext>, List<MethodDeclarationContext>> {
-        val testMethodDeclarations = ArrayList<MethodDeclarationContext>()
-        val nestedMethodDeclarations = ArrayList<MethodDeclarationContext>()
-        val emphasisedMethodDeclarations = ArrayList<MethodDeclarationContext>()
+    override fun findMethodDeclarationsIn(target: Class<out Any>): MethodDeclarations {
+        val testMethods = mutableListOf<MethodDeclarationContext>()
+        val nestedMethods = mutableListOf<MethodDeclarationContext>()
+        val emphasisedMethods = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
         compilationUnitFor(target).ordinaryCompilationUnit().topLevelClassOrInterfaceDeclaration()
@@ -22,18 +23,18 @@ object JavaParserDelegate : ParserDelegate {
                 it.classDeclaration() ?: it.interfaceDeclaration()
             }?.apply {
                 when (this) {
-                    is Java20Parser.ClassDeclarationContext ->
+                    is ClassDeclarationContext ->
                         normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
                             cbd.classMemberDeclaration().methodDeclaration()?.let { md ->
-                                testMethodDeclarations.takeIf { isAnnotatedAsTest(md.methodModifier(), Java20Parser.MethodModifierContext::annotation) }?.add(JavaMethodDeclarationContext(md))
-                                nestedMethodDeclarations.takeIf { isAnnotatedAsNested(md) }?.add(JavaMethodDeclarationContext(md))
-                                emphasisedMethodDeclarations.takeIf { isAnnotatedAsEmphasised(md) }?.add(JavaMethodDeclarationContext(md))
+                                testMethods.takeIf { isAnnotatedAsTest(md.methodModifier(), Java20Parser.MethodModifierContext::annotation) }?.add(JavaMethodDeclarationContext(md))
+                                nestedMethods.takeIf { isAnnotatedAsNested(md) }?.add(JavaMethodDeclarationContext(md))
+                                emphasisedMethods.takeIf { isAnnotatedAsEmphasised(md) }?.add(JavaMethodDeclarationContext(md))
                             }
                         }
-                    is Java20Parser.InterfaceDeclarationContext ->
+                    is InterfaceDeclarationContext ->
                         normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
                             imd.interfaceMethodDeclaration()?.let { md ->
-                                testMethodDeclarations.takeIf { isAnnotatedAsTest(md.interfaceMethodModifier(), Java20Parser.InterfaceMethodModifierContext::annotation) }
+                                testMethods.takeIf { isAnnotatedAsTest(md.interfaceMethodModifier(), Java20Parser.InterfaceMethodModifierContext::annotation) }
                                     ?.add(JavaInterfaceDeclarationContext(md))
                             }
                         }
@@ -42,7 +43,7 @@ object JavaParserDelegate : ParserDelegate {
                 }
             } ?: throw KensaException("Unable to find class declaration in source code")
 
-        return Triple(testMethodDeclarations, nestedMethodDeclarations, emphasisedMethodDeclarations)
+        return MethodDeclarations(testMethods, nestedMethods, emphasisedMethods)
     }
 
     private fun <T> isAnnotatedAsTest(l: List<T>, mmcProvider: (T) -> Java20Parser.AnnotationContext) =

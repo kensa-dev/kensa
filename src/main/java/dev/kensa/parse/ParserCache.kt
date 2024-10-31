@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 interface ParserCache {
     val parsedMethodCache: MutableMap<Method, ParsedMethod>
-    val declarationCache: MutableMap<Class<*>, Triple<List<MethodDeclarationContext>, List<MethodDeclarationContext>, List<MethodDeclarationContext>>>
+    val declarationCache: MutableMap<Class<*>, MethodDeclarations>
     val propertyCache: MutableMap<Class<*>, Map<String, PropertyAccessor>>
     val parameterCache: MutableMap<Method, MethodParameters>
     val testMethodSentenceCache: MutableMap<Method, List<Sentence>>
@@ -19,7 +19,7 @@ interface ParserCache {
 
 class RealParserCache : ParserCache {
     override val parsedMethodCache: MutableMap<Method, ParsedMethod> = ConcurrentHashMap()
-    override val declarationCache: MutableMap<Class<*>, Triple<List<MethodDeclarationContext>, List<MethodDeclarationContext>, List<MethodDeclarationContext>>> = HashMap()
+    override val declarationCache: MutableMap<Class<*>, MethodDeclarations> = HashMap()
     override val propertyCache: MutableMap<Class<*>, Map<String, PropertyAccessor>> = HashMap()
     override val parameterCache: MutableMap<Method, MethodParameters> = HashMap()
     override val testMethodSentenceCache: MutableMap<Method, List<Sentence>> = HashMap()

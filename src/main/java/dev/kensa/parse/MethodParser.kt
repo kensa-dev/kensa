@@ -14,30 +14,47 @@ import kotlin.reflect.KClass
 
 val greedyGenericPattern = "<.*>".toRegex()
 
+class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = emptyList(), val nestedMethods: List<MethodDeclarationContext> = emptyList(), val emphasisedMethods: List<MethodDeclarationContext> = emptyList()) {
+    operator fun plus(other: MethodDeclarations) = MethodDeclarations(testMethods + other.testMethods, nestedMethods + other.nestedMethods, emphasisedMethods + other.emphasisedMethods)
+
+    fun findTestMethodDeclaration(method: Method, toSimpleTypeName: (Class<*>) -> String): MethodDeclarationContext =
+        testMethods.find(matchingDeclarationFor(method, toSimpleTypeName))
+            ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
+
+    private fun matchingDeclarationFor(method: Method, toSimpleTypeName: (Class<*>) -> String) = { dc: MethodDeclarationContext ->
+        method.normalisedName == dc.name &&
+                // Only match on parameter simple type name - saves having to go looking in the imports
+                dc.parameterNamesAndTypes.map {
+                    it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
+                } == method.parameterTypes.map(toSimpleTypeName)
+    }
+}
+
 interface MethodParser : ParserCache, ParserDelegate {
+
+    val toSimpleTypeName: (Class<*>) -> String
+
     fun parse(method: Method): ParsedMethod =
         parsedMethodCache.getOrPut(method) {
             val testClass = method.declaringClass
             val actualDeclaringClass = method.actualDeclaringClass
-
-            val (testMethodDeclarations, nestedSentenceDeclarations, emphasisedMethodDeclarations) = findAndAggregateMethodDeclarations(testClass)
-
             val classToParse = testClass.takeIf { it == actualDeclaringClass } ?: actualDeclaringClass
+
+            val methodDeclarations = testClass.findSourcesMethodDeclarations() + classToParse.findMethodDeclarations()
+            val testMethodDeclaration = methodDeclarations.findTestMethodDeclaration(method, toSimpleTypeName)
+
             val properties = propertyCache.getOrPut(testClass) { preparePropertiesFor(testClass) }
 
-            addMethodDeclarations(classToParse, testMethodDeclarations, nestedSentenceDeclarations, emphasisedMethodDeclarations)
-
-            val testMethodDeclaration = findTestMethodDeclaration(method, testMethodDeclarations)
             val testMethodParameters = parameterCache.getOrPut(method) {
                 prepareParametersFor(method, testMethodDeclaration.parameterNamesAndTypes)
             }
 
             val emphasisedMethods = emphasisedMethodCache.getOrPut(testClass) {
-                prepareEmphasisedMethods(testClass, emphasisedMethodDeclarations)
+                prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
             }
             val methods = methodCache.getOrPut(testClass) { prepareMethodsFor(testClass) }
 
-            val nestedSentences = prepareNestedSentences(testClass, nestedSentenceDeclarations, properties, methods, testMethodParameters)
+            val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, properties, methods, testMethodParameters)
 
             val testMethodSentences = prepareTestMethodSentences(
                 testMethodDeclaration, properties, methods, testMethodParameters, nestedSentences, emphasisedMethods
@@ -53,37 +70,14 @@ interface MethodParser : ParserCache, ParserDelegate {
             )
         }
 
-    private fun findAndAggregateMethodDeclarations(testClass: Class<*>): Triple<MutableList<MethodDeclarationContext>, MutableList<MethodDeclarationContext>, MutableList<MethodDeclarationContext>> {
-        val testMethodDeclarations = ArrayList<MethodDeclarationContext>()
-        val nestedSentenceDeclarations = ArrayList<MethodDeclarationContext>()
-        val emphasisedMethodDeclarations = ArrayList<MethodDeclarationContext>()
-
-        (testClass.findAnnotation<Sources>()?.value?.map { it.java }?.toList() ?: emptyList()).forEach {
-            val (testMethods, nestedSentences, emphasisedMethods) = declarationCache.getOrPut(it) { findMethodDeclarationsIn(it) }
-            testMethodDeclarations.addAll(testMethods)
-            nestedSentenceDeclarations.addAll(nestedSentences)
-            emphasisedMethodDeclarations.addAll(emphasisedMethods)
+    private fun Class<*>.findSourcesMethodDeclarations(): MethodDeclarations =
+        MethodDeclarations().let { declarations ->
+            findAnnotation<Sources>()?.value?.map { it.java }?.fold(declarations) { acc, sourceClass ->
+                acc + declarationCache.getOrPut(sourceClass) { findMethodDeclarationsIn(sourceClass) }
+            } ?: declarations
         }
 
-        return Triple(testMethodDeclarations, nestedSentenceDeclarations, emphasisedMethodDeclarations)
-    }
-
-    private fun addMethodDeclarations(classToParse: Class<*>, testMethodDeclarations: MutableList<MethodDeclarationContext>, nestedSentenceDeclarations: MutableList<MethodDeclarationContext>, emphasisedMethodDeclarations: MutableList<MethodDeclarationContext>) {
-        declarationCache.getOrPut(classToParse) { findMethodDeclarationsIn(classToParse) }.also {
-                (testMethods, nestedSentences, emphasisedMethods) ->
-            testMethodDeclarations.addAll(testMethods)
-            nestedSentenceDeclarations.addAll(nestedSentences)
-            emphasisedMethodDeclarations.addAll(emphasisedMethods)
-        }
-    }
-
-    private fun findTestMethodDeclaration(
-        method: Method,
-        testMethodDeclarations: List<MethodDeclarationContext>
-    ): MethodDeclarationContext {
-        return testMethodDeclarations.find(matchingDeclarationFor(method))
-            ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
-    }
+    private fun Class<*>.findMethodDeclarations(): MethodDeclarations = declarationCache.getOrPut(this) { findMethodDeclarationsIn(this) }
 
     private fun prepareNestedSentences(
         testClass: Class<*>,
@@ -131,15 +125,6 @@ interface MethodParser : ParserCache, ParserDelegate {
             sentences
         }
     }
-    fun matchingDeclarationFor(method: Method) = { dc: MethodDeclarationContext ->
-        method.normalisedName == dc.name &&
-            // Only match on parameter simple type name - saves having to go looking in the imports
-            dc.parameterNamesAndTypes.map {
-                it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
-            } == method.parameterTypes.map(toSimpleTypeName)
-    }
-
-    val toSimpleTypeName: (Class<*>) -> String
 
     private fun prepareEmphasisedMethods(
         testClass: Class<*>,
