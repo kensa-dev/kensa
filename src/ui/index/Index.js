@@ -7,6 +7,7 @@ import {treeReducer} from "./treeFilter";
 import {createTree} from "./treeBuilder";
 import Package from "./Package";
 import {useNavigate, useSearchParams} from "react-router-dom";
+import Header from "../Header";
 
 const KENSA_FILTER_TEXT_REGEX = /\bissue:(?<issue>[0-9a-zA-Z\-]+,?)\b|(?<text>\b\w+\b)/g
 
@@ -92,11 +93,7 @@ const Index = () => {
            onClick={() => setUrl({...filter, state: state})}>{text}</a>
 
     return <>
-        <section className="hero is-info is-light">
-            <div className="hero-body">
-                <h1 className="title">Index</h1>
-            </div>
-        </section>
+        <Header headerText={"Index"} headerClass={"is-info is-light"}/>
         <section className="section">
             <nav className="block">
                 <div className="field has-addons">
