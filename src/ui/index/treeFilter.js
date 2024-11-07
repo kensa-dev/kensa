@@ -29,50 +29,52 @@ class ClassMatches extends Matches {
     }
 }
 
-const pkgCss = (hasFailures) => "idx-" + (hasFailures ? "failed" : "passed")
+const pkgCss = (anyFailed, anyDisabled) => "idx-" + (anyFailed ? "failed" : (anyDisabled ? "disabled" : "passed"))
 
-const testClassCss = (filter, classItem, anyTestsFailed) => "idx-" + (filter.state || (!anyTestsFailed ? "passed" : classItem.state)).toLowerCase().replaceAll(" ", "-")
+const classFor = (anyFailed, anyDisabled) => anyFailed ? "failed" : (anyDisabled ? "disabled" : "passed");
+
+const testClassCss = (filter, classItem, anyFailed, anyDisabled) => "idx-" + (filter.state || classFor(anyFailed, anyDisabled)).toLowerCase().replaceAll(" ", "-")
 
 const testCss = (filter, testItem) => "idx-" + (filter.state || testItem.state).toLowerCase().replaceAll(" ", "-")
 
-const filterPackages = (packages, filter) => packages.reduce(([didMatch, didFail], pkg) => {
-    const [anyMatches, anyFailures] = applyFilter(pkg, filter)
-    pkg.isExpanded = pkg.isVisible = anyMatches
-    pkg.cssCls = pkgCss(anyFailures)
+const filterPackages = (packages, filter) => packages.reduce(([anyMatched, anyFailed, anyDisabled], pkg) => {
+    const [anyPkgMatched, anyPkgFailed, anyPkgDisabled] = applyFilter(pkg, filter)
+    pkg.isExpanded = pkg.isVisible = anyPkgMatched
+    pkg.cssCls = pkgCss(anyPkgFailed, anyPkgDisabled)
 
-    return [didMatch || anyMatches, didFail || anyFailures]
+    return [anyMatched || anyPkgMatched, anyFailed || anyPkgFailed, anyDisabled || anyPkgDisabled]
 }, [false, false]);
 
-const filterClasses = (classes, filter) => classes.reduce(([didMatch, didFail], classItem) => {
+const filterClasses = (classes, filter) => classes.reduce(([anyMatched, anyFailed, anyDisabled], classItem) => {
     const classMatches = new ClassMatches(filter, classItem)
-    const [anyTestsMatched, anyTestsFailed] = filterTests(classItem, filter, classMatches)
+    const [anyTestsMatched, anyTestsFailed, anyTestsDisabled] = filterTests(classItem, filter, classMatches)
 
     classItem.isVisible = anyTestsMatched || classMatches.matches
-    classItem.cssCls = testClassCss(filter, classItem, anyTestsFailed)
+    classItem.cssCls = testClassCss(filter, classItem, anyTestsFailed, anyTestsDisabled)
 
-    return [didMatch || anyTestsMatched, didFail || anyTestsFailed]
+    return [anyMatched || anyTestsMatched, anyFailed || anyTestsFailed, anyDisabled || anyTestsDisabled]
 }, [false, false]);
 
-const filterTests = (classItem, filter, classMatches) => classItem.tests.reduce(([didMatch, didFail], testItem) => {
+const filterTests = (classItem, filter, classMatches) => classItem.tests.reduce(([anyMatched, anyFailed, anyDisabled], testItem) => {
     const testMatches = new TestMatches(filter, testItem, classMatches)
     testItem.isVisible = testMatches.matches
     testItem.cssCls = testCss(filter, testItem)
 
-    return [didMatch || testItem.isVisible, didFail || (testItem.isVisible && testItem.state === "Failed")]
+    return [anyMatched || testItem.isVisible, anyFailed || (testItem.isVisible && testItem.state === "Failed"), anyDisabled || (testItem.isVisible && testItem.state === "Disabled")]
 }, [false, false]);
 
 const applyFilter = (item, filter) => {
-    let [anyClassMatched, anyClassFailed] = filterClasses(item.classes, filter)
-    let [anyPackageMatched, anyPackageFailed] = filterPackages(item.packages, filter)
+    let [anyClassMatched, anyClassFailed, anyClassDisabled] = filterClasses(item.classes, filter)
+    let [anyPackageMatched, anyPackageFailed, anyPackageDisabled] = filterPackages(item.packages, filter)
 
-    return [anyPackageMatched || anyClassMatched, anyPackageFailed || anyClassFailed]
+    return [anyPackageMatched || anyClassMatched, anyPackageFailed || anyClassFailed, anyPackageDisabled || anyClassDisabled]
 }
 
 export const treeReducer = (indexTree, filter) => {
     let didMatch = indexTree.packages.reduce((didMatch, pkg) => {
-        const [anyMatched, anyFailed] = applyFilter(pkg, filter)
+        const [anyMatched, anyFailed, anyDisabled] = applyFilter(pkg, filter)
         pkg.isExpanded = pkg.isVisible = anyMatched
-        pkg.cssCls = pkgCss(anyFailed)
+        pkg.cssCls = pkgCss(anyFailed, anyDisabled)
         return didMatch || anyMatched
     }, false)
 

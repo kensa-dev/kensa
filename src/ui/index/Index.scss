@@ -14,6 +14,10 @@ dd.idx-disabled {
   color: $warning;
 }
 
+dd.idx-not-executed {
+  color: $grey-dark;
+}
+
 .idx {
   padding-left: 25px
 }
@@ -41,7 +45,7 @@ dl.idx-disabled {
 dl.idx-not-executed {
   @extend .idx;
 
-  color: $warning
+  color: $grey-dark
 }
 
 .idx-icon {

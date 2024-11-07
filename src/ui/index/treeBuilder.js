@@ -14,7 +14,7 @@ const createClass = (container) => {
                 issues: (test.issues.length > 0) ? test.issues : container.issues,
                 state: test.state,
                 isVisible: true,
-                cssCls: "idx-" + test.state.toLowerCase()
+                cssCls: null
             }
         })
     }
