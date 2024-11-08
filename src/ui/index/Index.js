@@ -20,7 +20,6 @@ const Index = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("Apply filter", filter)
         applyFilter(filter)
     }, [filter]);
 
