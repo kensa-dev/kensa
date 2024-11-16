@@ -11,6 +11,7 @@ class StateMachine<STATE : Any, EVENT : Any>(initialState: STATE, private val tr
         state = value
                 ?.firstOrNull { it.matcher.matches(event) }
                 ?.transitionFunc?.invoke(state, event)
+//                ?.also { println("Event $event applied :: State is now $it") }
                 ?: error("No transition for state ${state::class} -> event ${event::class}")
     }
 }
@@ -100,7 +101,10 @@ class StateMachineBuilder<STATE : Any, EVENT : Any> {
         }
 
         inline fun <reified E : EVENT> ignore(matcher: Matcher<out E>) {
-            on(matcher) { s, _ -> s }
+            on(matcher) { s, e ->
+//                println("Ignoring $e at state $s")
+                s
+            }
         }
 
         inline fun <reified E : EVENT> transitionTo(state: STATE): (S, E) -> STATE = { _, _ -> state }

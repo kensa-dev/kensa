@@ -11,16 +11,16 @@ import org.junit.jupiter.api.Test
 internal class StateMachineTest {
 
     sealed class State {
-        object State1 : State()
-        object State2 : State()
-        object State3 : State()
+        data object State1 : State()
+        data object State2 : State()
+        data object State3 : State()
     }
 
     sealed class Event {
-        object Event1 : Event()
-        object Event2 : Event()
-        object Event3 : Event()
-        object Event4 : Event()
+        data object Event1 : Event()
+        data object Event2 : Event()
+        data object Event3 : Event()
+        data object Event4 : Event()
     }
 
     private lateinit var lastState: State
@@ -29,9 +29,8 @@ internal class StateMachineTest {
 
     @BeforeEach
     internal fun setUp() {
-        stateMachine = aStateMachine<State, Event> {
+        stateMachine = aStateMachine {
             initialState = State1
-
 
             // State style 1
             state(State1) {

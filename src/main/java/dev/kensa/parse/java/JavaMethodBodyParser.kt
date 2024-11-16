@@ -33,12 +33,12 @@ class JavaMethodBodyParser(private val stateMachine: ParserStateMachine) : Java2
 
     override fun enterMethodBody(ctx: Java20Parser.MethodBodyContext) {
 //        println("Entering: ${ctx::class} :: ${ctx.text}")
-        stateMachine.transition(EnterTestMethodEvent(ctx))
+        stateMachine.transition(EnterMethodEvent(ctx))
     }
 
     override fun exitMethodBody(ctx: Java20Parser.MethodBodyContext) {
 //        println("Exiting: ${ctx::class} :: ${ctx.text}")
-        stateMachine.transition(ExitTestMethodEvent(ctx))
+        stateMachine.transition(ExitMethodEvent(ctx))
     }
 
     override fun enterStatement(ctx: Java20Parser.StatementContext) {
@@ -65,7 +65,7 @@ class JavaMethodBodyParser(private val stateMachine: ParserStateMachine) : Java2
 //        println("Terminal: ${node.symbol.type} :: ${node.text}")
         when (node.symbol.type) {
             IntegerLiteral, FloatingPointLiteral -> stateMachine.transition(NumberLiteralEvent(node))
-            CharacterLiteral, StringLiteral -> stateMachine.transition(StringLiteralEvent(node, node.text.extractGroup(1, Companion.optionalQuotesRegex)))
+            CharacterLiteral, StringLiteral -> stateMachine.transition(StringLiteralEvent(node, node.text.extractGroup(1, optionalQuotesRegex)))
             TextBlock -> stateMachine.transition(LiteralEvent.MultiLineStringEvent(node))
             Identifier -> stateMachine.transition(IdentifierEvent(node))
 
