@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {stateClassFor} from "../Util";
 import Test from "./Test";
 import Information from "./information/Information";
+import Header from "../Header";
 
 const TestClass = () => {
     const [data, setData] = useState(null);
@@ -22,11 +23,7 @@ const TestClass = () => {
     if (data) {
         return (
             <>
-                <section className={"hero " + stateClassFor(data.state)}>
-                    <div className="hero-body">
-                        <h1 className="title">{data.displayName}</h1>
-                    </div>
-                </section>
+                <Header headerText={data.displayName} headerClass={stateClassFor(data.state)}/>
                 <section className="section">
                     <Information issues={data.issues} notes={data.notes}/>
                     {

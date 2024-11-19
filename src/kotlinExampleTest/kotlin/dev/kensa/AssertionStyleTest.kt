@@ -6,6 +6,9 @@ import dev.kensa.Kensa.konfigure
 import dev.kensa.Section.*
 import dev.kensa.TextStyle.*
 import dev.kensa.example.KotlinTestInterface
+import dev.kensa.example.parsing.kotlin.InterfaceWithVariousInterestingFunctions
+import dev.kensa.example.parsing.kotlin.ObjectWithVariousInterestingFunctions
+import dev.kensa.example.parsing.kotlin.ObjectWithVariousInterestingFunctions.function3
 import dev.kensa.kotlin.KotlinKensaTest
 import dev.kensa.kotlin.WithAssertJ
 import dev.kensa.kotlin.WithHamcrest
@@ -29,7 +32,8 @@ data class MyContext(
 
 @Notes("Class Level Notes")
 @Issue("ISS-007")
-class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTestInterface {
+@Sources(InterfaceWithVariousInterestingFunctions::class, ObjectWithVariousInterestingFunctions::class)
+class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTestInterface, InterfaceWithVariousInterestingFunctions{
 
     @ScenarioHolder
     private val myContext = MyContext()
@@ -76,6 +80,9 @@ class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTes
 
             then(foo())
                 .isEqualTo(666)
+
+            function1()
+            function3()
         }
     }
 

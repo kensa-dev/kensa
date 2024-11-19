@@ -2,7 +2,7 @@ package dev.kensa.parse
 
 interface ParserDelegate {
 
-    fun findMethodDeclarationsIn(testClass: Class<out Any>): Triple<List<MethodDeclarationContext>, List<MethodDeclarationContext>, List<MethodDeclarationContext>>
+    fun findMethodDeclarationsIn(target: Class<out Any>): MethodDeclarations
 
     fun parse(stateMachine: ParserStateMachine, dc: MethodDeclarationContext)
 

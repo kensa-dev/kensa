@@ -10,18 +10,6 @@
   cursor: pointer;
 }
 
-.test-disabled {
-  @extend .is-warning;
-}
-
-.test-failed {
-  @extend .is-danger
-}
-
-.test-passed {
-  @extend .is-success
-}
-
 .kensa-highlight {
   background-color: yellow;
   color: $grey-dark

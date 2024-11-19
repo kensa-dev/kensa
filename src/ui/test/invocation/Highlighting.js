@@ -32,7 +32,6 @@ const searchElementContent = (parent, child, regExp) => {
         let index = result.index;
 
         if (index === 0) {
-            // debugger;
             restOfLine = restOfLine.substring(index + token.length);
             textNode = textNodeOf(restOfLine);
             parent.replaceChild(textNode, lastChild);
