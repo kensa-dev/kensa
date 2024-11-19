@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.28
+- #34  : Support Java 20 Grammar (Fix scenarios)
+- #35  : Add Source annotation and allow source files to be specified (WIP) 
+
 ### v0.4.27
 - #34  : Support Java 20 Grammar (Fix noisy output)
 
