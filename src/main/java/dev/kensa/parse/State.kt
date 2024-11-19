@@ -3,13 +3,18 @@ package dev.kensa.parse
 import org.antlr.v4.runtime.tree.ParseTree
 
 sealed class State {
-    object Start : State()
 
-    class InTestMethod(val parseTree: ParseTree, val isExpressionFunction: Boolean) : State()
-    class InStatement(val parseTree: ParseTree, val parentState: InTestMethod) : State()
-    class InExpression(val parseTree: ParseTree, val parentState: State) : State()
-    class InMethodCall(val parseTree: ParseTree, val parentState: State, val didBegin: Boolean = false) : State()
-    class InScenarioCall(val parseTree: ParseTree, val parentState: State, val scenarioName: String) : State()
+    data object Start : State()
 
-    object End : State()
+    sealed class ParseTreeState(val parseTree: ParseTree) : State() {
+        class InMethod(parseTree: ParseTree, val isExpressionFunction: Boolean) : ParseTreeState(parseTree)
+        class InStatement(parseTree: ParseTree, val parentState: InMethod) : ParseTreeState(parseTree)
+        class InExpression(parseTree: ParseTree, val parentState: State) : ParseTreeState(parseTree)
+        class InMethodCall(parseTree: ParseTree, val parentState: State, val didBegin: Boolean = false) : ParseTreeState(parseTree)
+        class InScenarioCall(parseTree: ParseTree, val parentState: State, val scenarioName: String) : ParseTreeState(parseTree)
+
+        override fun toString(): String = "${this::class.java.simpleName} :: ${parseTree.text}"
+    }
+
+    data object End : State()
 }

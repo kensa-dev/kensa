@@ -1,5 +1,6 @@
 package dev.kensa.parse.java
 
+import dev.kensa.example.JavaTestWithScenario
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
 import dev.kensa.parse.Accessor.ValueAccessor.*
@@ -10,6 +11,7 @@ import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
+import dev.kensa.sentence.SentenceTokens.aScenarioValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anIndent
@@ -26,6 +28,53 @@ import org.junit.jupiter.api.Test
 internal class JavaMethodParserTest {
 
     private val parser = JavaMethodParser()
+
+    @Test
+    internal fun `parses test with scenario`() {
+        val expectedSentence = Sentence(
+            listOf(
+                aKeywordOf("Then"),
+                aWordOf("test"),
+                aWordOf("foo"),
+                aNewline(),
+                anIndent(),
+                anIndent(),
+                anIndent(),
+                aWordOf("is"),
+                aWordOf("equal"),
+                aWordOf("to"),
+                aScenarioValueOf("scenario.foo"),
+                aNewline(),
+                anIndent(),
+                anIndent(),
+                anIndent(),
+                aWordOf("is"),
+                aWordOf("equal"),
+                aWordOf("to"),
+                aWordOf("foo"),
+            )
+        )
+
+        val method = JavaTestWithScenario::class.java.findMethod("useTheScenario")
+        val parsedMethod = parser.parse(method)
+
+        with(parsedMethod) {
+            name.shouldBe("useTheScenario")
+
+            with(properties) {
+                assertSoftly(get("foo")) {
+                    shouldNotBeNull()
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestWithScenario::class.propertyNamed("foo"))) }
+                }
+                assertSoftly(get("scenario")) {
+                    shouldNotBeNull()
+                    asClue { shouldBe(PropertyAccessor(dev.kensa.example.JavaTestWithScenario::class.propertyNamed("scenario"))) }
+                }
+            }
+
+            sentences.first().tokens shouldBe expectedSentence.tokens
+        }
+    }
 
     @Test
     internal fun `parses interface method`() {
