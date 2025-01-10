@@ -27,6 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 @Notes("Some notes {@link dev.kensa.AssertionStyleTest#canUseAssertJStyle} with text in between " +
         "{@link dev.kensa.AssertionStyleTest#canUseHamcrestStyle} and some trailing text")
+@Sources(JavaTestInterface.class)
 class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ, JavaTestInterface {
 
     private final String actionName = "ACTION1";
@@ -56,6 +57,7 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ, Ja
         then(theResultStoredInCapturedInteractions()).isEqualTo(theExpectedResult);
         withAllTheNestedThings();
 
+        nestedSentence();
         then(foo1())
                 .isEqualTo("777")
                     .hasSameClassAs("888");

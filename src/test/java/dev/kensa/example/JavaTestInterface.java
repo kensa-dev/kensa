@@ -1,6 +1,7 @@
 package dev.kensa.example;
 
 import dev.kensa.Highlight;
+import dev.kensa.NestedSentence;
 import dev.kensa.Scenario;
 import dev.kensa.SentenceValue;
 import dev.kensa.java.JavaKensaTest;
@@ -22,6 +23,11 @@ public interface JavaTestInterface extends JavaKensaTest, WithAssertJ {
 
     @Test
     default void interfaceTestMethod() {
+        assertThat("abc").contains("a");
+    }
+
+    @NestedSentence
+    default void nestedSentence() {
         assertThat("abc").contains("a");
     }
 }

@@ -27,15 +27,16 @@ object JavaParserDelegate : ParserDelegate {
                         normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
                             cbd.classMemberDeclaration().methodDeclaration()?.let { md ->
                                 testMethods.takeIf { isAnnotatedAsTest(md.methodModifier(), Java20Parser.MethodModifierContext::annotation) }?.add(JavaMethodDeclarationContext(md))
-                                nestedMethods.takeIf { isAnnotatedAsNested(md) }?.add(JavaMethodDeclarationContext(md))
-                                emphasisedMethods.takeIf { isAnnotatedAsEmphasised(md) }?.add(JavaMethodDeclarationContext(md))
+                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaMethodDeclarationContext(md))
+                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md))
                             }
                         }
                     is InterfaceDeclarationContext ->
                         normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
                             imd.interfaceMethodDeclaration()?.let { md ->
-                                testMethods.takeIf { isAnnotatedAsTest(md.interfaceMethodModifier(), Java20Parser.InterfaceMethodModifierContext::annotation) }
-                                    ?.add(JavaInterfaceDeclarationContext(md))
+                                testMethods.takeIf { isAnnotatedAsTest(md.interfaceMethodModifier(), Java20Parser.InterfaceMethodModifierContext::annotation) }?.add(JavaInterfaceDeclarationContext(md))
+                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaInterfaceDeclarationContext(md))
+                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaInterfaceDeclarationContext(md))
                             }
                         }
 
@@ -66,15 +67,29 @@ object JavaParserDelegate : ParserDelegate {
             testAnnotationNames.contains(it)
         } ?: false
 
-    private fun isAnnotatedAsNested(md: Java20Parser.MethodDeclarationContext) =
-        md.methodModifier().any { mm ->
+    private fun Java20Parser.MethodDeclarationContext.isAnnotatedAsNested() =
+        methodModifier().any { mm ->
             mm.annotation()?.markerAnnotation()?.typeName()?.text?.let {
                 ParserDelegate.nestedSentenceAnnotationNames.contains(it)
             } ?: false
         }
 
-    private fun isAnnotatedAsEmphasised(md: Java20Parser.MethodDeclarationContext) =
-        md.methodModifier().any { mm ->
+    private fun Java20Parser.MethodDeclarationContext.isAnnotatedAsEmphasised() =
+        methodModifier().any { mm ->
+            mm.annotation()?.normalAnnotation()?.typeName()?.text?.let {
+                ParserDelegate.emphasisedMethodAnnotationNames.contains(it)
+            } ?: false
+        }
+
+    private fun Java20Parser.InterfaceMethodDeclarationContext.isAnnotatedAsNested() =
+        interfaceMethodModifier().any { mm ->
+            mm.annotation()?.markerAnnotation()?.typeName()?.text?.let {
+                ParserDelegate.nestedSentenceAnnotationNames.contains(it)
+            } ?: false
+        }
+
+    private fun Java20Parser.InterfaceMethodDeclarationContext.isAnnotatedAsEmphasised() =
+        interfaceMethodModifier().any { mm ->
             mm.annotation()?.normalAnnotation()?.typeName()?.text?.let {
                 ParserDelegate.emphasisedMethodAnnotationNames.contains(it)
             } ?: false
