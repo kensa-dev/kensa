@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.31
+- #37  : WIP - Introduce SetupSteps
+
 ### v0.4.30
 - #35  : Quick 'fix' for Sources annotation use with Java  
 
