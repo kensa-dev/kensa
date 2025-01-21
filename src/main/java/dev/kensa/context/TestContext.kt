@@ -5,6 +5,7 @@ import dev.kensa.GivensBuilder
 import dev.kensa.GivensWithInteractionsBuilder
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Givens
+import dev.kensa.state.SetupStrategy
 
 class TestContext(val givens: Givens, val interactions: CapturedInteractions) {
     fun given(builder: GivensWithInteractionsBuilder) {
@@ -21,6 +22,10 @@ class TestContext(val givens: Givens, val interactions: CapturedInteractions) {
     }
 
     fun disableInteractionTestGroup() {
-        interactions.disableUnderTest()
+        interactions.isUnderTestEnabled = false
+    }
+
+    fun setSetupStrategy(strategy: SetupStrategy) {
+        interactions.setupStrategy = strategy
     }
 }

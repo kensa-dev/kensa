@@ -120,7 +120,7 @@ internal class CapturedInteractionsTest {
     @Test
     fun canDisableUnderTest() {
         with(interactions) {
-            disableUnderTest()
+            isUnderTestEnabled = false
             isUnderTest = true
             capture(from(Jon).to(Daenerys).with("I will not bend the knee", "Defiant statement"))
 

@@ -79,6 +79,8 @@ export const SequenceDiagram = ({capturedInteractions, highlights, sequenceDiagr
 
     const actorChildrenOf = (parent) => Array
         .from(parent.querySelectorAll('text:not(.sequence_diagram_clickable)'))
+        // filter out the Test & Setup group boxes if present
+        .filter(textNode => textNode.previousElementSibling.tagName === 'rect' && textNode.previousElementSibling.previousElementSibling && textNode.previousElementSibling.previousElementSibling.tagName !== 'path')
         .flatMap(textNode => [ textNode, textNode.previousElementSibling ]);
 
     const nameForActor = (textOrRectNode) => {

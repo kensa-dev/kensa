@@ -19,6 +19,10 @@ private val valuePatterns = listOf(
 )
 
 object SequenceDiagramFactory {
+
+    private const val setupGroupColour = "#ECECEC"
+    private const val testGroupColour = "#FFFFFF"
+
     private val participants: List<String>
         get() = configuration.umlDirectives.flatMap { uml: UmlDirective -> uml.asUml() }
 
@@ -47,7 +51,7 @@ object SequenceDiagramFactory {
                 .groupByTo(LinkedHashMap(), { it.first }, { it.second })
                 .forEach { (group, lines) ->
                     group?.takeIf { it.isNotEmpty() }?.let { g ->
-                        events.add("group $g")
+                        events.add("group#gold ${if (group == "Setup") setupGroupColour else testGroupColour} $g")
                         events.addAll(lines)
                         events.add("end")
                     } ?: events.addAll(lines)
