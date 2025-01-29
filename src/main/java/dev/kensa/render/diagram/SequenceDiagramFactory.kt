@@ -51,7 +51,12 @@ object SequenceDiagramFactory {
                 .groupByTo(LinkedHashMap(), { it.first }, { it.second })
                 .forEach { (group, lines) ->
                     group?.takeIf { it.isNotEmpty() }?.let { g ->
-                        events.add("group#gold ${if (group == "Setup") setupGroupColour else testGroupColour} $g")
+                        if(group == "Setup") {
+                            events.add("group $setupGroupColour $g")
+                        } else {
+                            events.add("group#gold $testGroupColour $g")
+                        }
+
                         events.addAll(lines)
                         events.add("end")
                     } ?: events.addAll(lines)
