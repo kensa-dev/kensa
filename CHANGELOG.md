@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.32
+- #38  : Allow setup to specify which Tab to open (Givens, Parameters, Captured Interactions or Sequence Diagram)
+
 ### v0.4.31
 - #37  : WIP - Introduce SetupSteps
 
