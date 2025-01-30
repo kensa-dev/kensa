@@ -1,6 +1,7 @@
 package dev.kensa.state
 
-import dev.kensa.state.SetupStrategy.*
+import dev.kensa.state.SetupStrategy.Grouped
+import dev.kensa.state.SetupStrategy.Ignored
 import dev.kensa.util.Attributes
 import dev.kensa.util.Attributes.Companion.emptyAttributes
 import dev.kensa.util.Attributes.Key.Group
@@ -12,7 +13,7 @@ enum class SetupStrategy {
     Ungrouped,
 }
 
-class CapturedInteractions : KensaMap<CapturedInteractions>() {
+class CapturedInteractions(private val setupStrategy: SetupStrategy) : KensaMap<CapturedInteractions>() {
 
     var isUnderTestEnabled = true
 
@@ -22,7 +23,6 @@ class CapturedInteractions : KensaMap<CapturedInteractions>() {
             isSetup = false
         }
 
-    var setupStrategy: SetupStrategy = Ungrouped
     private var isSetup = true
 
     fun capture(builder: CapturedInteractionBuilder) {

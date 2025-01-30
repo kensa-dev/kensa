@@ -1,7 +1,6 @@
 package dev.kensa.context
 
-import dev.kensa.Issue
-import dev.kensa.Notes
+import dev.kensa.*
 import dev.kensa.output.TestWriter
 import dev.kensa.state.TestMethodInvocation
 import dev.kensa.state.TestState.*
@@ -13,39 +12,41 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
 class TestContainerFactory {
-    fun createFor(context: ExtensionContext, testWriter: TestWriter): TestContainer {
-        return context.requiredTestClass.let { testClass ->
+    fun createFor(context: ExtensionContext, testWriter: TestWriter): TestContainer =
+        context.requiredTestClass.let { testClass ->
             TestContainer(
                 testClass,
-                deriveDisplayNameFor(testClass) { testClass.simpleName.unCamel() },
+                testClass.deriveDisplayName { testClass.simpleName.unCamel() },
                 invocationDataFor(testClass),
-                notesFor(testClass),
-                issuesFor(testClass),
+                testClass.notes(),
+                testClass.issues(),
                 testWriter
             )
         }
-    }
 
     private fun invocationDataFor(testClass: Class<*>): Map<Method, TestMethodInvocation> =
         testClass.testMethods()
-            .map { method: Method -> createInvocationData(method) }
+            .map { method: Method -> method.createInvocationData(testClass.autoOpenTab()) }
             .associateByTo(LinkedHashMap()) { invocation: TestMethodInvocation -> invocation.method }
 
-    private fun createInvocationData(method: Method): TestMethodInvocation =
+    private fun Method.createInvocationData(autoOpenTab: Tab): TestMethodInvocation =
         TestMethodInvocation(
-            method,
-            deriveDisplayNameFor(method) { method.normalisedName.unCamel() },
-            notesFor(method),
-            issuesFor(method),
-            initialStateFor(method)
+            this,
+            deriveDisplayName { normalisedName.unCamel() },
+            notes(),
+            issues(),
+            initialState(),
+            autoOpenTab(autoOpenTab)
         )
 
-    private fun initialStateFor(method: Method) = if (method.hasAnnotation<Disabled>()) Disabled else NotExecuted
+    private fun Method.initialState() = if (hasAnnotation<Disabled>()) Disabled else NotExecuted
 
-    private fun deriveDisplayNameFor(element: AnnotatedElement, lazyDefault: () -> String) =
-        element.findAnnotation<DisplayName>()?.value ?: lazyDefault()
+    private fun AnnotatedElement.autoOpenTab(default: Tab? = null) : Tab = findAnnotation<AutoOpenTab>()?.value ?: default ?: Kensa.configuration.autoOpenTab
 
-    private fun notesFor(element: AnnotatedElement): String? = element.findAnnotation<Notes>()?.value
+    private fun AnnotatedElement.deriveDisplayName(lazyDefault: () -> String) =
+        findAnnotation<DisplayName>()?.value ?: lazyDefault()
 
-    private fun issuesFor(element: AnnotatedElement): List<String> = element.findAnnotation<Issue>()?.value?.toList() ?: emptyList()
+    private fun AnnotatedElement.notes(): String? = findAnnotation<Notes>()?.value
+
+    private fun AnnotatedElement.issues(): List<String> = findAnnotation<Issue>()?.value?.toList() ?: emptyList()
 }

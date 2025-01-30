@@ -4,14 +4,14 @@ import Tabs from "./tabs/Tabs";
 import Sentences from "./sentence/Sentences";
 import FailureMessage from "./FailureMessage";
 
-const TestBody = ({invocation, testStateClass}) => {
+const TestBody = ({invocation, testStateClass, autoOpenTab}) => {
     const {sectionOrder} = useContext(ConfigContext)
     return <>
         {
             sectionOrder.map((section, idx) => {
                     switch (section) {
                         case Section.Buttons:
-                            return <Tabs key={idx} invocation={invocation} testStateClass={testStateClass}/>
+                            return <Tabs key={idx} invocation={invocation} testStateClass={testStateClass} autoOpenTab={autoOpenTab}/>
                         case Section.Exception:
                             return <FailureMessage key={idx} invocation={invocation}/>
                         case Section.Sentences:
@@ -42,10 +42,10 @@ const ParameterizedTestBody = ({invocation, testStateClass, ...props}) => {
     )
 }
 
-const Invocation = ({invocation}) => {
+const Invocation = ({invocation, autoOpenTab}) => {
     const testStateClass = stateClassFor(invocation.state);
 
-    const testBody = <TestBody invocation={invocation} testStateClass={testStateClass}/>
+    const testBody = <TestBody invocation={invocation} testStateClass={testStateClass} autoOpenTab={autoOpenTab}/>
 
     return (invocation['parameters']?.length)
         ? <ParameterizedTestBody invocation={invocation} testStateClass={testStateClass}>{testBody}</ParameterizedTestBody>

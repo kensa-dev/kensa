@@ -15,7 +15,7 @@ const TestContent = ({test}) =>
             <Information notes={test.notes} issues={test.issues}/>
             {
                 test.invocations.map((invocation, idx) =>
-                    <Invocation key={idx} invocation={invocation}/>
+                    <Invocation key={idx} invocation={invocation} autoOpenTab={test.autoOpenTab}/>
                 )
             }
         </div>

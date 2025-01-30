@@ -21,6 +21,13 @@ export const Section = {
     Sentences: 'Sentences'
 }
 
+export const Tab = {
+    Givens: 'givens',
+    CapturedInteractions: 'capturedInteractions',
+    Parameters: 'parameters',
+    SequenceDiagram: 'sequenceDiagram',
+}
+
 export const flash = (elem, numFlashes, flashingClassName = 'flashing', singleFlashDurationMillis = 150) => {
     const restoreAppearanceAndRepeatIfNecessary = () => {
         elem.classList.remove(flashingClassName);

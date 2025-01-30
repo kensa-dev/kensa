@@ -31,6 +31,7 @@ object JsonTransforms {
             .add("state", container.state.description)
             .add("notes", container.notes)
             .add("issues", asJsonArray(container.issues))
+//            .add("autoOpenTab", container.autoOpenTab.name)
             .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
                 var totalElapsed: Duration = Duration.ZERO
 
@@ -57,6 +58,7 @@ object JsonTransforms {
                     .add("notes", invocation.notes)
                     .add("issues", asJsonArray(invocation.issues))
                     .add("state", invocation.state.description)
+                    .add("autoOpenTab", invocation.autoOpenTab.name)
                     .add("invocations", invocations)
             })
     }

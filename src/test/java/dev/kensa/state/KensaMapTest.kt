@@ -158,7 +158,7 @@ internal class KensaMapTest {
         fun mapInstances(): Stream<out KensaMap<*>?> {
             return Stream.of(
                 Givens(),
-                CapturedInteractions()
+                CapturedInteractions(SetupStrategy.Ignored)
             )
         }
     }

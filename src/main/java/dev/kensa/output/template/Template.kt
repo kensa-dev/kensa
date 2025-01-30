@@ -1,6 +1,7 @@
 package dev.kensa.output.template
 
 import com.eclipsesource.json.Json
+import dev.kensa.Tab
 import dev.kensa.KensaException
 import dev.kensa.Section
 import dev.kensa.context.TestContainer
@@ -24,7 +25,7 @@ import com.eclipsesource.json.Json.`object` as jsonObject
 class JsonScript(@Suppress("unused", "for pebble template") val id: String, @Suppress("unused", "for pebble template") val content: String)
 class Index(@Suppress("unused", "for pebble template") val content: String)
 
-class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL, sectionOrder: List<Section>, acronyms: Set<Acronym>) {
+class Template(private val outputPath: Path, mode: Mode, issueTrackerUrl: URL, tab: Tab, sectionOrder: List<Section>, acronyms: Set<Acronym>) {
     enum class Mode {
         IndexFile, TestFile,
     }

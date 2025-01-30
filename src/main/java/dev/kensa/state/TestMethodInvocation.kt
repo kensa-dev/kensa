@@ -1,9 +1,10 @@
 package dev.kensa.state
 
+import dev.kensa.Tab
 import java.lang.reflect.Method
 import java.util.*
 
-class TestMethodInvocation(val method: Method, val displayName: String, val notes: String?, val issues: List<String>, private val initialState: TestState) {
+class TestMethodInvocation(val method: Method, val displayName: String, val notes: String?, val issues: List<String>, private val initialState: TestState, val autoOpenTab: Tab) {
     val invocations: MutableList<TestInvocation> = ArrayList()
 
     fun add(invocation: TestInvocation) {

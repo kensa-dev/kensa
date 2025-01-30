@@ -11,6 +11,7 @@ import dev.kensa.sentence.Acronym
 import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.Keyword
+import dev.kensa.state.SetupStrategy
 import org.antlr.v4.runtime.atn.PredictionMode
 import java.net.MalformedURLException
 import java.net.URI
@@ -108,6 +109,14 @@ object Kensa {
         configuration.sectionOrder = order.toList()
     }
 
+    fun withAutoOpenTab(tab: Tab): Kensa = apply {
+        configuration.autoOpenTab = tab
+    }
+
+    fun withSetupStrategy(setupStrategy: SetupStrategy): Kensa = apply {
+        configuration.setupStrategy = setupStrategy
+    }
+
     fun withTabSize(tabSize: Int): Kensa = apply {
         configuration.tabSize = tabSize
     }
@@ -125,6 +134,14 @@ enum class Section {
     Buttons,
     Exception,
     Sentences
+}
+
+enum class Tab {
+    CapturedInteractions,
+    Givens,
+    Parameters,
+    SequenceDiagram,
+    None
 }
 
 class Configuration(
@@ -146,6 +163,10 @@ class Configuration(
 
     var indexWriter: IndexWriter = DefaultIndexWriter(this)
     var testWriter: TestWriter = DefaultTestWriter(this)
+
+    var autoOpenTab: Tab = Tab.None
+
+    var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
 
     var sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
         set(order) {

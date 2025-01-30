@@ -8,12 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(KensaExtension::class)
 interface KotlinKensaTest {
+
     fun disableInteractionTestGroup() {
         testContext().disableInteractionTestGroup()
-    }
-
-    fun setSetupStrategy(strategy: SetupStrategy) {
-        testContext().setSetupStrategy(strategy)
     }
 
     fun given(steps: SetupSteps) {

@@ -2,10 +2,7 @@ package dev.kensa.junit
 
 import dev.kensa.Kensa
 import dev.kensa.KensaExecutionContext
-import dev.kensa.context.TestContainer
-import dev.kensa.context.TestContainerFactory
-import dev.kensa.context.TestContext
-import dev.kensa.context.TestContextHolder
+import dev.kensa.context.*
 import dev.kensa.output.ResultWriter
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
@@ -22,6 +19,7 @@ import java.time.temporal.ChronoUnit
 
 class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     AfterTestExecutionCallback, InvocationInterceptor {
+    private val testContextFactory = TestContextFactory()
     private val testContainerFactory = TestContainerFactory()
     private val testInvocationFactory = TestInvocationFactory(
         TestInvocationParser(),
@@ -43,7 +41,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
 
     override fun beforeEach(context: ExtensionContext) {
         with(context.getStore(KENSA)) {
-            TestContext(Givens(), CapturedInteractions()).also {
+            testContextFactory.createFor(context).also {
                 put(TEST_CONTEXT_KEY, it)
                 TestContextHolder.bindToThread(it)
             }
