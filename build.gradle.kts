@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.junitJupiterParams)
     implementation(libs.junitJupiterApi)
     implementation(libs.junitJupiterEngine)
+    implementation(libs.junitPlatformLauncher)
     implementation(libs.assertJCore)
     implementation(libs.hamcrestCore)
     implementation(libs.awaitilityKotlin)

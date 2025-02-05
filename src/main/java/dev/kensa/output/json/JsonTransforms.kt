@@ -30,6 +30,7 @@ object JsonTransforms {
             .add("displayName", container.classDisplayName)
             .add("state", container.state.description)
             .add("notes", container.notes)
+            .add("minimumUniquePackageName", container.minimumUniquePackageName)
             .add("issues", asJsonArray(container.issues))
             .add("tests", asJsonArray(container.methods.values) { invocation: TestMethodContainer ->
                 var totalElapsed: Duration = Duration.ZERO

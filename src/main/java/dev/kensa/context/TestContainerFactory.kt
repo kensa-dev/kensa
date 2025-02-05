@@ -12,7 +12,7 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
 class TestContainerFactory {
-    fun createFor(context: ExtensionContext, testWriter: TestWriter): TestContainer =
+    fun createFor(context: ExtensionContext, testWriter: TestWriter, commonBasePackage: String = ""): TestContainer =
         context.requiredTestClass.run {
             TestContainer(
                 this,
@@ -20,6 +20,7 @@ class TestContainerFactory {
                 createMethodContainers(),
                 notes(),
                 issues(),
+                deriveMinimumUniquePackageName(commonBasePackage),
                 testWriter
             )
         }
@@ -48,4 +49,14 @@ class TestContainerFactory {
     private fun AnnotatedElement.notes(): String? = findAnnotation<Notes>()?.value
 
     private fun AnnotatedElement.issues(): List<String> = findAnnotation<Issue>()?.value?.toList() ?: emptyList()
+
+    private fun <T> Class<T>.deriveMinimumUniquePackageName(commonBasePackage: String): String =
+        commonBasePackage
+            .takeIf { it.isNotBlank() and packageName.startsWith(it) }
+            ?.let { packageName.replaceFirst(it, "") }
+            ?.removeLeadingDots()
+            ?: packageName
+
+    private fun String.removeLeadingDots() =
+        replace(Regex("^\\.+"), "")
 }

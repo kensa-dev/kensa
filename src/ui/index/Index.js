@@ -92,7 +92,7 @@ const Index = () => {
            onClick={() => setUrl({...filter, state: state})}>{text}</a>
 
     return <>
-        <Header headerText={"Index"} headerClass={"is-info is-light"}/>
+        <Header headerClass={"is-info is-light"}>Index</Header>
         <section className="section">
             <nav className="block">
                 <div className="field has-addons">

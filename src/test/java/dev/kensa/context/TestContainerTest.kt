@@ -16,7 +16,8 @@ class TestContainerTest {
             emptyMap(),
             null,
             emptyList(),
-            writer
+            javaClass.packageName,
+            writer,
         )
 
         container.close()
