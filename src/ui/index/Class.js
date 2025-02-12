@@ -5,7 +5,7 @@ const Class = ({testClass, parentIsExpanded}) => {
     const [isExpanded, setExpanded] = useState(false);
 
     const load = (anchor) => () => {
-        window.location = "./" + testClass.fullClassName + ".html" + (anchor ? "#" + anchor : "");
+        window.location = "./" + (testClass.customPath || testClass.fullClassName) + ".html" + (anchor ? "#" + anchor : "");
     }
 
     const toggle = () => setExpanded(prev => !prev)
