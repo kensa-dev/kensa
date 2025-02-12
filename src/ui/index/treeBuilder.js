@@ -3,6 +3,7 @@ const createClass = (container) => {
         name: container.displayName,
         state: container.state,
         fullClassName: container.testClass,
+        customPath: container.customTestPath,
         isExpanded: false,
         isVisible: false,
         cssCls: null,
