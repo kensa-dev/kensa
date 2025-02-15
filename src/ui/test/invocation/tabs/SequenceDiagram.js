@@ -80,7 +80,11 @@ export const SequenceDiagram = ({capturedInteractions, highlights, sequenceDiagr
     const actorChildrenOf = (parent) => Array
         .from(parent.querySelectorAll('text:not(.sequence_diagram_clickable)'))
         // filter out the Test & Setup group boxes if present
-        .filter(textNode => textNode.previousElementSibling.tagName === 'rect' && textNode.previousElementSibling.previousElementSibling && textNode.previousElementSibling.previousElementSibling.tagName !== 'path')
+        .filter(textNode => {
+            let previousElementSibling = textNode.previousElementSibling;
+
+            return previousElementSibling && previousElementSibling.tagName === 'rect' && previousElementSibling.previousElementSibling && previousElementSibling.previousElementSibling.tagName !== 'path';
+        })
         .flatMap(textNode => [ textNode, textNode.previousElementSibling ]);
 
     const nameForActor = (textOrRectNode) => {
@@ -144,17 +148,19 @@ export const SequenceDiagram = ({capturedInteractions, highlights, sequenceDiagr
             newSvg.querySelectorAll('text, rect').forEach((element, idx) => { if (idx % 4 >= 2) element.remove() } );
 
             const firstRect = newSvg.querySelector('rect')
-            const firstRectTop = parseInt(firstRect.getAttribute('y'));
-            const firstRectHeight = parseInt(firstRect.getAttribute('height'));
-            const headerHeight = (firstRectTop*2) + firstRectHeight;
+            if (firstRect) {
+                const firstRectTop = parseInt(firstRect.getAttribute('y'));
+                const firstRectHeight = parseInt(firstRect.getAttribute('height'));
+                const headerHeight = (firstRectTop * 2) + firstRectHeight;
 
-            newSvg.style.height = `${headerHeight}px`;
-            newSvg.setAttribute('viewBox', newSvg.getAttribute('viewBox').split(' ').with(3, `${headerHeight}`).join(' '));
-            newSvg.setAttribute('height', `${headerHeight}px`);
+                newSvg.style.height = `${headerHeight}px`;
+                newSvg.setAttribute('viewBox', newSvg.getAttribute('viewBox').split(' ').with(3, `${headerHeight}`).join(' '));
+                newSvg.setAttribute('height', `${headerHeight}px`);
 
-            const headerDiv = sequenceDiagram.querySelector('.sequence-diagram-header');
-            headerDiv.appendChild(newSvg);
-            headerDiv.setAttribute('height', `${headerHeight}`);
+                const headerDiv = sequenceDiagram.querySelector('.sequence-diagram-header');
+                headerDiv.appendChild(newSvg);
+                headerDiv.setAttribute('height', `${headerHeight}`);
+            }
         } catch (e) {
             console.error('Failed to add floating header', e);
         }
@@ -173,14 +179,12 @@ export const SequenceDiagram = ({capturedInteractions, highlights, sequenceDiagr
 
         const diagramIsTooBigToFitOnScreen = windowHeight < diagramContainerHeight;
         const userHasReachedDiagram = windowScrollTop >= diagramContainerTop;
-        const userHasNotScrolledPastDiagram = windowScrollTop < diagramContainerTop + diagramContainerHeight - (headerHeight*2);
+        const userHasNotScrolledPastDiagram = windowScrollTop < diagramContainerTop + diagramContainerHeight - (headerHeight * 2);
 
         if (diagramIsTooBigToFitOnScreen && userHasReachedDiagram && userHasNotScrolledPastDiagram) {
             header.style.top = `${windowScrollTop - diagramContainerTop}px`;
             header.style.display = 'block';
-        }
-        else
-        {
+        } else {
             header.style.display = 'none';
         }
     }
