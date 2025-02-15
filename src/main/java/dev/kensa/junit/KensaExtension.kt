@@ -8,8 +8,6 @@ import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
 import dev.kensa.parse.kotlin.KotlinFunctionParser
 import dev.kensa.render.diagram.SequenceDiagramFactory
-import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import dev.kensa.state.TestInvocationContext
 import dev.kensa.state.TestInvocationFactory
 import org.junit.jupiter.api.extension.*
@@ -91,16 +89,17 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
                     val startTime = get(TEST_START_TIME_KEY, Long::class.java)
                     val testContext = get(TEST_CONTEXT_KEY, TestContext::class.java)
                     val testContainer = get(TEST_CONTAINER_KEY, TestContainer::class.java)
-                    val invocation = testContainer.testMethodInvocationFor(context.requiredTestMethod)
                     val testInvocationContext = get(TEST_INVOCATION_CONTEXT_KEY, TestInvocationContext::class.java)
-                    invocation.add(
-                        testInvocationFactory.create(
-                            Duration.of(endTime - startTime, ChronoUnit.MILLIS),
-                            testContext,
-                            testInvocationContext,
-                            context.executionException.orElse(null)
+                    testContainer.testMethodContainerFor(context.requiredTestMethod)
+                        .add(
+                            testInvocationFactory.create(
+                                Duration.of(endTime - startTime, ChronoUnit.MILLIS),
+                                testContext,
+                                testInvocationContext,
+                                context.executionException.orElse(null),
+                                context.displayName
+                            )
                         )
-                    )
                 }
             }
         } finally {

@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.*
 val Class<*>.isKotlinClass get() = declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
 val KClass<*>.isKotlinClass get() = java.isKotlinClass
 
-val Method.normalisedName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
+val Method.normalisedPlatformName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
 
 fun interface ReflectPredicate<T> {
     operator fun invoke(target: T): Boolean

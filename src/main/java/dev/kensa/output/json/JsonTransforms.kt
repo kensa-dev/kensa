@@ -11,7 +11,7 @@ import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceToken
 import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
 import dev.kensa.state.TestInvocation
-import dev.kensa.state.TestMethodInvocation
+import dev.kensa.state.TestMethodContainer
 import dev.kensa.util.Attributes
 import dev.kensa.util.DurationFormatter
 import dev.kensa.util.KensaMap
@@ -27,12 +27,11 @@ object JsonTransforms {
     fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue = { container: TestContainer ->
         jsonObject()
             .add("testClass", container.testClass.name)
-            .add("displayName", container.displayName)
+            .add("displayName", container.classDisplayName)
             .add("state", container.state.description)
             .add("notes", container.notes)
             .add("issues", asJsonArray(container.issues))
-//            .add("autoOpenTab", container.autoOpenTab.name)
-            .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
+            .add("tests", asJsonArray(container.methods.values) { invocation: TestMethodContainer ->
                 var totalElapsed: Duration = Duration.ZERO
 
                 val invocations = asJsonArray(invocation.invocations) { i ->
@@ -42,13 +41,13 @@ object JsonTransforms {
                         .add("elapsedTime", DurationFormatter.format(i.elapsed))
                         .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
                         .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
-                        .add("parameterizedTestDescription", i.parameterizedTestDescription)
                         .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
                         .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
                         .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
-                        .add("sequenceDiagram", if (i.sequenceDiagram == null) null else i.sequenceDiagram.toString())
+                        .add("sequenceDiagram", i.sequenceDiagram?.toString())
                         .add("state", i.state.description)
                         .add("executionException", executionExceptionFrom(i))
+                        .add("displayName", i.parameterizedTestDescription ?: i.displayName)
                 }
 
                 jsonObject()
@@ -73,9 +72,9 @@ object JsonTransforms {
             .add("id", id)
             .add("testClass", container.testClass.name)
             .add("issues", asJsonArray(container.issues))
-            .add("displayName", container.displayName)
+            .add("displayName", container.classDisplayName)
             .add("state", container.state.description)
-            .add("tests", asJsonArray(container.invocations.values) { invocation: TestMethodInvocation ->
+            .add("tests", asJsonArray(container.methods.values) { invocation: TestMethodContainer ->
                 jsonObject()
                     .add("testMethod", invocation.method.name)
                     .add("issues", asJsonArray(invocation.issues))

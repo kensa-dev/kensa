@@ -1,7 +1,7 @@
 package dev.kensa.state
 
 import dev.kensa.context.TestContext
-import dev.kensa.parse.ParsedTestInvocation
+import dev.kensa.parse.ParsedInvocation
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
 import dev.kensa.parse.kotlin.KotlinFunctionParser
@@ -15,9 +15,10 @@ class TestInvocationFactory(
     private val sequenceDiagramFactory: SequenceDiagramFactory
 ) {
 
-    fun create(elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?): TestInvocation =
+    fun create(elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?, displayName: String): TestInvocation =
         TestInvocation(
             elapsedTime,
+            displayName,
             throwable,
             sequenceDiagramFactory.create(testContext.interactions),
             parse(testInvocationContext),
@@ -25,7 +26,7 @@ class TestInvocationFactory(
             testContext.givens
         )
 
-    private fun parse(context: TestInvocationContext): ParsedTestInvocation =
+    private fun parse(context: TestInvocationContext): ParsedInvocation =
         when {
             context.isKotlin -> testInvocationParser.parse(context, kotlinFunctionParser)
             else -> testInvocationParser.parse(context, javaMethodParser)

@@ -18,11 +18,13 @@ import dev.kensa.sentence.Acronym
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.state.Party
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.stream.Stream
 
 data class MyContext(
@@ -117,6 +119,14 @@ class AssertionStyleTest : KotlinKensaTest, WithAssertJ, WithHamcrest, KotlinTes
         given(somethingIsDoneWith(actionName))
         whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
         then(theResultStoredInCapturedInteractions(), `is`(theExpectedResult))
+    }
+
+    @ParameterizedTest(name = "Parameterized test with [{0}]")
+    @ValueSource(strings = ["foo", "bar"])
+    fun parameterizedTestWithNameTemplate(@SentenceValue actionName: String) {
+        given(somethingIsDoneWith(actionName))
+        whenever(theActionIsPerformedAndTheResultIsAddedToCapturedInteractions())
+        then(theResultStoredInCapturedInteractions(), containsString(actionName))
     }
 
     @ParameterizedTest

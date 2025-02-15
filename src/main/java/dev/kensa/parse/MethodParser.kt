@@ -22,7 +22,7 @@ class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = empty
             ?: throw KensaException("Did not find method declaration for test method [${method.name}]")
 
     private fun matchingDeclarationFor(method: Method, toSimpleTypeName: (Class<*>) -> String) = { dc: MethodDeclarationContext ->
-        method.normalisedName == dc.name &&
+        method.normalisedPlatformName == dc.name &&
                 // Only match on parameter simple type name - saves having to go looking in the imports
                 dc.parameterNamesAndTypes.map {
                     it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
@@ -61,7 +61,7 @@ interface MethodParser : ParserCache, ParserDelegate {
             )
 
             ParsedMethod(
-                method.normalisedName,
+                method.normalisedPlatformName,
                 parameterCache[method]!!,
                 testMethodSentences,
                 nestedSentences,

@@ -57,31 +57,19 @@ object KotlinParserDelegate : ParserDelegate {
             interpreter.predictionMode = Kensa.configuration.antlrPredicationMode
         }.kotlinFile()
 
-    private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsTest(): Boolean =
-        findAnnotationsIn(this).any { ac ->
-            ac.singleAnnotation()?.unescapedAnnotation()?.userType()?.text?.let {
-                ParserDelegate.testAnnotationNames.contains(it)
-            } ?: false
-        }
+    private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsTest(): Boolean = findAnnotationNames().any { name -> ParserDelegate.testAnnotationNames.contains(name) }
 
-    private fun findAnnotationsIn(fd: KotlinParser.FunctionDeclarationContext): List<KotlinParser.AnnotationContext> =
-        fd.modifiers()?.annotation()?.takeIf { it.isNotEmpty() }
-            ?: fd.parent?.parent?.takeIf { it is KotlinParser.StatementContext }?.let { (it as KotlinParser.StatementContext).annotation() }
-            ?: emptyList()
+    private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsNested(): Boolean = findAnnotationNames().any { name -> ParserDelegate.nestedSentenceAnnotationNames.contains(name) }
 
-    private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsNested(): Boolean =
-        findAnnotationsIn(this).any { ac ->
-            ac.singleAnnotation()?.unescapedAnnotation()?.userType()?.text?.let {
-                ParserDelegate.nestedSentenceAnnotationNames.contains(it)
-            } ?: false
-        }
+    private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean = findAnnotationNames().any { name -> ParserDelegate.emphasisedMethodAnnotationNames.contains(name) }
 
-    private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean =
-        findAnnotationsIn(this).any { ac ->
-            ac.singleAnnotation()?.unescapedAnnotation()?.constructorInvocation()?.userType()?.text?.let {
-                ParserDelegate.emphasisedMethodAnnotationNames.contains(it)
-            } ?: false
-        }
+    private fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> =
+        modifiers()?.annotation()?.takeIf<MutableList<KotlinParser.AnnotationContext>> { it.isNotEmpty() }?.mapNotNull {
+            val withConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.constructorInvocation()?.userType()?.text
+            val withoutConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.userType()?.text
+
+            withConstructorInvocation ?: withoutConstructorInvocation
+        } ?: emptyList()
 
     override fun parse(stateMachine: ParserStateMachine, dc: MethodDeclarationContext) {
         ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine), dc.body)

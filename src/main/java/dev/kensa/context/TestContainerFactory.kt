@@ -2,7 +2,7 @@ package dev.kensa.context
 
 import dev.kensa.*
 import dev.kensa.output.TestWriter
-import dev.kensa.state.TestMethodInvocation
+import dev.kensa.state.TestMethodContainer
 import dev.kensa.state.TestState.*
 import dev.kensa.util.*
 import org.junit.jupiter.api.Disabled
@@ -13,26 +13,26 @@ import java.lang.reflect.Method
 
 class TestContainerFactory {
     fun createFor(context: ExtensionContext, testWriter: TestWriter): TestContainer =
-        context.requiredTestClass.let { testClass ->
+        context.requiredTestClass.run {
             TestContainer(
-                testClass,
-                testClass.deriveDisplayName { testClass.simpleName.unCamel() },
-                invocationDataFor(testClass),
-                testClass.notes(),
-                testClass.issues(),
+                this,
+                deriveDisplayName { simpleName.unCamel() },
+                createMethodContainers(),
+                notes(),
+                issues(),
                 testWriter
             )
         }
 
-    private fun invocationDataFor(testClass: Class<*>): Map<Method, TestMethodInvocation> =
-        testClass.testMethods()
-            .map { method: Method -> method.createInvocationData(testClass.autoOpenTab()) }
-            .associateByTo(LinkedHashMap()) { invocation: TestMethodInvocation -> invocation.method }
+    private fun Class<*>.createMethodContainers(): Map<Method, TestMethodContainer> =
+        testMethods()
+            .map { method: Method -> method.createMethodContainer(autoOpenTab()) }
+            .associateByTo(LinkedHashMap()) { invocation: TestMethodContainer -> invocation.method }
 
-    private fun Method.createInvocationData(autoOpenTab: Tab): TestMethodInvocation =
-        TestMethodInvocation(
+    private fun Method.createMethodContainer(autoOpenTab: Tab): TestMethodContainer =
+        TestMethodContainer(
             this,
-            deriveDisplayName { normalisedName.unCamel() },
+            deriveDisplayName { normalisedPlatformName.unCamel() },
             notes(),
             issues(),
             initialState(),
@@ -43,8 +43,7 @@ class TestContainerFactory {
 
     private fun AnnotatedElement.autoOpenTab(default: Tab? = null) : Tab = findAnnotation<AutoOpenTab>()?.value ?: default ?: Kensa.configuration.autoOpenTab
 
-    private fun AnnotatedElement.deriveDisplayName(lazyDefault: () -> String) =
-        findAnnotation<DisplayName>()?.value ?: lazyDefault()
+    private fun AnnotatedElement.deriveDisplayName(lazyDefault: () -> String) = findAnnotation<DisplayName>()?.value ?: lazyDefault()
 
     private fun AnnotatedElement.notes(): String? = findAnnotation<Notes>()?.value
 

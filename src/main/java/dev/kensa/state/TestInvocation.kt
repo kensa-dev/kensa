@@ -1,6 +1,6 @@
 package dev.kensa.state
 
-import dev.kensa.parse.ParsedTestInvocation
+import dev.kensa.parse.ParsedInvocation
 import dev.kensa.render.diagram.SequenceDiagram
 import dev.kensa.sentence.Sentence
 import dev.kensa.state.TestState.Failed
@@ -10,17 +10,18 @@ import dev.kensa.util.NamedValue
 import java.time.Duration
 
 class TestInvocation(
-        val elapsed: Duration,
-        val executionException: Throwable?,
-        val sequenceDiagram: SequenceDiagram?,
-        parsedTestInvocation: ParsedTestInvocation,
-        interactions: CapturedInteractions,
-        givens: Givens
+    val elapsed: Duration,
+    val displayName: String,
+    val executionException: Throwable?,
+    val sequenceDiagram: SequenceDiagram?,
+    parsedInvocation: ParsedInvocation,
+    interactions: CapturedInteractions,
+    givens: Givens
 ) {
-    val sentences: List<Sentence> = parsedTestInvocation.sentences
-    val parameters: Collection<NamedValue> = parsedTestInvocation.namedParameterValues
-    val parameterizedTestDescription: String = parsedTestInvocation.parameterizedTestDescription
-    val highlightedValues: Collection<NamedValue> = parsedTestInvocation.highlightedValues
+    val sentences: List<Sentence> = parsedInvocation.sentences
+    val parameters: Collection<NamedValue> = parsedInvocation.namedParameterValues
+    val parameterizedTestDescription: String? = parsedInvocation.parameterizedTestDescription
+    val highlightedValues: Collection<NamedValue> = parsedInvocation.highlightedValues
     val state: TestState
 
     private val _givens = givens

@@ -31,7 +31,7 @@ const ParameterizedTestBody = ({invocation, testStateClass, ...props}) => {
     return (
         <div className={"message " + testStateClass}>
             <div onClick={toggle} className={"message-header"}>
-                <span className={"limited-width"}>{invocation.parameterizedTestDescription}</span>
+                <span className={"limited-width"}>{invocation.displayName}</span>
                 <div>
                     <span className={"elapsed-time"}>Elapsed time: {invocation.elapsedTime}</span>
                     <CollapseIcon isCollapsed={isCollapsed}/>

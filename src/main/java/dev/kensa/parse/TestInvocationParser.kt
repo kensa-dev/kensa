@@ -11,7 +11,7 @@ import dev.kensa.util.NamedValue
 
 class TestInvocationParser {
 
-    fun parse(context: TestInvocationContext, methodParser: MethodParser): ParsedTestInvocation =
+    fun parse(context: TestInvocationContext, methodParser: MethodParser): ParsedInvocation =
         try {
             val parsedMethod = methodParser.parse(context.method)
 
@@ -46,10 +46,9 @@ class TestInvocationParser {
 
 //                sentences.forEach { println(it.squashedTokens) }
 
-            val parameterizedTestDescription: String = parsedMethod.parameters.descriptors.values.find { it.isParameterizedTestDescription }?.valueOfIn(context.arguments)?.toString()
-                ?: namedParameterValues.map { it.value }.joinToString(prefix = "[", postfix = "]")
+            val parameterizedTestDescription: String? = parsedMethod.parameters.descriptors.values.find { it.isParameterizedTestDescription }?.valueOfIn(context.arguments)?.toString()
 
-            ParsedTestInvocation(parsedMethod.name, namedParameterValues, sentences, highlightedValues, parameterizedTestDescription)
+            ParsedInvocation(parsedMethod.name, namedParameterValues, sentences, highlightedValues, parameterizedTestDescription)
         } catch (e: Exception) {
             throw KensaException("Unable to parse test invocation ", e)
         }

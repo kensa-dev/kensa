@@ -38,7 +38,7 @@ internal class TestContainerFactoryTest {
         whenever(extensionContext.requiredTestClass).thenReturn(testClass)
         val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
 
-        result.invocations.values.map { it.method } shouldContainAll expected
+        result.methods.values.map { it.method } shouldContainAll expected
     }
 
     @Test
@@ -48,7 +48,7 @@ internal class TestContainerFactoryTest {
         whenever(extensionContext.requiredTestClass).thenReturn(testClass)
         val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
 
-        result.invocations.filterValues { it.displayName == "Test 7" }.shouldNotBeEmpty()
+        result.methods.filterValues { it.displayName == "Test 7" }.shouldNotBeEmpty()
     }
 
     private interface TestInterface {
