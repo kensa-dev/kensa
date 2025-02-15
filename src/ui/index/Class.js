@@ -1,11 +1,19 @@
-import React, {useState} from "react";
-import {ExpandIcon} from "../Util";
+import React, {useContext, useState} from "react";
+import {ConfigContext, ExpandIcon} from "../Util";
 
 const Class = ({testClass, parentIsExpanded}) => {
     const [isExpanded, setExpanded] = useState(false);
+    const {flattenPackages} = useContext(ConfigContext)
+    const generateUrl = (testClass, anchor) => {
+        const basePath = flattenPackages
+            ? `${testClass.fullClassName}.html`
+            : `./${testClass.fullClassName.split(".").join("/")}.html`;
+
+        return anchor ? `${basePath}#${anchor}` : basePath;
+    };
 
     const load = (anchor) => () => {
-        window.location = "./" + testClass.fullClassName + ".html" + (anchor ? "#" + anchor : "");
+        window.location = generateUrl(testClass, anchor);
     }
 
     const toggle = () => setExpanded(prev => !prev)

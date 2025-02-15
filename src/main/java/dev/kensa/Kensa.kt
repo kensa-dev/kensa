@@ -4,7 +4,6 @@ import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
 import dev.kensa.Section.*
-import dev.kensa.output.*
 import dev.kensa.render.*
 import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.sentence.Acronym
@@ -121,12 +120,8 @@ object Kensa {
         configuration.tabSize = tabSize
     }
 
-    fun withIndexWriter(writer: IndexWriter): Kensa = apply {
-        configuration.indexWriter = writer
-    }
-
-    fun withTestWriter(writer: TestWriter): Kensa = apply {
-        configuration.testWriter = writer
+    fun flattenPackages(value: Boolean): Kensa = apply {
+        configuration.flattenOutputPackages = value
     }
 }
 
@@ -144,26 +139,23 @@ enum class Tab {
     None
 }
 
-class Configuration(
-    val dictionary: Dictionary = Dictionary(),
+class Configuration {
+    val dictionary: Dictionary = Dictionary()
+    val renderers: Renderers = Renderers()
+
     var outputDir: Path = Paths.get(
         System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")),
         KENSA_OUTPUT_DIR
-    ),
+    )
+    var flattenOutputPackages: Boolean = true
     var isOutputEnabled: Boolean = if (System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
         System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
-    } else true,
-    val renderers: Renderers = Renderers(),
-    var antlrPredicationMode: PredictionMode = PredictionMode.LL,
-    var antlrErrorListenerDisabled: Boolean = true,
-    var umlDirectives: List<UmlDirective> = ArrayList(),
-    var issueTrackerUrl: URL = defaultIssueTrackerUrl(),
+    } else true
+    var antlrPredicationMode: PredictionMode = PredictionMode.LL
+    var antlrErrorListenerDisabled: Boolean = true
+    var umlDirectives: List<UmlDirective> = ArrayList()
+    var issueTrackerUrl: URL = defaultIssueTrackerUrl()
     var tabSize: Int = 5
-) {
-
-    var indexWriter: IndexWriter = DefaultIndexWriter(this)
-    var testWriter: TestWriter = DefaultTestWriter(this)
-
     var autoOpenTab: Tab = Tab.None
 
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
@@ -192,7 +184,7 @@ class Configuration(
     companion object {
         private fun defaultIssueTrackerUrl(): URL = try {
             URI.create("http://empty").toURL()
-        } catch (ignored: MalformedURLException) {
+        } catch (_: MalformedURLException) {
             throw KensaException("Unable to initialise default issue tracker url")
         }
     }

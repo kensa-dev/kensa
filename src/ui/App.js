@@ -9,14 +9,20 @@ const App = () => {
         return JSON.parse(document.querySelector("script[id='config']").textContent);
     }, [])
 
-    switch (mode) {
-        case 'IndexFile':
-            return <Index/>
-        case 'TestFile':
-            return <ConfigContext.Provider value={config}>
-                <TestClass/>
-            </ConfigContext.Provider>
+    const renderComponent = () => {
+        switch (mode) {
+            case 'IndexFile':
+                return <Index/>;
+            case 'TestFile':
+                return <TestClass/>;
+        }
     }
+
+    return (
+        <ConfigContext.Provider value={config}>
+            {renderComponent()}
+        </ConfigContext.Provider>
+    );
 };
 
 export default App

@@ -1,10 +1,9 @@
 package dev.kensa.output
 
 import dev.kensa.Configuration
-import dev.kensa.Kensa
 import dev.kensa.context.TestContainer
-import dev.kensa.output.template.Template
-import dev.kensa.output.template.Template.Mode.TestFile
+import dev.kensa.output.template.FileTemplate.IndexFileTemplate
+import dev.kensa.output.template.FileTemplate.TestFileTemplate
 import dev.kensa.util.IoUtil
 import java.nio.file.Path
 
@@ -34,10 +33,8 @@ interface IndexWriter {
 
 class DefaultIndexWriter(private val configuration: Configuration) : IndexWriter {
     override fun write(containers: Set<TestContainer>) {
-        Template(configuration.outputDir.resolve("index.html"), Template.Mode.IndexFile, configuration.issueTrackerUrl, configuration.autoOpenTab, configuration.sectionOrder, configuration.dictionary.acronyms).apply {
-            containers.forEach { container ->
-                addIndex(container, Template.asIndex())
-            }
+        IndexFileTemplate(configuration).apply {
+            containers.forEach { addIndex(it) }
             write()
         }
     }
@@ -49,9 +46,6 @@ interface TestWriter {
 
 class DefaultTestWriter(private val configuration: Configuration) : TestWriter {
     override fun write(container: TestContainer) {
-        Template(Kensa.configuration.outputDir.resolve("${container.testClass.name}.html"), TestFile, configuration.issueTrackerUrl, configuration.autoOpenTab, configuration.sectionOrder, configuration.dictionary.acronyms).apply {
-            addJsonScript(container, Template.asJsonScript(Kensa.configuration.renderers))
-            write()
-        }
+        TestFileTemplate(configuration, container).write()
     }
 }

@@ -50,11 +50,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             favicon: "src/ui/public/favicon.ico",
             template: INDEX,
-            filename: "./index.html",
-            inlineSource: '.(js|css)$'
-        }),
-        new HtmlWebpackPlugin({
-            template: INDEX,
+            inject: false,
             filename: "./pebble-index.html",
             inlineSource: '.(js|css)$',
             pebbleScript: "{% if scripts is not empty %}\n" +

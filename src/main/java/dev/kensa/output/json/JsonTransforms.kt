@@ -62,10 +62,7 @@ object JsonTransforms {
             })
     }
 
-    // Overload rangeTo to allow chaining of function calls
-    operator fun <T, R, V> ((T) -> R).rangeTo(other: (R) -> V): ((T) -> V) = {
-        other(this(it))
-    }
+    fun <T, R, V> ((T) -> R).andThen(other: (R) -> V): ((T) -> V) = { other(this(it)) }
 
     fun toIndexJson(id: String): (TestContainer) -> JsonValue = { container: TestContainer ->
         jsonObject()
