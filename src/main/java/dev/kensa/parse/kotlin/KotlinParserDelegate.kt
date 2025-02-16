@@ -63,13 +63,18 @@ object KotlinParserDelegate : ParserDelegate {
 
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean = findAnnotationNames().any { name -> ParserDelegate.emphasisedMethodAnnotationNames.contains(name) }
 
-    private fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> =
-        modifiers()?.annotation()?.takeIf<MutableList<KotlinParser.AnnotationContext>> { it.isNotEmpty() }?.mapNotNull {
-            val withConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.constructorInvocation()?.userType()?.text
-            val withoutConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.userType()?.text
+    private fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> {
+        val annotationContexts = modifiers()?.annotation()?.takeIf { it.isNotEmpty() }
+            ?: parent?.parent?.takeIf { it is KotlinParser.StatementContext }?.let { (it as KotlinParser.StatementContext).annotation() }
+            ?: emptyList()
 
-            withConstructorInvocation ?: withoutConstructorInvocation
-        } ?: emptyList()
+        return annotationContexts.mapNotNull {
+            val namedWithConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.constructorInvocation()?.userType()?.text
+            val namedWithoutConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.userType()?.text
+
+            namedWithConstructorInvocation ?: namedWithoutConstructorInvocation
+        }
+    }
 
     override fun parse(stateMachine: ParserStateMachine, dc: MethodDeclarationContext) {
         ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine), dc.body)
