@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.4.33
+- #39,#40  : Introduce `flattenOutputPackages` configuration flag (defaults to `false`), to allow package folder structure to be maintained or flattened. Ability to use custom test or index writers is now removed.
+- #41  : JUnit's `ParameterizedTest` annotation is correctly handled with the `name` template becoming the test's display name. 
+
 ### v0.4.32
 - #38  : Allow setup to specify which Tab to open (Givens, Parameters, Captured Interactions or Sequence Diagram)
 
