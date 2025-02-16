@@ -5,7 +5,9 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, 'src/ui');
 const ENTRY = path.resolve(ROOT, 'index.js');
 const INDEX = path.resolve(ROOT, 'public/index.html');
+const FAVICON = path.resolve(ROOT, 'public/favicon.ico');
 const OUTPUT = path.resolve(__dirname, 'build/resources/main');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // const Visualizer = require('webpack-visualizer-plugin');
 
@@ -47,8 +49,12 @@ module.exports = {
             filename: "[name].css",
             chunkFilename: "[id].css"
         }),
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: FAVICON, to: OUTPUT } // Adjust paths as needed
+            ]
+        }),
         new HtmlWebpackPlugin({
-            favicon: "src/ui/public/favicon.ico",
             template: INDEX,
             inject: false,
             filename: "./pebble-index.html",
@@ -60,7 +66,7 @@ module.exports = {
                     "{% endif %}\n" +
                     "{% if indices is not empty %}\n" +
                     "<script id=\"indices\" type=\"application/json\">" +
-                    "{\"mode\": \"{{ mode }}\", \"issueTrackerUrl\": \"{{ issueTrackerUrl }}\", \"indices\":[{% for index in indices %}{{ index.content }}{{ loop.last ? \"\" : \",\" }}{% endfor %}]}" +
+                    "{\"indices\":[{% for index in indices %}{{ index.content }}{{ loop.last ? \"\" : \",\" }}{% endfor %}]}" +
                     "</script>\n" +
                     "{% endif %}\n"
         })

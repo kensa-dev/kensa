@@ -25,31 +25,34 @@ import com.eclipsesource.json.Json.`object` as jsonObject
 class JsonScript(@Suppress("unused", "for pebble template") val id: String, @Suppress("unused", "for pebble template") val content: String)
 class Index(@Suppress("unused", "for pebble template") val content: String)
 
-sealed class FileTemplate(mode: Mode, configuration: Configuration, private val templateOutputPath: Path) {
+sealed class FileTemplate(mode: Mode, configuration: Configuration, private val templateOutputPath: Path, private val relativeRootPath: String = "") {
 
     enum class Mode { IndexFile, TestFile }
 
     private val template: PebbleTemplate = pebbleEngine.getTemplate("pebble-index.html")
-    private val kensaScript: String = configuration.outputDir.resolve("kensa.js").toString()
 
-    private val templateMap = mutableMapOf<String, MutableList<Any>>("scripts" to mutableListOf<Any>(configuration.asJson(mode)))
+    private val templateMap = mutableMapOf("scripts" to mutableListOf<Any>(configuration.asJson(mode)))
 
     protected fun add(key: String, value: Any) {
-        templateMap.getOrPut(key) { mutableListOf<Any>() }.add(value)
+        templateMap.getOrPut(key) { mutableListOf() }.add(value)
     }
 
     fun write() {
         try {
             template.evaluate(
                 newBufferedWriter(templateOutputPath, UTF_8, CREATE),
-                mapOf("kensaScript" to kensaScript) + templateMap
+                mapOf(
+                    "kensaScript" to "${relativeRootPath}kensa.js",
+                    "favIcon" to "$relativeRootPath${"favicon.ico"}"
+                ) + templateMap
             )
         } catch (e: IOException) {
             throw KensaException("Unable to write template", e)
         }
     }
 
-    class IndexFileTemplate(configuration: Configuration) : FileTemplate(IndexFile, configuration, configuration.outputDir.resolve("index.html")) {
+    class IndexFileTemplate(configuration: Configuration) :
+        FileTemplate(IndexFile, configuration, configuration.outputDir.resolve("index.html")) {
 
         private var indexCounter = 1
 
@@ -58,13 +61,23 @@ sealed class FileTemplate(mode: Mode, configuration: Configuration, private val 
         }
     }
 
-    class TestFileTemplate(configuration: Configuration, container: TestContainer) : FileTemplate(TestFile, configuration, container.deriveTestPath(configuration.outputDir, configuration.flattenOutputPackages)) {
+    class TestFileTemplate(configuration: Configuration, container: TestContainer) :
+        FileTemplate(TestFile, configuration, container.deriveTestPath(configuration.outputDir, configuration.flattenOutputPackages), container.deriveRelativeRootPath(configuration.flattenOutputPackages)) {
 
         init {
             add("scripts", container.transform(toJsonWith(configuration.renderers).andThen(toJsonString().andThen { content: String -> JsonScript("test-result-1", content) })))
         }
 
         companion object {
+
+            private fun TestContainer.deriveRelativeRootPath(flattenOutputPackages: Boolean): String =
+                if (flattenOutputPackages) {
+                    ""
+                } else {
+                    val packages = testClass.name.substringBeforeLast(".")
+                    val depth = packages.split(".").size
+                    "../".repeat(depth)
+                }
 
             private fun TestContainer.deriveTestPath(outputDir: Path, flattenOutputPackages: Boolean): Path =
                 if (flattenOutputPackages) {

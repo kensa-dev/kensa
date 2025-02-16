@@ -120,7 +120,7 @@ object Kensa {
         configuration.tabSize = tabSize
     }
 
-    fun flattenPackages(value: Boolean): Kensa = apply {
+    fun withFlattenOutputPackages(value: Boolean): Kensa = apply {
         configuration.flattenOutputPackages = value
     }
 }
@@ -147,7 +147,7 @@ class Configuration {
         System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")),
         KENSA_OUTPUT_DIR
     )
-    var flattenOutputPackages: Boolean = true
+    var flattenOutputPackages: Boolean = false
     var isOutputEnabled: Boolean = if (System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
         System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
     } else true

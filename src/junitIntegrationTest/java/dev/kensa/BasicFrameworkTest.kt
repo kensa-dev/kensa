@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.TestExecutionResult.Status.FAILED
 import java.nio.file.Files.exists
+import kotlin.io.path.Path
 
 internal class BasicFrameworkTest : KensaAcceptanceTest() {
 
@@ -18,7 +19,7 @@ internal class BasicFrameworkTest : KensaAcceptanceTest() {
         executeTests(*testClasses)
 
         testClasses.forEach {
-            val outputFilePath = kensaOutputDir.resolve(it.name + ".html")
+            val outputFilePath = kensaOutputDir.resolve(Path("dev/kensa/example/" + it.simpleName + ".html"))
 
             assertThat(exists(outputFilePath))
                 .withFailMessage("Expected file [%s] to exist.", outputFilePath)
