@@ -1,5 +1,5 @@
 # Kensa
-##Documentation
+## Documentation
 
 Kensa is an acceptance test tool which supports Java, Kotlin and JUnit5.
 
@@ -7,6 +7,7 @@ Kensa is an acceptance test tool which supports Java, Kotlin and JUnit5.
 Kotlin and Java are both fully supported as of version 105.
 <br />
 On request, forking will be made available.
+
 ### Dependency:
 ```
 <dependency>
