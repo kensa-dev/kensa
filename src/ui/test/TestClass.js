@@ -1,10 +1,12 @@
-import React, {useEffect, useState} from "react";
-import {stateClassFor} from "../Util";
+import React, {useContext, useEffect, useState} from "react";
+import {ConfigContext, stateClassFor} from "../Util";
 import Test from "./Test";
 import Information from "./information/Information";
 import Header from "../Header";
+import PackageName from "./PackageName";
 
 const TestClass = () => {
+    const {packageDisplayMode} = useContext(ConfigContext)
     const [data, setData] = useState(null);
     const [startExpanded, setStartExpanded] = useState(0);
 
@@ -19,11 +21,16 @@ const TestClass = () => {
 
         setData(data)
     }, [])
-
+    
+    const packageNameFromClass = (fqClassName) => fqClassName.replace(/\.[^.]+$/, "")
+     
     if (data) {
         return (
             <>
-                <Header headerText={data.displayName} headerClass={stateClassFor(data.state)}/>
+                <Header headerClass={stateClassFor(data.state)}>
+                    <PackageName packageDisplayMode={packageDisplayMode} fullPackageName={packageNameFromClass(data.testClass)} minimumUniquePackageName={data.minimumUniquePackageName}/>
+                    {data.displayName}                        
+                </Header>
                 <section className="section">
                     <Information issues={data.issues} notes={data.notes}/>
                     {

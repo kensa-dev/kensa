@@ -32,7 +32,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
         if (Kensa.configuration.isOutputEnabled) {
             with(context.getStore(KENSA)) {
                 val executionContext = bindToRootContextOf(context)
-                val container = testContainerFactory.createFor(context, DefaultTestWriter(Kensa.configuration))
+                val container = testContainerFactory.createFor(context, DefaultTestWriter(Kensa.configuration), TestPlanDetails.commonBasePackage) 
                 put(TEST_CONTAINER_KEY, container)
                 executionContext.register(container)
             }

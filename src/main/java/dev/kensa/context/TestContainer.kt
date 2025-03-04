@@ -13,7 +13,8 @@ class TestContainer(
     val methods: Map<Method, TestMethodContainer>,
     val notes: String?,
     val issues: List<String>,
-    private val testWriter: TestWriter
+    val minimumUniquePackageName: String,
+    private val testWriter: TestWriter,
 ) : CloseableResource {
     val state: TestState
         get() = methods.values

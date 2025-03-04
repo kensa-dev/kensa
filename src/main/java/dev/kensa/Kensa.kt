@@ -3,6 +3,7 @@ package dev.kensa
 import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
+import dev.kensa.PackageDisplayMode.HideCommonPackages
 import dev.kensa.Section.*
 import dev.kensa.render.*
 import dev.kensa.render.diagram.directive.UmlDirective
@@ -119,10 +120,20 @@ object Kensa {
     fun withTabSize(tabSize: Int): Kensa = apply {
         configuration.tabSize = tabSize
     }
-
+    
     fun withFlattenOutputPackages(value: Boolean): Kensa = apply {
         configuration.flattenOutputPackages = value
     }
+    
+    fun withPackageDisplayMode(packageDisplayMode: PackageDisplayMode): Kensa = apply {
+        configuration.packageDisplayMode = packageDisplayMode
+    }
+}
+
+enum class PackageDisplayMode {
+    Hidden,
+    HideCommonPackages,
+    ShowFullPackage,
 }
 
 enum class Section {
@@ -157,6 +168,7 @@ class Configuration {
     var issueTrackerUrl: URL = defaultIssueTrackerUrl()
     var tabSize: Int = 5
     var autoOpenTab: Tab = Tab.None
+    var packageDisplayMode: PackageDisplayMode = HideCommonPackages
 
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
 

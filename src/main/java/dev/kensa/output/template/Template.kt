@@ -109,6 +109,7 @@ sealed class FileTemplate(mode: Mode, configuration: Configuration, private val 
                         .add("issueTrackerUrl", issueTrackerUrl.toString())
                         .add("acronyms", acronymsAsJson(acronyms))
                         .add("flattenPackages", flattenOutputPackages)
+                        .add("packageDisplayMode", packageDisplayMode.name)
                         .add("sectionOrder", Json.array().apply {
                             sectionOrder.forEach { add(it.name) }
                         })

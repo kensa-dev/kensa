@@ -4,7 +4,9 @@ import dev.kensa.Kensa
 import dev.kensa.output.DefaultTestWriter
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.maps.shouldNotBeEmpty
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
@@ -50,6 +52,50 @@ internal class TestContainerFactoryTest {
 
         result.methods.filterValues { it.displayName == "Test 7" }.shouldNotBeEmpty()
     }
+    
+    @Nested
+    inner class MinimumUniquePackageName {
+
+        @Test
+        internal fun `selects empty package name when commonBasePackage matches fully`() {
+            val testClass: Class<*> = TestClass::class.java
+
+            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
+            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "dev.kensa.context")
+
+            result.minimumUniquePackageName shouldBe ""
+        }
+
+        @Test
+        internal fun `selects partial package name when commonBasePackage matches partially`() {
+            val testClass: Class<*> = TestClass::class.java
+
+            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
+            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "dev.kensa")
+
+            result.minimumUniquePackageName shouldBe "context"
+        }
+
+        @Test
+        internal fun `keeps original package name when commonBasePackage does not match at all`() {
+            val testClass: Class<*> = TestClass::class.java
+
+            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
+            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "something.else")
+
+            result.minimumUniquePackageName shouldBe "dev.kensa.context"
+        }
+        
+        @Test
+        internal fun `keeps original package name when commonBasePackage is empty`() {
+            val testClass: Class<*> = TestClass::class.java
+
+            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
+            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "")
+
+            result.minimumUniquePackageName shouldBe "dev.kensa.context"
+        }
+    }
 
     private interface TestInterface {
         @Test
@@ -57,7 +103,7 @@ internal class TestContainerFactoryTest {
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("UNUSED_PARAMETER", "JUnitMalformedDeclaration", "RedundantVisibilityModifier")
     private class TestClass : TestInterface {
         @Test
         fun test1() {
