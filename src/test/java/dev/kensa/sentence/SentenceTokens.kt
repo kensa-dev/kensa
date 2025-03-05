@@ -1,6 +1,7 @@
 package dev.kensa.sentence
 
 import dev.kensa.parse.EmphasisDescriptor
+import dev.kensa.parse.HighlightDescriptor
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.sentence.TokenType.Acronym
 import dev.kensa.sentence.TokenType.ProtectedPhrase
@@ -8,7 +9,7 @@ import dev.kensa.sentence.TokenType.Keyword
 
 object SentenceTokens {
 
-    fun aWordOf(value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) = SentenceToken(value, tokenTypes = setOf(Word), emphasis = emphasisDescriptor)
+    fun aWordOf(value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default, highlightIndex: String? = null) = SentenceToken(value, tokenTypes = setOf(Word), emphasis = emphasisDescriptor, highlight = highlightIndex?.let { HighlightDescriptor(highlightIndex, highlightIndex, highlightIndex) })
 
     fun aNumberLiteralOf(value: String) = SentenceToken(value, tokenTypes = setOf(NumberLiteral))
 

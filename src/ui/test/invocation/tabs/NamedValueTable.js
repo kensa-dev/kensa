@@ -1,11 +1,10 @@
 import React from "react";
-import {highlight} from "../Highlighting";
 
 export function NamedValueTable({showHeader, highlights, namedValues}) {
-    const setCodeRef = (wrappingDiv) => {
-        if(wrappingDiv) {
-            highlight('plainText', wrappingDiv, highlights)
-        }
+    
+    const highlightClassFor = (name) => {
+        const descriptor = highlights.find(entry => entry.name === name);
+        return descriptor && (`kensa-highlight kensa-highlight-${descriptor.colourIndex}`);
     }
 
     return (
@@ -26,7 +25,7 @@ export function NamedValueTable({showHeader, highlights, namedValues}) {
                         <tr key={idx}>
                             <td>{name}</td>
                             <td>
-                                <div ref={setCodeRef.bind(this)}>{value}</div>
+                                <span className={highlightClassFor(name)}>{value}</span>
                             </td>
                         </tr>
                     )

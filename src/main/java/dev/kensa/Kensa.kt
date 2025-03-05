@@ -3,6 +3,7 @@ package dev.kensa
 import dev.kensa.Kensa.KENSA_DISABLE_OUTPUT
 import dev.kensa.Kensa.KENSA_OUTPUT_DIR
 import dev.kensa.Kensa.KENSA_OUTPUT_ROOT
+import dev.kensa.Kensa.MAX_ALLOWED_HIGHLIGHT_COLOURS
 import dev.kensa.PackageDisplayMode.HideCommonPackages
 import dev.kensa.Section.*
 import dev.kensa.render.*
@@ -13,7 +14,6 @@ import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.Keyword
 import dev.kensa.state.SetupStrategy
 import org.antlr.v4.runtime.atn.PredictionMode
-import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
 import java.nio.file.Path
@@ -25,6 +25,7 @@ object Kensa {
     internal const val KENSA_OUTPUT_ROOT = "kensa.output.root"
     internal const val KENSA_DISABLE_OUTPUT = "kensa.disable.output"
     internal const val KENSA_OUTPUT_DIR = "kensa-output"
+    internal const val MAX_ALLOWED_HIGHLIGHT_COLOURS = 8
 
     @JvmStatic
     val configuration = Configuration()
@@ -102,13 +103,17 @@ object Kensa {
     fun withTabSize(tabSize: Int): Kensa = apply {
         configuration.tabSize = tabSize
     }
-    
+
     fun withFlattenOutputPackages(value: Boolean): Kensa = apply {
         configuration.flattenOutputPackages = value
     }
-    
+
     fun withPackageDisplayMode(packageDisplayMode: PackageDisplayMode): Kensa = apply {
         configuration.packageDisplayMode = packageDisplayMode
+    }
+
+    fun withMaxHighlightColours(value: Int): Kensa = apply {
+        configuration.maxHighlightColours = value.coerceAtMost(MAX_ALLOWED_HIGHLIGHT_COLOURS)
     }
 }
 
@@ -130,6 +135,11 @@ enum class Tab {
     Parameters,
     SequenceDiagram,
     None
+}
+
+enum class MaxHighlightColoursBehaviour {
+    RollOver,
+    Stop,
 }
 
 class Configuration {
@@ -170,6 +180,10 @@ class Configuration {
 
     var protectedPhrases: Set<ProtectedPhrase> = emptySet()
         set(value) = dictionary.putProtectedPhrases(value)
+
+    var maxHighlightColours: Int = MAX_ALLOWED_HIGHLIGHT_COLOURS
+
+    var maxHighlightColoursBehaviour: MaxHighlightColoursBehaviour = MaxHighlightColoursBehaviour.RollOver
 
     fun disableOutput() {
         isOutputEnabled = false

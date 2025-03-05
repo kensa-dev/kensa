@@ -6,6 +6,7 @@ import com.eclipsesource.json.JsonValue
 import com.eclipsesource.json.WriterConfig
 import dev.kensa.KensaException
 import dev.kensa.context.TestContainer
+import dev.kensa.parse.HighlightDescriptor
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceToken
@@ -40,7 +41,7 @@ object JsonTransforms {
 
                     jsonObject()
                         .add("elapsedTime", DurationFormatter.format(i.elapsed))
-                        .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
+                        .add("highlights", asJsonArray(i.highlightDescriptors.descriptors, highlightDescriptorAsJson(renderers)))
                         .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
                         .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
                         .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
@@ -96,12 +97,14 @@ object JsonTransforms {
         asJsonArray(sentence.squashedTokens) { token: SentenceToken ->
             jsonObject()
                 .add("types", asJsonArray(token.cssClasses))
+                .apply { token.sourceHint?.also { add("sourceHint", it) } }
                 .add("value", token.value)
                 .add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<SentenceToken> ->
                     asJsonArray(sentenceTokens) { sentenceToken ->
                         jsonObject()
                             .add("types", asJsonArray(sentenceToken.cssClasses))
                             .add("value", sentenceToken.value)
+                            .apply { token.sourceHint?.also { add("sourceHint", it) } }
                     }
                 })
         }
@@ -157,8 +160,13 @@ object JsonTransforms {
             )
         }
 
-    private fun nvValueAsJson(renderers: Renderers) = { nv: NamedValue -> Json.value(renderers.renderValue(nv.value)) }
-
+    private fun highlightDescriptorAsJson(renderers: Renderers) = {
+        descriptor: HighlightDescriptor -> jsonObject()
+            .add("value", renderers.renderValue(descriptor.value))
+            .add("name", descriptor.name)
+            .add("colourIndex", descriptor.colourIndex)
+    }
+    
     private fun NamedValue.asJson(renderers: Renderers) = jsonObject().add(name, renderers.renderValue(value))
     private fun nvAsJson(renderers: Renderers) = { nv: NamedValue -> jsonObject().add(nv.name, renderers.renderValue(nv.value)) }
 

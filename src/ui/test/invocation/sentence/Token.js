@@ -21,13 +21,13 @@ const AcronymToken = ({tokenCls, value}) => {
     return <span className={"tooltip " + tokenCls} data-tooltip={acronyms[value]}>{value}</span>;
 }
 
-const SimpleToken = ({tokenCls, value}) =>
-    <span className={tokenCls}>{value}</span>
+const SimpleToken = ({tokenCls, value, sourceHint}) =>
+    <span className={tokenCls} title={sourceHint}>{value}</span>
 
 const TextBlockToken = ({tokenCls, value}) =>
     <div className={tokenCls}>{value}</div>
 
-export const Token = ({types, value, tokens}) => {
+export const Token = ({types, value, sourceHint, tokens}) => {
     const tokenCls = types.join(" ")
 
     if (types.includes("tk-ex")) {
@@ -37,7 +37,7 @@ export const Token = ({types, value, tokens}) => {
     } else if (types.includes("tk-tb")) {
         return <TextBlockToken tokenCls={tokenCls} value={value}/>
     } else {
-        return <SimpleToken tokenCls={tokenCls} value={value}/>
+        return <SimpleToken tokenCls={tokenCls} value={value} sourceHint={sourceHint}/>
     }
 }
 

@@ -1,5 +1,6 @@
 package dev.kensa.state
 
+import dev.kensa.parse.HighlightDescriptors
 import dev.kensa.parse.ParsedInvocation
 import dev.kensa.render.diagram.SequenceDiagram
 import dev.kensa.sentence.Sentence
@@ -21,7 +22,7 @@ class TestInvocation(
     val sentences: List<Sentence> = parsedInvocation.sentences
     val parameters: Collection<NamedValue> = parsedInvocation.namedParameterValues
     val parameterizedTestDescription: String? = parsedInvocation.parameterizedTestDescription
-    val highlightedValues: Collection<NamedValue> = parsedInvocation.highlightedValues
+    val highlightDescriptors: HighlightDescriptors = parsedInvocation.highlightDescriptors
     val state: TestState
 
     private val _givens = givens
@@ -33,7 +34,7 @@ class TestInvocation(
         get() = _interactions.entrySet()
 
     init {
-        _givens.putNamedValues(highlightedValues)
+        _givens.putNamedValues(parsedInvocation.defaultGivens) 
         state = if (executionException == null) Passed else Failed
     }
 }

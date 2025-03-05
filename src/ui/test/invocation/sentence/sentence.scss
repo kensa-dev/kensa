@@ -20,6 +20,25 @@
   background-color: yellow;
 }
 
+.tk-hl-1 { background-color: yellow; }
+.tk-hl-2 { background-color: #ffba38; }
+.tk-hl-3 { background-color: lime; }
+.tk-hl-4 { background-color: cyan; }
+.tk-hl-5 { background-color: hotpink; }
+.tk-hl-6 { background-color: #99ffcc; }
+.tk-hl-7 { background-color: #66ccff; }
+.tk-hl-8 { background-color: #ccaaff; }
+
+.tk-hl-ambiguous {
+  background: repeating-linear-gradient(
+                  -45deg,
+                  #eeeeee,
+                  #eeeeee 10px,
+                  #e0e0e0 10px,
+                  #e0e0e0 20px
+  );
+}
+
 .tk-id {
   font-weight: bold;
 }
