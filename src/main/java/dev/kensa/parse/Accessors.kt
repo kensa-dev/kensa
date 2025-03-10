@@ -59,6 +59,7 @@ sealed interface Accessor {
             override val highlight by lazy { method.findAnnotation<Highlight>() ?: throwAnnotationNotFound(Highlight::class) }
         }
 
+        @Suppress("UNCHECKED_CAST")
         class ParameterAccessor(val parameter: Parameter, override val name: String, val index: Int) : ValueAccessor {
             override fun valueOfIn(target: Any): Any? {
                 target as Array<Any?>

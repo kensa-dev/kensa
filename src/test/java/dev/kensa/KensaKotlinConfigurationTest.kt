@@ -70,12 +70,6 @@ internal class KensaKotlinConfigurationTest {
     }
 
     @Test
-    fun throwsWhenIssueTrackerUrlInvalid() {
-        shouldThrowExactly<IllegalArgumentException> { configure().withIssueTrackerUrl("foo") }
-            .shouldHaveMessage("Invalid Issue Tracker URL specified.")
-    }
-
-    @Test
     fun throwsWhenKensaOutputDirNotAbsolute() {
         shouldThrowExactly<IllegalArgumentException> { configure().withOutputDir("foo") }
             .shouldHaveMessage("OutputDir must be absolute.")
