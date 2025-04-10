@@ -40,7 +40,7 @@ class TestContainerFactory {
 
     private fun Method.initialState() = if (hasAnnotation<Disabled>()) Disabled else NotExecuted
 
-    private fun AnnotatedElement.autoOpenTab(default: Tab? = null) : Tab = findAnnotation<AutoOpenTab>()?.value ?: default ?: Kensa.configuration.autoOpenTab
+    private fun AnnotatedElement.autoOpenTab(default: Tab? = null): Tab = findAnnotation<AutoOpenTab>()?.value ?: default ?: Kensa.configuration.autoOpenTab
 
     private fun AnnotatedElement.deriveDisplayName(lazyDefault: () -> String) = findAnnotation<DisplayName>()?.value ?: lazyDefault()
 
@@ -55,6 +55,9 @@ class TestContainerFactory {
             ?.removeLeadingDots()
             ?: packageName
 
-    private fun String.removeLeadingDots() =
-        replace(Regex("^\\.+"), "")
+    private fun String.removeLeadingDots(): String = replace(greedyDotRegex, "")
+
+    companion object {
+        private val greedyDotRegex = Regex("^\\.+")
+    }
 }

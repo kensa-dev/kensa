@@ -28,8 +28,6 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     )
 
     override fun beforeAll(context: ExtensionContext) {
-        println("KensaExtension.beforeAll::> ${context.uniqueId}")
-
         if (Kensa.configuration.isOutputEnabled) {
             with(context.getStore(KENSA)) {
                 val executionContext = getOrCreateExecutionContext(context)
@@ -41,7 +39,6 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     }
 
     override fun beforeEach(context: ExtensionContext) {
-        println("KensaExtension.beforeEach::> ${context.uniqueId}")
         with(context.getStore(KENSA)) {
             TestContext(context.requiredTestClass, context.requiredTestMethod).also {
                 put(TEST_CONTEXT_KEY, it)
@@ -56,7 +53,6 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
         invocationContext: ReflectiveInvocationContext<Method>,
         context: ExtensionContext
     ) {
-        println("KensaExtension.interceptTestTemplateMethod::> ${context.uniqueId}")
         createTestInvocationContext(context, invocationContext.arguments.toTypedArray())
         invocation.proceed()
     }
@@ -67,7 +63,6 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
         invocationContext: ReflectiveInvocationContext<Method>,
         context: ExtensionContext
     ) {
-        println("KensaExtension.interceptTestMethod::> ${context.uniqueId}")
         createTestInvocationContext(context, invocationContext.arguments.toTypedArray())
         invocation.proceed()
     }
@@ -88,7 +83,6 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback,
     }
 
     override fun afterTestExecution(context: ExtensionContext) {
-        println("KensaExtension.afterTestExecution::> ${context.uniqueId}")
         try {
             if (Kensa.configuration.isOutputEnabled) {
                 val endTime = System.currentTimeMillis()

@@ -51,8 +51,7 @@ internal class TestContainerFactoryTest {
         internal fun `selects empty package name when commonBasePackage matches fully`() {
             val testClass: Class<*> = TestClass::class.java
 
-            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "dev.kensa.context")
+            val result = factory.createFor(testClass, "Test", "dev.kensa.context")
 
             result.minimumUniquePackageName shouldBe ""
         }
@@ -61,8 +60,7 @@ internal class TestContainerFactoryTest {
         internal fun `selects partial package name when commonBasePackage matches partially`() {
             val testClass: Class<*> = TestClass::class.java
 
-            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "dev.kensa")
+            val result = factory.createFor(testClass, "Test", "dev.kensa")
 
             result.minimumUniquePackageName shouldBe "context"
         }
@@ -71,8 +69,7 @@ internal class TestContainerFactoryTest {
         internal fun `keeps original package name when commonBasePackage does not match at all`() {
             val testClass: Class<*> = TestClass::class.java
 
-            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "something.else")
+            val result = factory.createFor(testClass, "Test", "something.else")
 
             result.minimumUniquePackageName shouldBe "dev.kensa.context"
         }
@@ -81,8 +78,7 @@ internal class TestContainerFactoryTest {
         internal fun `keeps original package name when commonBasePackage is empty`() {
             val testClass: Class<*> = TestClass::class.java
 
-            whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-            val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration), "")
+            val result = factory.createFor(testClass, "Test", "")
 
             result.minimumUniquePackageName shouldBe "dev.kensa.context"
         }
