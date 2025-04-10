@@ -6,18 +6,17 @@ import dev.kensa.parse.KotlinLexer.*
 import dev.kensa.parse.KotlinParser
 import dev.kensa.parse.KotlinParserBaseListener
 import dev.kensa.parse.ParserStateMachine
-import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class KotlinFunctionBodyParser(private val stateMachine: ParserStateMachine) : KotlinParserBaseListener() {
 
 //  For Debugging:
 //    override fun enterEveryRule(ctx: ParserRuleContext) {
-//        println(">Entering: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state")
+//        println(">Entering: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
 //    }
 
 //    override fun exitEveryRule(ctx: ParserRuleContext) {
-//        println(">Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state")
+//        println(">Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
 //    }
 
     override fun enterFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
@@ -48,6 +47,15 @@ class KotlinFunctionBodyParser(private val stateMachine: ParserStateMachine) : K
     override fun exitExpression(ctx: KotlinParser.ExpressionContext) {
 //        println("Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
         stateMachine.transition(ExitMethodInvocationEvent(ctx))
+    }
+
+    override fun enterTypeArguments(ctx: KotlinParser.TypeArgumentsContext) {
+        stateMachine.transition(EnterTypeArgumentsEvent(ctx))
+    }
+
+    override fun exitTypeArguments(ctx: KotlinParser.TypeArgumentsContext) {
+        stateMachine.transition(ExitTypeArgumentsEvent(ctx))
+        super.exitTypeArguments(ctx)
     }
 
     override fun visitTerminal(node: TerminalNode) {
