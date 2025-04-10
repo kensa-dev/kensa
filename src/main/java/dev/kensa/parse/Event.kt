@@ -33,6 +33,8 @@ sealed class Event<PT : ParseTree>(val parseTree: PT) {
     class TerminalNodeEvent(parseTree: TerminalNode) : Event<TerminalNode>(parseTree)
     class EnterMethodInvocationEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class ExitMethodInvocationEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
+    class EnterTypeArgumentsEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
+    class ExitTypeArgumentsEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class IdentifierEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class EnterStatementEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)
     class ExitStatementEvent(parseTree: ParseTree) : Event<ParseTree>(parseTree)

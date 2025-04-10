@@ -11,8 +11,8 @@ class KotlinTestWithVariousLiterals : KotlinKensaTest, WithKotest {
     fun literalTest() {
         then(theNullResult(), be(null))
         then(theHexResult(), be(0x123))
-        then(theBooleanResult(), be(true))
-        then(theCharacterResult(), be('a'))
+        then(theBooleanResult(), be<Boolean>(true))
+        then(theCharacterResult(), be<Char>('a'))
     }
 
     private fun theNullResult() = StateExtractor { null }

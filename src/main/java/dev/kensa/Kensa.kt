@@ -36,14 +36,6 @@ object Kensa {
         configuration.apply(init)
     }
 
-    fun withIssueTrackerUrl(url: String): Kensa = apply {
-        try {
-            withIssueTrackerUrl(URL(url))
-        } catch (e: MalformedURLException) {
-            throw IllegalArgumentException("Invalid Issue Tracker URL specified.", e)
-        }
-    }
-
     fun withIssueTrackerUrl(url: URL): Kensa = apply {
         configuration.issueTrackerUrl = url
     }
@@ -57,16 +49,6 @@ object Kensa {
 
     fun withOutputDisabled(): Kensa = apply {
         configuration.isOutputEnabled = false
-    }
-
-    @Deprecated("Deprecated", ReplaceWith("withValueRenderer(klass, renderer)", "dev.kensa"))
-    fun <T : Any> withRenderer(klass: Class<T>, renderer: Renderer<out T>): Kensa = apply {
-        withValueRenderer(klass, renderer)
-    }
-
-    @Deprecated("Deprecated", ReplaceWith("withValueRenderer(klass, renderer)", "dev.kensa"))
-    fun <T : Any> withRenderer(klass: KClass<T>, renderer: Renderer<out T>): Kensa = apply {
-        withValueRenderer(klass, renderer)
     }
 
     fun <T : Any> withListRendererFormat(format: ListRendererFormat): Kensa = apply {
@@ -165,7 +147,7 @@ class Configuration {
     var antlrPredicationMode: PredictionMode = PredictionMode.LL
     var antlrErrorListenerDisabled: Boolean = true
     var umlDirectives: List<UmlDirective> = ArrayList()
-    var issueTrackerUrl: URL = defaultIssueTrackerUrl()
+    var issueTrackerUrl: URL = URI.create("http://empty").toURL()
     var tabSize: Int = 5
     var autoOpenTab: Tab = Tab.None
     var packageDisplayMode: PackageDisplayMode = HideCommonPackages
@@ -191,13 +173,5 @@ class Configuration {
 
     fun disableOutput() {
         isOutputEnabled = false
-    }
-
-    companion object {
-        private fun defaultIssueTrackerUrl(): URL = try {
-            URI.create("http://empty").toURL()
-        } catch (_: MalformedURLException) {
-            throw KensaException("Unable to initialise default issue tracker url")
-        }
     }
 }

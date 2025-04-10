@@ -6,15 +6,17 @@ import dev.kensa.output.template.FileTemplate.IndexFileTemplate
 import dev.kensa.output.template.FileTemplate.TestFileTemplate
 import dev.kensa.util.IoUtil
 import java.nio.file.Path
+import java.util.Comparator
+import java.util.TreeSet
 
-class ResultWriter(private val outputDir: Path, private val indexWriter: IndexWriter) {
+class ResultWriter(private val outputDir: Path, private val configuration: Configuration) {
 
     init {
         IoUtil.recreate(outputDir)
     }
 
-    fun write(containers: Set<TestContainer>) {
-        indexWriter.write(containers)
+    fun write(containers: List<TestContainer>) {
+        writeIndices(containers.sortedBy { it.testClass.name })
         IoUtil.copyResource("/kensa.js", outputDir)
         IoUtil.copyResource("/favicon.ico", outputDir)
 
@@ -25,14 +27,8 @@ class ResultWriter(private val outputDir: Path, private val indexWriter: IndexWr
             """.trimIndent()
         )
     }
-}
 
-interface IndexWriter {
-    fun write(containers: Set<TestContainer>)
-}
-
-class DefaultIndexWriter(private val configuration: Configuration) : IndexWriter {
-    override fun write(containers: Set<TestContainer>) {
+    private fun writeIndices(containers: List<TestContainer>) {
         IndexFileTemplate(configuration).apply {
             containers.forEach { addIndex(it) }
             write()
@@ -40,12 +36,8 @@ class DefaultIndexWriter(private val configuration: Configuration) : IndexWriter
     }
 }
 
-interface TestWriter {
-    fun write(container: TestContainer)
-}
-
-class DefaultTestWriter(private val configuration: Configuration) : TestWriter {
-    override fun write(container: TestContainer) {
+class TestWriter(private val configuration: Configuration) {
+    fun write(container: TestContainer) {
         TestFileTemplate(configuration, container).write()
     }
 }

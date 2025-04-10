@@ -17,13 +17,6 @@ class KensaJavaConfigurationTest {
     }
 
     @Test
-    void throwsWhenIssueTrackerUrlInvalid() {
-        assertThatThrownBy(() -> Kensa.configure().withIssueTrackerUrl("foo"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Invalid Issue Tracker URL specified.");
-    }
-
-    @Test
     void throwsWhenKensaOutputDirNotAbsolute() {
         assertThatThrownBy(() -> Kensa.configure().withOutputDir("foo"))
                 .isInstanceOf(IllegalArgumentException.class)

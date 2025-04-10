@@ -1,12 +1,13 @@
 package dev.kensa.parse
 
-import dev.kensa.parse.Accessor.ValueAccessor.ParameterAccessor
 import dev.kensa.parse.Accessor.ValueAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
+import dev.kensa.parse.Accessor.ValueAccessor.ParameterAccessor
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.Event.LiteralEvent.*
-import dev.kensa.parse.State.*
+import dev.kensa.parse.State.End
 import dev.kensa.parse.State.ParseTreeState.*
+import dev.kensa.parse.State.Start
 import dev.kensa.parse.state.Matcher
 import dev.kensa.parse.state.StateMachine
 import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
@@ -141,7 +142,19 @@ class ParserStateMachine(
                 add(Matcher.any<TerminalNodeEvent>())
             }
         }
+        state<InTypeArguments> {
+            on<ExitTypeArgumentsEvent> { currentState, event ->
+                currentState.parentState
+            }
+            ignoreAll<Event<*>> {
+                add(Matcher.any<TerminalNodeEvent>())
+                add(Matcher.any<IdentifierEvent>())
+            }
+        }
         state<InMethodCall> {
+            on<EnterTypeArgumentsEvent> { currentState, event ->
+                InTypeArguments(event.parseTree, currentState)
+            }
             on<EnterMethodInvocationEvent> { currentState, event ->
                 InMethodCall(event.parseTree, currentState)
             }
@@ -257,17 +270,17 @@ class ParserStateMachine(
         stateMachine.transition(event)
     }
 
-    private fun isExpressionFunction(event: EnterMethodEvent) = event.parseTree.firstChildOrNull()?.startsExpressionFunction() ?: false
+    private fun isExpressionFunction(event: EnterMethodEvent) = event.parseTree.firstChildOrNull()?.startsExpressionFunction() == true
 
     private fun isNestedMethodCall(value: String) = nestedMethods.containsKey(value)
 
-    private fun isScenarioIdentifier(value: String) = properties[value]?.isScenario ?: false
+    private fun isScenarioIdentifier(value: String) = properties[value]?.isScenario == true
 
-    private fun isFieldIdentifier(value: String) = properties[value]?.run { isSentenceValue || isHighlight } ?: false
+    private fun isFieldIdentifier(value: String) = properties[value]?.run { isSentenceValue || isHighlight } == true
 
-    private fun isMethodIdentifier(value: String) = methods[value]?.run { isSentenceValue || isHighlight } ?: false
+    private fun isMethodIdentifier(value: String) = methods[value]?.run { isSentenceValue || isHighlight } == true
 
-    private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlight } ?: false
+    private fun isParameterIdentifier(value: String) = parameters[value]?.run { isSentenceValue || isHighlight } == true
 
     private fun ParseTree.firstChildOrNull() = getChild(0)
     private fun ParseTree.startsExpressionFunction() = this is TerminalNode && text == "="

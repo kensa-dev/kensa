@@ -1,25 +1,14 @@
 package dev.kensa
 
 import dev.kensa.context.TestContainer
-import dev.kensa.output.ResultWriter
-import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource
 import java.util.*
 import java.util.Collections.synchronizedList
 
-class KensaExecutionContext internal constructor(private val resultWriter: ResultWriter) : CloseableResource {
-    private val containers = synchronizedList(ArrayList<TestContainer>())
+class KensaExecutionContext {
+    private val _containers = synchronizedList(ArrayList<TestContainer>())
+    val containers: List<TestContainer> get() = _containers
 
-    override fun close() {
-        resultWriter.write(sortedContainers())
-    }
-
-    fun register(testContainer: TestContainer) {
-        containers.add(testContainer)
-    }
-
-    private fun sortedContainers(): Set<TestContainer> {
-        return TreeSet(Comparator.comparing { o: TestContainer -> o.testClass.name }).apply {
-            this.addAll(containers)
-        }
+    fun add(testContainer: TestContainer) {
+        _containers.add(testContainer)
     }
 }

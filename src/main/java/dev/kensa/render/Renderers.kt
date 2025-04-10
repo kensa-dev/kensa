@@ -22,16 +22,6 @@ class Renderers {
         listRenderer = renderer
     }
 
-    @Deprecated("Deprecated", ReplaceWith("renderers.addValueRenderer(klass,renderer)", "dev.kensa.renderer"))
-    fun <T: Any> add(klass: Class<T>, renderer: Renderer<out T>) {
-        addValueRenderer(klass, renderer)
-    }
-
-    @Deprecated("Deprecated", ReplaceWith("renderers.addValueRenderer(klass,renderer)", "dev.kensa.renderer"))
-    fun <T: Any> add(klass: KClass<T>, renderer: Renderer<out T>) {
-        addValueRenderer(klass, renderer)
-    }
-
     fun <T : Any> addValueRenderer(klass: Class<T>, renderer: ValueRenderer<out T>) {
         addValueRenderer(klass.kotlin, renderer)
     }

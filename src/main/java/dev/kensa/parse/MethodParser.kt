@@ -37,7 +37,7 @@ interface MethodParser : ParserCache, ParserDelegate {
     fun parse(method: Method): ParsedMethod =
         parsedMethodCache.getOrPut(method) {
             val testClass = method.declaringClass
-            val actualDeclaringClass = method.actualDeclaringClass
+            val actualDeclaringClass = method.actualDeclaringClass()
             val classToParse = testClass.takeIf { it == actualDeclaringClass } ?: actualDeclaringClass
 
             val methodDeclarations = testClass.findSourcesMethodDeclarations() + classToParse.findMethodDeclarations()

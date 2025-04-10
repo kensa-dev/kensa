@@ -1,32 +1,30 @@
 package dev.kensa.context
 
 import dev.kensa.*
-import dev.kensa.output.TestWriter
 import dev.kensa.state.TestMethodContainer
-import dev.kensa.state.TestState.*
+import dev.kensa.state.TestState.Disabled
+import dev.kensa.state.TestState.NotExecuted
 import dev.kensa.util.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.extension.ExtensionContext
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
 class TestContainerFactory {
-    fun createFor(context: ExtensionContext, testWriter: TestWriter, commonBasePackage: String = ""): TestContainer =
-        context.requiredTestClass.run {
+    fun createFor(testClass: Class<*>, displayName: String, commonBasePackage: String = ""): TestContainer =
+        testClass.run {
             TestContainer(
                 this,
-                deriveDisplayName { simpleName.unCamel() },
+                displayName,
                 createMethodContainers(),
                 notes(),
                 issues(),
                 deriveMinimumUniquePackageName(commonBasePackage),
-                testWriter
             )
         }
 
     private fun Class<*>.createMethodContainers(): Map<Method, TestMethodContainer> =
-        testMethods()
+        findTestMethods()
             .map { method: Method -> method.createMethodContainer(autoOpenTab()) }
             .associateByTo(LinkedHashMap()) { invocation: TestMethodContainer -> invocation.method }
 

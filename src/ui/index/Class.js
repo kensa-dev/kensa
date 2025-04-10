@@ -12,10 +12,6 @@ const Class = ({testClass, parentIsExpanded}) => {
         return anchor ? `${basePath}#${anchor}` : basePath;
     };
 
-    const load = (anchor) => () => {
-        window.location = generateUrl(testClass, anchor);
-    }
-
     const toggle = () => setExpanded(prev => !prev)
 
     if (parentIsExpanded && testClass.isVisible) {
@@ -23,11 +19,11 @@ const Class = ({testClass, parentIsExpanded}) => {
             <dl className={testClass.cssCls}>
                 <dt>
                     <ExpandIcon isExpanded={isExpanded} onClick={toggle}/>
-                    <a onClick={load()}>{testClass.name}</a>
+                    <a href={generateUrl(testClass)}>{testClass.name}</a>
                 </dt>
                 {isExpanded && testClass.tests.filter(e => e.isVisible).map((entry, idx) =>
                     <dd className={entry.cssCls} key={idx}>
-                        <a onClick={load(entry.method)}>{entry.name}</a>
+                        <a href={generateUrl(testClass, entry.method)}>{entry.name}</a>
                     </dd>
                 )
                 }

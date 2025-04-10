@@ -1,26 +1,19 @@
 package dev.kensa.context
 
-import dev.kensa.Kensa
-import dev.kensa.output.DefaultTestWriter
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.maps.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import kotlin.reflect.jvm.javaMethod
 
 internal class TestContainerFactoryTest {
     private lateinit var factory: TestContainerFactory
-    private lateinit var extensionContext: ExtensionContext
 
     @BeforeEach
     internal fun setUp() {
-        extensionContext = mock()
         factory = TestContainerFactory()
     }
 
@@ -37,8 +30,7 @@ internal class TestContainerFactoryTest {
             TestClass::test7.javaMethod,
             TestInterface::interfaceTest.javaMethod
         )
-        whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-        val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
+        val result = factory.createFor(testClass, "Test")
 
         result.methods.values.map { it.method } shouldContainAll expected
     }
@@ -47,12 +39,11 @@ internal class TestContainerFactoryTest {
     internal fun `derives display name for internal method`() {
         val testClass: Class<*> = TestClass::class.java
 
-        whenever(extensionContext.requiredTestClass).thenReturn(testClass)
-        val result = factory.createFor(extensionContext, DefaultTestWriter(Kensa.configuration))
+        val result = factory.createFor(testClass, "Test")
 
         result.methods.filterValues { it.displayName == "Test 7" }.shouldNotBeEmpty()
     }
-    
+
     @Nested
     inner class MinimumUniquePackageName {
 
@@ -85,7 +76,7 @@ internal class TestContainerFactoryTest {
 
             result.minimumUniquePackageName shouldBe "dev.kensa.context"
         }
-        
+
         @Test
         internal fun `keeps original package name when commonBasePackage is empty`() {
             val testClass: Class<*> = TestClass::class.java

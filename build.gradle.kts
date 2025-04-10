@@ -1,5 +1,6 @@
 import com.github.gradle.node.task.NodeTask
-import org.gradle.api.JavaVersion.*
+import org.gradle.api.JavaVersion.VERSION_17
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -108,9 +109,9 @@ tasks {
 
     withType<KotlinCompile> {
         dependsOn("generateGrammarSource")
-        kotlinOptions {
-            jvmTarget = "17"
-            freeCompilerArgs += listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts")
+        compilerOptions {
+            jvmTarget.set(JVM_17)
+            freeCompilerArgs.addAll(listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts"))
         }
     }
 
@@ -174,7 +175,7 @@ tasks {
         inputs.file("webpack.config.js")
         inputs.file("package-lock.json")
         inputs.dir("src/ui")
-        outputs.dir("$buildDir/resources/main")
+        outputs.dir("${layout.buildDirectory.get()}/resources/main")
         dependsOn("npmInstall")
     }
 
@@ -184,7 +185,7 @@ tasks {
         inputs.file("webpack.config.js")
         inputs.file("package-lock.json")
         inputs.dir("src/ui")
-        outputs.dir("$buildDir/resources/main")
+        outputs.dir("${layout.buildDirectory.get()}/resources/main")
         dependsOn("npmInstall")
     }
 

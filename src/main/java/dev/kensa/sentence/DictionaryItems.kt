@@ -14,7 +14,7 @@ data class Keyword(val value: String, override val emphasisDescriptor: EmphasisD
     }
 }
 
-data class Acronym private constructor(val acronym: String) {
+data class Acronym(val acronym: String) {
 
     lateinit var _meaning: String
         private set
