@@ -58,7 +58,7 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ, Ja
         withAllTheNestedThings();
 
         nestedSentence();
-        then(foo1())
+        then(this.<String>foo1(""))
                 .isEqualTo("777")
                     .hasSameClassAs("888");
         then(foo())
@@ -77,7 +77,7 @@ class AssertionStyleTest implements JavaKensaTest, WithHamcrest, WithAssertJ, Ja
         return interactions -> 666;
     }
 
-    private StateExtractor<String> foo1() {
+    private <T> StateExtractor<String> foo1(T t) {
         return interactions -> "777";
     }
 

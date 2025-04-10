@@ -55,7 +55,6 @@ class KotlinFunctionBodyParser(private val stateMachine: ParserStateMachine) : K
 
     override fun exitTypeArguments(ctx: KotlinParser.TypeArgumentsContext) {
         stateMachine.transition(ExitTypeArgumentsEvent(ctx))
-        super.exitTypeArguments(ctx)
     }
 
     override fun visitTerminal(node: TerminalNode) {

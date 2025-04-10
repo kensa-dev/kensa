@@ -61,6 +61,14 @@ class JavaMethodBodyParser(private val stateMachine: ParserStateMachine) : Java2
         stateMachine.transition(ExitMethodInvocationEvent(ctx))
     }
 
+    override fun enterTypeArguments(ctx: Java20Parser.TypeArgumentsContext) {
+        stateMachine.transition(EnterTypeArgumentsEvent(ctx))
+    }
+
+    override fun exitTypeArguments(ctx: Java20Parser.TypeArgumentsContext) {
+        stateMachine.transition(ExitTypeArgumentsEvent(ctx))
+    }
+
     override fun visitTerminal(node: TerminalNode) {
 //        println("Terminal: ${node.symbol.type} :: ${node.text}")
         when (node.symbol.type) {
