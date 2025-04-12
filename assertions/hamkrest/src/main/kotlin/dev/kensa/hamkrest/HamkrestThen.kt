@@ -1,0 +1,24 @@
+package dev.kensa.hamkrest
+
+import dev.kensa.StateExtractor
+import dev.kensa.context.TestContext
+import java.time.Duration
+import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.SECONDS
+import com.natpryce.hamkrest.Matcher
+import com.natpryce.hamkrest.assertion.assertThat
+import org.awaitility.kotlin.await
+
+object HamkrestThen {
+    @JvmStatic
+    fun <T> then(context: TestContext, extractor: StateExtractor<T>, matcher: Matcher<T>) {
+        assertThat(extractor.execute(context.interactions), matcher)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun <T> thenEventually(timeout: Long = 10, timeUnit: ChronoUnit = SECONDS, context: TestContext, extractor: StateExtractor<T>, matcher: Matcher<T>) {
+        await.atMost(Duration.of(timeout, timeUnit)).untilAsserted { assertThat(extractor.execute(context.interactions), matcher) }
+        assertThat(extractor.execute(context.interactions), matcher)
+    }
+}

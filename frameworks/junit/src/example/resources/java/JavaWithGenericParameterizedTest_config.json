@@ -1,0 +1,12 @@
+{
+  "mode": "TestFile",
+  "issueTrackerUrl": "http://empty",
+  "acronyms": {},
+  "flattenPackages": false,
+  "packageDisplayMode": "HideCommonPackages",
+  "sectionOrder": [
+    "Buttons",
+    "Sentences",
+    "Exception"
+  ]
+}

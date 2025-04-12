@@ -1,0 +1,49 @@
+{
+  "testClass": "dev.kensa.KotlinWithParameterResolverExtensionTest",
+  "displayName": "KotlinWithParameterResolverExtensionTest",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "dev.kensa",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "theTest",
+      "displayName": "The Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "assert that parameter value equal to MY_PARAMETER_VALUE",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "parameter": "myParameter"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "theTest(MyArgument)"
+        }
+      ]
+    }
+  ]
+}

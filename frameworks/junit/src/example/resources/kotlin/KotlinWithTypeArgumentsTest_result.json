@@ -1,0 +1,63 @@
+{
+  "testClass": "dev.kensa.KotlinWithTypeArgumentsTest",
+  "displayName": "KotlinWithTypeArgumentsTest",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "dev.kensa",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a literal of",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-sl"
+                ],
+                "value": "aStringValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}

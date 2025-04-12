@@ -10,11 +10,13 @@ kotest = "5.9.1"
 junitPlatform = "1.11.4"
 junitJupiter = "5.11.4"
 assertJ = "3.22.0"
-hamcrest = "1.3"
+hamcrest = "2.2"
+hamkrest = "1.8.0.1"
 awaitility = "4.0.3"
 minimalJson = "0.9.5"
 antlr = "4.13.2"
 nexusPublish = "2.0.0"
+jsoup = "1.19.1"
 
 [libraries]
 kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin"}
@@ -22,17 +24,21 @@ kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = 
 kotlinCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines"}
 kotlinCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 antlr = { module = "org.antlr:antlr4", version.ref = "antlr"}
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 assertJCore = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
 hamcrestCore = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrest" }
+hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
 awaitilityKotlin = { module = "org.awaitility:awaitility-kotlin", version.ref = "awaitility" }
 minimalJson = { module = "com.eclipsesource.minimal-json:minimal-json", version.ref = "minimalJson" }
 plantuml = { module = "net.sourceforge.plantuml:plantuml", version.ref = "plantUml" }
 pebble = { module = "io.pebbletemplates:pebble", version.ref = "pebble" }
 kotestAssertionsCoreJvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
+kotestAssertionsJson = { module = "io.kotest:kotest-assertions-json", version.ref = "kotest" }
 junitJupiterParams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiter" }
 junitJupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiter" }
 junitJupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiter" }
 junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatform" }
+junitPlatformEngine = { module = "org.junit.platform:junit-platform-engine", version.ref = "junitPlatform" }
 junitPlatformTestKit = { module = "org.junit.platform:junit-platform-testkit", version.ref = "junitPlatform" }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
 

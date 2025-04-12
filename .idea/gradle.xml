@@ -4,13 +4,19 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="delegatedBuild" value="true" />
-        <option name="testRunner" value="GRADLE" />
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/assertions/assertj" />
+            <option value="$PROJECT_DIR$/assertions/hamcrest" />
+            <option value="$PROJECT_DIR$/assertions/hamkrest" />
+            <option value="$PROJECT_DIR$/assertions/kotest" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/frameworks/junit" />
+            <option value="$PROJECT_DIR$/frameworks/kotest" />
+            <option value="$PROJECT_DIR$/frameworks/testng" />
+            <option value="$PROJECT_DIR$/ui" />
           </set>
         </option>
       </GradleProjectSettings>

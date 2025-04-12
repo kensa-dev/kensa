@@ -1,0 +1,74 @@
+{
+  "testClass": "dev.kensa.KotlinWithGenericParameterizedTest",
+  "displayName": "KotlinWithGenericParameterizedTest",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "dev.kensa",
+  "issues": [],
+  "tests": [
+    {
+      "testMethod": "theTest",
+      "displayName": "The Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "assert that param get",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-num"
+                ],
+                "value": "0",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "has key",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-sl"
+                ],
+                "value": "a",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "param": "[{a=b}]"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] [{a=b}]"
+        }
+      ]
+    }
+  ]
+}

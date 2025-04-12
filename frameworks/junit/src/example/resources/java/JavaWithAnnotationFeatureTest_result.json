@@ -1,0 +1,362 @@
+{
+  "testClass": "dev.kensa.JavaWithAnnotationFeatureTest",
+  "displayName": "JavaWithAnnotationFeatureTest",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "dev.kensa",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithScenario",
+      "displayName": "Test With Scenario",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some prerequisites",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some action",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value is",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-sv"
+                ],
+                "value": "aStringValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "foo": "bar"
+            },
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithScenario()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithHighlight",
+      "displayName": "Test With Highlight",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some prerequisites with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-sl"
+                ],
+                "value": "noHighlight",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some action with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-fv",
+                  "tk-hl"
+                ],
+                "value": "givensViaHighlight",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value is",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "aStringValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "key_noHighlight": "noHighlight"
+            },
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithHighlight()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithEmphasis",
+      "displayName": "Test With Emphasis",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "has-background-danger",
+                  "has-text-light",
+                  "has-text-weight-bold",
+                  "is-italic",
+                  "is-uppercase",
+                  "tk-wd"
+                ],
+                "value": "some action with emphasis",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value is",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "aStringValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithEmphasis()"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "testClass": "dev.kensa.JavaWithLiteralsTest",
+  "displayName": "JavaWithLiteralsTest",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "dev.kensa",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "19 Ms",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "19 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a literal of",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-sl"
+                ],
+                "value": "aStringValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a literal of",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-bo"
+                ],
+                "value": "true",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a literal of",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-num"
+                ],
+                "value": "10",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a literal of",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-null"
+                ],
+                "value": "null",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a literal of",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-cl"
+                ],
+                "value": "a",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a literal of",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-tb"
+                ],
+                "value": "a multiline string",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}

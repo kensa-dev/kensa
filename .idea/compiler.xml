@@ -2,15 +2,17 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="17">
-      <module name="kensa.core" target="17" />
-      <module name="kensa.core.main" target="17" />
-      <module name="kensa.core.test" target="17" />
       <module name="kensa.java" target="17" />
       <module name="kensa.java.main" target="17" />
       <module name="kensa.java.test" target="17" />
+      <module name="kensa.javaExampleTest" target="21" />
+      <module name="kensa.junitIntegrationTest" target="21" />
       <module name="kensa.kotlin" target="17" />
       <module name="kensa.kotlin.main" target="17" />
       <module name="kensa.kotlin.test" target="17" />
+      <module name="kensa.kotlinExampleTest" target="21" />
+      <module name="kensa.main" target="21" />
+      <module name="kensa.test" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

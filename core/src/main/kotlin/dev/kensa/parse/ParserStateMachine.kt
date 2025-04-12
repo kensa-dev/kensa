@@ -1,0 +1,205 @@
+package dev.kensa.parse
+
+import dev.kensa.parse.Event.*
+import dev.kensa.parse.LocatedEvent.*
+import dev.kensa.parse.State.*
+import dev.kensa.parse.state.Matcher
+import dev.kensa.parse.state.StateMachine
+import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
+import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.SentenceBuilder
+
+class ParserStateMachine(private val createSentenceBuilder: (Location) -> SentenceBuilder) {
+
+    private val _sentences: MutableList<Sentence> = ArrayList()
+    val sentences: List<Sentence>
+        get() = _sentences
+
+    private lateinit var sentenceBuilder: SentenceBuilder
+    private var lastLocation: Location? = null
+
+    private fun beginSentence(location: Location) {
+        sentenceBuilder = createSentenceBuilder(lastLocation ?: location)
+    }
+
+    private fun finishSentence() {
+        lastLocation = sentenceBuilder.lastLocation
+        _sentences += sentenceBuilder.build()
+
+    }
+
+    internal val stateMachine: StateMachine<State, Event> = aStateMachine {
+
+        initialState = Start
+
+        state<Start> {
+            on<EnterMethod> { _, event ->
+                InMethod
+            }
+        }
+        state<InMethod> {
+            on<ExitMethod>(transitionTo(End))
+            on<EnterBlock> { currentState, event ->
+                TestBlock(currentState)
+            }
+            on<EnterExpression> { currentState, event ->
+                ExpressionFn(currentState)
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Operator>())
+                add(Matcher.any<Terminal>())
+            }
+        }
+        state<ExpressionFn> {
+            on<EnterExpression> { currentState, event ->
+                ExpressionFn(currentState)
+            }
+            on<ExitExpression> { currentState, event ->
+                currentState.parentState
+            }
+            on<EnterStatement> { currentState, event ->
+                beginSentence(event.location)
+                InStatement(currentState)
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+                add(Matcher.any<Identifier>())
+            }
+        }
+        state<TestBlock> {
+            on<ExitBlock> { currentState, event -> currentState.parentState}
+
+            on<EnterStatement> { currentState, event ->
+                beginSentence(event.location)
+                InStatement(currentState)
+            }
+
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+            }
+        }
+
+        state<InStatement> {
+            on<ExitStatement> { currentState, event ->
+                finishSentence()
+                currentState.parentState
+            }
+            on<EnterExpression> { currentState, event ->
+                InExpression(currentState)
+            }
+            on<EnterMethodInvocation> { currentState, event ->
+                InMethodInvocation(currentState)
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Identifier>())
+                add(Matcher.any<Terminal>())
+            }
+        }
+        state<InScenarioExpression> {
+            on<ExitExpression> { currentState, event ->
+                currentState.parentState
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+                add(Matcher.any<Identifier>())
+            }
+        }
+        state<InExpression> {
+            on<EnterExpression> { currentState, event ->
+                InExpression(currentState)
+            }
+            on<ExitExpression> { currentState, _ ->
+                currentState.parentState
+            }
+            on<ScenarioExpression> { currentState, event ->
+                sentenceBuilder.appendScenarioIdentifier(event.location, "${event.name}.${event.call}")
+                InScenarioExpression(currentState)
+            }
+            on<MethodName> { currentState, event ->
+                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                currentState
+            }
+            on<EnterTypeArguments> { currentState, event ->
+                InTypeArguments(currentState)
+            }
+            on<Parameter> { currentState, event ->
+                sentenceBuilder.appendParameterIdentifier(event.location, event.name)
+                currentState
+            }
+            on<Field> { currentState, event ->
+                sentenceBuilder.appendFieldIdentifier(event.location, event.name)
+                currentState
+            }
+            on<Nested> { currentState, event ->
+                sentenceBuilder.appendNested(event.location, event.name, event.sentences)
+                currentState
+            }
+            on<CharacterLiteral> { currentState, event ->
+                sentenceBuilder.appendCharacterLiteral(event.location, event.value)
+                currentState
+            }
+            on<NullLiteral> { currentState, event ->
+                sentenceBuilder.appendNullLiteral(event.location)
+                currentState
+            }
+            on<BooleanLiteral> { currentState, event ->
+                sentenceBuilder.appendBooleanLiteral(event.location, event.value)
+                currentState
+            }
+            on<StringLiteral> { currentState, event ->
+                sentenceBuilder.appendStringLiteral(event.location, event.value)
+                currentState
+            }
+            on<MultilineString> { currentState, event ->
+                sentenceBuilder.appendTextBlock(event.value)
+                currentState
+            }
+            on<NumberLiteral> { currentState, event ->
+                sentenceBuilder.appendNumberLiteral(event.location, event.value)
+                currentState
+            }
+            on<Identifier> { currentState, event ->
+                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                currentState
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+            }
+        }
+        state<InTypeArguments> {
+            on<ExitTypeArguments> { currentState, event ->
+                currentState.parentState
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+                add(Matcher.any<Identifier>())
+            }
+        }
+        state<InMethodInvocation> {
+            on<ExitMethodInvocation> { currentState, _ ->
+                currentState.parentState.also {
+                    if (it is InMethodInvocation && it.didBegin) finishSentence()
+                }
+            }
+            on<MethodName> { currentState, event ->
+                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                currentState
+            }
+            on<Method> { currentState, event ->
+                sentenceBuilder.appendMethodIdentifier(event.location, event.name)
+                currentState
+            }
+            on<EnterExpression> { currentState, event ->
+                InExpression(currentState)
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+                add(Matcher.any<Identifier>())
+            }
+        }
+    }
+
+    fun apply(event: Event) {
+        stateMachine.apply(event)
+    }
+}

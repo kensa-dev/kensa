@@ -1,0 +1,125 @@
+{
+  "testClass": "dev.kensa.JavaWithSinglePassingTest",
+  "displayName": "JavaWithSinglePassingTest",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "dev.kensa",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some prerequisites",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some action",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value is",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "aStringValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "foo": "bar"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}
