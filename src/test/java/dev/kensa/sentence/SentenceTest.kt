@@ -4,7 +4,6 @@ import dev.kensa.TextStyle.Italic
 import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.SentenceTokens.aBooleanLiteralOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
-import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aNullLiteral
 import dev.kensa.sentence.SentenceTokens.aStringLiteralAcronymOf
@@ -21,15 +20,27 @@ internal class SentenceTest {
     internal fun squashesTokensContainingMultipleWordsInSingleValues() {
         val expected = listOf(
                 aWordOf("Word1 Word2", EmphasisDescriptor.Default),
-                aWordOf("Word3 Word4", EmphasisDescriptor(setOf(Italic)))
+                aWordOf("Word3 Word4", EmphasisDescriptor(setOf(Italic))),
+                aWordOf("Word5 Word6", EmphasisDescriptor(setOf(Italic)), highlightIndex = "highlight1"),
+                aWordOf("Word7 Word8", EmphasisDescriptor(setOf(Italic)), highlightIndex = "highlight2"),
+                aWordOf("Word9 Word10", highlightIndex = "highlight2"),
+                aWordOf("Word11 Word12", highlightIndex = "highlight3"),
         )
 
         val sentence = Sentence(
                 listOf(
                         aWordOf("Word1", EmphasisDescriptor.Default),
                         aWordOf("Word2", EmphasisDescriptor.Default),
-                        aWordOf("Word3",EmphasisDescriptor(setOf(Italic))),
-                        aWordOf("Word4",EmphasisDescriptor(setOf(Italic)))
+                        aWordOf("Word3", EmphasisDescriptor(setOf(Italic))),
+                        aWordOf("Word4", EmphasisDescriptor(setOf(Italic))),
+                        aWordOf("Word5", EmphasisDescriptor(setOf(Italic)), highlightIndex = "highlight1"),
+                        aWordOf("Word6", EmphasisDescriptor(setOf(Italic)), highlightIndex = "highlight1"),
+                        aWordOf("Word7", EmphasisDescriptor(setOf(Italic)), highlightIndex = "highlight2"),
+                        aWordOf("Word8", EmphasisDescriptor(setOf(Italic)), highlightIndex = "highlight2"),
+                        aWordOf("Word9", EmphasisDescriptor.Default, highlightIndex = "highlight2"),
+                        aWordOf("Word10", EmphasisDescriptor.Default, highlightIndex = "highlight2"),
+                        aWordOf("Word11", EmphasisDescriptor.Default, highlightIndex = "highlight3"),
+                        aWordOf("Word12", EmphasisDescriptor.Default, highlightIndex = "highlight3"),
                 )
         )
 
@@ -65,7 +76,8 @@ internal class SentenceTest {
                 aKeywordOf("K2"),
                 aWordOf("Word3 Word4"),
                 anAcronymOf("BOO"),
-                aBooleanLiteralOf(true)
+                aBooleanLiteralOf(true),
+                aWordOf("Word5 Word6", highlightIndex = "highlight1"),
         )
         val sentence = Sentence(
                 listOf(
@@ -82,7 +94,9 @@ internal class SentenceTest {
                         aWordOf("Word3"),
                         aWordOf("Word4"),
                         anAcronymOf("BOO"),
-                        aBooleanLiteralOf(true)
+                        aBooleanLiteralOf(true),
+                        aWordOf("Word5", highlightIndex = "highlight1"),
+                        aWordOf("Word6", highlightIndex = "highlight1"),
                 ))
 
         sentence.squashedTokens shouldContainExactly expected

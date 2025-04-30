@@ -25,10 +25,17 @@ class TestInvocationParser {
                 parsedMethod.parameters.descriptors[namedValue.name]?.isHighlight ?: false
             }
 
-            val highlightedValues = LinkedHashSet<NamedValue>()
+            val givensFromPropertiesAndParameters = listOf<NamedValue>()
                 .plus(highlightedPropertyValues(parsedMethod.properties, context.instance))
                 .plus(highlightedParameterValues)
+                .toList()
 
+            val highlightDescriptors = HighlightDescriptors.from(
+                givensFromPropertiesAndParameters.plus(highlightedMethodValues(parsedMethod.methods)),
+                configuration.maxHighlightColours,
+                configuration.maxHighlightColoursBehaviour,
+            )
+            
             val scenarioProperties = parsedMethod.properties.filter { it.value.isScenario }
 
             val tokenFactory = SentenceTokenFactory(
@@ -39,7 +46,7 @@ class TestInvocationParser {
                 parsedMethod.parameters.descriptors,
                 parsedMethod.properties,
                 parsedMethod.methods,
-                highlightedValues
+                highlightDescriptors,
             )
 
             val sentences = regenerateSentences(parsedMethod.sentences, tokenFactory)
@@ -48,7 +55,7 @@ class TestInvocationParser {
 
             val parameterizedTestDescription: String? = parsedMethod.parameters.descriptors.values.find { it.isParameterizedTestDescription }?.valueOfIn(context.arguments)?.toString()
 
-            ParsedInvocation(parsedMethod.name, namedParameterValues, sentences, highlightedValues, parameterizedTestDescription)
+            ParsedInvocation(parsedMethod.name, namedParameterValues, sentences, highlightDescriptors, givensFromPropertiesAndParameters, parameterizedTestDescription)
         } catch (e: Exception) {
             throw KensaException("Unable to parse test invocation ", e)
         }
@@ -72,6 +79,12 @@ class TestInvocationParser {
         .filter(ValueAccessor::isHighlight)
         .map { NamedValue(highlightOrFieldNameFor(it), configuration.renderers.renderValue(it.valueOfIn(testInstance))) }
         .toSet()
+    
+    
+    private fun highlightedMethodValues(methods: Map<String, ValueAccessor.MethodAccessor>) = methods
+        .values
+        .filter { it.isHighlight }
+        .map { NamedValue(it.name, null) }
 
     private fun highlightOrFieldNameFor(accessor: ValueAccessor): String =
         accessor.takeIf { it.isHighlight }?.run {

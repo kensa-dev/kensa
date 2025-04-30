@@ -1,6 +1,7 @@
 package dev.kensa.sentence
 
 import dev.kensa.parse.EmphasisDescriptor
+import dev.kensa.parse.HighlightDescriptor
 import dev.kensa.sentence.TokenType.Word
 import java.util.*
 
@@ -11,19 +12,21 @@ class Sentence(val tokens: List<SentenceToken>) {
             var currentTokenTypes: Set<TokenType> = emptySet()
             var currentValue = ""
             var currentEmphasis = EmphasisDescriptor.Default
+            var currentHighlight: HighlightDescriptor? = null
 
             fun finishCurrentWord() {
                 if (currentTokenTypes.contains(Word)) {
-                    add(SentenceToken(currentValue, currentTokenTypes, emphasis = currentEmphasis))
+                    add(SentenceToken(currentValue, currentTokenTypes, emphasis = currentEmphasis, highlight = currentHighlight))
                     currentValue = ""
                     currentEmphasis = EmphasisDescriptor.Default
+                    currentHighlight = null
                 }
             }
 
             tokens.forEach { token ->
                 if (token.hasType(Word)) {
                     currentValue = if (currentTokenTypes.contains(Word)) {
-                        if (currentEmphasis == token.emphasis) {
+                        if (currentEmphasis == token.emphasis && currentHighlight == token.highlight) {
                             "$currentValue ${token.value}"
                         } else {
                             finishCurrentWord()
@@ -38,6 +41,7 @@ class Sentence(val tokens: List<SentenceToken>) {
                 }
                 currentTokenTypes = token.tokenTypes
                 currentEmphasis = token.emphasis
+                currentHighlight = token.highlight
             }
             finishCurrentWord()
         }
