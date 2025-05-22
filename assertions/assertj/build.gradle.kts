@@ -3,5 +3,4 @@ dependencies {
 
     implementation(libs.assertJCore)
     implementation(libs.awaitilityKotlin)
-
 }

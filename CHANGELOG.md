@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.0-SNAPSHOT
+- Drop webpack. Introduce Vite. UI layout changes. Parsing Changes. Test Fixtures.   
+
 ### v0.4.34
 - #45 : Ignore type arguments when building sentences
 - #43 : Display the test class's package as part of the header (thanks to Michael Orr)

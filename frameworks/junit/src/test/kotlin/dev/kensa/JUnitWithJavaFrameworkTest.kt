@@ -7,12 +7,15 @@ import dev.kensa.KensaTestExecutor.executeAllTestsIn
 import dev.kensa.KensaTestExecutor.executeTests
 import dev.kensa.extension.TestParameterResolver.MyArgument
 import dev.kensa.junit.KensaTest
+import dev.kensa.sentence.Acronym
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.paths.shouldExist
 import io.kotest.matchers.paths.shouldNotExist
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.testkit.engine.EngineExecutionResults
 import java.nio.file.Path
@@ -91,9 +94,20 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
     @Nested
     inner class JsonOutput {
 
-        @Test
-        fun embeddedJsonIsCorrectForSimpleTest() {
-            executeTestAndVerifyJson(JavaWithSinglePassingTest::class.java)
+        @ParameterizedTest(name = "Test class name: {0}")
+        @ValueSource(
+            classes = [
+                JavaWithSinglePassingTest::class,
+                JavaWithGenericParameterizedTest::class,
+                JavaWithAnnotationFeatureTest::class,
+                JavaWithNestedSentenceTest::class,
+                JavaWithLiteralsTest::class,
+                JavaWithTypeArgumentsTest::class,
+                JavaWithFixturesTest::class,
+            ]
+        )
+        fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {
+            executeTestAndVerifyJson(theTestClass)
         }
 
         @Test
@@ -105,28 +119,12 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
         }
 
         @Test
-        fun embeddedJsonIsCorrectForTestWithGenericParameter() {
-            executeTestAndVerifyJson(JavaWithGenericParameterizedTest::class.java)
-        }
-
-        @Test
-        fun verifyJsonForAnnotationFeatureTest() {
-            executeTestAndVerifyJson(JavaWithAnnotationFeatureTest::class.java)
-        }
-
-        @Test
-        fun verifyJsonForNestedSentenceTest() {
-            executeTestAndVerifyJson(JavaWithNestedSentenceTest::class.java)
-        }
-
-        @Test
-        fun verifyJsonForLiteralsTest() {
-            executeTestAndVerifyJson(JavaWithLiteralsTest::class.java)
-        }
-
-        @Test
-        fun verifyJsonForTypeArgumentsTest() {
-            executeTestAndVerifyJson(JavaWithTypeArgumentsTest::class.java)
+        fun embeddedJsonIsCorrectForTestWithAcronyms() {
+            testConfiguration {
+                acronyms(Acronym.of("FTTP", "Fibre To The Premises"))
+                acronyms(Acronym.of("FUBAR", "F***** up beyond all recognition"))
+            }
+            executeTestAndVerifyJson(JavaWithAcronymsTest::class.java)
         }
 
         private fun executeTestAndVerifyJson(testClass: Class<*>) {

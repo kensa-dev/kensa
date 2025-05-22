@@ -2,30 +2,57 @@
 
 $modal-background-background-color: rgba(0, 0, 0, 0.15);
 $modal-content-width: 1200px;
-$success: hsl(141, 78%, 35%);
-$warning: hsl(48, 100%, 54%);
-$danger: hsl(352, 100%, 48%);
+$kensa_success: hsl(141, 78%, 35%);
+$kensa_warning: hsl(48, 100%, 54%);
+$kensa_danger: hsl(352, 100%, 48%);
+$kensa_title_color: #ffffff;
 $divider-thickness: .2rem;
 
-@import "~bulma/sass/utilities/all";
-@import "~bulma/sass/base/all";
-@import "~bulma/sass/helpers/all";
-@import "~bulma/sass/form/all";
-@import "~bulma/sass/components/card";
-@import "~bulma/sass/components/message";
-@import "~bulma/sass/components/modal";
-@import "~bulma/sass/components/panel";
-@import "~bulma/sass/components/tabs";
-@import "~bulma/sass/elements/button";
-@import "~bulma/sass/elements/box";
-@import "~bulma/sass/elements/container";
-@import "~bulma/sass/elements/icon";
-@import "~bulma/sass/elements/notification";
-@import "~bulma/sass/elements/table";
-@import "~bulma/sass/elements/tag";
-@import "~bulma/sass/elements/title";
-@import "~bulma/sass/grid/tiles";
-@import "~bulma/sass/layout/hero";
-@import "~bulma/sass/layout/section";
-@import "~bulma-tooltip/dist/css/bulma-tooltip.min.css";
-@import "~bulma-divider/dist/css/bulma-divider";
+@use "bulma/sass/utilities" with (
+  $success: $kensa_success,
+  $warning: $kensa_warning,
+  $danger: $kensa_danger,
+);
+
+
+@forward "bulma/sass/utilities/derived-variables";
+@forward "bulma/sass/base";
+@forward "bulma/sass/helpers/color";
+@forward "bulma/sass/helpers/spacing";
+
+@forward "bulma/sass/layout/hero";
+@forward "bulma/sass/layout/container";
+@forward "bulma/sass/layout/level";
+@use "bulma/sass/layout/section" with(
+$section-padding-desktop: 1.5rem 1.5rem
+);
+
+@use "bulma/sass/components/modal" with(
+$modal-content-width: 70rem
+);
+
+@use "bulma/sass/components/message" with (
+$message-header-padding: 0.50em 1.25em
+);
+
+@use "bulma/sass/components/breadcrumb" with(
+$breadcrumb-item-color: $kensa_title_color
+);
+@forward "bulma/sass/components/tabs";
+@forward "bulma/sass/components/panel";
+@forward "bulma/sass/components/card";
+@forward "bulma/sass/components/navbar";
+
+@forward "bulma/sass/elements/title";
+@forward "bulma/sass/elements/icon";
+@forward "bulma/sass/elements/block";
+@forward "bulma/sass/elements/button";
+@forward "bulma/sass/elements/box";
+@forward "bulma/sass/elements/table";
+@forward "bulma/sass/elements/content";
+@forward "bulma/sass/elements/tag";
+
+@forward "bulma/sass/form";
+@forward "bulma/sass/themes";
+
+//@use "bulma-tooltip/dist/css/bulma-tooltip.min.css";

@@ -12,21 +12,25 @@ node {
 }
 
 tasks {
-    register<NodeTask>("webpack") {
-        script = project.file("node_modules/.bin/webpack")
-        inputs.file("webpack.config.js")
+    register<NodeTask>("viteBuild") {
+        script.set(project.file("node_modules/.bin/vite"))
+        args = listOf("build")
+
+        inputs.file("vite.config.js")
         inputs.file("package-lock.json")
+        inputs.dir("src")
         outputs.dir("${layout.buildDirectory.get()}/js")
         dependsOn("npmInstall")
     }
 
-    register<NodeTask>("startUiDevServer") {
-        script = project.file("node_modules/.bin/webpack-dev-server")
-        args = listOf("--mode", "development")
-        inputs.file("webpack.config.js")
+    register<NodeTask>("viteDev") {
+        script.set(project.file("node_modules/.bin/vite"))
+        args = listOf("dev")
+
+        inputs.file("vite.config.js")
         inputs.file("package-lock.json")
-        inputs.dir("src/ui")
-        outputs.dir("${layout.buildDirectory.get()}/js")
+        inputs.dir("src")
+
         dependsOn("npmInstall")
     }
 }

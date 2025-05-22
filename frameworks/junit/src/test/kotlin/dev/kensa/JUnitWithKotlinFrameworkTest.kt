@@ -7,12 +7,15 @@ import dev.kensa.KensaTestExecutor.executeAllTestsIn
 import dev.kensa.KensaTestExecutor.executeTests
 import dev.kensa.extension.TestParameterResolver.MyArgument
 import dev.kensa.junit.KensaTest
+import dev.kensa.sentence.Acronym
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.paths.shouldExist
 import io.kotest.matchers.paths.shouldNotExist
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.testkit.engine.EngineExecutionResults
 import java.nio.file.Path
@@ -91,9 +94,20 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
     @Nested
     inner class JsonOutput {
 
-        @Test
-        fun embeddedJsonIsCorrectForSimpleTest() {
-            executeTestAndVerifyJson(KotlinWithSinglePassingTest::class.java)
+        @ParameterizedTest(name = "Test class name: {0}")
+        @ValueSource(
+            classes = [
+                KotlinWithSinglePassingTest::class,
+                KotlinWithGenericParameterizedTest::class,
+                KotlinWithAnnotationFeatureTest::class,
+                KotlinWithNestedSentenceTest::class,
+                KotlinWithLiteralsTest::class,
+                KotlinWithTypeArgumentsTest::class,
+                KotlinWithFixturesTest::class,
+            ]
+        )
+        fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {
+            executeTestAndVerifyJson(theTestClass)
         }
 
         @Test
@@ -105,23 +119,12 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         }
 
         @Test
-        fun embeddedJsonIsCorrectForTestWithGenericParameter() {
-            executeTestAndVerifyJson(KotlinWithGenericParameterizedTest::class.java)
-        }
-
-        @Test
-        fun verifyJsonForAnnotationFeatureTest() {
-            executeTestAndVerifyJson(KotlinWithAnnotationFeatureTest::class.java)
-        }
-
-        @Test
-        fun verifyJsonForLiteralsTest() {
-            executeTestAndVerifyJson(KotlinWithLiteralsTest::class.java)
-        }
-
-        @Test
-        fun verifyJsonForTypeArgumentsTest() {
-            executeTestAndVerifyJson(KotlinWithTypeArgumentsTest::class.java)
+        fun embeddedJsonIsCorrectForTestWithAcronyms() {
+            testConfiguration {
+                acronyms(Acronym.of("FTTP", "Fibre To The Premises"))
+                acronyms(Acronym.of("FUBAR", "F***** up beyond all recognition"))
+            }
+            executeTestAndVerifyJson(KotlinWithAcronymsTest::class.java)
         }
 
         private fun executeTestAndVerifyJson(testClass: Class<*>) {

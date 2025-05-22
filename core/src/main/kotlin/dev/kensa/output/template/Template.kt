@@ -57,7 +57,7 @@ sealed class FileTemplate(mode: Mode, configuration: Configuration, private val 
         private var indexCounter = 1
 
         fun addIndex(container: TestContainer) {
-            add("indices", container.transform(toIndexJson("test-result-$indexCounter++").andThen(toJsonString()).andThen(::Index)))
+            add("indices", container.transform(toIndexJson("test-result-${indexCounter}++").andThen(toJsonString()).andThen(::Index)))
         }
     }
 
@@ -106,10 +106,11 @@ sealed class FileTemplate(mode: Mode, configuration: Configuration, private val 
                 toJsonString()(
                     jsonObject()
                         .add("mode", mode.name)
+                        .add("titleText", titleText)
                         .add("issueTrackerUrl", issueTrackerUrl.toString())
-                        .add("acronyms", acronymsAsJson(acronyms))
+                        .add("acronyms", acronymsAsJson(dictionary.acronyms))
                         .add("flattenPackages", flattenOutputPackages)
-                        .add("packageDisplayMode", packageDisplayMode.name)
+                        .add("packageDisplayMode", packageDisplay.name)
                         .add("sectionOrder", Json.array().apply {
                             sectionOrder.forEach { add(it.name) }
                         })

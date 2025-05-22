@@ -1,18 +1,19 @@
 package dev.kensa.parse.java
 
-import dev.kensa.Configuration
 import dev.kensa.KensaException
 import dev.kensa.parse.*
 import dev.kensa.parse.Java20Parser.ClassDeclarationContext
 import dev.kensa.parse.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.CommonTokenStream
+import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
 class JavaParserDelegate(
     private val isClassTest: (Java20Parser.MethodDeclarationContext) -> Boolean,
     private val isInterfaceTest: (Java20Parser.InterfaceMethodDeclarationContext) -> Boolean,
-    private val configuration: Configuration
+    private val antlrErrorListenerDisabled: Boolean,
+    private val antlrPredicationMode: PredictionMode
 ) : ParserDelegate {
 
     override fun findMethodDeclarationsIn(target: Class<out Any>): MethodDeclarations {
@@ -28,7 +29,7 @@ class JavaParserDelegate(
                 when (this) {
                     is ClassDeclarationContext ->
                         normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
-                            cbd.classMemberDeclaration().methodDeclaration()?.let { md ->
+                            cbd.classMemberDeclaration()?.methodDeclaration()?.let { md ->
                                 testMethods.takeIf { isClassTest(md) }?.add(JavaMethodDeclarationContext(md))
                                 nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaMethodDeclarationContext(md))
                                 emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md))
@@ -57,8 +58,8 @@ class JavaParserDelegate(
                 Java20Lexer(SourceCode.sourceStreamFor(target))
             )
         ).apply {
-            takeIf { configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
-            interpreter.predictionMode = configuration.antlrPredicationMode
+            takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
+            interpreter.predictionMode = antlrPredicationMode
         }.compilationUnit()
 
     private fun Java20Parser.MethodDeclarationContext.isAnnotatedAsNested() =

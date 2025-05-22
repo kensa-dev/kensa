@@ -1,0 +1,228 @@
+.link {
+  cursor: pointer;
+}
+
+// This class uses underscores because it is created inside PlantUML
+// where dashes are special
+.sequence_diagram_clickable {
+  cursor: pointer;
+}
+
+.kensa-highlight {
+  background-color: yellow;
+  color: var(bulma-grey-dark)
+}
+
+.failure-message {
+  margin: 20px 0 20px 0;
+  max-height: 200px;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.stack-trace {
+  resize: none;
+  overflow: scroll;
+  color: $danger;
+  white-space: pre;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.test-disabled {
+  @extend .is-warning;
+}
+
+.test-failed {
+  @extend .is-danger
+}
+
+.test-passed {
+  @extend .is-success
+}
+
+.header {
+  @extend .hero;
+  @extend .is-small;
+}
+
+.header-body {
+  @extend .hero-body;
+  display: flex;
+  align-items: center;
+}
+
+.header-title {
+  @extend .title;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  vertical-align: middle;
+}
+
+.message {
+  margin-bottom: 24px;
+}
+
+.message-body {
+  border-style: none !important;
+}
+
+.message-body .card {
+  margin-bottom: 1rem;
+}
+
+.limited-width {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 85%;
+}
+
+.message.test-passed > .message-header {
+  background-color: $success;
+  border-color: $success;
+}
+
+.message.test-failed .message.test-passed > .message-header {
+  background-color: $success;
+  border-color: $success;
+}
+
+.message.test-failed > .message-header {
+  background-color: $danger;
+  border-color: $danger;
+}
+
+.sentences {
+  @extend .has-text-black;
+  padding: 1.25em 0 0 0;
+}
+
+.rendered-attribute {
+  margin-bottom: 10px !important;
+  overflow-x: hidden;
+  max-height: 150px;
+}
+
+.rendered-value {
+  margin-bottom: 10px !important;
+}
+
+.rendered-value .scrollable-value {
+  padding: 0;
+  background-color: #fcfcfc;
+}
+
+.notes .message-body {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.breadcrumb {
+  margin-bottom: 0.3rem;
+}
+
+.header-tags {
+  @extend .tags;
+  margin-top: 0.3rem
+}
+
+.navbar-brand a {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-item .button {
+  color: white;
+}
+
+.tags .tag {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: white;
+  font-weight: normal
+}
+
+.sequence-diagram {
+  overflow-x: auto;
+  position: relative;
+}
+
+.buttons:not(:last-child) {
+  margin-bottom: 0 !important;
+}
+
+.buttons .button.has-selected {
+  margin-bottom: 0.5rem !important;
+}
+
+.table.is-borderless td, th {
+  border: 0
+}
+
+.table.pairs {
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 21px;
+  font-style: normal;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  color: var(bulma-grey);
+}
+
+.buttons .button.is-selected {
+  margin-bottom: 0.5rem !important;
+  color: white;
+}
+
+.card-header {
+  margin-bottom: 0.5rem;
+}
+
+.buttons .button {
+  margin-bottom: 0 !important;
+}
+
+pre.lowlight {
+  padding: 0
+}
+
+.pairs .name {
+  font-weight: bold;
+}
+
+.pairs .name::after {
+  content: ':'
+}
+
+.font-normal {
+  font-size: 1rem !important;
+}
+
+.font-large {
+  font-size: 1.5rem !important;
+}
+
+.is-tiny {
+  @extend .is-small;
+  font-size: 0.50rem !important;
+}
+
+.scrollable-value {
+  min-height: 600px;
+  max-height: 600px;
+}
+
+.test-information {
+  @extend .is-info;
+  padding: 10px;
+  background-color: var(bulma-info-light);
+  color: var(bulma-info-dark);
+  margin-bottom: 5px;
+}

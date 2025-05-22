@@ -19,6 +19,7 @@ enum class TokenType(private val css: String, val isWhitespace : Boolean = false
     Operator("op"),
     ParameterValue("pv"),
     ScenarioValue("sv"),
+    FixturesValue("fv"),
     StringLiteral("sl"),
     TextBlock("tb"),
     Word("wd");

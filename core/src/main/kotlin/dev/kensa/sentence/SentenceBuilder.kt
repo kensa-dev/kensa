@@ -59,22 +59,27 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
         append(value, Operator)
     }
 
-    fun appendScenarioIdentifier(location: Location, value: String) {
+    fun appendScenarioValue(location: Location, value: String) {
         checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = setOf(ScenarioValue)))
     }
 
-    fun appendMethodIdentifier(location: Location, value: String) {
+    fun appendFixturesValue(location: Location, value: String) {
+        checkLineAndIndent(location)
+        tokens.add(SentenceToken(value, tokenTypes = setOf(FixturesValue)))
+    }
+
+    fun appendMethodValue(location: Location, value: String) {
         checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = setOf(MethodValue)))
     }
 
-    fun appendFieldIdentifier(location: Location, value: String) {
+    fun appendFieldValue(location: Location, value: String) {
         checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = setOf(FieldValue)))
     }
 
-    fun appendParameterIdentifier(location: Location, value: String) {
+    fun appendParameterValue(location: Location, value: String) {
         checkLineAndIndent(location)
         tokens.add(SentenceToken(value, tokenTypes = setOf(ParameterValue)))
     }

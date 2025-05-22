@@ -1,0 +1,55 @@
+/* Tooltip container */
+.tooltip {
+  position: relative; /* Ensure that the tooltip content is positioned relative to this element */
+  cursor: pointer;
+}
+
+/* Tooltip text (invisible by default) */
+.tooltip::after {
+  content: attr(data-tooltip); /* Display the data-tooltip attribute's value */
+  position: absolute;
+  bottom: 150%; /* Place the tooltip above the element */
+  left: 50%;
+  transform: translateX(-50%);
+
+  background-color: rgba(74, 74, 74, .9); /* Tooltip background color */
+  color: #fff; /* Text color */
+  padding: 8px 12px; /* Padding for better readability */
+  border-radius: 4px; /* Rounded corners for a softer look */
+  white-space: nowrap; /* Prevent text from wrapping */
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  opacity: 0; /* Initially hidden */
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out; /* Smooth fade-in effect */
+  z-index: 1000; /* Ensure it appears above other elements */
+}
+
+/* Tooltip arrow (visible downward triangle) */
+.tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 94%; /* Slightly below the tooltip text */
+  left: 50%;
+  transform: translateX(-50%);
+
+  border-width: 5px; /* Size of the arrow */
+  border-style: solid;
+  border-color: rgba(74, 74, 74, .9) transparent transparent transparent; /* Proper orientation for a downward arrow */
+
+  z-index: 1000; /* Ensure it appears above the triggering element */
+  opacity: 0; /* Initially hidden */
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Show tooltip on hover or focus */
+.tooltip:hover::after,
+.tooltip:hover::before,
+.tooltip:focus::after,
+.tooltip:focus::before {
+  opacity: 1; /* Fully visible */
+  visibility: visible;
+}

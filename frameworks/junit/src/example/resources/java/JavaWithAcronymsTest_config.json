@@ -1,0 +1,16 @@
+{
+  "mode": "TestFile",
+  "titleText": "Index",
+  "issueTrackerUrl": "http://empty",
+  "acronyms": {
+    "FTTP": "Fibre To The Premises",
+    "FUBAR": "F***** up beyond all recognition"
+  },
+  "flattenPackages": false,
+  "packageDisplayMode": "HideCommonPackages",
+  "sectionOrder": [
+    "Buttons",
+    "Sentences",
+    "Exception"
+  ]
+}

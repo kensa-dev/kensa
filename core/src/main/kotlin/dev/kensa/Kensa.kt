@@ -1,6 +1,5 @@
 package dev.kensa
 
-import dev.kensa.PackageDisplayMode.HideCommonPackages
 import dev.kensa.Section.*
 import dev.kensa.render.InteractionRenderer
 import dev.kensa.render.ListRendererFormat
@@ -61,31 +60,23 @@ object Kensa {
 class KensaConfigurator(private val configuration: Configuration) {
 
     fun withIssueTrackerUrl(url: URL): KensaConfigurator = apply { configuration.issueTrackerUrl = url }
-    fun withOutputDir(dir: String): KensaConfigurator = withOutputDir(Paths.get(dir))
 
+    fun withOutputDir(dir: String): KensaConfigurator = withOutputDir(Paths.get(dir))
     fun withOutputDir(dir: Path): KensaConfigurator = apply {
         require(dir.isAbsolute) { "OutputDir must be absolute." }
         configuration.outputDir = if (dir.endsWith(KENSA_OUTPUT_DIR)) dir else dir.resolve(KENSA_OUTPUT_DIR)
     }
-
     fun withOutputDisabled(): KensaConfigurator = apply { configuration.isOutputEnabled = false }
 
     fun withListRendererFormat(format: ListRendererFormat): KensaConfigurator = apply { configuration.renderers.setListRendererFormat(format) }
-
     fun <T : Any> withValueRenderer(klass: Class<T>, renderer: ValueRenderer<out T>): KensaConfigurator = apply { configuration.renderers.addValueRenderer(klass, renderer) }
-
     fun <T : Any> withValueRenderer(klass: KClass<T>, renderer: ValueRenderer<out T>): KensaConfigurator = apply { configuration.renderers.addValueRenderer(klass, renderer) }
-
     fun <T : Any> withInteractionRenderer(klass: Class<T>, renderer: InteractionRenderer<out T>): KensaConfigurator = apply { configuration.renderers.addInteractionRenderer(klass, renderer) }
-
     fun <T : Any> withInteractionRenderer(klass: KClass<T>, renderer: InteractionRenderer<out T>): KensaConfigurator = apply { configuration.renderers.addInteractionRenderer(klass, renderer) }
 
     fun withProtectedPhrases(vararg phrases: ProtectedPhrase): KensaConfigurator = apply { configuration.dictionary.putProtectedPhrases(*phrases) }
-
     fun withAcronyms(vararg acronyms: Acronym): KensaConfigurator = apply { configuration.dictionary.putAcronyms(*acronyms) }
-
     fun withKeywords(vararg keywords: String): KensaConfigurator = apply { configuration.dictionary.putKeywords(*keywords) }
-
     fun withKeywords(vararg keywords: Keyword): KensaConfigurator = apply { configuration.dictionary.putKeywords(*keywords) }
 
     fun withSectionOrder(vararg order: Section): KensaConfigurator = apply { configuration.sectionOrder = order.toList() }
@@ -97,20 +88,10 @@ class KensaConfigurator(private val configuration: Configuration) {
     fun withTabSize(tabSize: Int): KensaConfigurator = apply { configuration.tabSize = tabSize }
 
     fun withFlattenOutputPackages(value: Boolean): KensaConfigurator = apply { configuration.flattenOutputPackages = value }
-
-    fun withPackageDisplayMode(packageDisplayMode: PackageDisplayMode): KensaConfigurator = apply { configuration.packageDisplayMode = packageDisplayMode }
-
-    /**
-     * Sets the packages to scan for fixture containers.
-     *
-     * @param packageNames The names of the packages to scan for fixture containers
-     * @return This configurator
-     */
-    fun withFixturePackages(vararg packageNames: String): KensaConfigurator = apply { configuration.fixturePackages = packageNames.toList() }
-
+    fun withPackageDisplayMode(packageDisplay: PackageDisplay): KensaConfigurator = apply { configuration.packageDisplay = packageDisplay }
 }
 
-enum class PackageDisplayMode {
+enum class PackageDisplay {
     Hidden,
     HideCommonPackages,
     ShowFullPackage,
@@ -130,27 +111,26 @@ enum class Tab {
     None
 }
 
-class Configuration(
-    val dictionary: Dictionary = Dictionary(),
-    val renderers: Renderers = Renderers(),
-    var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR),
-    var flattenOutputPackages: Boolean = false,
+class Configuration {
+
+    internal val dictionary: Dictionary = Dictionary()
+    val renderers: Renderers = Renderers()
+    var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR)
+    var flattenOutputPackages: Boolean = false
     var isOutputEnabled: Boolean = if (System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
         System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
-    } else true,
-    var antlrPredicationMode: PredictionMode = PredictionMode.LL,
-    var antlrErrorListenerDisabled: Boolean = true,
-    var umlDirectives: List<UmlDirective> = ArrayList(),
-    var issueTrackerUrl: URL = URI.create("http://empty").toURL(),
-    var tabSize: Int = 5,
-    var autoOpenTab: Tab = Tab.None,
-    var packageDisplayMode: PackageDisplayMode = HideCommonPackages,
-    var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped,
-    var fixturePackages: List<String> = emptyList(),
+    } else true
+    var antlrPredicationMode: PredictionMode = PredictionMode.LL
+    var antlrErrorListenerDisabled: Boolean = true
+    var umlDirectives: List<UmlDirective> = ArrayList()
+    var issueTrackerUrl: URL = URI.create("http://empty").toURL()
+    var tabSize: Int = 5
+    var autoOpenTab: Tab = Tab.None
+    var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
+    var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
+    var titleText: String = "Index"
 
-    private var _sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception),
-) {
-
+    private var _sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
     var sectionOrder: List<Section>
         get() = _sectionOrder
         set(order) {
@@ -160,12 +140,8 @@ class Configuration(
             _sectionOrder = order
         }
 
-    var keywords: Set<String> = emptySet()
-        set(value) = dictionary.putKeywords(value)
-
-    var acronyms: Set<Acronym> = emptySet()
-        set(value) = dictionary.putAcronyms(value)
-
-    var protectedPhrases: Set<ProtectedPhrase> = emptySet()
-        set(value) = dictionary.putProtectedPhrases(value)
+    fun keyWords(vararg keywords: String) = dictionary.putKeywords(*keywords)
+    fun keyWords(vararg keywords: Keyword) = dictionary.putKeywords(*keywords)
+    fun acronyms(vararg acronyms: Acronym) = dictionary.putAcronyms(*acronyms)
+    fun protectedPhrases(vararg phrases: ProtectedPhrase) = dictionary.putProtectedPhrases(*phrases)
 }

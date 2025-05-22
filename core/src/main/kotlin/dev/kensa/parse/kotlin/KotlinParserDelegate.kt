@@ -1,13 +1,13 @@
 package dev.kensa.parse.kotlin
 
-import dev.kensa.Configuration
 import dev.kensa.parse.*
 import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
+import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
-class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean, private val configuration: Configuration) : ParserDelegate {
+class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean, private val antlrErrorListenerDisabled: Boolean, private val antlrPredicationMode: PredictionMode) : ParserDelegate {
 
     override fun findMethodDeclarationsIn(target: Class<out Any>): MethodDeclarations {
         val testFunctions = mutableListOf<MethodDeclarationContext>()
@@ -53,8 +53,8 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
                 KotlinLexer(SourceCode.sourceStreamFor(testClass))
             )
         ).apply {
-            takeIf { configuration.antlrErrorListenerDisabled }?.removeErrorListeners()
-            interpreter.predictionMode = configuration.antlrPredicationMode
+            takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
+            interpreter.predictionMode = antlrPredicationMode
         }.kotlinFile()
 
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsNested(): Boolean = findAnnotationNames().any { name -> ParserDelegate.nestedSentenceAnnotationNames.contains(name) }

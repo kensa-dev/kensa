@@ -1,6 +1,8 @@
 package dev.kensa.parse
 
 import dev.kensa.*
+import dev.kensa.fixture.FixtureRegistry
+import dev.kensa.fixture.Fixtures
 import dev.kensa.util.*
 import java.lang.System.err
 import java.lang.reflect.Method
@@ -32,12 +34,12 @@ sealed interface Accessor {
         fun valueOfIn(target: Any): Any?
 
         open class PropertyAccessor(val property: KProperty<*>) : ValueAccessor {
+            override fun valueOfIn(target: Any): Any? = accessAndLogError { property.valueOfKotlinPropertyIn(target) }
             override val name: String = property.name
             override val isSentenceValue: Boolean by lazy { property.hasKotlinOrJavaAnnotation<SentenceValue>() }
             override val isHighlight: Boolean by lazy { property.hasKotlinOrJavaAnnotation<Highlight>() }
             override val isScenario: Boolean by lazy { property.hasKotlinOrJavaAnnotation<Scenario>() }
             override val isScenarioHolder: Boolean by lazy { property.hasKotlinOrJavaAnnotation<ScenarioHolder>() }
-            override fun valueOfIn(target: Any): Any? = accessAndLogError { property.valueOfKotlinPropertyIn(target) }
             override val highlight by lazy { property.findKotlinOrJavaAnnotation<Highlight>() ?: throwAnnotationNotFound(Highlight::class) }
         }
 
@@ -50,23 +52,18 @@ sealed interface Accessor {
         }
 
         class MethodAccessor(val method: Method) : ValueAccessor {
+            override fun valueOfIn(target: Any): Any? = accessAndLogError { target.invokeMethod(name) }
             override val name: String = method.name
             override val isSentenceValue: Boolean by lazy { method.hasAnnotation<SentenceValue>() }
             override val isHighlight: Boolean by lazy { method.hasAnnotation<Highlight>() }
             override val isScenario: Boolean by lazy { method.hasAnnotation<Scenario>() }
             override val isScenarioHolder: Boolean = false
-            override fun valueOfIn(target: Any): Any? = accessAndLogError { target.invokeMethod(name) }
             override val highlight by lazy { method.findAnnotation<Highlight>() ?: throwAnnotationNotFound(Highlight::class) }
         }
 
         @Suppress("UNCHECKED_CAST")
         class ParameterAccessor(val parameter: Parameter, override val name: String, val index: Int) : ValueAccessor {
-            override fun valueOfIn(target: Any): Any? {
-                target as Array<Any?>
-
-                return target[index]
-            }
-
+            override fun valueOfIn(target: Any): Any? = (target as Array<Any?>)[index]
             val isParameterizedTestDescription: Boolean by lazy { parameter.hasAnnotation<ParameterizedTestDescription>() }
             override val isSentenceValue: Boolean by lazy { parameter.hasAnnotation<SentenceValue>() }
             override val isHighlight: Boolean by lazy { parameter.hasAnnotation<Highlight>() }

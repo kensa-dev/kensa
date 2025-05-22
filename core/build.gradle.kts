@@ -46,7 +46,7 @@ tasks {
     }
 
     named<Jar>("jar") {
-        dependsOn(":ui:webpack")
+        dependsOn(":ui:viteBuild")
 
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
             into("/")

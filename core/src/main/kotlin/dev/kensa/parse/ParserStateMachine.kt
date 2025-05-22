@@ -78,7 +78,6 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 add(Matcher.any<Terminal>())
             }
         }
-
         state<InStatement> {
             on<ExitStatement> { currentState, event ->
                 finishSentence()
@@ -104,6 +103,19 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 add(Matcher.any<Identifier>())
             }
         }
+        state<InFixturesExpression> {
+            on<EnterExpression> { currentState, event ->
+                InFixturesExpression(currentState)
+            }
+            on<ExitExpression> { currentState, event ->
+                currentState.parentState
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<MethodName>())
+                add(Matcher.any<Terminal>())
+                add(Matcher.any<Identifier>())
+            }
+        }
         state<InExpression> {
             on<EnterExpression> { currentState, event ->
                 InExpression(currentState)
@@ -112,8 +124,12 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 currentState.parentState
             }
             on<ScenarioExpression> { currentState, event ->
-                sentenceBuilder.appendScenarioIdentifier(event.location, "${event.name}.${event.call}")
+                sentenceBuilder.appendScenarioValue(event.location, "${event.name}.${event.call}")
                 InScenarioExpression(currentState)
+            }
+            on<FixturesExpression> { currentState, event ->
+                sentenceBuilder.appendFixturesValue(event.location, event.name)
+                InFixturesExpression(currentState)
             }
             on<MethodName> { currentState, event ->
                 sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
@@ -123,11 +139,11 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 InTypeArguments(currentState)
             }
             on<Parameter> { currentState, event ->
-                sentenceBuilder.appendParameterIdentifier(event.location, event.name)
+                sentenceBuilder.appendParameterValue(event.location, event.name)
                 currentState
             }
             on<Field> { currentState, event ->
-                sentenceBuilder.appendFieldIdentifier(event.location, event.name)
+                sentenceBuilder.appendFieldValue(event.location, event.name)
                 currentState
             }
             on<Nested> { currentState, event ->
@@ -181,20 +197,31 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                     if (it is InMethodInvocation && it.didBegin) finishSentence()
                 }
             }
+            on<ScenarioExpression> { currentState, event ->
+                sentenceBuilder.appendScenarioValue(event.location, "${event.name}.${event.call}")
+                InScenarioExpression(currentState)
+            }
+            on<FixturesExpression> { currentState, event ->
+                sentenceBuilder.appendFixturesValue(event.location, event.name)
+                InFixturesExpression(currentState)
+            }
             on<MethodName> { currentState, event ->
                 sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
                 currentState
             }
             on<Method> { currentState, event ->
-                sentenceBuilder.appendMethodIdentifier(event.location, event.name)
+                sentenceBuilder.appendMethodValue(event.location, event.name)
                 currentState
             }
             on<EnterExpression> { currentState, event ->
                 InExpression(currentState)
             }
+            on<Identifier> { currentState, event ->
+                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                currentState
+            }
             ignoreAll<Event> {
                 add(Matcher.any<Terminal>())
-                add(Matcher.any<Identifier>())
             }
         }
     }

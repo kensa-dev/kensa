@@ -16,11 +16,15 @@ class SentenceTokenFactory(
     private val arguments: Array<Any?>,
     private val renderers: Renderers,
     private val scenarioAccessor: CachingScenarioMethodAccessor,
+    private val fixturesAccessor: FixturesAccessor,
     private val parameters: Map<String, ParameterAccessor>,
     private val properties: Map<String, ValueAccessor>,
     private val methods: Map<String, MethodAccessor>,
     private val highlightedValues: Set<NamedValue>
 ) {
+
+    fun fixturesValueTokenFrom(token: SentenceToken) =
+        SentenceToken(renderers.renderValue(fixturesAccessor.valueOf(token.value)), setOf(FixturesValue))
 
     fun scenarioValueTokenFrom(token: SentenceToken) = token.value.split(".").let { split ->
         renderers.renderValue(scenarioAccessor.valueOf(split[0], split[1])).let { value ->

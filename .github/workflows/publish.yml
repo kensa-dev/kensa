@@ -15,6 +15,7 @@ env:
 jobs:
   PublishToStaging:
     runs-on: ubuntu-latest
+    if: ${{ !endsWith(github.ref, '-SNAPSHOT') }}
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: olegtarasov/get-tag@v2.1.3
@@ -26,9 +27,24 @@ jobs:
           distribution: 'temurin'
       - name: Publish to Sonatype
         run: make publish-to-sonatype
+  PublishToSnapshot:
+    runs-on: ubuntu-latest
+    if: ${{ endsWith(github.ref, '-SNAPSHOT') }}
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: olegtarasov/get-tag@v2.1.3
+        id: tagName
+      - name: Set up JDK
+        uses: actions/setup-java@v4.0.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Publish to Sonatype Snapshot
+        run: make publish-to-sonatype-snapshot
   DispatchReleaseEvent:
     runs-on: ubuntu-latest
-    needs: [PublishToStaging]
+    needs: [PublishToStaging, PublishToSnapshot]
+    if: ${{ always() && (needs.PublishToStaging.result == 'success' || needs.PublishToSnapshot.result == 'success') }}
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: olegtarasov/get-tag@v2.1.3

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="icon" type="image/x-icon" href="{{ favIcon }}">
+    <title>Kensa Test Results</title>
+    <script defer="defer" src="{{ kensaScript }}"></script>
+</head>
+<body>
+
+{% if scripts is not empty %}
+{% for script in scripts %}
+<script id="{{ script.id }}" type="application/json">{{ script.content }}</script>
+{% endfor %}
+{% endif %}
+{% if indices is not empty %}
+<script id="indices" type="application/json">
+    {"indices":[{% for index in indices %}{{ index.content }}{{ loop.last ? "" : "," }}{% endfor %}]}
+</script>
+{% endif %}
+
+<div id="root"></div>
+</body>
+</html>

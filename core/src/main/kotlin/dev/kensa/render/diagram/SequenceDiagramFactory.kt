@@ -1,6 +1,6 @@
 package dev.kensa.render.diagram
 
-import dev.kensa.Configuration
+import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.util.KensaMap
 import net.sourceforge.plantuml.FileFormat.SVG
@@ -15,10 +15,10 @@ private val valuePatterns = listOf(
     "^==.*==$".toRegex()
 )
 
-class SequenceDiagramFactory(private val configuration: Configuration) {
+class SequenceDiagramFactory(private val umlDirectives: List<UmlDirective>) {
 
     private val participants: List<String>
-        get() = configuration.umlDirectives.flatMap { it.asUml() }
+        get() = umlDirectives.flatMap { it.asUml() }
 
     fun create(interactions: CapturedInteractions): SequenceDiagram? =
         eventsFrom(interactions).takeUnless { it.isEmpty() }?.let { events ->

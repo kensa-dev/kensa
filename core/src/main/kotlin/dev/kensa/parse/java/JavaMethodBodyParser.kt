@@ -77,7 +77,7 @@ class JavaMethodBodyParser(
 
     override fun enterExpression(ctx: Java20Parser.ExpressionContext) =
         with(parseContext) {
-            stateMachine.apply(ctx.asScenario() ?: ctx.asEnterExpression())
+            stateMachine.apply(ctx.asFixture() ?: ctx.asScenario() ?: ctx.asEnterExpression())
         }
 
     override fun exitExpression(ctx: Java20Parser.ExpressionContext) {

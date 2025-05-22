@@ -8,6 +8,7 @@ import dev.kensa.context.TestContainer
 import dev.kensa.context.TestContainerFactory
 import dev.kensa.context.TestContext
 import dev.kensa.context.TestContextHolder
+import dev.kensa.fixture.Fixtures
 import dev.kensa.output.ResultWriter
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
@@ -36,7 +37,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
     override fun beforeAll(context: ExtensionContext) {
         if (context.kensaConfiguration.isOutputEnabled) {
             with(context) {
-                val testContainer = kensaContext.createTestContainer(requiredTestClass, displayName)
+                val testContainer = kensaContext.createTestContainer(requiredTestClass, displayName, TestPlanDetails.commonBasePackage)
                 kensaStore.put(TEST_CONTAINER_KEY, CloseableTestContainer(context.kensaResultWriter, testContainer))
             }
         }
@@ -44,7 +45,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
 
     override fun beforeEach(context: ExtensionContext) {
         with(context) {
-            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy).also { it ->
+            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy, context.fixtures).also { it ->
                 TestContextHolder.bindToCurrentThread(it)
                 kensaStore.put(TEST_CONTEXT_KEY, it)
             }
@@ -74,7 +75,8 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                         requiredTestMethod,
                         arguments,
                         context.displayName,
-                        System.currentTimeMillis()
+                        System.currentTimeMillis(),
+                        context.fixtures
                     )
                 )
             }
@@ -146,11 +148,18 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                 ResultWriter::class.java
             )
 
+        private val ExtensionContext.fixtures
+            get() = kensaStore.getOrComputeIfAbsent(
+                KENSA_FIXTURES_KEY,
+                { Fixtures() },
+                Fixtures::class.java
+            )
+
         private fun testInvocationFactory(configuration: Configuration) = TestInvocationFactory(
             TestInvocationParser(configuration),
             JavaMethodParser(isJavaClassTest, isJavaInterfaceTest, configuration),
-            KotlinFunctionParser(isKotlinTest, configuration),
-            SequenceDiagramFactory(configuration)
+            KotlinFunctionParser(isKotlinTest, configuration, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode),
+            SequenceDiagramFactory(configuration.umlDirectives)
         )
 
         private fun kensaContextFactory(resultWriter: ResultWriter, configuration: Configuration) = { _: String ->
@@ -173,6 +182,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
         private val kensaNamespace: ExtensionContext.Namespace = ExtensionContext.Namespace.create("dev", "kensa")
 
         private const val KENSA_CONTEXT_KEY = "KensaContext"
+        private const val KENSA_FIXTURES_KEY = "KensaFixtures"
         private const val KENSA_CONFIGURATION_KEY = "KensaConfiguration"
         private const val TEST_CONTEXT_KEY = "TestContext"
         private const val TEST_CONTAINER_KEY = "TestContainer"

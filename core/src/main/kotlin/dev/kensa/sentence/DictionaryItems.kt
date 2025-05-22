@@ -14,15 +14,14 @@ data class Keyword(val value: String, override val emphasisDescriptor: EmphasisD
     }
 }
 
-data class Acronym(val acronym: String) {
+data class Acronym(val acronym: String) : DictionaryItem {
 
     lateinit var _meaning: String
         private set
     val meaning: String get() = _meaning
 
-    var _emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default
-        private set
-    val emphasisDescriptor: EmphasisDescriptor get() = _emphasisDescriptor
+    private var _emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default
+    override val emphasisDescriptor: EmphasisDescriptor get() = _emphasisDescriptor
 
     companion object {
         private const val minLength = 2

@@ -4,6 +4,7 @@ import dev.kensa.Configuration
 import dev.kensa.example.JavaWithInterface
 import dev.kensa.example.JavaWithParameters
 import dev.kensa.example.JavaWithScenario
+import dev.kensa.example.JavaWithVariousFields
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
 import dev.kensa.parse.Accessor.ValueAccessor.*
@@ -205,14 +206,14 @@ internal class JavaMethodParserTest {
         )
 
         val parsedMethod =
-            parser.parse(JavaWithParameters::class.java.findMethod(methodName))
+            parser.parse(JavaWithVariousFields::class.java.findMethod(methodName))
 
         with(parsedMethod) {
             name.shouldBe(methodName)
             parameters.descriptors.shouldBeEmpty()
 
-            assertPropertyDescriptors(properties, JavaWithParameters::class.java)
-            assertMethodDescriptors(methods, JavaWithParameters::class.java)
+            assertPropertyDescriptors(properties, JavaWithVariousFields::class.java)
+            assertMethodDescriptors(methods, JavaWithVariousFields::class.java)
 
             assertSoftly(nestedSentences["nested1"]) {
                 shouldNotBeNull()
@@ -274,10 +275,6 @@ internal class JavaMethodParserTest {
                 asClue { shouldBe(ParameterAccessor(secondParameter, "second", 1)) }
             }
 
-            assertPropertyDescriptors(properties, JavaWithParameters::class.java)
-            assertMethodDescriptors(methods, JavaWithParameters::class.java)
-
-            nestedSentences.shouldContainKey("nested1")
             sentences.map { it.tokens }.shouldBe(expectedSentences.map { it.tokens })
         }
     }

@@ -8,6 +8,7 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
+import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.*
 
@@ -15,8 +16,20 @@ typealias ReflectPredicate<T> = (T) -> Boolean
 
 val Class<*>.isKotlinClass get() = declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
 val KClass<*>.isKotlinClass get() = java.isKotlinClass
+val Class<*>.isKotlinObject get() = isKotlinClass && kotlin.objectInstance != null
+val KClass<*>.isKotlinObject get() = isKotlinClass && objectInstance != null
 
 val Method.normalisedPlatformName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
+
+fun KProperty<*>.isPublic(): Boolean = visibility == null || visibility.toString() == "PUBLIC"
+fun Field.isStatic(): Boolean = Modifier.isStatic(modifiers)
+fun Field.isPublicStatic(): Boolean = Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)
+inline fun <reified T> Field.hasType(): Boolean = T::class.java.isAssignableFrom(this.type)
+
+inline fun <reified T> KProperty1<*, *>.hasType(): Boolean {
+    val type = T::class.createType(arguments = listOf(KTypeProjection.STAR))
+    return returnType.isSubtypeOf(type)
+}
 
 fun <T> ReflectPredicate<T>.and(other: ReflectPredicate<T>): ReflectPredicate<T> = { it: T -> invoke(it) && other.invoke(it) }
 
@@ -73,25 +86,25 @@ internal val Class<*>.allFields get() = findFieldsInHierarchy(allTheFields)
 
 @Suppress("UNCHECKED_CAST")
 private fun Field.valueOfIn(target: Any): Any? = run {
-    takeUnless { Modifier.isStatic(modifiers) }?.run {
+    takeUnless { isStatic() }?.run {
         (kotlinProperty?.run {
             valueOfKotlinPropertyIn(target)
         } ?: valueOfJavaFieldIn(target))
-    } ?: valueOfJavaStaticFieldIn(target)
+    } ?: valueOfJavaStaticField()
 }
 
 fun KProperty<*>.valueOfKotlinPropertyIn(target: Any): Any? = run {
-    javaField?.takeIf { Modifier.isStatic(it.modifiers) }?.run {
-        valueOfJavaStaticFieldIn(target)
+    javaField?.takeIf { it.isStatic() }?.run {
+        valueOfJavaStaticField()
     } ?: run {
         isAccessible = true
         getter.call(target)?.realValue()
     }
 }
 
-private fun Field.valueOfJavaStaticFieldIn(target: Any): Any? = kotlin.run {
+inline fun <reified T> Field.valueOfJavaStaticField(): T? = run {
     isAccessible = true
-    get(target::class.java)
+    get(null) as? T
 }
 
 private fun Field.valueOfJavaFieldIn(target: Any) = run {
@@ -118,7 +131,7 @@ private fun shouldStop(): (Class<*>) -> Boolean = { it == Any::class.java }
 
 private fun Class<*>?.findField(predicate: ReflectPredicate<Field>): Field? =
     this?.takeUnless(shouldStop())?.run {
-        this.declaredFields.singleOrNull { predicate.invoke(it) }
+        declaredFields.singleOrNull { predicate.invoke(it) }
             ?: superclass.findField(predicate)
     }
 

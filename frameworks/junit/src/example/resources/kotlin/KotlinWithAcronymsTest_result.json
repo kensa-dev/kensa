@@ -1,0 +1,119 @@
+{
+  "testClass": "dev.kensa.KotlinWithAcronymsTest",
+  "displayName": "KotlinWithAcronymsTest",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "4 Ms",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "4 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a method name with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-ac"
+                ],
+                "value": "FTTP",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "acronym",
+                "tokens": [
+                  []
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": "",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "And",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a method name with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-ac"
+                ],
+                "value": "FUBAR",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "acronym",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}

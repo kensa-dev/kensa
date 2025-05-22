@@ -8,6 +8,7 @@ import dev.kensa.parse.LocatedEvent.EnterExpression
 import dev.kensa.parse.LocatedEvent.EnterMethodInvocation
 import dev.kensa.parse.LocatedEvent.EnterStatement
 import dev.kensa.parse.LocatedEvent.Field
+import dev.kensa.parse.LocatedEvent.FixturesExpression
 import dev.kensa.parse.LocatedEvent.Identifier
 import dev.kensa.parse.LocatedEvent.Method
 import dev.kensa.parse.LocatedEvent.MethodName
@@ -39,6 +40,7 @@ class ParseContext(
 
     private val scenarioNamePattern = scenarioNames.joinToString("|") { Regex.escape(it) }
     private val scenarioPattern = """^($scenarioNamePattern)\.(\w+)(\(\))?$""".toRegex()
+    private val fixturesPattern = """fixtures[\[(](\w+\.)?([^)\]]+)[)\]]""".toRegex()
 
     private fun emphasis(name: String) = emphasisedMethods[name] ?: EmphasisDescriptor.Default
     private fun nestedSentences(name: String) = nestedMethods[name] ?: error("No nested method found with name [$name]")
@@ -50,6 +52,7 @@ class ParseContext(
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
     internal fun ParseTree.asScenario() = scenarioPattern.matchEntire(text)?.let { ScenarioExpression(location, it.groupValues[1], it.groupValues[2]) }
+    internal fun ParseTree.asFixture() = fixturesPattern.matchEntire(text)?.let { FixturesExpression(location, it.groupValues[2]) }
 
     companion object {
 

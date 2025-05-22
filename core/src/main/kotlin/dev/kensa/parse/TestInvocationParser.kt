@@ -36,6 +36,7 @@ class TestInvocationParser(private val configuration: Configuration) {
                 context.arguments,
                 configuration.renderers,
                 CachingScenarioMethodAccessor(context.instance, scenarioProperties),
+                FixturesAccessor(context.fixtures),
                 parsedMethod.parameters.descriptors,
                 parsedMethod.properties,
                 parsedMethod.methods,
@@ -63,6 +64,7 @@ class TestInvocationParser(private val configuration: Configuration) {
                 token.hasType(MethodValue) -> tokenFactory.methodValueTokenFrom(token)
                 token.hasType(ParameterValue) -> tokenFactory.parameterValueTokenFrom(token)
                 token.hasType(ScenarioValue) -> tokenFactory.scenarioValueTokenFrom(token)
+                token.hasType(FixturesValue) -> tokenFactory.fixturesValueTokenFrom(token)
                 token.hasType(Expandable) -> SentenceToken(token.value, token.tokenTypes, nestedTokens = token.nestedTokens.map { subTokens -> regenerateTokens(subTokens, tokenFactory) })
                 else -> token
             }

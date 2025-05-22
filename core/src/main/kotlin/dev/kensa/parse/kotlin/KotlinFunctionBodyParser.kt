@@ -58,7 +58,7 @@ class KotlinFunctionBodyParser(
 
     override fun enterExpression(ctx: KotlinParser.ExpressionContext) =
         with(parseContext) {
-            stateMachine.apply(ctx.asScenario() ?: ctx.asEnterExpression())
+            stateMachine.apply(ctx.asFixture() ?: ctx.asScenario() ?: ctx.asEnterExpression())
         }
 
     override fun exitExpression(ctx: KotlinParser.ExpressionContext) {

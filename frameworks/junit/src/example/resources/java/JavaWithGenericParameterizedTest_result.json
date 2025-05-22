@@ -3,7 +3,7 @@
   "displayName": "JavaWithGenericParameterizedTest",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "dev.kensa",
+  "minimumUniquePackageName": "",
   "issues": [],
   "tests": [
     {

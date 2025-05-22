@@ -54,10 +54,6 @@ class Dictionary {
         keywords.forEach(this::putKeyword)
     }
 
-    fun putKeywords(values: Set<String>) {
-        values.forEach(this::putKeyword)
-    }
-
     fun indexProtectedPhrases(value: String): List<Triple<Int, Int, EmphasisDescriptor>> {
         val indices = mutableListOf<Triple<Int, Int, EmphasisDescriptor>>()
         protectedPhrases.forEach {

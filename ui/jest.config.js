@@ -1,7 +1,7 @@
 
 module.exports = {
     transform: {
-        '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest', // Transpile JS/TS files
+        '^.+\\.(js|jsx|ts|tsx)$': 'esbuild-jest'
     },
     moduleNameMapper: {
         '^react-lowlight$': '<rootDir>/ui/__mocks__/react-lowlight.js',

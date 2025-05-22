@@ -12,6 +12,7 @@ sealed class State {
     data class InExpression(val parentState: State) : State()
     data class InTypeArguments(val parentState: State) : State()
     data class InScenarioExpression(val parentState: State) : State()
+    data class InFixturesExpression(val parentState: State) : State()
 
     data object End : State()
 }

@@ -3,7 +3,7 @@
   "displayName": "JavaWithParameterResolverExtensionTest",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "dev.kensa",
+  "minimumUniquePackageName": "",
   "issues": [],
   "tests": [
     {

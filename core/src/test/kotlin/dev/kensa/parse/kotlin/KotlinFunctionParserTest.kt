@@ -4,6 +4,8 @@ import dev.kensa.Configuration
 import dev.kensa.example.*
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
+import dev.kensa.parse.Accessor
+import dev.kensa.parse.Accessor.ValueAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.parse.KotlinParser
@@ -49,7 +51,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "literalTest"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val method = KotlinWithVariousLiterals::class.java.findMethod(functionName)
@@ -77,7 +81,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "simpleTest"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val javaClass = KotlinWithScenarioHolder::class.java
@@ -86,7 +92,6 @@ internal class KotlinFunctionParserTest {
 
             val expectedSentence = Sentence(
                 listOf(
-                    aWordOf("test"),
                     aWordOf("action"),
                     aWordOf("with"),
                     aScenarioValueOf("myScenario.value")
@@ -106,7 +111,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "simpleTest"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val javaClass = KotlinWithWhenever::class.java
@@ -137,7 +144,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "simpleTest"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val javaClass = KotlinWithAnnotations::class.java
@@ -252,7 +261,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "simpleTest"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val expectedSentence = Sentence(
@@ -289,7 +300,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "interfaceTestMethod"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val expectedSentence = Sentence(
@@ -322,7 +335,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "simpleTest"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val expectedSentence = Sentence(
@@ -371,7 +386,9 @@ internal class KotlinFunctionParserTest {
             val functionName = "simpleTest\$core_example"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
-                configuration = configuration
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
             )
 
             val expectedSentence = Sentence(
@@ -399,169 +416,48 @@ internal class KotlinFunctionParserTest {
 
     @Nested
     inner class Parameters {
+        @Test
+        internal fun parsesTestMethodWithExtensionParameters() {
+            val functionName = "parameterizedTest"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
 
+            val expectedSentence = Sentence(
+                listOf(
+                    aWordOf("assert"),
+                    aWordOf("that"),
+                    aWordOf("first"),
+                    aWordOf("is"),
+                    aWordOf("in"),
+                    aStringLiteralOf("a"),
+                    aStringLiteralOf("b")
+                )
+            )
+
+            val method = KotlinWithParameters::class.java.findMethod(functionName)
+            val firstParameter = method.parameters.first()
+            val secondParameter = method.parameters.last()
+            val parsedMethod = parser.parse(method)
+
+            with(parsedMethod) {
+                name.shouldBe("parameterizedTest")
+
+                assertSoftly(parameters.descriptors["first"]) {
+                    shouldNotBeNull()
+                    asClue { shouldBe(ValueAccessor.ParameterAccessor(firstParameter, "first", 0)) }
+                }
+                assertSoftly(parameters.descriptors["second"]) {
+                    shouldNotBeNull()
+                    asClue { shouldBe(ValueAccessor.ParameterAccessor(secondParameter, "second", 1)) }
+                }
+                sentences.first().tokens.shouldBe(expectedSentence.tokens)
+            }
+        }
     }
-
-//
-//    @Test
-//    internal fun parsesTestMethodWhenOtherMethodsHaveSimilarNames() {
-//        val expectedSentence = Sentence(
-//            listOf(
-//                aWordOf("assert"),
-//                aWordOf("that"),
-//                aStringLiteralOf("string"),
-//                aWordOf("is"),
-//                aWordOf("not"),
-//                aWordOf("blank"),
-//            )
-//        )
-//
-//        val expectedNestedSentence = Sentence(
-//            listOf(
-//                aWordOf("some"),
-//                aWordOf("builder"),
-//                aNewline(),
-//                anIndent(),
-//                anIndent(),
-//                aWordOf("with"),
-//                aWordOf("something"),
-//                aNewline(),
-//                anIndent(),
-//                anIndent(),
-//                aWordOf("build")
-//            )
-//        )
-//
-//        val method = KotlinTestWithVariousParameterCombinations::class.java.findMethod("similarNameTest1")
-//        val parsedMethod = parser.parse(method)
-//
-//        with(parsedMethod) {
-//            name.shouldBe("similarNameTest1")
-//            parameters.descriptors.shouldBeEmpty()
-//            assertPropertyDescriptors(properties, KotlinTestWithVariousParameterCombinations::class.java)
-//            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class.java)
-//
-//            assertSoftly(nestedSentences["nested1"]) {
-//                shouldNotBeNull()
-//                shouldHaveSize(1)
-//                first().tokens.shouldBe(expectedNestedSentence.tokens)
-//            }
-//            sentences.first().tokens.shouldBe(expectedSentence.tokens)
-//        }
-//    }
-//
-//    @Test
-//    internal fun parsesTestMethodWithExtensionParameters() {
-//        val expectedSentence = Sentence(
-//            listOf(
-//                aWordOf("assert"),
-//                aWordOf("that"),
-//                aWordOf("first"),
-//                aWordOf("value"),
-//                aWordOf("is"),
-//                aWordOf("equal"),
-//                aWordOf("to"),
-//                aWordOf("MY_PARAMETER_VALUE")
-//            )
-//        )
-//
-//        val method = KotlinTestWithVariousParameterCombinations::class.java.findMethod("testWithExtensionParameter")
-//        val firstParameter = method.parameters.first()
-//        val parsedMethod = parser.parse(method)
-//
-//        with(parsedMethod) {
-//            name.shouldBe("testWithExtensionParameter")
-//
-//            assertSoftly(parameters.descriptors["first"]) {
-//                shouldNotBeNull()
-//                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
-//            }
-//            assertPropertyDescriptors(properties, KotlinTestWithVariousParameterCombinations::class.java)
-//            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class.java)
-//            nestedSentences.shouldContainKey("nested1")
-//            sentences.first().tokens.shouldBe(expectedSentence.tokens)
-//        }
-//    }
-//
-//    @Test
-//    internal fun parsesParameterizedTestMethod() {
-//        val expectedSentence = Sentence(
-//            listOf(
-//                aWordOf("assert"),
-//                aWordOf("that"),
-//                aWordOf("first"),
-//                aWordOf("is"),
-//                aWordOf("in"),
-//                aStringLiteralOf("a"),
-//                aStringLiteralOf("b")
-//            )
-//        )
-//
-//        val method = KotlinTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTest")
-//        val firstParameter = method.parameters.first()
-//        val parsedMethod = parser.parse(method)
-//
-//        with(parsedMethod) {
-//            name.shouldBe("parameterizedTest")
-//            assertSoftly(parameters.descriptors["first"]) {
-//                shouldNotBeNull()
-//                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
-//            }
-//            assertPropertyDescriptors(properties, KotlinTestWithVariousParameterCombinations::class.java)
-//            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class.java)
-//            nestedSentences.shouldContainKey("nested1")
-//            sentences.first().tokens.shouldBe(expectedSentence.tokens)
-//        }
-//    }
-//
-//    @Test
-//    internal fun parsesParameterizedTestMethodWithExtensionParameters() {
-//        val expectedSentence1 = Sentence(
-//            listOf(
-//                aWordOf("assert"),
-//                aWordOf("that"),
-//                aWordOf("first"),
-//                aWordOf("is"),
-//                aWordOf("in"),
-//                aStringLiteralOf("a"),
-//                aStringLiteralOf("b")
-//            )
-//        )
-//        val expectedSentence2 = Sentence(
-//            listOf(
-//                aWordOf("assert"),
-//                aWordOf("that"),
-//                aParameterValueOf("second"),
-//                aWordOf("value"),
-//                aWordOf("is"),
-//                aWordOf("equal"),
-//                aWordOf("to"),
-//                aWordOf("MY_PARAMETER_VALUE"),
-//            )
-//        )
-//
-//        val method = KotlinTestWithVariousParameterCombinations::class.java.findMethod("parameterizedTestWithExtensionParameter")
-//        val firstParameter = method.parameters.first()
-//        val secondParameter = method.parameters.last()
-//        val parsedMethod = parser.parse(method)
-//
-//        with(parsedMethod) {
-//            name.shouldBe("parameterizedTestWithExtensionParameter")
-//            assertSoftly(parameters.descriptors["first"]) {
-//                shouldNotBeNull()
-//                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
-//            }
-//            assertSoftly(parameters.descriptors["second"]) {
-//                shouldNotBeNull()
-//                asClue { shouldBe(ParameterAccessor(secondParameter, "second", 1)) }
-//            }
-//            assertPropertyDescriptors(properties, KotlinTestWithVariousParameterCombinations::class.java)
-//            assertMethodDescriptors(methods, KotlinTestWithVariousParameterCombinations::class.java)
-//            nestedSentences.shouldContainKey("nested1")
-//            sentences.first().tokens.shouldBe(expectedSentence1.tokens)
-//            sentences.last().tokens.shouldBe(expectedSentence2.tokens)
-//        }
-//    }
 
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }
 }

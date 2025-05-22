@@ -9,7 +9,7 @@ class JavaMethodParser(
     override val configuration: Configuration
 ) : MethodParser,
     ParserCache by RealParserCache(),
-    ParserDelegate by JavaParserDelegate(isClassTest, isInterfaceTest, configuration) {
+    ParserDelegate by JavaParserDelegate(isClassTest, isInterfaceTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode) {
 
     override val toSimpleTypeName: (Class<*>) -> String = { it.simpleName }
 }
