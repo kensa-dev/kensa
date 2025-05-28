@@ -44,6 +44,7 @@ publish-to-sonatype:
 publish-to-sonatype-snapshot:
 	./gradlew --build-cache --no-daemon publishToSonatype \
 		-Psign=true \
+		-PreleaseVersion="$(GIT_TAG_NAME)" \
 		-PsigningKeyId="$${SIGNING_KEY_ID}" \
 		-PsigningKey="$${SIGNING_KEY}" \
 		-PsigningPassword="$${SIGNING_PASSWORD}" \
