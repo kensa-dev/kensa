@@ -40,15 +40,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./ui/package-lock.json', './ui/vite.config.js') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: Cache Vite Pre-bundled Cache
-        uses: actions/cache@v4.2.0
-        env:
-          cache-name: cache-vite-modules
-        with:
-          path: ./ui/node_modules/.vite
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./ui/package-lock.json', './ui/vite.config.js') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Cache Gradle packages
         uses: actions/cache@v4.2.0
         with:
@@ -58,8 +49,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Check Vite Cache
-        run: ls -lRa ./ui/node_modules
       - name: Build
         run: make build-ci
       - name: Cleanup Gradle Cache
