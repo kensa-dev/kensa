@@ -13,7 +13,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation(project(":core"))
+    api(project(":core"))
     implementation(libs.kotlinReflect)
 
     implementation(libs.junitJupiterParams)

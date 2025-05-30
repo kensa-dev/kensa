@@ -89,6 +89,13 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             on<EnterMethodInvocation> { currentState, event ->
                 InMethodInvocation(currentState)
             }
+            on<Operator> { currentState, event, ->
+                sentenceBuilder.appendOperator(event.location, event.text)
+                currentState
+            }
+            on<ScenarioExpression> { currentState, event ->
+                InScenarioExpression(currentState)
+            }
             ignoreAll<Event> {
                 add(Matcher.any<Identifier>())
                 add(Matcher.any<Terminal>())
@@ -104,6 +111,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             ignoreAll<Event> {
                 add(Matcher.any<Terminal>())
                 add(Matcher.any<Identifier>())
+                add(Matcher.any<Field>())
             }
         }
         state<InFixturesExpression> {
@@ -123,6 +131,9 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             }
         }
         state<InExpression> {
+            on<EnterStatement> { currentState, event ->
+                InStatement(currentState)
+            }
             on<EnterExpression> { currentState, event ->
                 InExpression(currentState)
             }
@@ -150,6 +161,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             }
             on<Field> { currentState, event ->
                 sentenceBuilder.appendFieldValue(event.location, event.name)
+                currentState
+            }
+            on<Method> { currentState, event ->
+                sentenceBuilder.appendMethodValue(event.location, event.name)
                 currentState
             }
             on<Nested> { currentState, event ->
@@ -182,6 +197,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             }
             on<Identifier> { currentState, event ->
                 sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                currentState
+            }
+            on<Operator> { currentState, event, ->
+                sentenceBuilder.appendOperator(event.location, event.text)
                 currentState
             }
             ignoreAll<Event> {
