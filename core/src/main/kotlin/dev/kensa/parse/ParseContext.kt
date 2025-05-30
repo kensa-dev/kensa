@@ -54,6 +54,9 @@ class ParseContext(
     internal fun ParseTree.asScenario() = scenarioPattern.matchEntire(text)?.let { ScenarioExpression(location, it.groupValues[1], it.groupValues[2]) }
     internal fun ParseTree.asFixture() = fixturesPattern.matchEntire(text)?.let { FixturesExpression(location, it.groupValues[2]) }
 
+    internal fun ParseTree?.matchesScenario() = this?.text?.matches(scenarioPattern) ?: false
+    internal fun ParseTree?.matchesFixture() = this?.text?.matches(fixturesPattern) ?: false
+
     companion object {
 
         internal fun ParseTree.asOperator() = Operator(location, text)

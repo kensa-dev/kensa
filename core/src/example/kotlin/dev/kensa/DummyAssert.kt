@@ -4,7 +4,7 @@ class DummyAssert<T : Any> {
     val isNotBlank: Unit
         get() {}
 
-    fun isEqualTo(expected: T?) {}
+    infix fun isEqualTo(expected: T?) {}
     fun isIn(vararg expected: T?) {}
     fun contains(expected: String?) {}
 

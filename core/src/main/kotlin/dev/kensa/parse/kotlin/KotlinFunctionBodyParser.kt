@@ -32,6 +32,40 @@ class KotlinFunctionBodyParser(
 //        println(">Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
     }
 
+    override fun enterInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
+        with(parseContext) {
+            val rhExpression = ctx.rangeExpression(1)
+            if (rhExpression.matchesScenario() || rhExpression.matchesFixture()) {
+                stateMachine.apply(ctx.asEnterExpression())
+            }
+        }
+    }
+
+    override fun exitInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
+        with(parseContext) {
+            val rhExpression = ctx.rangeExpression(1)
+            if (rhExpression.matchesScenario() || rhExpression.matchesFixture()) {
+                stateMachine.apply(ExitExpression)
+            }
+        }
+    }
+
+    override fun enterRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
+        with(parseContext) {
+            if (ctx.matchesScenario() || ctx.matchesFixture()) {
+                (ctx.asScenario() ?: ctx.asFixture())?.also { stateMachine.apply(it) }
+            }
+        }
+    }
+
+    override fun exitRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
+        with(parseContext) {
+            if (ctx.matchesScenario() || ctx.matchesFixture()) {
+                stateMachine.apply(ExitExpression)
+            }
+        }
+    }
+
     override fun enterFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
         stateMachine.apply(EnterMethod)
     }

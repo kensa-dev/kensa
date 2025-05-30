@@ -4,7 +4,6 @@ import dev.kensa.Configuration
 import dev.kensa.example.*
 import dev.kensa.kotest.asClue
 import dev.kensa.kotest.shouldBe
-import dev.kensa.parse.Accessor
 import dev.kensa.parse.Accessor.ValueAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.PropertyAccessor
 import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
@@ -13,6 +12,7 @@ import dev.kensa.parse.propertyNamed
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceTokens.aBooleanLiteralOf
 import dev.kensa.sentence.SentenceTokens.aCharacterLiteralOf
+import dev.kensa.sentence.SentenceTokens.aFixturesValueOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aNullLiteral
 import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
@@ -77,8 +77,8 @@ internal class KotlinFunctionParserTest {
     inner class Scenario {
 
         @Test
-        fun `replaces scenario value in sentence when using scenario holder`() {
-            val functionName = "simpleTest"
+        fun `replaces scenario value in sentence when using scenario with infix function`() {
+            val functionName = "testWithInfixScenario"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
                 configuration,
@@ -86,7 +86,40 @@ internal class KotlinFunctionParserTest {
                 configuration.antlrPredicationMode,
             )
 
-            val javaClass = KotlinWithScenarioHolder::class.java
+            val javaClass = KotlinWithScenario::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = Sentence(
+                listOf(
+                    aWordOf("assert"),
+                    aWordOf("that"),
+                    aWordOf("the"),
+                    aWordOf("extracted"),
+                    aWordOf("value"),
+                    aWordOf("is"),
+                    aWordOf("equal"),
+                    aWordOf("to"),
+                    aScenarioValueOf("myScenario.value")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
+
+        @Test
+        fun `replaces scenario value in sentence when using scenario`() {
+            val functionName = "testWithScenario"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val javaClass = KotlinWithScenario::class.java
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
@@ -95,6 +128,97 @@ internal class KotlinFunctionParserTest {
                     aWordOf("action"),
                     aWordOf("with"),
                     aScenarioValueOf("myScenario.value")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
+
+        @Test
+        fun `replaces scenario value in sentence when using scenario holder`() {
+            val functionName = "testWithScenarioHolder"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val javaClass = KotlinWithScenario::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = Sentence(
+                listOf(
+                    aWordOf("action"),
+                    aWordOf("with"),
+                    aScenarioValueOf("myScenario.value")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
+    }
+
+    @Nested
+    inner class Fixtures {
+
+        @Test
+        fun `replaces fixture value in sentence when using fixtures with infix function`() {
+            val functionName = "testWithInfixFixtures"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val javaClass = KotlinWithFixtures::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = Sentence(
+                listOf(
+                    aWordOf("assert"),
+                    aWordOf("that"),
+                    aWordOf("the"),
+                    aWordOf("extracted"),
+                    aWordOf("value"),
+                    aWordOf("is"),
+                    aWordOf("equal"),
+                    aWordOf("to"),
+                    aFixturesValueOf("MyFixture")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
+
+        @Test
+        fun `replaces scenario value in sentence when using fixture`() {
+            val functionName = "testWithFixtures"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val javaClass = KotlinWithFixtures::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = Sentence(
+                listOf(
+                    aWordOf("action"),
+                    aWordOf("with"),
+                    aFixturesValueOf("MyFixture")
                 )
             )
 

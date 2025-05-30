@@ -67,7 +67,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             }
         }
         state<TestBlock> {
-            on<ExitBlock> { currentState, event -> currentState.parentState}
+            on<ExitBlock> { currentState, event -> currentState.parentState }
 
             on<EnterStatement> { currentState, event ->
                 beginSentence(event.location)
@@ -98,17 +98,23 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             on<ExitExpression> { currentState, event ->
                 currentState.parentState
             }
+            on<ScenarioExpression> { currentState, event ->
+                InScenarioExpression(currentState)
+            }
             ignoreAll<Event> {
                 add(Matcher.any<Terminal>())
                 add(Matcher.any<Identifier>())
             }
         }
         state<InFixturesExpression> {
-            on<EnterExpression> { currentState, event ->
-                InFixturesExpression(currentState)
-            }
             on<ExitExpression> { currentState, event ->
                 currentState.parentState
+            }
+            on<FixturesExpression> { currentState, event ->
+                InFixturesExpression(currentState)
+            }
+            on<EnterExpression> { currentState, event ->
+                InFixturesExpression(currentState)
             }
             ignoreAll<Event> {
                 add(Matcher.any<MethodName>())

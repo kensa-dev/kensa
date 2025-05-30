@@ -34,6 +34,8 @@ object SentenceTokens {
 
     fun aScenarioValueOf(value: String) = SentenceToken(value, tokenTypes = setOf(TokenType.ScenarioValue))
 
+    fun aFixturesValueOf(value: String) = SentenceToken(value, tokenTypes = setOf(TokenType.FixturesValue))
+
     fun aFieldIdentifierOf(value: String) = SentenceToken(value, tokenTypes = setOf(TokenType.FieldValue))
 
     fun aMethodIdentifierOf(value: String) = SentenceToken(value, tokenTypes = setOf(TokenType.MethodValue))
