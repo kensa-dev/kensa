@@ -9,5 +9,5 @@ class KotlinWithWhenever {
     }
 
     private fun whenever(action: ActionUnderTest) = Unit
-    private fun someActionIsPerformed() = ActionUnderTest { _, _ -> }
+    private fun someActionIsPerformed() = ActionUnderTest { _, _, _ -> }
 }

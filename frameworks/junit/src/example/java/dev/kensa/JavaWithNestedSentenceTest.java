@@ -27,7 +27,7 @@ public class JavaWithNestedSentenceTest implements KensaTest, WithHamcrest {
     }
 
     private GivensBuilder somePrerequisites() {
-        return givens -> givens.put("foo", "bar");
+        return (givens, fixtures) -> givens.put("foo", "bar");
     }
 
     @NestedSentence
@@ -37,7 +37,7 @@ public class JavaWithNestedSentenceTest implements KensaTest, WithHamcrest {
 
     @NotNull
     private static ActionUnderTest someActionUnderTest() {
-        return (givens, interactions) -> {
+        return (givens, fixtures, interactions) -> {
         };
     }
 }

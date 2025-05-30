@@ -26,7 +26,7 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
     }
 
     private fun somePrerequisites(): GivensBuilder {
-        return GivensBuilder { givens: Givens? -> givens!!.put("foo", "bar") }
+        return GivensBuilder { givens: Givens, _ -> givens.put("foo", "bar") }
     }
 
     @NestedSentence
@@ -35,7 +35,7 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
     }
 
     private fun someActionUnderTest(): ActionUnderTest {
-        return ActionUnderTest { givens: Givens?, interactions: CapturedInteractions? -> }
+        return ActionUnderTest { _, _, _ ->}
     }
 
 }

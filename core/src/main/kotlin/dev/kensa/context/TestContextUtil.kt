@@ -11,7 +11,7 @@ object TestContextUtil {
 
 class TestContextRunner(private val testContext: TestContext) {
     fun execute(action: ActionUnderTest) {
-        with(testContext) { action.execute(givens, interactions) }
+        with(testContext) { action.execute(givens, fixtures, interactions) }
     }
 
     fun <T> execute(extractor: StateExtractor<T>) = testContext.run { extractor.execute(interactions) }

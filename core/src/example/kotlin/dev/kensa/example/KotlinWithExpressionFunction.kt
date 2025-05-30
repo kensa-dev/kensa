@@ -8,7 +8,7 @@ class KotlinWithExpressionFunction {
         given(someActionNameIsAddedToGivens())
     }
 
-    private fun someActionNameIsAddedToGivens() = GivensBuilder { }
+    private fun someActionNameIsAddedToGivens() = GivensBuilder { _, _ -> }
 
     private fun given(givensBuilder: GivensBuilder) = Unit
 }

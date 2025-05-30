@@ -64,16 +64,16 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
 
     private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { interactions: CapturedInteractions -> aValue }
 
-    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens, _ -> givens.put("foo", "bar") }
 
-    private fun somePrerequisitesWith(vararg values: String): GivensBuilder = GivensBuilder { givens: Givens ->
+    private fun somePrerequisitesWith(vararg values: String): GivensBuilder = GivensBuilder { givens: Givens, _ ->
         values.forEach { givens.put("key_$it", it) }
     }
 
-    private fun someAction(): ActionUnderTest = ActionUnderTest { givens: Givens, interactions: CapturedInteractions? -> }
-    private fun someActionWith(value: String): ActionUnderTest = ActionUnderTest { givens: Givens, interactions: CapturedInteractions? -> }
+    private fun someAction(): ActionUnderTest = ActionUnderTest { _, _, _ -> }
+    private fun someActionWith(value: String): ActionUnderTest = ActionUnderTest { _, _, _ -> }
 
     @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase], textColour = TextLight, backgroundColor = BackgroundDanger)
-    private fun someActionWithEmphasis(): ActionUnderTest = ActionUnderTest { givens: Givens, interactions: CapturedInteractions? -> }
+    private fun someActionWithEmphasis(): ActionUnderTest = ActionUnderTest { _, _, _ -> }
 }
 

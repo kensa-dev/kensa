@@ -27,11 +27,11 @@ public class JavaWithSinglePassingTest implements KensaTest, WithHamcrest {
     }
 
     private GivensBuilder somePrerequisites() {
-        return givens -> givens.put("foo", "bar");
+        return (givens, fixtures) -> givens.put("foo", "bar");
     }
 
     private ActionUnderTest someAction() {
-        return (givens, interactions) -> {
+        return (givens, fixtures, interactions) -> {
         };
     }
 }

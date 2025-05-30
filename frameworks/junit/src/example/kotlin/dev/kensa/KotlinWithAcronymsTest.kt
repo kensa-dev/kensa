@@ -3,7 +3,6 @@ package dev.kensa
 import dev.kensa.Kensa.konfigure
 import dev.kensa.junit.KensaTest
 import dev.kensa.sentence.Acronym.Companion.of
-import dev.kensa.state.Givens
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -25,7 +24,7 @@ class KotlinWithAcronymsTest : KensaTest {
         and(aMethodNameWithFubarAcronym())
     }
 
-    fun aMethodNameWithFttpAcronym(): GivensBuilder = GivensBuilder { givens: Givens -> }
+    fun aMethodNameWithFttpAcronym(): GivensBuilder = GivensBuilder { _, _ -> }
 
-    fun aMethodNameWithFubarAcronym(): GivensBuilder = GivensBuilder { givens: Givens -> }
+    fun aMethodNameWithFubarAcronym(): GivensBuilder = GivensBuilder { _, _ -> }
 }

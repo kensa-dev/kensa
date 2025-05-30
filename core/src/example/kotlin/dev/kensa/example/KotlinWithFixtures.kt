@@ -1,10 +1,7 @@
 package dev.kensa.example
 
 import dev.kensa.ActionUnderTest
-import dev.kensa.DummyAssert
 import dev.kensa.DummyAssert.Companion.assertThat
-import dev.kensa.Scenario
-import dev.kensa.ScenarioHolder
 import dev.kensa.StateExtractor
 
 class KotlinWithFixtures {
@@ -23,6 +20,6 @@ class KotlinWithFixtures {
 
     private fun theExtractedValue() = StateExtractor { "" }
 
-    private fun actionWith(value: String) = ActionUnderTest { g, i ->
+    private fun actionWith(value: String) = ActionUnderTest { _, _, _ ->
     }
 }

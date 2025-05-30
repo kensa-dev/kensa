@@ -11,6 +11,6 @@ public class JavaWithTypeArgumentsTest implements KensaTest {
     }
 
     private <T> GivensBuilder aLiteralOf(T aValue) {
-        return givens -> {};
+        return (givens, fixtures) -> {};
     }
 }

@@ -2,7 +2,6 @@ package dev.kensa.junit
 
 import dev.kensa.ActionUnderTest
 import dev.kensa.GivensBuilder
-import dev.kensa.GivensWithInteractionsBuilder
 import dev.kensa.SetupSteps
 import dev.kensa.context.TestContextHolder.testContext
 import dev.kensa.fixture.Fixture
@@ -30,14 +29,6 @@ interface KensaTest {
 
     fun and(steps: SetupSteps) {
         steps.execute()
-    }
-
-    fun given(builder: GivensWithInteractionsBuilder) {
-        testContext().given(builder)
-    }
-
-    fun and(builder: GivensWithInteractionsBuilder) {
-        given(builder)
     }
 
     fun whenever(action: ActionUnderTest) {

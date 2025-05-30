@@ -18,6 +18,6 @@ public class JavaWithLiteralsTest implements KensaTest {
     }
 
     private <T> GivensBuilder aLiteralOf(T aValue) {
-        return givens -> {};
+        return (givens, fixtures) -> {};
     }
 }

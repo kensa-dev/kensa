@@ -22,7 +22,7 @@ class KotlinWithSinglePassingTest : KensaTest, WithHamkrest {
 
     private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { interactions: CapturedInteractions -> aValue }
 
-    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens, _ -> givens.put("foo", "bar") }
 
-    private fun someAction(): ActionUnderTest = ActionUnderTest { givens: Givens, interactions: CapturedInteractions? -> }
+    private fun someAction(): ActionUnderTest = ActionUnderTest { _, _, _->}
 }

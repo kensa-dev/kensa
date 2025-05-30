@@ -1,6 +1,9 @@
 package dev.kensa;
 
-import dev.kensa.fixture.*;
+import dev.kensa.fixture.FixtureContainer;
+import dev.kensa.fixture.FixtureRegistry;
+import dev.kensa.fixture.PrimaryFixture;
+import dev.kensa.fixture.SecondaryFixture;
 import dev.kensa.hamcrest.WithHamcrest;
 import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.Test;
@@ -10,7 +13,6 @@ import java.util.List;
 
 import static dev.kensa.JavaTestFixtures.CHILD_STRING_FIXTURE;
 import static dev.kensa.JavaTestFixtures.STRING_FIXTURE;
-import static dev.kensa.fixture.FixtureKt.createFixture;
 import static dev.kensa.fixture.FixtureKt.createFixture;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -38,7 +40,7 @@ public class JavaWithFixturesTest implements KensaTest, WithHamcrest {
     }
 
     private GivensBuilder somePrerequisites() {
-        return givens -> {
+        return (givens, fixtures) -> {
             givens.put("foo", fixtures(STRING_FIXTURE));
         };
     }
