@@ -31,6 +31,8 @@ interface KensaTest {
         steps.execute()
     }
 
+    fun `when`(action: ActionUnderTest) = whenever(action)
+
     fun whenever(action: ActionUnderTest) {
         testContext().whenever(action)
     }

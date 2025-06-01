@@ -1,6 +1,6 @@
 {
   "testClass": "dev.kensa.KotlinWithGenericParameterizedTest",
-  "displayName": "KotlinWithGenericParameterizedTest",
+  "displayName": "Kotlin With Generic Parameterized Test",
   "state": "Passed",
   "notes": null,
   "minimumUniquePackageName": "",

@@ -5,5 +5,5 @@ import dev.kensa.state.Givens
 
 @FunctionalInterface
 fun interface GivensBuilder {
-    fun build(givens: Givens, fixture: Fixtures)
+    fun build(givens: Givens, fixtures: Fixtures)
 }

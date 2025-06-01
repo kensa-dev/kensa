@@ -21,7 +21,7 @@ class TestContainerFactory(
         testClass.run {
             TestContainer(
                 this,
-                displayName,
+                displayName.unCamel(),
                 createMethodContainers(),
                 notes(),
                 issues(),

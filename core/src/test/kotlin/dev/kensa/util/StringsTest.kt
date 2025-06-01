@@ -22,6 +22,7 @@ internal class StringsTest {
         "FTTCCamelCasePhrase9000".unCamel() shouldBe "FTTC Camel Case Phrase 9000"
         "FTTCCamel9000CasePhrase".unCamel() shouldBe "FTTC Camel 9000 Case Phrase"
         "9000FTTCCamelCasePhrase".unCamel() shouldBe "9000 FTTC Camel Case Phrase"
+        "9000 FTTC Camel Case Phrase".unCamel() shouldBe "9000 FTTC Camel Case Phrase"
     }
 
     @Test
