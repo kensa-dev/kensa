@@ -7,7 +7,7 @@ import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 
 class KotlinWithOutputDisabledTest : KensaTest, WithHamkrest {
-    @SentenceValue
+    @Resolve
     private val aValue = "aStringValue"
 
     @Test

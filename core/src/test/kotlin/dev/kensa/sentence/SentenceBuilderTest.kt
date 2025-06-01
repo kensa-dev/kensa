@@ -5,14 +5,14 @@ import dev.kensa.Configuration
 import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Location
 import dev.kensa.sentence.Acronym.Companion.of
-import dev.kensa.sentence.SentenceTokens.aFieldIdentifierOf
+import dev.kensa.sentence.SentenceTokens.aFieldValueOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
 import dev.kensa.sentence.SentenceTokens.aMethodIdentifierOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
 import dev.kensa.sentence.SentenceTokens.aProtectedPhraseOf
-import dev.kensa.sentence.SentenceTokens.aScenarioValueOf
+//import dev.kensa.sentence.SentenceTokens.aScenarioValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anAcronymOf
@@ -48,7 +48,7 @@ internal class SentenceBuilderTest {
             appendIdentifier(Location(2, 0), value = "andFOO")
             appendStringLiteral(Location(2, 0), "stringLiteral1")
             appendNumberLiteral(Location(2, 0), "10")
-            appendScenarioValue(Location(3, 0), "scenario.call")
+            appendFieldValue(Location(3, 0), "scenario.call")
             appendFieldValue(Location(3, 0), "fieldName")
             appendMethodValue(Location(3, 0), "methodName")
             appendParameterValue(Location(3, 0), "parameterName")
@@ -69,8 +69,8 @@ internal class SentenceBuilderTest {
             anAcronymOf("FOO"),
             aStringLiteralOf("stringLiteral1"),
             aNumberLiteralOf("10"),
-            aScenarioValueOf("scenario.call"),
-            aFieldIdentifierOf("fieldName"),
+            aFieldValueOf("scenario.call"),
+            aFieldValueOf("fieldName"),
             aMethodIdentifierOf("methodName"),
             aParameterValueOf("parameterName"),
             aNewline(),

@@ -99,7 +99,6 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
             classes = [
                 KotlinWithSinglePassingTest::class,
                 KotlinWithGenericParameterizedTest::class,
-                KotlinWithAnnotationFeatureTest::class,
                 KotlinWithNestedSentenceTest::class,
                 KotlinWithLiteralsTest::class,
                 KotlinWithTypeArgumentsTest::class,
@@ -116,6 +115,14 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 renderers.addValueRenderer(MyArgument::class.java, MyArgumentRenderer)
             }
             executeTestAndVerifyJson(KotlinWithParameterResolverExtensionTest::class.java)
+        }
+
+        @Test
+        fun embeddedJsonIsCorrectForTestWihVariousAnnotationsParameter() {
+            testConfiguration {
+                renderers.addValueRenderer(MyArgument::class.java, MyArgumentRenderer)
+            }
+            executeTestAndVerifyJson(KotlinWithAnnotationFeatureTest::class.java)
         }
 
         @Test

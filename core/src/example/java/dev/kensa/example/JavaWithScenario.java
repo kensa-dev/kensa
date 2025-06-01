@@ -1,10 +1,10 @@
 package dev.kensa.example;
 
-import dev.kensa.Scenario;
+import dev.kensa.Resolve;
 
 public class JavaWithScenario {
 
-    @Scenario
+    @Resolve
     private MyJavaScenario scenario;
 
     private Integer foo = 666;

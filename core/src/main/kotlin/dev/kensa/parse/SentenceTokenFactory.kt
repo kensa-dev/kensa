@@ -1,69 +1,63 @@
 package dev.kensa.parse
 
+import dev.kensa.ElementDescriptor
+import dev.kensa.ElementDescriptor.ResolveHolderElementDescriptor
 import dev.kensa.KensaException
-import dev.kensa.parse.Accessor.ValueAccessor.ParameterAccessor
-import dev.kensa.parse.Accessor.ValueAccessor
-import dev.kensa.parse.Accessor.ValueAccessor.MethodAccessor
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.SentenceToken
 import dev.kensa.sentence.TokenType
 import dev.kensa.sentence.TokenType.*
 import dev.kensa.util.NamedValue
-import dev.kensa.util.invokeMethod
 
 class SentenceTokenFactory(
     private val testInstance: Any,
     private val arguments: Array<Any?>,
     private val renderers: Renderers,
-    private val scenarioAccessor: CachingScenarioMethodAccessor,
     private val fixturesAccessor: FixturesAccessor,
-    private val parameters: Map<String, ParameterAccessor>,
-    private val properties: Map<String, ValueAccessor>,
-    private val methods: Map<String, MethodAccessor>,
+    private val parameters: Map<String, ElementDescriptor>,
+    private val properties: Map<String, ElementDescriptor>,
+    private val methods: Map<String, ElementDescriptor>,
     private val highlightedValues: Set<NamedValue>
 ) {
+
+    private val regex = """^([a-zA-Z_][a-zA-Z0-9_]*)(?:\(\))?(?:\.(.+))?$""".toRegex()
 
     fun fixturesValueTokenFrom(token: SentenceToken) =
         SentenceToken(renderers.renderValue(fixturesAccessor.valueOf(token.value)), setOf(FixturesValue))
 
-    fun scenarioValueTokenFrom(token: SentenceToken) = token.value.split(".").let { split ->
-        renderers.renderValue(scenarioAccessor.valueOf(split[0], split[1])).let { value ->
-            SentenceToken(value, HashSet<TokenType>().apply {
-                add(ScenarioValue)
-                takeIf { valueIsHighlighted(value) }?.add(Highlighted)
-            })
-        }
-    }
+    fun fieldValueTokenFrom(token: SentenceToken): SentenceToken =
+        regex.matchEntire(token.value)?.let { match ->
+            properties[match.groupValues[1]]?.let { pd ->
+                if (pd is ResolveHolderElementDescriptor) {
+                    renderers.renderValue(pd.resolveValue(testInstance, token.value))
+                } else {
+                    renderers.renderValue(pd.resolveValue(testInstance, match.groupValues[2]))
+                }.asSentenceToken(FieldValue, pd.shouldHighlight)
+            }
+        } ?: throw KensaException("Token with type FieldValue did not refer to an actual field")
 
-    fun fieldValueTokenFrom(token: SentenceToken) = properties[token.value]?.let { pd ->
-        renderers.renderValue(pd.valueOfIn(testInstance)).let { value ->
-            SentenceToken(value, HashSet<TokenType>().apply {
-                add(FieldValue)
-                takeIf { pd.isHighlight }?.add(Highlighted)
-                takeIf { valueIsHighlighted(value) }?.add(Highlighted)
-            })
-        }
-    } ?: throw KensaException("Token with type FieldValue did not refer to an actual field")
+    fun methodValueTokenFrom(token: SentenceToken): SentenceToken =
+        regex.matchEntire(token.value)?.let { match ->
+            methods[match.groupValues[1]]?.let { md ->
+                renderers.renderValue(md.resolveValue(testInstance, match.groupValues[2]))
+                    .asSentenceToken(MethodValue, md.shouldHighlight)
+            }
+        } ?: throw KensaException("Token with type MethodValue did not refer to an actual method")
 
-    fun methodValueTokenFrom(token: SentenceToken) = methods[token.value]?.let { md ->
-        renderers.renderValue(testInstance.invokeMethod<Any>(md.method)).let { value ->
-            SentenceToken(value, HashSet<TokenType>().apply {
-                add(MethodValue)
-                takeIf { md.isHighlight }?.add(Highlighted)
-                takeIf { valueIsHighlighted(value) }?.add(Highlighted)
-            })
-        }
-    } ?: throw KensaException("Token with type MethodValue did not refer to an actual method")
+    fun parameterValueTokenFrom(token: SentenceToken): SentenceToken =
+        regex.matchEntire(token.value)?.let { match ->
+            parameters[match.groupValues[1]]?.let { pd ->
+                renderers.renderValue(pd.resolveValue(arguments, match.groupValues[2]))
+                    .asSentenceToken(ParameterValue, pd.shouldHighlight)
+            }
 
-    fun parameterValueTokenFrom(token: SentenceToken) = parameters[token.value]?.let { pd ->
-        renderers.renderValue(arguments[pd.index]).let { value ->
-            SentenceToken(value, HashSet<TokenType>().apply {
-                add(ParameterValue)
-                takeIf { pd.isHighlight }?.add(Highlighted)
-                takeIf { valueIsHighlighted(value) }?.add(Highlighted)
-            })
-        }
-    } ?: throw KensaException("Token with type ParameterValue did not refer to an actual parameter")
+        } ?: throw KensaException("Token with type ParameterValue did not refer to an actual parameter")
 
-    private fun valueIsHighlighted(value: String) = highlightedValues.any { it.value == value }
+    private fun String.asSentenceToken(type: TokenType, shouldHighlight: Boolean) =
+        SentenceToken(this, buildSet {
+            add(type)
+            if (shouldHighlight || isHighlighted()) add(Highlighted)
+        })
+
+    private fun String.isHighlighted() = highlightedValues.any { it.value == this }
 }

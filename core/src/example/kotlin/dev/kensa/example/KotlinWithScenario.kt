@@ -2,12 +2,11 @@ package dev.kensa.example
 
 import dev.kensa.ActionUnderTest
 import dev.kensa.DummyAssert.Companion.assertThat
-import dev.kensa.Scenario
-import dev.kensa.ScenarioHolder
+import dev.kensa.Resolve
 import dev.kensa.StateExtractor
 
 class MyHolder {
-    @Scenario
+    @Resolve
     val myScenario = MyScenario("foopy")
 }
 
@@ -19,10 +18,10 @@ class KotlinWithScenario {
 
     fun test(block: MyHolder.() -> Unit): Unit = with(myHolder) { block() }
 
-    @Scenario
+    @Resolve
     val myScenario = MyScenario("foopy")
 
-    @ScenarioHolder
+    @Resolve
     private val myHolder = MyHolder()
 
     fun testWithScenarioHolder() = test {

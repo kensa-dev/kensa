@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "2 Ms",
+      "elapsedTime": "3 Ms",
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "2 Ms",
+          "elapsedTime": "3 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -100,7 +100,7 @@
               },
               {
                 "types": [
-                  "tk-sv"
+                  "tk-fv"
                 ],
                 "value": "aStringValue",
                 "tokens": [
@@ -230,7 +230,7 @@
               },
               {
                 "types": [
-                  "tk-sv"
+                  "tk-fv"
                 ],
                 "value": "aStringValue",
                 "tokens": [
@@ -257,7 +257,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithHighlight",
       "displayName": "Test With Highlight",
       "notes": null,
@@ -266,7 +266,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -485,6 +485,298 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithEmphasis()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithSimpleFunctionSentenceValue",
+      "displayName": "Test With Simple Function Sentence Value",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some something with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-mv"
+                ],
+                "value": "myValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithSimpleFunctionSentenceValue()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "testWithChainedFunctionSentenceValue",
+      "displayName": "Test With Chained Function Sentence Value",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some something with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-mv"
+                ],
+                "value": "myValue",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithChainedFunctionSentenceValue()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "testWithChainedFieldSentenceValue",
+      "displayName": "Test With Chained Field Sentence Value",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some something with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "myFieldThing",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithChainedFieldSentenceValue()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithChainedFunctionSentenceValueParameter",
+      "displayName": "Test With Chained Function Sentence Value Parameter",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some something with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-pv"
+                ],
+                "value": "foo",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "value": "MyThing(value=foo)"
+            }
+          ],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] MyThing(value=foo)"
+        },
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some something with",
+                "tokens": [
+                  []
+                ]
+              },
+              {
+                "types": [
+                  "tk-pv"
+                ],
+                "value": "bar",
+                "tokens": [
+                  []
+                ]
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "value": "MyThing(value=bar)"
+            }
+          ],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[2] MyThing(value=bar)"
         }
       ]
     }

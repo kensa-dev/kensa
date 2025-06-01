@@ -1,5 +1,5 @@
 package dev.kensa.parse
 
-import dev.kensa.parse.Accessor.ValueAccessor.ParameterAccessor
+import dev.kensa.ElementDescriptor
 
-data class MethodParameters(val descriptors: Map<String, ParameterAccessor>)
+data class MethodParameters(val descriptors: Map<String, ElementDescriptor>)

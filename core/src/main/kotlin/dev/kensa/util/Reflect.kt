@@ -1,5 +1,6 @@
 package dev.kensa.util
 
+import java.lang.System.err
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -65,9 +66,14 @@ internal fun <T> Any.invokeMethod(name: String): T? {
 }
 
 @Suppress("UNCHECKED_CAST")
-internal fun <T> Any.invokeMethod(method: Method): T? = method.run {
+internal fun <T> Any.invokeMethodOrNull(method: Method): T? = method.run {
     isAccessible = true
-    invoke(this@invokeMethod) as T?
+    try {
+        invoke(this@invokeMethodOrNull) as T?
+    }catch(e: Exception) {
+        err.println("Unable to invoke method [${method.name}] on [${this@invokeMethodOrNull::class.simpleName}"); e.printStackTrace(err)
+        null
+    }
 }
 
 fun Class<*>.findMethod(name: String) =

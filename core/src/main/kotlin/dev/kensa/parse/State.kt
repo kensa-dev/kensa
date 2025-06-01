@@ -11,8 +11,8 @@ sealed class State {
     data class InMethodInvocation(val parentState: State, val didBegin: Boolean = false) : State()
     data class InExpression(val parentState: State) : State()
     data class InTypeArguments(val parentState: State) : State()
-    data class InScenarioExpression(val parentState: State) : State()
     data class InFixturesExpression(val parentState: State) : State()
+    data class InChainedCallExpression(val parentState: State) : State()
 
     data object End : State()
 }

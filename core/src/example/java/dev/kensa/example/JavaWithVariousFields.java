@@ -11,18 +11,18 @@ public class JavaWithVariousFields {
 
     private String field1;
 
-    @Scenario
+    @Resolve
     private String field2;
 
     @Highlight
-    @SentenceValue
+    @Resolve
     private String field3;
 
     void simpleTest() {
         assertThat("string").isNotBlank();
     }
 
-    @SentenceValue
+    @Resolve
     private void method1() {
     }
 

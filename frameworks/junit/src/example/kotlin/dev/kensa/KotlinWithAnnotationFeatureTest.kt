@@ -3,6 +3,7 @@ package dev.kensa
 import com.natpryce.hamkrest.equalTo
 import dev.kensa.Colour.BackgroundDanger
 import dev.kensa.Colour.TextLight
+import dev.kensa.Kensa.configure
 import dev.kensa.TextStyle.Italic
 import dev.kensa.TextStyle.TextWeightBold
 import dev.kensa.TextStyle.Uppercase
@@ -12,21 +13,35 @@ import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Givens
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
 class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
 
     @Highlight
     private val highlightMe = "givensViaHighlight"
 
-    @SentenceValue
+    @Resolve
     private val aValue = "aStringValue"
 
-    @Scenario
+    @Resolve
     private val myScenario = MyScenario(aValue)
 
-    @ScenarioHolder
+    @ResolveHolder
     private val myHolder = MyScenarioHolder(myScenario)
+
+    @Resolve
+    private val myThing = MyThing("myFieldThing")
+
+    @BeforeEach
+    fun setUp() {
+        configure()
+            .withValueRenderer(MyThing::class.java) {
+                """MyThing"""
+            }
+    }
 
     @Test
     fun testWithScenario() {
@@ -62,6 +77,35 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
         then(theExtractedValue(), equalTo(aValue))
     }
 
+    @Test
+    fun testWithSimpleFunctionSentenceValue() {
+        given(someSomethingWith(aSimpleSentenceValueFunction()))
+    }
+
+    @Test
+    fun testWithChainedFunctionSentenceValue() {
+        given(someSomethingWith(aSentenceValueFunction().value))
+    }
+
+    @Test
+    fun testWithChainedFieldSentenceValue() {
+        given(someSomethingWith(myThing.value))
+    }
+
+    @ParameterizedTest
+    @MethodSource("myThing")
+    fun testWithChainedFunctionSentenceValueParameter(@Resolve value: MyThing) {
+        given(someSomethingWith(value.value))
+    }
+
+    @Resolve
+    private fun aSimpleSentenceValueFunction() = "myValue"
+
+    @Resolve
+    private fun aSentenceValueFunction() = MyThing("myValue")
+
+    private fun someSomethingWith(value: String): GivensBuilder = GivensBuilder { _, _ -> }
+
     private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { interactions: CapturedInteractions -> aValue }
 
     private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens, _ -> givens.put("foo", "bar") }
@@ -75,5 +119,12 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
 
     @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase], textColour = TextLight, backgroundColor = BackgroundDanger)
     private fun someActionWithEmphasis(): ActionUnderTest = ActionUnderTest { _, _, _ -> }
+
+    companion object {
+        @JvmStatic
+        fun myThing() = listOf(MyThing("foo"), MyThing("bar"))
+    }
 }
+
+data class MyThing(val value: String)
 

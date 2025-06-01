@@ -1,33 +1,31 @@
 package dev.kensa.parse.java
 
 import dev.kensa.Configuration
+import dev.kensa.ElementDescriptor
 import dev.kensa.example.JavaWithInterface
 import dev.kensa.example.JavaWithParameters
 import dev.kensa.example.JavaWithScenario
 import dev.kensa.example.JavaWithVariousFields
-import dev.kensa.kotest.asClue
-import dev.kensa.kotest.shouldBe
-import dev.kensa.parse.Accessor.ValueAccessor.*
 import dev.kensa.parse.Java20Parser
-import dev.kensa.parse.assertMethodDescriptors
-import dev.kensa.parse.assertPropertyDescriptors
-import dev.kensa.parse.propertyNamed
 import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.SentenceTokens.aFieldValueOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aParameterValueOf
-import dev.kensa.sentence.SentenceTokens.aScenarioValueOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
 import dev.kensa.sentence.SentenceTokens.anIndent
+import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
-import io.kotest.assertions.asClue
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.equality.FieldsEqualityCheckConfig
+import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.maps.shouldBeEmpty
-import io.kotest.matchers.maps.shouldContainKey
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 internal class JavaMethodParserTest {
 
@@ -46,7 +44,7 @@ internal class JavaMethodParserTest {
             listOf(
                 aWordOf("do"),
                 aWordOf("something"),
-                aScenarioValueOf("scenario.foo"),
+                aFieldValueOf("scenario.foo()")
             )
         )
 
@@ -57,14 +55,12 @@ internal class JavaMethodParserTest {
             methodName.shouldBe("usingAScenario")
 
             with(properties) {
-                assertSoftly(get("foo")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithScenario::class.propertyNamed("foo"))) }
-                }
-                assertSoftly(get("scenario")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithScenario::class.propertyNamed("scenario"))) }
-                }
+                get("foo")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithScenario::class.propertyNamed("foo")))
+                get("scenario")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithScenario::class.propertyNamed("scenario")))
             }
 
             sentences.first().tokens shouldBe expectedSentence.tokens
@@ -95,24 +91,20 @@ internal class JavaMethodParserTest {
             parameters.descriptors.shouldBeEmpty()
 
             with(properties) {
-                assertSoftly(get("field4")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field4"))) }
-                }
-                assertSoftly(get("field5")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field5"))) }
-                }
-                assertSoftly(get("field6")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field6"))) }
-                }
+                get("field4")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field4")))
+                get("field5")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field5")))
+                get("field6")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field6")), ignoringHighlightProperty())
             }
 
-            assertSoftly(methods[methodName]) {
-                shouldNotBeNull()
-                asClue { shouldBe(MethodAccessor(method)) }
-            }
+            methods[methodName]
+                .shouldNotBeNull()
+                .shouldBeEqualToComparingFields(ElementDescriptor.forMethod(method))
 
             sentences.first().tokens shouldBe expectedSentence.tokens
         }
@@ -145,24 +137,20 @@ internal class JavaMethodParserTest {
             parameters.descriptors.shouldBeEmpty()
 
             with(properties) {
-                assertSoftly(get("field1")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field1"))) }
-                }
-                assertSoftly(get("field2")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field2"))) }
-                }
-                assertSoftly(get("field3")) {
-                    shouldNotBeNull()
-                    asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field3"))) }
-                }
+                get("field1")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field1")))
+                get("field2")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field2")))
+                get("field3")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field3")), ignoringHighlightProperty())
             }
 
-            assertSoftly(methods[methodName]) {
-                shouldNotBeNull()
-                asClue { shouldBe(MethodAccessor(method)) }
-            }
+            methods[methodName]
+                .shouldNotBeNull()
+                .shouldBeEqualToComparingFields(ElementDescriptor.forMethod(method))
 
             sentences.first().tokens.shouldBe(expectedSentence.tokens)
         }
@@ -205,15 +193,27 @@ internal class JavaMethodParserTest {
             )
         )
 
-        val parsedMethod =
-            parser.parse(JavaWithVariousFields::class.java.findMethod(methodName))
+        val method = JavaWithVariousFields::class.java.findMethod(methodName)
+        val parsedMethod = parser.parse(method)
 
         with(parsedMethod) {
             name.shouldBe(methodName)
             parameters.descriptors.shouldBeEmpty()
 
-            assertPropertyDescriptors(properties, JavaWithVariousFields::class.java)
-            assertMethodDescriptors(methods, JavaWithVariousFields::class.java)
+            with(properties) {
+                get("field1")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field1")))
+                get("field2")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field2")))
+                get("field3")
+                    .shouldNotBeNull()
+                    .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field3")), ignoringHighlightProperty())
+            }
+            methods[methodName]
+                .shouldNotBeNull()
+                .shouldBeEqualToComparingFields(ElementDescriptor.forMethod(method))
 
             assertSoftly(nestedSentences["nested1"]) {
                 shouldNotBeNull()
@@ -266,20 +266,19 @@ internal class JavaMethodParserTest {
 
         with(parsedMethod) {
             name.shouldBe(methodName)
-            assertSoftly(parameters.descriptors["first"]) {
-                shouldNotBeNull()
-                asClue { shouldBe(ParameterAccessor(firstParameter, "first", 0)) }
-            }
-            assertSoftly(parameters.descriptors["second"]) {
-                shouldNotBeNull()
-                asClue { shouldBe(ParameterAccessor(secondParameter, "second", 1)) }
-            }
+            parameters.descriptors["first"]
+                .shouldNotBeNull()
+                .shouldBeEqualToComparingFields(ElementDescriptor.forParameter(firstParameter, "first", 0))
+            parameters.descriptors["second"]
+                .shouldNotBeNull()
+                .shouldBeEqualToComparingFields(ElementDescriptor.forParameter(secondParameter, "second", 1))
 
             sentences.map { it.tokens }.shouldBe(expectedSentences.map { it.tokens })
         }
     }
 
+    private fun ignoringHighlightProperty(): FieldsEqualityCheckConfig = FieldsEqualityCheckConfig(propertiesToExclude = listOf(ElementDescriptor.PropertyElementDescriptor::class.propertyNamed("highlight")))
+    private fun KClass<*>.propertyNamed(name: String): KProperty<*> = allProperties.find { it.name == name } ?: throw IllegalArgumentException("Property $name not found in class ${this.qualifiedName}")
     private fun classMethodNamed(name: String): (Java20Parser.MethodDeclarationContext) -> Boolean = { it.methodHeader()?.methodDeclarator()?.identifier()?.text == name }
     private fun interfaceMethodNamed(name: String): (Java20Parser.InterfaceMethodDeclarationContext) -> Boolean = { it.methodHeader()?.methodDeclarator()?.identifier()?.text == name }
-
 }

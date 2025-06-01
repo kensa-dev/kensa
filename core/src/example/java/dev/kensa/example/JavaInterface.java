@@ -1,18 +1,17 @@
 package dev.kensa.example;
 
 import dev.kensa.Highlight;
-import dev.kensa.Scenario;
-import dev.kensa.SentenceValue;
+import dev.kensa.Resolve;
 
 public interface JavaInterface {
 
     String field4 = "4";
 
-    @Scenario
+    @Resolve
     String field5 = "5";
 
     @Highlight
-    @SentenceValue
+    @Resolve
     String field6 = "6";
 
     default void doSomething() {}

@@ -1,22 +1,25 @@
 package dev.kensa.example
 
-import dev.kensa.*
 import dev.kensa.DummyAssert.Companion.assertThat
+import dev.kensa.GivensBuilder
+import dev.kensa.Highlight
+import dev.kensa.NestedSentence
+import dev.kensa.Resolve
 import dev.kensa.SomeBuilder.Companion.someBuilder
 
 class KotlinWithAnnotations {
 
-    @field:[Highlight SentenceValue]
+    @field:[Highlight Resolve]
     private val field1: String? = null
 
-    @[Highlight SentenceValue]
+    @[Highlight Resolve]
     private val property1: String = "property1"
 
-    @get:[Highlight SentenceValue]
+    @get:[Highlight Resolve]
     private val propertyWithGetter: String
         get() = "propertyWithGetter"
 
-    @get:[SentenceValue]
+    @get:[Resolve]
     private val throwingGetter: String
         get() = throw RuntimeException("Boom!")
 
@@ -27,7 +30,7 @@ class KotlinWithAnnotations {
         assertThat("true").isEqualTo("true")
     }
 
-    @SentenceValue
+    @Resolve
     fun method1() {
     }
 

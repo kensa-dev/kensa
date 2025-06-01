@@ -29,6 +29,11 @@ sealed class LocatedEvent(val location: Location) : Event() {
 
     class ScenarioExpression(location: Location, val name: String, val call: String) : LocatedEvent(location)
     class FixturesExpression(location: Location, val name: String) : LocatedEvent(location)
+    class ChainedCallExpression(location: Location, val type: Type, val chain: String) : LocatedEvent(location) {
+        enum class Type {
+            Method, Field, Parameter
+        }
+    }
     class MethodName(location: Location, val name: String, val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) : LocatedEvent(location)
 
     class Operator(location: Location, val text: String) : LocatedEvent(location)

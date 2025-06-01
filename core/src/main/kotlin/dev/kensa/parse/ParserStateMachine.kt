@@ -2,6 +2,7 @@ package dev.kensa.parse
 
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.*
+import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.*
 import dev.kensa.parse.State.*
 import dev.kensa.parse.state.Matcher
 import dev.kensa.parse.state.StateMachine
@@ -54,6 +55,9 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             on<EnterExpression> { currentState, event ->
                 ExpressionFn(currentState)
             }
+            on<ChainedCallExpression> { currentState, event ->
+                ExpressionFn(currentState)
+            }
             on<ExitExpression> { currentState, event ->
                 currentState.parentState
             }
@@ -64,6 +68,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             ignoreAll<Event> {
                 add(Matcher.any<Terminal>())
                 add(Matcher.any<Identifier>())
+                add(Matcher.any<Field>())
             }
         }
         state<TestBlock> {
@@ -93,25 +98,18 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 sentenceBuilder.appendOperator(event.location, event.text)
                 currentState
             }
-            on<ScenarioExpression> { currentState, event ->
-                InScenarioExpression(currentState)
+            on<ChainedCallExpression> { currentState, event ->
+                when(event.type) {
+                    Method -> sentenceBuilder.appendMethodValue(event.location, event.chain)
+                    Field -> sentenceBuilder.appendFieldValue(event.location, event.chain)
+                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.chain)
+                }
+
+                InChainedCallExpression(currentState)
             }
             ignoreAll<Event> {
                 add(Matcher.any<Identifier>())
                 add(Matcher.any<Terminal>())
-            }
-        }
-        state<InScenarioExpression> {
-            on<ExitExpression> { currentState, event ->
-                currentState.parentState
-            }
-            on<ScenarioExpression> { currentState, event ->
-                InScenarioExpression(currentState)
-            }
-            ignoreAll<Event> {
-                add(Matcher.any<Terminal>())
-                add(Matcher.any<Identifier>())
-                add(Matcher.any<Field>())
             }
         }
         state<InFixturesExpression> {
@@ -130,6 +128,21 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 add(Matcher.any<Identifier>())
             }
         }
+        state<InChainedCallExpression> {
+            on<ExitExpression> { currentState, event ->
+                currentState.parentState
+            }
+            on<ChainedCallExpression> { currentState, event ->
+                InChainedCallExpression(currentState)
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Method>())
+                add(Matcher.any<Terminal>())
+                add(Matcher.any<Identifier>())
+                add(Matcher.any<Parameter>())
+                add(Matcher.any<Field>())
+            }
+        }
         state<InExpression> {
             on<EnterStatement> { currentState, event ->
                 InStatement(currentState)
@@ -140,9 +153,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             on<ExitExpression> { currentState, _ ->
                 currentState.parentState
             }
-            on<ScenarioExpression> { currentState, event ->
-                sentenceBuilder.appendScenarioValue(event.location, "${event.name}.${event.call}")
-                InScenarioExpression(currentState)
+            on<ChainedCallExpression> { currentState, event ->
+                when(event.type) {
+                    Method -> sentenceBuilder.appendMethodValue(event.location, event.chain)
+                    Field -> sentenceBuilder.appendFieldValue(event.location, event.chain)
+                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.chain)
+                }
+
+                InChainedCallExpression(currentState)
             }
             on<FixturesExpression> { currentState, event ->
                 sentenceBuilder.appendFixturesValue(event.location, event.name)
@@ -222,9 +240,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                     if (it is InMethodInvocation && it.didBegin) finishSentence()
                 }
             }
-            on<ScenarioExpression> { currentState, event ->
-                sentenceBuilder.appendScenarioValue(event.location, "${event.name}.${event.call}")
-                InScenarioExpression(currentState)
+            on<ChainedCallExpression> { currentState, event ->
+                when(event.type) {
+                    Method -> sentenceBuilder.appendMethodValue(event.location, event.chain)
+                    Field -> sentenceBuilder.appendFieldValue(event.location, event.chain)
+                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.chain)
+                }
+
+                InChainedCallExpression(currentState)
             }
             on<FixturesExpression> { currentState, event ->
                 sentenceBuilder.appendFixturesValue(event.location, event.name)

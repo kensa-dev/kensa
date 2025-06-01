@@ -1,46 +1,32 @@
 package dev.kensa.parse
 
+import dev.kensa.ElementDescriptor
 import dev.kensa.KensaException
 import dev.kensa.parse.Event.MultilineString
-import dev.kensa.parse.LocatedEvent.BooleanLiteral
-import dev.kensa.parse.LocatedEvent.CharacterLiteral
-import dev.kensa.parse.LocatedEvent.EnterExpression
-import dev.kensa.parse.LocatedEvent.EnterMethodInvocation
-import dev.kensa.parse.LocatedEvent.EnterStatement
-import dev.kensa.parse.LocatedEvent.Field
-import dev.kensa.parse.LocatedEvent.FixturesExpression
-import dev.kensa.parse.LocatedEvent.Identifier
-import dev.kensa.parse.LocatedEvent.Method
-import dev.kensa.parse.LocatedEvent.MethodName
-import dev.kensa.parse.LocatedEvent.Nested
-import dev.kensa.parse.LocatedEvent.NullLiteral
-import dev.kensa.parse.LocatedEvent.NumberLiteral
-import dev.kensa.parse.LocatedEvent.Operator
-import dev.kensa.parse.LocatedEvent.Parameter
-import dev.kensa.parse.LocatedEvent.ScenarioExpression
-import dev.kensa.parse.LocatedEvent.StringLiteral
+import dev.kensa.parse.LocatedEvent.*
+import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Field
+import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Method
+import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Parameter
 import dev.kensa.sentence.Sentence
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class ParseContext(
-    properties: Map<String, Accessor.ValueAccessor>,
-    methods: Map<String, Accessor.ValueAccessor.MethodAccessor>,
-    parameters: Map<String, Accessor.ValueAccessor.ParameterAccessor> = emptyMap(),
+    private val properties: Map<String, ElementDescriptor>,
+    private val methods: Map<String, ElementDescriptor>,
+    private val parameters: Map<String, ElementDescriptor> = emptyMap(),
     private val nestedMethods: Map<String, List<Sentence>> = emptyMap(),
     private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()
 ) {
 
-    private val scenarioNames = properties.filterValues { it.isScenario }.keys
-    private val methodNames = methods.filterValues { it.isSentenceValue || it.isHighlight }.keys
-    private val fieldNames = properties.filterValues { it.isSentenceValue || it.isHighlight }.keys
-    private val parameterNames = parameters.filterValues { it.isSentenceValue || it.isHighlight }.keys
+    private val methodNames = methods.filterValues { it.shouldResolve || it.shouldHighlight }.keys
+    private val fieldNames = properties.filterValues { it.shouldResolve || it.shouldHighlight }.keys
+    private val parameterNames = parameters.filterValues { it.shouldResolve || it.shouldHighlight }.keys
     private val nestedMethodNames = nestedMethods.keys
 
-    private val scenarioNamePattern = scenarioNames.joinToString("|") { Regex.escape(it) }
-    private val scenarioPattern = """^($scenarioNamePattern)\.(\w+)(\(\))?$""".toRegex()
     private val fixturesPattern = """fixtures[\[(](\w+\.)?([^)\]]+)[)\]]""".toRegex()
+    private val chainedCallPattern = """^([a-zA-Z_][a-zA-Z0-9_]*)\(?\)??(?:\.[a-zA-Z_][a-zA-Z0-9_]*(?:\(\))?)*$""".toRegex()
 
     private fun emphasis(name: String) = emphasisedMethods[name] ?: EmphasisDescriptor.Default
     private fun nestedSentences(name: String) = nestedMethods[name] ?: error("No nested method found with name [$name]")
@@ -51,18 +37,40 @@ class ParseContext(
     internal fun ParseTree.asParameter() = takeIf { parameterNames.contains(text) }?.let { Parameter(location, text) }
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
-    internal fun ParseTree.asScenario() = scenarioPattern.matchEntire(text)?.let { ScenarioExpression(location, it.groupValues[1], it.groupValues[2]) }
     internal fun ParseTree.asFixture() = fixturesPattern.matchEntire(text)?.let { FixturesExpression(location, it.groupValues[2]) }
 
-    internal fun ParseTree?.matchesScenario() = this?.text?.matches(scenarioPattern) ?: false
+    internal fun ParseTree.asChainedCall(): ChainedCallExpression? =
+        chainedCallPattern.matchEntire(text)?.let { matchResult ->
+            callTypeFor(matchResult.groupValues[1])?.let { type ->
+                ChainedCallExpression(location, type, text)
+            }
+        }
+
+    private fun ParseContext.callTypeFor(key: String): ChainedCallExpression.Type? =
+        when {
+            methods[key]?.shouldResolve == true -> Method
+            parameters[key]?.shouldResolve == true -> Parameter
+            properties[key]?.shouldResolve == true -> Field
+            else -> null
+        }
+
     internal fun ParseTree?.matchesFixture() = this?.text?.matches(fixturesPattern) ?: false
+    internal fun ParseTree?.matchesChainedCall(): Boolean {
+        if (this == null) return false
+        val text = this.text ?: return false
+
+        val matchResult = chainedCallPattern.matchEntire(text) ?: return false
+        val firstGroup = matchResult.groupValues[1]
+
+        return callTypeFor(firstGroup) != null
+    }
 
     companion object {
 
         internal fun ParseTree.asOperator() = Operator(location, text)
         internal fun ParseTree.asBooleanLiteral() = BooleanLiteral(location, text)
         internal fun ParseTree.asCharacterLiteral() = CharacterLiteral(location, text)
-        internal fun ParseTree.asStringLiteral() = StringLiteral(location,  text.removeQuotes())
+        internal fun ParseTree.asStringLiteral() = StringLiteral(location, text.removeQuotes())
         internal fun ParseTree.asNumberLiteral() = NumberLiteral(location, text)
         internal fun ParseTree.asNullLiteral() = NullLiteral(location)
         internal fun ParseTree.asMultilineString() = MultilineString(asTextBlock())

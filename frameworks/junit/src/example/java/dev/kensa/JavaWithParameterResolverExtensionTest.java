@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ExtendWith(TestParameterResolver.class)
 public class JavaWithParameterResolverExtensionTest implements KensaTest, WithHamcrest {
 
-    @SentenceValue
+    @Resolve
     private final String aValue = "aStringValue";
 
     @Test

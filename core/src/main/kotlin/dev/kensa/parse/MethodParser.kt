@@ -1,15 +1,11 @@
 package dev.kensa.parse
 
-import dev.kensa.Configuration
-import dev.kensa.Emphasise
-import dev.kensa.KensaException
-import dev.kensa.Sources
-import dev.kensa.parse.Accessor.ValueAccessor
-import dev.kensa.parse.Accessor.ValueAccessor.*
+import dev.kensa.*
 import dev.kensa.sentence.Sentence
 import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.util.*
 import java.lang.reflect.Method
+import kotlin.collections.buildList
 import kotlin.reflect.KClass
 
 val greedyGenericPattern = "<.*>".toRegex()
@@ -56,9 +52,9 @@ interface MethodParser : ParserCache, ParserDelegate {
             val emphasisedMethods = emphasisedMethodCache.getOrPut(testClass) {
                 prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
             }
-            val methodAccessors = methodCache.getOrPut(testClass) { prepareMethodAccessorsFor(testClass) }
-            val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methodAccessors))
-            val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methodAccessors, testMethodParameters.descriptors, nestedSentences, emphasisedMethods))
+            val methodDescriptors = methodCache.getOrPut(testClass) { prepareMethodAccessorsFor(testClass) }
+            val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methodDescriptors))
+            val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methodDescriptors, testMethodParameters.descriptors, nestedSentences, emphasisedMethods))
 
             ParsedMethod(
                 indexInSource,
@@ -67,7 +63,7 @@ interface MethodParser : ParserCache, ParserDelegate {
                 testMethodSentences,
                 nestedSentences,
                 properties,
-                methodAccessors
+                methodDescriptors
             )
         }
 
@@ -80,13 +76,9 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     private fun Class<*>.findMethodDeclarations(): MethodDeclarations = declarationCache.getOrPut(this) { findMethodDeclarationsIn(this) }
 
-    private fun sentenceBuilder() : (Location) -> SentenceBuilder = { location -> SentenceBuilder(location, configuration.dictionary, configuration.tabSize) }
+    private fun sentenceBuilder(): (Location) -> SentenceBuilder = { location -> SentenceBuilder(location, configuration.dictionary, configuration.tabSize) }
 
-    private fun prepareNestedSentences(
-        testClass: Class<*>,
-        nestedSentenceDeclarations: List<MethodDeclarationContext>,
-        parseContext: ParseContext
-    ): Map<String, List<Sentence>> {
+    private fun prepareNestedSentences(testClass: Class<*>, nestedSentenceDeclarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, List<Sentence>> {
         nestedSentenceCache[testClass] = nestedSentenceDeclarations
             .map {
                 Pair(
@@ -107,51 +99,44 @@ interface MethodParser : ParserCache, ParserDelegate {
             sentences
         }
 
-    private fun prepareEmphasisedMethods(
-        testClass: Class<*>,
-        emphasisedMethodDeclarations: List<MethodDeclarationContext>
-    ): Map<String, EmphasisDescriptor> {
-        return emphasisedMethodDeclarations
+    private fun prepareEmphasisedMethods(testClass: Class<*>, emphasisedMethodDeclarations: List<MethodDeclarationContext>): Map<String, EmphasisDescriptor> =
+        emphasisedMethodDeclarations
             .map { dc ->
                 testClass.findMethod(dc.name).findAnnotation<Emphasise>()!!.run {
                     Pair(dc.name, EmphasisDescriptor(textStyles.toSet(), textColour, backgroundColor))
                 }
             }
             .associateBy({ it.first }, { it.second })
-    }
 
-    private fun prepareParametersFor(
-        method: Method,
-        parameterNamesAndTypes: List<Pair<String, String>>
-    ): MethodParameters =
+    private fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
         MethodParameters(
             method.parameters.mapIndexed { index, parameter ->
-                ParameterAccessor(
-                    parameter,
-                    parameterNamesAndTypes[index].first,
-                    index,
-                )
-            }.associateByTo(LinkedHashMap(), ParameterAccessor::name)
+                ElementDescriptor.forParameter(parameter, parameterNamesAndTypes[index].first, index)
+            }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
         )
 
     private fun prepareMethodAccessorsFor(clazz: Class<*>) =
         clazz.allMethods
-            .map { MethodAccessor(it) }
-            .associateBy(MethodAccessor::name)
+            .map { ElementDescriptor.forMethod(it) }
+            .associateBy(ElementDescriptor::name)
 
     private fun preparePropertiesFor(clazz: Class<*>) =
         clazz.allProperties
             .flatMap { property ->
-                val valueAccessor = PropertyAccessor(property)
+                buildList {
+                    val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
 
-                if (valueAccessor.isScenarioHolder) {
-                    listOf(valueAccessor) + when (val classifier = property.returnType.classifier) {
-                        is KClass<*> -> classifier.allProperties.map { ScenarioHolderAccessor(property, it) }.filter { it.isScenario }
-                        else -> emptyList()
+                    // Lift the properties of any ResolverHolders
+                    if (descriptor.isResolveHolder) {
+                        val classifier = property.returnType.classifier
+                        if (classifier is KClass<*>) {
+                            addAll(
+                                classifier.allProperties
+                                    .filter { it.hasKotlinOrJavaAnnotation<Resolve>() }
+                                    .map { ElementDescriptor.forResolveHolder(descriptor, it) }
+                            )
+                        }
                     }
-                } else {
-                    listOf(valueAccessor)
                 }
-            }
-            .associateBy(ValueAccessor::name)
+            }.associateBy(ElementDescriptor::name)
 }

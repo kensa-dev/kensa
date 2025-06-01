@@ -9,7 +9,7 @@ public class JavaWithParameters {
 
     private static final String MY_PARAMETER_VALUE = "myParameterValue";
 
-    void methodWithParameters(String first, @SentenceValue String second) {
+    void methodWithParameters(String first, @Resolve String second) {
         assertThat(first).isIn("a", "b");
         assertThat(second).isEqualTo(MY_PARAMETER_VALUE);
     }

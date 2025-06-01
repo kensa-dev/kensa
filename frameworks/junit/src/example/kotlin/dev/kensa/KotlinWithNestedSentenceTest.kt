@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 
 class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
 
-    @SentenceValue
+    @Resolve
     private val aValue = "aStringValue"
 
     @Test

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestParameterResolver::class)
 class KotlinWithParameterResolverExtensionTest : KensaTest, WithHamkrest {
-    @SentenceValue
+    @Resolve
     private val aValue = "aStringValue"
 
     @BeforeEach

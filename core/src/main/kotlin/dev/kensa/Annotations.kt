@@ -1,7 +1,6 @@
 package dev.kensa
 
 import dev.kensa.state.SetupStrategy
-import kotlin.DeprecationLevel.WARNING
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.*
 import kotlin.reflect.KClass
@@ -28,15 +27,11 @@ annotation class NestedSentence
 
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER)
-annotation class Scenario
-
-@Retention(RUNTIME)
-@Target(FIELD, VALUE_PARAMETER)
-annotation class ScenarioHolder
+annotation class ResolveHolder
 
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER, FUNCTION, PROPERTY_GETTER)
-annotation class SentenceValue
+annotation class Resolve
 
 @Retention(RUNTIME)
 @Target(CLASS)
