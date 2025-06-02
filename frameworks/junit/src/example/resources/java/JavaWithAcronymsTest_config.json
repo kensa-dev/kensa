@@ -1,5 +1,6 @@
 {
   "mode": "TestFile",
+  "indexUrl": "../../index.html",
   "titleText": "Index",
   "issueTrackerUrl": "http://empty",
   "acronyms": {

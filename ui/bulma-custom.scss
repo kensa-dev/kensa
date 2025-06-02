@@ -32,7 +32,8 @@ $modal-content-width: 70rem
 );
 
 @use "bulma/sass/components/message" with (
-$message-header-padding: 0.50em 1.25em
+$message-header-padding: 0.50em 1.25em,
+$message-body-pre-code-background-color: #fcfcfc,
 );
 
 @use "bulma/sass/components/breadcrumb" with(

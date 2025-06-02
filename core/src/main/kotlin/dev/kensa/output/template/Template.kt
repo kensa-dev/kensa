@@ -31,7 +31,7 @@ sealed class FileTemplate(mode: Mode, configuration: Configuration, private val 
 
     private val template: PebbleTemplate = pebbleEngine.getTemplate("pebble-index.html")
 
-    private val templateMap = mutableMapOf("scripts" to mutableListOf<Any>(configuration.asJson(mode)))
+    private val templateMap = mutableMapOf("scripts" to mutableListOf<Any>(configuration.asJson(mode, relativeRootPath)))
 
     protected fun add(key: String, value: Any) {
         templateMap.getOrPut(key) { mutableListOf() }.add(value)
@@ -100,12 +100,13 @@ sealed class FileTemplate(mode: Mode, configuration: Configuration, private val 
 
     companion object {
         private val pebbleEngine = PebbleEngine.Builder().autoEscaping(false).loader(ClasspathLoader()).build()
-        private fun Configuration.asJson(mode: Mode): JsonScript =
+        private fun Configuration.asJson(mode: Mode, relativeRootPath: String): JsonScript =
             JsonScript(
                 "config",
                 toJsonString()(
                     jsonObject()
                         .add("mode", mode.name)
+                        .add("indexUrl", "${relativeRootPath}index.html")
                         .add("titleText", titleText)
                         .add("issueTrackerUrl", issueTrackerUrl.toString())
                         .add("acronyms", acronymsAsJson(dictionary.acronyms))

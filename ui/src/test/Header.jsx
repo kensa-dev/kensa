@@ -1,14 +1,17 @@
 import Logo from '@/images/Logo.svg?react';
-import React from "react";
+import React, {useContext} from "react";
 import PackageName from "@/test/PackageName";
 import Issues from "@/test/information/Issues";
 import {GitHubIcon} from "@/Util";
+import {ConfigContext} from "@/Util";
 
 const Header = ({headerClass, testClass, displayName, issues}) => {
+    const {indexUrl} = useContext(ConfigContext)
+
     return (
         <nav className={"navbar " + headerClass}>
             <div className="navbar-brand p-3">
-                <a href={"index.html"}>
+                <a href={indexUrl}>
                     <Logo className="logo"/>
                 </a>
             </div>
