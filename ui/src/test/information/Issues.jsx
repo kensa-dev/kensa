@@ -8,7 +8,7 @@ const Issues = ({issues}) => {
         const issueCls = "tag is-small"
 
         return issueTrackerUrl ?
-            <a className={issueCls} href={issueTrackerUrl.replace(/\/?$/, "/") + issue}>{issue}</a>
+            <a className={issueCls} href={issueTrackerUrl.replace(/\/?$/, "/") + issue} target="_blank">{issue}</a>
             :
             <span className={issueCls}>{issue}</span>;
     }
