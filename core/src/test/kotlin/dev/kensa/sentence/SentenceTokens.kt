@@ -39,4 +39,6 @@ object SentenceTokens {
     fun aMethodIdentifierOf(value: String) = SentenceToken(value, tokenTypes = setOf(TokenType.MethodValue))
 
     fun aParameterValueOf(value: String) = SentenceToken(value, tokenTypes = setOf(TokenType.ParameterValue))
+
+    fun anOperatorOf(value: String) = SentenceToken(value, tokenTypes = setOf(TokenType.Operator))
 }

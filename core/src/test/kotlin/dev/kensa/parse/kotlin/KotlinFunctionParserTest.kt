@@ -9,10 +9,13 @@ import dev.kensa.sentence.SentenceTokens.aCharacterLiteralOf
 import dev.kensa.sentence.SentenceTokens.aFieldValueOf
 import dev.kensa.sentence.SentenceTokens.aFixturesValueOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
+import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aNullLiteral
 import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
 import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
 import dev.kensa.sentence.SentenceTokens.aWordOf
+import dev.kensa.sentence.SentenceTokens.anIndent
+import dev.kensa.sentence.SentenceTokens.anOperatorOf
 import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
 import io.kotest.assertions.asClue
@@ -163,6 +166,42 @@ internal class KotlinFunctionParserTest {
 
     @Nested
     inner class Fixtures {
+
+        @Test
+        fun `replaces fixture value in sentence when using fixtures inside lambda function`() {
+            val functionName = "testWithFixturesInLambda"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val javaClass = KotlinWithFixtures::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = Sentence(
+                listOf(
+                    aKeywordOf("When"),
+                    aWordOf("something"),
+                    aWordOf("with"),
+                    aNewline(),
+                    anIndent(),
+                    anIndent(),
+                    aWordOf("a"),
+                    aWordOf("data"),
+                    aWordOf("item"),
+                    anOperatorOf("="),
+                    aFixturesValueOf("MyFixture")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.size shouldBe 1
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
 
         @Test
         fun `replaces fixture value in sentence when using fixtures with infix function`() {

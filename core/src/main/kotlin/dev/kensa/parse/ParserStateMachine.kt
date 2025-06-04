@@ -26,7 +26,6 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
     private fun finishSentence() {
         lastLocation = sentenceBuilder.lastLocation
         _sentences += sentenceBuilder.build()
-
     }
 
     internal val stateMachine: StateMachine<State, Event> = aStateMachine {
@@ -69,6 +68,8 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 add(Matcher.any<Terminal>())
                 add(Matcher.any<Identifier>())
                 add(Matcher.any<Field>())
+                add(Matcher.any<EnterLambda>())
+                add(Matcher.any<ExitLambda>())
             }
         }
         state<TestBlock> {
@@ -85,7 +86,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
         }
         state<InStatement> {
             on<ExitStatement> { currentState, event ->
-                finishSentence()
+                if(currentState.didBegin) finishSentence()
                 currentState.parentState
             }
             on<EnterExpression> { currentState, event ->
@@ -98,6 +99,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 sentenceBuilder.appendOperator(event.location, event.text)
                 currentState
             }
+            on<Identifier> { currentState, event ->
+                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                currentState
+            }
+            on<FixturesExpression> { currentState, event ->
+                sentenceBuilder.appendFixturesValue(event.location, event.name)
+                InFixturesExpression(currentState)
+            }
             on<ChainedCallExpression> { currentState, event ->
                 when(event.type) {
                     Method -> sentenceBuilder.appendMethodValue(event.location, event.chain)
@@ -108,7 +117,6 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 InChainedCallExpression(currentState)
             }
             ignoreAll<Event> {
-                add(Matcher.any<Identifier>())
                 add(Matcher.any<Terminal>())
             }
         }
@@ -143,7 +151,21 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 add(Matcher.any<Field>())
             }
         }
+        state<InLambda> {
+            on<ExitLambda> { currentState, event ->
+                currentState.parentState
+            }
+            on<EnterStatement> { currentState, event ->
+                InStatement(currentState, didBegin = false)
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+            }
+        }
         state<InExpression> {
+            on<EnterLambda> { currentState, event ->
+                InLambda(currentState)
+            }
             on<EnterStatement> { currentState, event ->
                 InStatement(currentState)
             }

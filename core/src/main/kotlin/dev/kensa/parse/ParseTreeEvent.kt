@@ -13,6 +13,8 @@ sealed class Event {
     object ExitStatement : Event()
     object ExitMethodInvocation : Event()
     object ExitExpression : Event()
+    object EnterLambda : Event()
+    object ExitLambda : Event()
 
     class MultilineString(val value: String) : Event()
 

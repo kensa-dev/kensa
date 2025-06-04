@@ -16,6 +16,20 @@ class KotlinWithFixtures {
         assertThat(theExtractedValue()) isEqualTo fixtures(MyFixture)
     }
 
+    fun testWithFixturesInLambda() {
+        whenever(somethingWith {
+            aDataItem = fixtures(MyFixture)
+        })
+    }
+
+    private fun whenever(action: MyBlock) = Unit
+
+    private fun somethingWith(block: MyBlock.() -> Unit) = MyBlock().apply(block)
+
+    class MyBlock() {
+        var aDataItem: String = ""
+    }
+
     private fun fixtures(name: String) = ""
 
     private fun theExtractedValue() = StateExtractor { "" }

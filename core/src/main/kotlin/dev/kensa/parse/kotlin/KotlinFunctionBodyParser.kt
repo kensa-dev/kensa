@@ -32,6 +32,14 @@ class KotlinFunctionBodyParser(
 //        println(">Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
     }
 
+    override fun enterLambdaLiteral(ctx: KotlinParser.LambdaLiteralContext) {
+        stateMachine.apply(EnterLambda)
+    }
+
+    override fun exitLambdaLiteral(ctx: KotlinParser.LambdaLiteralContext) {
+        stateMachine.apply(ExitLambda)
+    }
+
     override fun enterInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
         with(parseContext) {
             val rhExpression = ctx.rangeExpression(1)
