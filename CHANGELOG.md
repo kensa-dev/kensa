@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.2
+- Fixing parsing issue 
+
 ### v0.5.1
 - Introduce Bom.
 - Fixes for Bulma typography.
