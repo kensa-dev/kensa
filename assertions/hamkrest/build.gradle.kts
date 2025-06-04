@@ -1,3 +1,5 @@
+description = "Hamkrest assertion helpers for Kensa"
+
 dependencies {
     implementation(project(":core"))
 

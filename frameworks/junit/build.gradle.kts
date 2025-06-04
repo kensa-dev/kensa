@@ -1,5 +1,7 @@
 import java.nio.file.Paths
 
+description = "Kensa for JUnit5"
+
 private val uiBuildDir = Paths.get(project(":ui").layout.buildDirectory.get().toString(), "js")
 
 sourceSets {

@@ -145,3 +145,14 @@ class Configuration {
     fun acronyms(vararg acronyms: Acronym) = dictionary.putAcronyms(*acronyms)
     fun protectedPhrases(vararg phrases: ProtectedPhrase) = dictionary.putProtectedPhrases(*phrases)
 }
+
+class RendererConfiguration(@PublishedApi internal val renderers: Renderers) {
+    inline fun <reified T : Any> valueRenderer(renderer: ValueRenderer<T>) {
+        renderers.addValueRenderer(T::class, renderer)
+    }
+    inline fun <reified T : Any> interactionRenderer(renderer: InteractionRenderer<T>) {
+        renderers.addInteractionRenderer(T::class, renderer)
+    }
+}
+
+fun Configuration.withRenderers(block: RendererConfiguration.() -> Unit) =  RendererConfiguration(this.renderers).block()

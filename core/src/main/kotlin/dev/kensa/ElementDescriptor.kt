@@ -92,7 +92,11 @@ sealed interface ElementDescriptor {
         override val highlight: Highlight? = method.findAnnotation<Highlight>()
 
         override fun resolveValue(target: Any, path: String?): Any? {
-            val initialValue : Any = target.invokeMethodOrNull(method) ?: return null
+            val initialValue: Any = try {
+                target.invokeMethodOrNull(method)
+            } catch (e: Exception) {
+                err.println("Accessor threw an exception: "); e.printStackTrace(err); null
+            } ?: return null
 
             return resolvePath(initialValue, path)
         }
@@ -106,7 +110,11 @@ sealed interface ElementDescriptor {
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
 
         override fun resolveValue(target: Any, path: String?): Any? {
-            val initialValue = property.valueOfKotlinPropertyIn(target) ?: return null
+            val initialValue = try {
+                property.valueOfKotlinPropertyIn(target)
+            } catch (e: Exception) {
+                err.println("Accessor threw an exception: "); e.printStackTrace(err); null
+            } ?: return null
 
             return resolvePath(initialValue, path)
         }

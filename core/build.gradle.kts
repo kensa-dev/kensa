@@ -1,5 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+description = "A BDD testing framework for Kotlin & Java"
 
 plugins {
     antlr
