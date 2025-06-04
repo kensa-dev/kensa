@@ -1,5 +1,22 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.0
+- Breaking changes: Dependencies changed in prep for supporting other test frameworks:
+  - Now need to choose dependency `dev.kensa:kensa-framework-junit` and one of:
+  - `dev.kensa:kensa-assertions-kotest`
+  - `dev.kensa:kensa-assertions-hamcrest`
+  - `dev.kensa:kensa-assertions-hamkrest`
+  - `dev.kensa:kensa-assertions-assertj`
+- Breaking changes: `JavaKensaTest` has been removed - use `KensaTest` from JUnit framework dependency
+- Breaking changes: `KotlinKensaTest` has been removed - use `KensaTest` from JUnit framework dependency
+- Breaking changes: Introduce `fixtures` parameter to GivensBuilder & ActionUnderTest
+- Breaking changes: Rename annotation `SentenceValue` to `RenderedValue`
+- Breaking changes: Rename annotation `ScenarioHolder` to `RenderedValueHolder`
+- Breaking changes: Remove annotation `Scenario` (replaced by call chaining capability)
+- Breaking changes: Remove interface GivensWithInteractionsBuilder
+- Rendered values will now follow chained calls eg `myField.myPropery`
+- Introduce `Fixtures`. Tests now have access to a built-in fixture container with custom factories. Fixture values will be rendered by default in test output
+
 ### v0.5.0-SNAPSHOT
 - Drop webpack. Introduce Vite. UI layout changes. Parsing Changes. Test Fixtures.   
 
