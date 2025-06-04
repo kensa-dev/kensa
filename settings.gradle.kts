@@ -25,3 +25,4 @@ project(":framework-kotest").projectDir = file("frameworks/kotest")
 include("framework-testng")
 project(":framework-testng").projectDir = file("frameworks/testng")
 
+include("bom")

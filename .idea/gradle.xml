@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/assertions/hamcrest" />
             <option value="$PROJECT_DIR$/assertions/hamkrest" />
             <option value="$PROJECT_DIR$/assertions/kotest" />
+            <option value="$PROJECT_DIR$/bom" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/frameworks/junit" />
             <option value="$PROJECT_DIR$/frameworks/kotest" />
