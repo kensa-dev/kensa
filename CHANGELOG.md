@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.1
+- Introduce Bom.
+- Fixes for Bulma typography.
+- Lenient value reflection.
+
 ### v0.5.0
 - Breaking changes: Dependencies changed in prep for supporting other test frameworks:
   - Now need to choose dependency `dev.kensa:kensa-framework-junit` and one of:
