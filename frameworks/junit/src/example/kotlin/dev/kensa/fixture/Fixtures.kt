@@ -1,8 +1,8 @@
 package dev.kensa.fixture
 
-import dev.kensa.Resolve
+import dev.kensa.RenderedValue
 
-class MyScenarioHolder(@field:Resolve val scenario: MyScenario)
+class MyScenarioHolder(@field:RenderedValue val scenario: MyScenario)
 class MyScenario(val stringValue: String = "aStringValue")
 
 private val chars = ('a'..'z') + ('A'..'Z') + ('0'..'9')

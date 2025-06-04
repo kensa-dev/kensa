@@ -18,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ExtendWith(TestParameterResolver.class)
 public class JavaWithParameterResolverExtensionAndParameterizedTest implements KensaTest, WithHamcrest {
 
-    @Resolve
+    @RenderedValue
     private final String aValue = "aStringValue";
 
     @BeforeEach
@@ -29,7 +29,7 @@ public class JavaWithParameterResolverExtensionAndParameterizedTest implements K
 
     @ParameterizedTest
     @ValueSource(strings = {"arg1", "arg2"})
-    void theTest(@Resolve String parameter1, TestParameterResolver.MyArgument parameter2) {
+    void theTest(@RenderedValue String parameter1, TestParameterResolver.MyArgument parameter2) {
         assertThat(parameter2.getValue(), is(MY_PARAMETER_VALUE));
         assertThat(Set.of("arg1", "arg2"), hasItem(parameter1));
     }

@@ -1,9 +1,9 @@
 package dev.kensa.example;
 
-import dev.kensa.Resolve;
+import dev.kensa.RenderedValue;
 
 public class JavaTestInstance {
-    @Resolve
+    @RenderedValue
     private TestScenario scenario = new TestScenario();
     private TestScenario nullScenario = null;
 

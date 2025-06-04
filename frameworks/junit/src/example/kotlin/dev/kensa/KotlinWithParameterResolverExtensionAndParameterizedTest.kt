@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource
 
 @ExtendWith(TestParameterResolver::class)
 class KotlinWithParameterResolverExtensionAndParameterizedTest : KensaTest, WithHamkrest {
-    @Resolve
+    @RenderedValue
     private val aValue = "aStringValue"
 
     @BeforeEach
@@ -27,7 +27,7 @@ class KotlinWithParameterResolverExtensionAndParameterizedTest : KensaTest, With
 
     @ParameterizedTest
     @ValueSource(strings = ["arg1", "arg2"])
-    fun theTest(@Resolve parameter1: String, parameter2: MyArgument) {
+    fun theTest(@RenderedValue parameter1: String, parameter2: MyArgument) {
         assertThat(parameter2.value, equalTo(MY_PARAMETER_VALUE))
         assertThat(listOf("arg1", "arg2"), hasItem(parameter1))
     }

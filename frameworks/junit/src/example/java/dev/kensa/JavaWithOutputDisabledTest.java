@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 public class JavaWithOutputDisabledTest implements KensaTest, WithHamcrest {
 
-    @Resolve
+    @RenderedValue
     private final String aValue = "aStringValue";
 
     @Test

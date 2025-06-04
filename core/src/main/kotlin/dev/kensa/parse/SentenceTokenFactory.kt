@@ -32,7 +32,7 @@ class SentenceTokenFactory(
                     renderers.renderValue(pd.resolveValue(testInstance, token.value))
                 } else {
                     renderers.renderValue(pd.resolveValue(testInstance, match.groupValues[2]))
-                }.asSentenceToken(FieldValue, pd.shouldHighlight)
+                }.asSentenceToken(FieldValue, pd.isHighlight)
             }
         } ?: throw KensaException("Token with type FieldValue did not refer to an actual field")
 
@@ -40,7 +40,7 @@ class SentenceTokenFactory(
         regex.matchEntire(token.value)?.let { match ->
             methods[match.groupValues[1]]?.let { md ->
                 renderers.renderValue(md.resolveValue(testInstance, match.groupValues[2]))
-                    .asSentenceToken(MethodValue, md.shouldHighlight)
+                    .asSentenceToken(MethodValue, md.isHighlight)
             }
         } ?: throw KensaException("Token with type MethodValue did not refer to an actual method")
 
@@ -48,7 +48,7 @@ class SentenceTokenFactory(
         regex.matchEntire(token.value)?.let { match ->
             parameters[match.groupValues[1]]?.let { pd ->
                 renderers.renderValue(pd.resolveValue(arguments, match.groupValues[2]))
-                    .asSentenceToken(ParameterValue, pd.shouldHighlight)
+                    .asSentenceToken(ParameterValue, pd.isHighlight)
             }
 
         } ?: throw KensaException("Token with type ParameterValue did not refer to an actual parameter")

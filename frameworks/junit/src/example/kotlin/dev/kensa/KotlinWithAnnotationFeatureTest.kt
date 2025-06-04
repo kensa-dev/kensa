@@ -23,16 +23,16 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
     @Highlight
     private val highlightMe = "givensViaHighlight"
 
-    @Resolve
+    @RenderedValue
     private val aValue = "aStringValue"
 
-    @Resolve
+    @RenderedValue
     private val myScenario = MyScenario(aValue)
 
-    @ResolveHolder
+    @RenderedValueContainer
     private val myHolder = MyScenarioHolder(myScenario)
 
-    @Resolve
+    @RenderedValue
     private val myThing = MyThing("myFieldThing")
 
     @BeforeEach
@@ -94,14 +94,14 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
 
     @ParameterizedTest
     @MethodSource("myThing")
-    fun testWithChainedFunctionSentenceValueParameter(@Resolve value: MyThing) {
+    fun testWithChainedFunctionSentenceValueParameter(@RenderedValue value: MyThing) {
         given(someSomethingWith(value.value))
     }
 
-    @Resolve
+    @RenderedValue
     private fun aSimpleSentenceValueFunction() = "myValue"
 
-    @Resolve
+    @RenderedValue
     private fun aSentenceValueFunction() = MyThing("myValue")
 
     private fun someSomethingWith(value: String): GivensBuilder = GivensBuilder { _, _ -> }

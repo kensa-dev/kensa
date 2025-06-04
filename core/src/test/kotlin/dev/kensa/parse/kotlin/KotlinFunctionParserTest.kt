@@ -282,8 +282,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "field1"
-                            it.shouldHighlight.shouldBeTrue()
-                            it.shouldResolve.shouldBeTrue()
+                            it.isHighlight.shouldBeTrue()
+                            it.isRenderedValue.shouldBeTrue()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
@@ -291,8 +291,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "property1"
-                            it.shouldHighlight.shouldBeTrue()
-                            it.shouldResolve.shouldBeTrue()
+                            it.isHighlight.shouldBeTrue()
+                            it.isRenderedValue.shouldBeTrue()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
@@ -300,8 +300,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "propertyWithGetter"
-                            it.shouldHighlight.shouldBeTrue()
-                            it.shouldResolve.shouldBeTrue()
+                            it.isHighlight.shouldBeTrue()
+                            it.isRenderedValue.shouldBeTrue()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
@@ -309,8 +309,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "throwingGetter"
-                            it.shouldHighlight.shouldBeFalse()
-                            it.shouldResolve.shouldBeTrue()
+                            it.isHighlight.shouldBeFalse()
+                            it.isRenderedValue.shouldBeTrue()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
@@ -318,8 +318,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "lazyProperty"
-                            it.shouldHighlight.shouldBeTrue()
-                            it.shouldResolve.shouldBeFalse()
+                            it.isHighlight.shouldBeTrue()
+                            it.isRenderedValue.shouldBeFalse()
                             it.isParameterizedTestDescription.shouldBeFalse()
 
                         }
@@ -331,8 +331,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "method1"
-                            it.shouldHighlight.shouldBeFalse()
-                            it.shouldResolve.shouldBeTrue()
+                            it.isHighlight.shouldBeFalse()
+                            it.isRenderedValue.shouldBeTrue()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
@@ -340,8 +340,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "nested1"
-                            it.shouldHighlight.shouldBeFalse()
-                            it.shouldResolve.shouldBeFalse()
+                            it.isHighlight.shouldBeFalse()
+                            it.isRenderedValue.shouldBeFalse()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
@@ -349,8 +349,8 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         asClue {
                             it.name shouldBe "internalNested\$core_example"
-                            it.shouldHighlight.shouldBeFalse()
-                            it.shouldResolve.shouldBeFalse()
+                            it.isHighlight.shouldBeFalse()
+                            it.isRenderedValue.shouldBeFalse()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }

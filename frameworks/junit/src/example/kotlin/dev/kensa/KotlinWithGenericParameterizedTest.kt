@@ -11,7 +11,7 @@ import java.util.List
 import java.util.Map
 
 class KotlinWithGenericParameterizedTest : KensaTest, WithHamkrest {
-    @Resolve
+    @RenderedValue
     private val aValue = "aStringValue"
 
     @ParameterizedTest

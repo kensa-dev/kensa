@@ -4,22 +4,22 @@ import dev.kensa.DummyAssert.Companion.assertThat
 import dev.kensa.GivensBuilder
 import dev.kensa.Highlight
 import dev.kensa.NestedSentence
-import dev.kensa.Resolve
+import dev.kensa.RenderedValue
 import dev.kensa.SomeBuilder.Companion.someBuilder
 
 class KotlinWithAnnotations {
 
-    @field:[Highlight Resolve]
+    @field:[Highlight RenderedValue]
     private val field1: String? = null
 
-    @[Highlight Resolve]
+    @[Highlight RenderedValue]
     private val property1: String = "property1"
 
-    @get:[Highlight Resolve]
+    @get:[Highlight RenderedValue]
     private val propertyWithGetter: String
         get() = "propertyWithGetter"
 
-    @get:[Resolve]
+    @get:[RenderedValue]
     private val throwingGetter: String
         get() = throw RuntimeException("Boom!")
 
@@ -30,7 +30,7 @@ class KotlinWithAnnotations {
         assertThat("true").isEqualTo("true")
     }
 
-    @Resolve
+    @RenderedValue
     fun method1() {
     }
 

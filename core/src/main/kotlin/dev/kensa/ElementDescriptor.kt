@@ -15,9 +15,9 @@ import kotlin.reflect.jvm.javaGetter
 
 sealed interface ElementDescriptor {
     val name: String
-    val shouldResolve: Boolean
-    val shouldHighlight: Boolean
-    val isResolveHolder: Boolean get() = false
+    val isRenderedValue: Boolean
+    val isRenderedValueContainer: Boolean get() = false
+    val isHighlight: Boolean
     val isParameterizedTestDescription: Boolean get() = false
     val highlight: Highlight?
 
@@ -73,8 +73,8 @@ sealed interface ElementDescriptor {
     }
 
     class ParameterElementDescriptor(override val name: String, private val parameter: Parameter, private val index: Int) : ElementDescriptor {
-        override val shouldResolve: Boolean = parameter.hasAnnotation<Resolve>()
-        override val shouldHighlight: Boolean = parameter.hasAnnotation<Highlight>()
+        override val isRenderedValue: Boolean = parameter.hasAnnotation<RenderedValue>()
+        override val isHighlight: Boolean = parameter.hasAnnotation<Highlight>()
         override val highlight: Highlight? = parameter.findAnnotation<Highlight>()
         override val isParameterizedTestDescription: Boolean by lazy { parameter.hasAnnotation<ParameterizedTestDescription>() }
 
@@ -87,8 +87,8 @@ sealed interface ElementDescriptor {
 
     class MethodElementDescriptor(private val method: Method) : ElementDescriptor {
         override val name: String = method.name
-        override val shouldResolve: Boolean = method.hasAnnotation<Resolve>()
-        override val shouldHighlight: Boolean = method.hasAnnotation<Highlight>()
+        override val isRenderedValue: Boolean = method.hasAnnotation<RenderedValue>()
+        override val isHighlight: Boolean = method.hasAnnotation<Highlight>()
         override val highlight: Highlight? = method.findAnnotation<Highlight>()
 
         override fun resolveValue(target: Any, path: String?): Any? {
@@ -100,9 +100,9 @@ sealed interface ElementDescriptor {
 
     class PropertyElementDescriptor(private val property: KProperty<*>) : ElementDescriptor {
         override val name: String = property.name
-        override val shouldResolve: Boolean = property.hasKotlinOrJavaAnnotation<Resolve>()
-        override val isResolveHolder: Boolean = property.hasKotlinOrJavaAnnotation<ResolveHolder>()
-        override val shouldHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
+        override val isRenderedValue: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValue>()
+        override val isRenderedValueContainer: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValueContainer>()
+        override val isHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
 
         override fun resolveValue(target: Any, path: String?): Any? {
@@ -114,9 +114,9 @@ sealed interface ElementDescriptor {
 
     class ResolveHolderElementDescriptor(private val parentDescriptor: PropertyElementDescriptor, property: KProperty<*>) : ElementDescriptor {
         override val name: String = property.name
-        override val shouldResolve: Boolean = property.hasKotlinOrJavaAnnotation<Resolve>()
-        override val isResolveHolder: Boolean = property.hasKotlinOrJavaAnnotation<ResolveHolder>()
-        override val shouldHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
+        override val isRenderedValue: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValue>()
+        override val isRenderedValueContainer: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValueContainer>()
+        override val isHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
 
         override fun resolveValue(target: Any, path: String?): Any? {

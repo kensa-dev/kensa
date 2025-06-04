@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.hasKey;
 
 public class JavaWithGenericParameterizedTest implements KensaTest, WithHamcrest {
 
-    @Resolve
+    @RenderedValue
     private final String aValue = "aStringValue";
 
     @ParameterizedTest

@@ -20,9 +20,9 @@ class ParseContext(
     private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()
 ) {
 
-    private val methodNames = methods.filterValues { it.shouldResolve || it.shouldHighlight }.keys
-    private val fieldNames = properties.filterValues { it.shouldResolve || it.shouldHighlight }.keys
-    private val parameterNames = parameters.filterValues { it.shouldResolve || it.shouldHighlight }.keys
+    private val methodNames = methods.filterValues { it.isRenderedValue || it.isHighlight }.keys
+    private val fieldNames = properties.filterValues { it.isRenderedValue || it.isHighlight }.keys
+    private val parameterNames = parameters.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val nestedMethodNames = nestedMethods.keys
 
     private val fixturesPattern = """fixtures[\[(](\w+\.)?([^)\]]+)[)\]]""".toRegex()
@@ -48,9 +48,9 @@ class ParseContext(
 
     private fun ParseContext.callTypeFor(key: String): ChainedCallExpression.Type? =
         when {
-            methods[key]?.shouldResolve == true -> Method
-            parameters[key]?.shouldResolve == true -> Parameter
-            properties[key]?.shouldResolve == true -> Field
+            methods[key]?.isRenderedValue == true -> Method
+            parameters[key]?.isRenderedValue == true -> Parameter
+            properties[key]?.isRenderedValue == true -> Field
             else -> null
         }
 

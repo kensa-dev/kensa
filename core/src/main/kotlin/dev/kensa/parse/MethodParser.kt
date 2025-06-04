@@ -127,12 +127,12 @@ interface MethodParser : ParserCache, ParserDelegate {
                     val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
 
                     // Lift the properties of any ResolverHolders
-                    if (descriptor.isResolveHolder) {
+                    if (descriptor.isRenderedValueContainer) {
                         val classifier = property.returnType.classifier
                         if (classifier is KClass<*>) {
                             addAll(
                                 classifier.allProperties
-                                    .filter { it.hasKotlinOrJavaAnnotation<Resolve>() }
+                                    .filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }
                                     .map { ElementDescriptor.forResolveHolder(descriptor, it) }
                             )
                         }

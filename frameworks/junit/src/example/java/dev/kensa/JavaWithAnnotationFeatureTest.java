@@ -15,10 +15,10 @@ class JavaWithAnnotationFeatureTest implements KensaTest, WithHamcrest {
     @Highlight
     private String highlightMe = "givensViaHighlight";
 
-    @Resolve
+    @RenderedValue
     private String aValue = "aStringValue";
 
-    @Resolve
+    @RenderedValue
     private MyScenario myScenario = new MyScenario(aValue);
 
     @Test

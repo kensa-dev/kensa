@@ -1,17 +1,17 @@
 package dev.kensa.example;
 
 import dev.kensa.Highlight;
-import dev.kensa.Resolve;
+import dev.kensa.RenderedValue;
 
 public class JavaWithInterface implements JavaInterface {
 
     private String field1;
 
-    @Resolve
+    @RenderedValue
     private String field2;
 
     @Highlight
-    @Resolve
+    @RenderedValue
     private String field3;
 
     void classTestMethod() {

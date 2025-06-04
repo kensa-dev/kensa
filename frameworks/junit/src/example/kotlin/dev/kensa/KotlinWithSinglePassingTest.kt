@@ -8,7 +8,7 @@ import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 
 class KotlinWithSinglePassingTest : KensaTest, WithHamkrest {
-    @Resolve
+    @RenderedValue
     private val aValue = "aStringValue"
 
     @Test

@@ -3,7 +3,6 @@ package dev.kensa;
 import dev.kensa.extension.TestParameterResolver;
 import dev.kensa.hamcrest.WithHamcrest;
 import dev.kensa.junit.KensaTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -14,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ExtendWith(TestParameterResolver.class)
 public class JavaWithParameterResolverExtensionTest implements KensaTest, WithHamcrest {
 
-    @Resolve
+    @RenderedValue
     private final String aValue = "aStringValue";
 
     @Test

@@ -27,11 +27,11 @@ annotation class NestedSentence
 
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER)
-annotation class ResolveHolder
+annotation class RenderedValueContainer
 
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER, FUNCTION, PROPERTY_GETTER)
-annotation class Resolve
+annotation class RenderedValue
 
 @Retention(RUNTIME)
 @Target(CLASS)

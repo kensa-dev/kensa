@@ -22,7 +22,7 @@ class TestInvocationParser(private val configuration: Configuration) {
                 }
 
             val highlightedParameterValues = namedParameterValues.filter { namedValue: NamedValue ->
-                parsedMethod.parameters.descriptors[namedValue.name]?.shouldHighlight ?: false
+                parsedMethod.parameters.descriptors[namedValue.name]?.isHighlight ?: false
             }
 
             val highlightedValues = LinkedHashSet<NamedValue>()
@@ -67,12 +67,12 @@ class TestInvocationParser(private val configuration: Configuration) {
         }
 
     private fun highlightedPropertyValues(fields: Map<String, ElementDescriptor>, testInstance: Any) = fields.values
-        .filter(ElementDescriptor::shouldHighlight)
+        .filter(ElementDescriptor::isHighlight)
         .map { NamedValue(highlightOrFieldNameFor(it), configuration.renderers.renderValue(it.resolveValue(testInstance))) }
         .toSet()
 
     private fun highlightOrFieldNameFor(accessor: ElementDescriptor): String =
-        accessor.takeIf { it.shouldHighlight }?.run {
+        accessor.takeIf { it.isHighlight }?.run {
             highlight?.value?.run { ifEmpty { accessor.name } }
         } ?: accessor.name
 }
