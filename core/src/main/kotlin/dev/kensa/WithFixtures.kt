@@ -7,6 +7,6 @@ interface WithFixtures {
     val fixtures: Fixtures
 }
 
-object TestContextFixtures : WithFixtures {
+class TestContextFixtures : WithFixtures {
     override val fixtures: Fixtures = TestContextHolder.testContext().fixtures
 }

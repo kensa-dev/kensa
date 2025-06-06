@@ -11,6 +11,8 @@ class Fixtures {
     private val keyToValue = mutableMapOf<String, Any?>()
     private val keyToFixture = mutableMapOf<String, Fixture<*>>()
 
+    fun hasValue(fixture: Fixture<*>): Boolean = synchronized(lock) { keyToValue.containsKey(fixture.key) }
+
     /**
      * Gets the value of a fixture by key.
      * The fixture is created lazily when first accessed.

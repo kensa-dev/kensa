@@ -1,7 +1,5 @@
 package dev.kensa.fixture
 
-import io.kotest.matchers.booleans.shouldBeFalse
-import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
@@ -11,6 +9,17 @@ import java.time.LocalDate
 
 class FixturesTest {
 
+    @Test
+    fun `can check whether fixture has an initialised value`() {
+        val stringFixture = fixture<String>("string")
+        val fixtures = Fixtures()
+
+        fixtures.hasValue(stringFixture) shouldBe false
+
+        fixtures[stringFixture] = "foo"
+
+        fixtures.hasValue(stringFixture) shouldBe true
+    }
 
     @Test
     fun `should create primary fixture with lazy initialization`() {
