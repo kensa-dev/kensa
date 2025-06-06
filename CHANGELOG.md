@@ -1,9 +1,11 @@
 <h2 class="github">Changelog</h2>
 
-### v0.5.3
+### v0.5.4
 - Fix ui issues. 
 - Introduce *WithFixtures suffix interfaces for GivensBuilder, ActionUnderTest & StateExtractor.
 - Revert GivensBuilder, ActionUnderTest & StateExtractor to remove Fixtures (for backwards compatibility).
+
+### v0.5.3 - cancelled
 
 ### v0.5.2
 - Fixing parsing issue 
