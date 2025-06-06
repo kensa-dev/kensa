@@ -4,6 +4,8 @@ import dev.kensa.ActionsUnderTest.Companion.buildActions
 import dev.kensa.GivensBuilders.Companion.buildGivens
 import dev.kensa.context.TestContextHolder.testContext
 import dev.kensa.fixture.Fixtures
+import dev.kensa.state.CapturedInteractions
+import dev.kensa.state.Givens
 
 interface SetupStep {
     fun givens(): GivensBuilders = buildGivens()
@@ -11,21 +13,67 @@ interface SetupStep {
     fun verify(): Verification = Verification.Companion.verify()
 }
 
-class GivensBuilders private constructor(private val block: MutableList<GivensBuilderWithFixtures>.(Fixtures) -> Unit) {
+class GivensHolder {
 
-    fun buildWith(fixtures: Fixtures): List<GivensBuilderWithFixtures> = buildList { block(this, fixtures) }
+    val list = mutableListOf<Any>()
 
-    companion object {
-        fun buildGivens(block: MutableList<GivensBuilderWithFixtures>.(Fixtures) -> Unit = { }) = GivensBuilders(block)
+    fun add(givens: GivensBuilder) {
+        list.add(givens)
+    }
+
+    fun add(givens: GivensBuilderWithFixtures) {
+        list.add(givens)
+    }
+
+    fun executeWith(givens: Givens, fixtures: Fixtures) {
+        list.forEach {
+            when (it) {
+                is GivensBuilder -> it.build(givens)
+                is GivensBuilderWithFixtures -> it.build(givens, fixtures)
+                else -> throw IllegalStateException("Unexpected type in GivensHolder")
+            }
+        }
     }
 }
 
-class ActionsUnderTest private constructor(private val block: MutableList<ActionUnderTest>.(Fixtures) -> Unit) {
+class ActionUnderTestHolder {
 
-    fun buildWith(fixtures: Fixtures): List<ActionUnderTest> = buildList { block(this, fixtures) }
+    val list = mutableListOf<Any>()
+
+    fun add(actionUnderTest: ActionUnderTest) {
+        list.add(actionUnderTest)
+    }
+
+    fun add(actionUnderTest: ActionUnderTestWithFixtures) {
+        list.add(actionUnderTest)
+    }
+
+    fun executeWith(givens: Givens, fixtures: Fixtures, interactions: CapturedInteractions) {
+        list.forEach {
+            when (it) {
+                is ActionUnderTest -> it.execute(givens, interactions)
+                is ActionUnderTestWithFixtures -> it.execute(givens, fixtures, interactions)
+                else -> throw IllegalStateException("Unexpected type in ActionUnderTestHolder")
+            }
+        }
+    }
+}
+
+class GivensBuilders private constructor(private val block1: GivensHolder.(Fixtures) -> Unit) {
+
+    fun buildWith(fixtures: Fixtures): GivensHolder = GivensHolder().apply { block1(fixtures) }
 
     companion object {
-        fun buildActions(block: MutableList<ActionUnderTest>.(Fixtures) -> Unit = { }) = ActionsUnderTest(block)
+        fun buildGivens(block: GivensHolder.(Fixtures) -> Unit = { }) = GivensBuilders(block)
+    }
+}
+
+class ActionsUnderTest private constructor(private val block: ActionUnderTestHolder.(Fixtures) -> Unit) {
+
+    fun buildWith(fixtures: Fixtures): ActionUnderTestHolder = ActionUnderTestHolder().apply { block(fixtures) }
+
+    companion object {
+        fun buildActions(block: ActionUnderTestHolder.(Fixtures) -> Unit = { }) = ActionsUnderTest(block)
     }
 }
 
@@ -45,8 +93,8 @@ class SetupSteps(vararg steps: SetupStep) {
     fun execute() {
         with(testContext()) {
             steps.forEach { step ->
-                step.givens().buildWith(fixtures).forEach { given(it) }
-                step.actions().buildWith(fixtures).forEach { whenever(it) }
+                step.givens().buildWith(fixtures).executeWith(givens, fixtures)
+                step.actions().buildWith(fixtures).executeWith(givens, fixtures, interactions)
                 step.verify().verifyWith(fixtures)
             }
         }

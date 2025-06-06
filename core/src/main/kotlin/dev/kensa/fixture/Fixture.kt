@@ -50,7 +50,7 @@ class SecondaryFixture<T, P>(
  * @param factory Factory function to create the fixture value
  * @return A new parent fixture key
  */
-inline fun <reified T> fixture(key: String, noinline factory: () -> T): PrimaryFixture<T> = PrimaryFixture(key, factory)
+inline fun <reified T> fixture(key: String, noinline factory: () -> T = { throw IllegalStateException("Fixture value should be set, not generated") }): PrimaryFixture<T> = PrimaryFixture(key, factory)
 
 /**
  * Creates a secondary fixture with a type-safe key.
