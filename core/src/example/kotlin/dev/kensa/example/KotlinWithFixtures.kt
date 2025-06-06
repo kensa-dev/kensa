@@ -34,6 +34,6 @@ class KotlinWithFixtures {
 
     private fun theExtractedValue() = StateExtractor { "" }
 
-    private fun actionWith(value: String) = ActionUnderTest { _, _, _ ->
+    private fun actionWith(value: String) = ActionUnderTest { _, _->
     }
 }

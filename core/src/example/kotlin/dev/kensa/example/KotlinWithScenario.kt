@@ -38,6 +38,6 @@ class KotlinWithScenario {
 
     private fun theExtractedValue() = StateExtractor { myScenario.value }
 
-    private fun actionWith(value: String) = ActionUnderTest { _, _, _ ->
+    private fun actionWith(value: String) = ActionUnderTest { _, _ ->
     }
 }
