@@ -1,7 +1,7 @@
 package dev.kensa.example
 
 import dev.kensa.DummyAssert.Companion.assertThat
-import dev.kensa.GivensBuilder
+import dev.kensa.GivensBuilderWithFixtures
 import dev.kensa.Highlight
 import dev.kensa.NestedSentence
 import dev.kensa.RenderedValue
@@ -35,7 +35,7 @@ class KotlinWithAnnotations {
     }
 
     @NestedSentence
-    private fun nested1(): GivensBuilder {
+    private fun nested1(): GivensBuilderWithFixtures {
         return someBuilder()
             .withSomething()
             .build()

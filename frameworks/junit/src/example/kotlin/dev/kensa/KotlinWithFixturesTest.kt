@@ -44,7 +44,7 @@ class KotlinWithFixturesTest : KensaTest, WithHamkrest {
     private fun theIntegerFixture(): StateExtractor<Int> = StateExtractor { interactions: CapturedInteractions -> fixtures[IntegerFixture] }
     private fun theStringFixture(): StateExtractor<String> = StateExtractor { interactions: CapturedInteractions -> fixtures[StringFixture] }
     private fun theFixture(value: String): StateExtractor<String> = StateExtractor { interactions: CapturedInteractions -> value }
-    private fun somePrerequisites() = GivensBuilder { givens: Givens, _ -> givens.put("foo", fixtures[StringFixture]) }
+    private fun somePrerequisites() = GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("foo", fixtures[StringFixture]) }
 
     companion object : FixtureContainer {
         val IntegerFixture = fixture("KotlinIntegerFixture") { 23 }

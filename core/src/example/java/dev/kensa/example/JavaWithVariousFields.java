@@ -27,7 +27,7 @@ public class JavaWithVariousFields {
     }
 
     @NestedSentence
-    private GivensBuilder nested1() {
+    private GivensBuilderWithFixtures nested1() {
         return someBuilder()
                 .withSomething()
                 .build();

@@ -104,21 +104,21 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
     @RenderedValue
     private fun aSentenceValueFunction() = MyThing("myValue")
 
-    private fun someSomethingWith(value: String): GivensBuilder = GivensBuilder { _, _ -> }
+    private fun someSomethingWith(value: String): GivensBuilderWithFixtures = GivensBuilderWithFixtures { _, _ -> }
 
     private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { interactions: CapturedInteractions -> aValue }
 
-    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens, _ -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("foo", "bar") }
 
-    private fun somePrerequisitesWith(vararg values: String): GivensBuilder = GivensBuilder { givens: Givens, _ ->
+    private fun somePrerequisitesWith(vararg values: String): GivensBuilderWithFixtures = GivensBuilderWithFixtures { givens: Givens, _ ->
         values.forEach { givens.put("key_$it", it) }
     }
 
-    private fun someAction(): ActionUnderTest = ActionUnderTest { _, _, _ -> }
-    private fun someActionWith(value: String): ActionUnderTest = ActionUnderTest { _, _, _ -> }
+    private fun someAction(): ActionUnderTest = ActionUnderTest { _, _ -> }
+    private fun someActionWith(value: String): ActionUnderTest = ActionUnderTest { _, _ -> }
 
     @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase], textColour = TextLight, backgroundColor = BackgroundDanger)
-    private fun someActionWithEmphasis(): ActionUnderTest = ActionUnderTest { _, _, _ -> }
+    private fun someActionWithEmphasis(): ActionUnderTest = ActionUnderTest { _, _ -> }
 
     companion object {
         @JvmStatic

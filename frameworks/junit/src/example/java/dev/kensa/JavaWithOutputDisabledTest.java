@@ -26,12 +26,12 @@ public class JavaWithOutputDisabledTest implements KensaTest, WithHamcrest {
         return interactions -> aValue;
     }
 
-    private GivensBuilder somePrerequisites() {
+    private GivensBuilderWithFixtures somePrerequisites() {
         return (givens, fixtures) -> givens.put("foo", "bar");
     }
 
     private ActionUnderTest someAction() {
-        return (givens, fixtures, interactions) -> {
+        return (givens, interactions) -> {
         };
     }
 

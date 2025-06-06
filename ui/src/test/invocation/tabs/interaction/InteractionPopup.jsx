@@ -33,7 +33,9 @@ export const InteractionPopup = ({onHide, capturedInteraction, highlights}) => {
                     <header className="modal-card-head">
                         <p className="modal-card-title">{capturedInteraction.name}</p>
                         <button className={"button is-info is-small mr-5"} onClick={togglePresentationSize}>Demo</button>
-                        <a onClick={onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
+                        <span className="icon is-small has-text-grey">
+                            <a onClick={onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
+                        </span>
                     </header>
                     <section className={"modal-card-body " + fontSizes[fontSizeIdx]}>
                         <InteractionContent interaction={capturedInteraction["rendered"]} highlights={highlights}/>

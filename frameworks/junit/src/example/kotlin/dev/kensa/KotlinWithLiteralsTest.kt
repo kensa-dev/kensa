@@ -20,7 +20,7 @@ class KotlinWithLiteralsTest : KensaTest {
         )
     }
 
-    private fun <T> aLiteralOf(aValue: T?): GivensBuilder {
-        return GivensBuilder { _, _ -> }
+    private fun <T> aLiteralOf(aValue: T?): GivensBuilderWithFixtures {
+        return GivensBuilderWithFixtures { _, _ -> }
     }
 }

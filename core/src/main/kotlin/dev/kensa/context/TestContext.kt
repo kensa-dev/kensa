@@ -1,7 +1,9 @@
 package dev.kensa.context
 
 import dev.kensa.ActionUnderTest
+import dev.kensa.ActionUnderTestWithFixtures
 import dev.kensa.GivensBuilder
+import dev.kensa.GivensBuilderWithFixtures
 import dev.kensa.UseSetupStrategy
 import dev.kensa.fixture.Fixture
 import dev.kensa.fixture.Fixtures
@@ -13,11 +15,21 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
 class TestContext(val givens: Givens, val interactions: CapturedInteractions, val fixtures: Fixtures) {
+
     fun given(builder: GivensBuilder) {
+        builder.build(givens)
+    }
+
+    fun given(builder: GivensBuilderWithFixtures) {
         builder.build(givens, fixtures)
     }
 
     fun whenever(action: ActionUnderTest) {
+        interactions.isUnderTest = true
+        action.execute(givens, interactions)
+    }
+
+    fun whenever(action: ActionUnderTestWithFixtures) {
         interactions.isUnderTest = true
         action.execute(givens, fixtures, interactions)
     }

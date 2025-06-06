@@ -11,12 +11,12 @@ interface SetupStep {
     fun verify(): Verification = Verification.Companion.verify()
 }
 
-class GivensBuilders private constructor(private val block: MutableList<GivensBuilder>.(Fixtures) -> Unit) {
+class GivensBuilders private constructor(private val block: MutableList<GivensBuilderWithFixtures>.(Fixtures) -> Unit) {
 
-    fun buildWith(fixtures: Fixtures): List<GivensBuilder> = buildList { block(this, fixtures) }
+    fun buildWith(fixtures: Fixtures): List<GivensBuilderWithFixtures> = buildList { block(this, fixtures) }
 
     companion object {
-        fun buildGivens(block: MutableList<GivensBuilder>.(Fixtures) -> Unit = { }) = GivensBuilders(block)
+        fun buildGivens(block: MutableList<GivensBuilderWithFixtures>.(Fixtures) -> Unit = { }) = GivensBuilders(block)
     }
 }
 

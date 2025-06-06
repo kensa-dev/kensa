@@ -23,7 +23,9 @@ const StackTracePopup = ({isActive, stackTrace, onHide}) => {
             <div className="modal-card">
                 <header className="modal-card-head">
                     <p className="modal-card-title">Stacktrace</p>
-                    <a onClick={onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
+                    <span className="icon is-small has-text-grey">
+                        <a onClick={onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
+                    </span>
                 </header>
                 <section className={"modal-card-body"}>
                     <div className="stack-trace">{stackTrace}</div>

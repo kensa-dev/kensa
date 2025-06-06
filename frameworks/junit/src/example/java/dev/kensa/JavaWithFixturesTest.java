@@ -39,7 +39,7 @@ public class JavaWithFixturesTest implements KensaTest, WithHamcrest {
         then(theFixture(fixtures(CHILD_STRING_FIXTURE)), startsWith(fixtures(STRING_FIXTURE)));
     }
 
-    private GivensBuilder somePrerequisites() {
+    private GivensBuilderWithFixtures somePrerequisites() {
         return (givens, fixtures) -> {
             givens.put("foo", fixtures(STRING_FIXTURE));
         };

@@ -1,12 +1,13 @@
 package dev.kensa
 
 import dev.kensa.Kensa.konfigure
+import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
 import dev.kensa.sentence.Acronym.Companion.of
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class KotlinWithAcronymsTest : KensaTest {
+class KotlinWithAcronymsTest : KensaTest, WithHamkrest {
     @BeforeEach
     fun setUp() {
         konfigure {
@@ -24,7 +25,7 @@ class KotlinWithAcronymsTest : KensaTest {
         and(aMethodNameWithFubarAcronym())
     }
 
-    fun aMethodNameWithFttpAcronym(): GivensBuilder = GivensBuilder { _, _ -> }
+    fun aMethodNameWithFttpAcronym(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { _, _ -> }
 
-    fun aMethodNameWithFubarAcronym(): GivensBuilder = GivensBuilder { _, _ -> }
+    fun aMethodNameWithFubarAcronym(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { _, _ -> }
 }

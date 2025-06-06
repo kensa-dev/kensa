@@ -10,7 +10,7 @@ public class JavaWithTypeArgumentsTest implements KensaTest {
         given(this.<String>aLiteralOf("aStringValue"));
     }
 
-    private <T> GivensBuilder aLiteralOf(T aValue) {
+    private <T> GivensBuilderWithFixtures aLiteralOf(T aValue) {
         return (givens, fixtures) -> {};
     }
 }

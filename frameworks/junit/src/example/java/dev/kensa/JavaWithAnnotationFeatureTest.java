@@ -50,11 +50,11 @@ class JavaWithAnnotationFeatureTest implements KensaTest, WithHamcrest {
         return interactions -> aValue;
     }
 
-    private GivensBuilder somePrerequisites() {
+    private GivensBuilderWithFixtures somePrerequisites() {
         return (givens, fixtures) -> givens.put("foo", "bar");
     }
 
-    private GivensBuilder somePrerequisitesWith(String... values) {
+    private GivensBuilderWithFixtures somePrerequisitesWith(String... values) {
         return (givens, fixtures) -> {
             for (String value : values) {
                 givens.put("key_" + value, value);
@@ -63,18 +63,18 @@ class JavaWithAnnotationFeatureTest implements KensaTest, WithHamcrest {
     }
 
     private ActionUnderTest someAction() {
-        return (givens, fixtures, interactions) -> {
+        return (givens, interactions) -> {
         };
     }
 
     private ActionUnderTest someActionWith(String value) {
-        return (givens, fixtures,interactions) -> {
+        return (givens,interactions) -> {
         };
     }
 
     @Emphasise(textStyles = {TextWeightBold, Italic, Uppercase}, textColour = TextLight, backgroundColor = BackgroundDanger)
     private ActionUnderTest someActionWithEmphasis() {
-        return (givens, fixtures, interactions) -> {
+        return (givens, interactions) -> {
         };
     }
 }
