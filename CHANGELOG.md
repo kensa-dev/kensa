@@ -1,6 +1,10 @@
 <h2 class="github">Changelog</h2>
 
 ### v0.5.4
+- Adding `hasValue` function to Fixtures.
+- TestContext should be a class not an object.
+
+### v0.5.4
 - Fix ui issues. 
 - Introduce *WithFixtures suffix interfaces for GivensBuilder, ActionUnderTest & StateExtractor.
 - Revert GivensBuilder, ActionUnderTest & StateExtractor to remove Fixtures (for backwards compatibility).
