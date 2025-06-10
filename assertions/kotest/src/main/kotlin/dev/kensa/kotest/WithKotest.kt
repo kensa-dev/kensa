@@ -114,7 +114,7 @@ interface WithKotest {
             with(spec) {
                 KotestThen.thenEventually(duration, testContext(), extractor) {
                     invokeMatcher(this, matcher)
-                    onMatch(this)
+                    onMatch(this, testContext().fixtures)
                 }
             }
         }
