@@ -8,5 +8,5 @@ interface WithFixtures {
 }
 
 class TestContextFixtures : WithFixtures {
-    override val fixtures: Fixtures = TestContextHolder.testContext().fixtures
+    override val fixtures: Fixtures get() = TestContextHolder.testContext().fixtures
 }
