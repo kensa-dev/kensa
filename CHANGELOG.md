@@ -1,6 +1,11 @@
 <h2 class="github">Changelog</h2>
 
-### v0.5.4
+### v0.5.6
+- Adding FixturesParameterResolver
+- Adding fixtures as parameter to `onMatch` for `ThenSpecWithFixtures`
+- Allow SecondaryFixtures to be parents of other fixtures.
+
+### v0.5.5
 - Adding `hasValue` function to Fixtures.
 - TestContext should be a class not an object.
 
