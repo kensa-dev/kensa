@@ -22,6 +22,10 @@ class KotlinWithFixtures {
         })
     }
 
+    fun testWithChainedFixture() {
+        assertThat(theExtractedCharacter()) isEqualTo fixtures(MyFixture).toString().last()
+    }
+
     private fun whenever(action: MyBlock) = Unit
 
     private fun somethingWith(block: MyBlock.() -> Unit) = MyBlock().apply(block)
@@ -33,6 +37,7 @@ class KotlinWithFixtures {
     private fun fixtures(name: String) = ""
 
     private fun theExtractedValue() = StateExtractor { "" }
+    private fun theExtractedCharacter() = StateExtractor { 'c' }
 
     private fun actionWith(value: String) = ActionUnderTest { _, _->
     }

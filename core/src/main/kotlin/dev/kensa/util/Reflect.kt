@@ -201,3 +201,42 @@ private fun KClass<*>.findStaticPropertiesInHierarchy(): Set<KProperty<*>> {
 
     return results
 }
+
+/**
+ * Resolves a dot-separated path on the given object.
+ */
+fun resolvePath(startingValue: Any, path: String?): Any? {
+    if (path.isNullOrEmpty()) {
+        return startingValue
+    }
+
+    val segments = path.split(".")
+    var currentValue: Any? = startingValue
+
+    for (segment in segments) {
+        currentValue = currentValue?.let { resolveSegment(it, segment) } ?: return null
+    }
+
+    return currentValue
+}
+
+/**
+ * Resolves a single path segment on the given object.
+ * The segment can represent a property or method.
+ */
+private fun resolveSegment(target: Any, segment: String): Any? =
+    try {
+        if (segment.endsWith("()")) {
+            val methodName = segment.removeSuffix("()")
+            val method = target::class.java.methods.find { it.name == methodName }
+                ?: throw NoSuchMethodException("Method $methodName not found on ${target::class.java.name}")
+            method.apply { isAccessible = true }.invoke(target)
+        } else {
+            val property = target::class.members.find { it.name == segment } as? KProperty<*>
+                ?: throw NoSuchFieldException("Property $segment not found on ${target::class.java.name}")
+            property.javaField?.apply { isAccessible = true }?.get(target)
+                ?: property.javaGetter?.apply { isAccessible = true }?.invoke(target)
+        }
+    } catch (e: Exception) {
+        err.println("Accessor threw an exception: "); e.printStackTrace(err); null
+    }

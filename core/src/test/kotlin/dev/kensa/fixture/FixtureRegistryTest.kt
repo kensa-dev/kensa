@@ -76,7 +76,7 @@ class FixtureRegistryTest {
             val TestDateFixture = fixture<LocalDate>(key = "TestDate", factory = { LocalDate.now() })
             val TestDayFixture = fixture<DayOfWeek, LocalDate>(
                 key = "TestDay",
-                primaryFixture = TestDateFixture,
+                parentFixture = TestDateFixture,
                 factory = { date -> date.dayOfWeek }
             )
         }

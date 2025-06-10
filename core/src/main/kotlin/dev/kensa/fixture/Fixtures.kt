@@ -48,9 +48,13 @@ class Fixtures {
         }
     }
 
-    private fun clearDependentFixtures(fixture: PrimaryFixture<*>) {
+    private fun clearDependentFixtures(fixture: Fixture<*>) {
         keyToFixture.filterValues { it is SecondaryFixture<*, *> && it.parent == fixture }
-            .map { it.key }
+            .map {
+                clearDependentFixtures(it.value)
+                it.key
+
+            }
             .forEach { secondaryKey ->
                 keyToValue.remove(secondaryKey)
             }

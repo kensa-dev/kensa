@@ -82,4 +82,21 @@ class FixturesTest {
         val updatedDay: DayOfWeek = fixtures[dayFixture]
         updatedDay shouldBe MONDAY
     }
+
+    @Test
+    fun `secondary fixtures can be children of other secondary fixtures`() {
+        val dateFixture = fixture<LocalDate>("date", { LocalDate.of(2023, 1, 1) })
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture, { date -> date.dayOfWeek })
+        val dayPlusOneFixture = fixture<DayOfWeek, DayOfWeek>("dayPlusOne", dayFixture, { day -> day.plus(1) })
+
+        val fixtures = Fixtures()
+        val dayValue = fixtures[dayPlusOneFixture]
+
+        dayValue shouldBe MONDAY
+
+        fixtures[dateFixture] = LocalDate.of(2023, 1, 2)
+
+        val dayValue1 = fixtures[dayPlusOneFixture]
+        dayValue1 shouldBe DayOfWeek.TUESDAY
+    }
 }

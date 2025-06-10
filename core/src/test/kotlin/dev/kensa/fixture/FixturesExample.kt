@@ -12,7 +12,7 @@ class FixturesExample {
         val MessageDateFixture = fixture<LocalDate>(key = "MessageDateProperty", factory = { LocalDate.now() })
         val MessageDayFixture = fixture<DayOfWeek, LocalDate>(
             key = "MessageDayProperty",
-            primaryFixture = MessageDateFixture,
+            parentFixture = MessageDateFixture,
             factory = { date -> date.dayOfWeek }
         )
         val DurationFixture = fixture<Duration>(key = "DurationMsProperty", factory = { Duration.ofDays(1) })

@@ -50,17 +50,17 @@ class SecondaryFixture<T, P>(
  * @param factory Factory function to create the fixture value
  * @return A new parent fixture key
  */
-inline fun <reified T> fixture(key: String, noinline factory: () -> T = { throw IllegalStateException("Fixture value should be set, not generated") }): PrimaryFixture<T> = PrimaryFixture(key, factory)
+inline fun <reified T> fixture(key: String, noinline factory: () -> T = { throw IllegalStateException("Fixture value $key should be set, not generated") }): PrimaryFixture<T> = PrimaryFixture(key, factory)
 
 /**
  * Creates a secondary fixture with a type-safe key.
  *
  * @param key The string key used internally
- * @param primaryFixture The parent fixture key
+ * @param parentFixture The parent fixture key
  * @param factory Function to transform the parent fixture value into the secondary fixture value
  * @return A new secondary fixture key
  */
-inline fun <reified T, P> fixture(key: String, primaryFixture: PrimaryFixture<P>, noinline factory: (P) -> T): SecondaryFixture<T, P> = SecondaryFixture(key, primaryFixture, factory)
+inline fun <reified T, P> fixture(key: String, parentFixture: Fixture<P>, noinline factory: (P) -> T): SecondaryFixture<T, P> = SecondaryFixture(key, parentFixture, factory)
 
 /**
  * Non-inline version of the fixture function for Java interoperability.
@@ -76,9 +76,9 @@ fun <T> createFixture(key: String, factory: () -> T): PrimaryFixture<T> = Primar
  * Non-inline version of the fixture function for Java interoperability.
  *
  * @param key The string key used internally
- * @param primaryFixture The parent fixture key
+ * @param parentFixture The parent fixture key
  * @param factory Function to transform the parent fixture value into the secondary fixture value
  * @return A new secondary fixture key
  */
 @JvmName("createFixture")
-fun <T, P> createFixture(key: String, primaryFixture: PrimaryFixture<P>, factory: (P) -> T): SecondaryFixture<T, P> = SecondaryFixture(key, primaryFixture, factory)
+fun <T, P> createFixture(key: String, parentFixture: Fixture<P>, factory: (P) -> T): SecondaryFixture<T, P> = SecondaryFixture(key, parentFixture, factory)

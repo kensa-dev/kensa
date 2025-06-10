@@ -1,17 +1,10 @@
 package dev.kensa
 
-import dev.kensa.util.findAnnotation
-import dev.kensa.util.findKotlinOrJavaAnnotation
-import dev.kensa.util.hasAnnotation
-import dev.kensa.util.hasKotlinOrJavaAnnotation
-import dev.kensa.util.invokeMethodOrNull
-import dev.kensa.util.valueOfKotlinPropertyIn
+import dev.kensa.util.*
 import java.lang.System.err
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import kotlin.reflect.KProperty
-import kotlin.reflect.jvm.javaField
-import kotlin.reflect.jvm.javaGetter
 
 sealed interface ElementDescriptor {
     val name: String
@@ -32,44 +25,6 @@ sealed interface ElementDescriptor {
 
         fun forParameter(parameter: Parameter, name: String, index: Int): ElementDescriptor = ParameterElementDescriptor(name, parameter, index)
 
-        /**
-         * Resolves a dot-separated path on the given object.
-         */
-        private fun resolvePath(startingValue: Any, path: String?): Any? {
-            if (path.isNullOrEmpty()) {
-                return startingValue
-            }
-
-            val segments = path.split(".")
-            var currentValue: Any? = startingValue
-
-            for (segment in segments) {
-                currentValue = currentValue?.let { resolveSegment(it, segment) } ?: return null
-            }
-
-            return currentValue
-        }
-
-        /**
-         * Resolves a single path segment on the given object.
-         * The segment can represent a property or method.
-         */
-        private fun resolveSegment(target: Any, segment: String): Any? =
-            try {
-                if (segment.endsWith("()")) {
-                    val methodName = segment.removeSuffix("()")
-                    val method = target::class.java.methods.find { it.name == methodName }
-                        ?: throw NoSuchMethodException("Method $methodName not found on ${target::class.java.name}")
-                    method.apply { isAccessible = true }.invoke(target)
-                } else {
-                    val property = target::class.members.find { it.name == segment } as? KProperty<*>
-                        ?: throw NoSuchFieldException("Property $segment not found on ${target::class.java.name}")
-                    property.javaField?.apply { isAccessible = true }?.get(target)
-                        ?: property.javaGetter?.apply { isAccessible = true }?.invoke(target)
-                }
-            } catch (e: Exception) {
-                err.println("Accessor threw an exception: "); e.printStackTrace(err); null
-            }
     }
 
     class ParameterElementDescriptor(override val name: String, private val parameter: Parameter, private val index: Int) : ElementDescriptor {
