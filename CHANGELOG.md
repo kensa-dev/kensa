@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.7
+- Make TestContextFixtures use a getter
+
 ### v0.5.6
 - Adding FixturesParameterResolver
 - Adding fixtures as parameter to `onMatch` for `ThenSpecWithFixtures`
