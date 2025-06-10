@@ -148,7 +148,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                 ResultWriter::class.java
             )
 
-        private val ExtensionContext.fixtures
+        internal val ExtensionContext.fixtures
             get() = kensaStore.getOrComputeIfAbsent(
                 KENSA_FIXTURES_KEY,
                 { Fixtures() },
