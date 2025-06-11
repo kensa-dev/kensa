@@ -9,6 +9,7 @@ import dev.kensa.sentence.SentenceTokens.aCharacterLiteralOf
 import dev.kensa.sentence.SentenceTokens.aFieldValueOf
 import dev.kensa.sentence.SentenceTokens.aFixturesValueOf
 import dev.kensa.sentence.SentenceTokens.aKeywordOf
+import dev.kensa.sentence.SentenceTokens.aMethodValueOf
 import dev.kensa.sentence.SentenceTokens.aNewline
 import dev.kensa.sentence.SentenceTokens.aNullLiteral
 import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
@@ -100,7 +101,7 @@ internal class KotlinFunctionParserTest {
                     aWordOf("is"),
                     aWordOf("equal"),
                     aWordOf("to"),
-                    aFieldValueOf("myScenario.value")
+                    aFieldValueOf("myScenario:value")
                 )
             )
 
@@ -110,8 +111,8 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
-        fun `replaces scenario value in sentence when using scenario`() {
-            val functionName = "testWithScenario"
+        fun `replaces scenario value in sentence when using scenario field`() {
+            val functionName = "testWithScenarioField"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
                 configuration,
@@ -127,7 +128,34 @@ internal class KotlinFunctionParserTest {
                 listOf(
                     aWordOf("action"),
                     aWordOf("with"),
-                    aFieldValueOf("myScenario.value")
+                    aFieldValueOf("myScenario:value")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
+
+        @Test
+        fun `replaces scenario value in sentence when using scenario function`() {
+            val functionName = "testWithScenarioFunction"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val javaClass = KotlinWithScenario::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = Sentence(
+                listOf(
+                    aWordOf("action"),
+                    aWordOf("with"),
+                    aMethodValueOf("myScenarioFun:value")
                 )
             )
 
@@ -154,7 +182,7 @@ internal class KotlinFunctionParserTest {
                 listOf(
                     aWordOf("action"),
                     aWordOf("with"),
-                    aFieldValueOf("myScenario.value"),
+                    aFieldValueOf("myScenario:value"),
                 )
             )
 
@@ -193,7 +221,7 @@ internal class KotlinFunctionParserTest {
                     aWordOf("data"),
                     aWordOf("item"),
                     anOperatorOf("="),
-                    aFixturesValueOf("MyFixture")
+                    aFixturesValueOf("MyFixture:")
                 )
             )
 
@@ -227,7 +255,7 @@ internal class KotlinFunctionParserTest {
                     aWordOf("is"),
                     aWordOf("equal"),
                     aWordOf("to"),
-                    aFixturesValueOf("MyFixture")
+                    aFixturesValueOf("MyFixture:")
                 )
             )
 
@@ -254,7 +282,40 @@ internal class KotlinFunctionParserTest {
                 listOf(
                     aWordOf("action"),
                     aWordOf("with"),
-                    aFixturesValueOf("MyFixture")
+                    aFixturesValueOf("MyFixture:")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
+
+        @Test
+        fun `replaces scenario value in sentence when using chained fixture`() {
+            val functionName = "testWithChainedFixture"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val javaClass = KotlinWithFixtures::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = Sentence(
+                listOf(
+                    aWordOf("assert"),
+                    aWordOf("that"),
+                    aWordOf("the"),
+                    aWordOf("extracted"),
+                    aWordOf("character"),
+                    aWordOf("is"),
+                    aWordOf("equal"),
+                    aWordOf("to"),
+                    aFixturesValueOf("MyFixture:toString().last()")
                 )
             )
 

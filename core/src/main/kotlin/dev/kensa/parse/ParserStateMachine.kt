@@ -86,7 +86,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
         }
         state<InStatement> {
             on<ExitStatement> { currentState, event ->
-                if(currentState.didBegin) finishSentence()
+                if (currentState.didBegin) finishSentence()
                 currentState.parentState
             }
             on<EnterExpression> { currentState, event ->
@@ -95,7 +95,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
             on<EnterMethodInvocation> { currentState, event ->
                 InMethodInvocation(currentState)
             }
-            on<Operator> { currentState, event, ->
+            on<Operator> { currentState, event ->
                 sentenceBuilder.appendOperator(event.location, event.text)
                 currentState
             }
@@ -104,14 +104,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 currentState
             }
             on<FixturesExpression> { currentState, event ->
-                sentenceBuilder.appendFixturesValue(event.location, event.name)
+                sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
             on<ChainedCallExpression> { currentState, event ->
-                when(event.type) {
-                    Method -> sentenceBuilder.appendMethodValue(event.location, event.chain)
-                    Field -> sentenceBuilder.appendFieldValue(event.location, event.chain)
-                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.chain)
+                when (event.type) {
+                    Method -> sentenceBuilder.appendMethodValue(event.location, event.name, event.path)
+                    Field -> sentenceBuilder.appendFieldValue(event.location, event.name, event.path)
+                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.name, event.path)
                 }
 
                 InChainedCallExpression(currentState)
@@ -176,16 +176,16 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 currentState.parentState
             }
             on<ChainedCallExpression> { currentState, event ->
-                when(event.type) {
-                    Method -> sentenceBuilder.appendMethodValue(event.location, event.chain)
-                    Field -> sentenceBuilder.appendFieldValue(event.location, event.chain)
-                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.chain)
+                when (event.type) {
+                    Method -> sentenceBuilder.appendMethodValue(event.location, event.name, event.path)
+                    Field -> sentenceBuilder.appendFieldValue(event.location, event.name, event.path)
+                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.name, event.path)
                 }
 
                 InChainedCallExpression(currentState)
             }
             on<FixturesExpression> { currentState, event ->
-                sentenceBuilder.appendFixturesValue(event.location, event.name)
+                sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
             on<MethodName> { currentState, event ->
@@ -196,15 +196,15 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 InTypeArguments(currentState)
             }
             on<Parameter> { currentState, event ->
-                sentenceBuilder.appendParameterValue(event.location, event.name)
+                sentenceBuilder.appendParameterValue(event.location, event.name, "")
                 currentState
             }
             on<Field> { currentState, event ->
-                sentenceBuilder.appendFieldValue(event.location, event.name)
+                sentenceBuilder.appendFieldValue(event.location, event.name, "")
                 currentState
             }
             on<Method> { currentState, event ->
-                sentenceBuilder.appendMethodValue(event.location, event.name)
+                sentenceBuilder.appendMethodValue(event.location, event.name, "")
                 currentState
             }
             on<Nested> { currentState, event ->
@@ -239,7 +239,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
                 currentState
             }
-            on<Operator> { currentState, event, ->
+            on<Operator> { currentState, event ->
                 sentenceBuilder.appendOperator(event.location, event.text)
                 currentState
             }
@@ -263,16 +263,16 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 }
             }
             on<ChainedCallExpression> { currentState, event ->
-                when(event.type) {
-                    Method -> sentenceBuilder.appendMethodValue(event.location, event.chain)
-                    Field -> sentenceBuilder.appendFieldValue(event.location, event.chain)
-                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.chain)
+                when (event.type) {
+                    Method -> sentenceBuilder.appendMethodValue(event.location, event.name, event.path)
+                    Field -> sentenceBuilder.appendFieldValue(event.location, event.name, event.path)
+                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.name, event.path)
                 }
 
                 InChainedCallExpression(currentState)
             }
             on<FixturesExpression> { currentState, event ->
-                sentenceBuilder.appendFixturesValue(event.location, event.name)
+                sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
             on<MethodName> { currentState, event ->
@@ -280,7 +280,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 currentState
             }
             on<Method> { currentState, event ->
-                sentenceBuilder.appendMethodValue(event.location, event.name)
+                sentenceBuilder.appendMethodValue(event.location, event.name, "")
                 currentState
             }
             on<EnterExpression> { currentState, event ->

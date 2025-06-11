@@ -20,38 +20,37 @@ class SentenceTokenFactory(
     private val highlightedValues: Set<NamedValue>
 ) {
 
-    private val regex = """^([a-zA-Z_][a-zA-Z0-9_]*)(?:\(\))?(?:\.(.+))?$""".toRegex()
-
     fun fixturesValueTokenFrom(token: SentenceToken) =
-        SentenceToken(renderers.renderValue(fixturesAccessor.valueOf(token.value)), setOf(FixturesValue))
+        token.value.split(":").let {(name, path) ->
+            SentenceToken(renderers.renderValue(fixturesAccessor.valueOf(name, path)), setOf(FixturesValue))
+        }
 
     fun fieldValueTokenFrom(token: SentenceToken): SentenceToken =
-        regex.matchEntire(token.value)?.let { match ->
-            properties[match.groupValues[1]]?.let { pd ->
+        token.value.split(":").let { (name, path) ->
+            properties[name]?.let { pd ->
                 if (pd is ResolveHolderElementDescriptor) {
-                    renderers.renderValue(pd.resolveValue(testInstance, token.value))
+                    renderers.renderValue(pd.resolveValue(testInstance, "$name.$path"))
                 } else {
-                    renderers.renderValue(pd.resolveValue(testInstance, match.groupValues[2]))
+                    renderers.renderValue(pd.resolveValue(testInstance, path))
                 }.asSentenceToken(FieldValue, pd.isHighlight)
             }
-        } ?: throw KensaException("Token with type FieldValue did not refer to an actual field")
+        } ?: throw KensaException("Token [${token.value}] with type FieldValue did not refer to an actual field")
 
     fun methodValueTokenFrom(token: SentenceToken): SentenceToken =
-        regex.matchEntire(token.value)?.let { match ->
-            methods[match.groupValues[1]]?.let { md ->
-                renderers.renderValue(md.resolveValue(testInstance, match.groupValues[2]))
+        token.value.split(":").let { (name, path) ->
+            methods[name]?.let { md ->
+                renderers.renderValue(md.resolveValue(testInstance, path))
                     .asSentenceToken(MethodValue, md.isHighlight)
             }
-        } ?: throw KensaException("Token with type MethodValue did not refer to an actual method")
+        } ?: throw KensaException("Token [${token.value}] with type MethodValue did not refer to an actual method")
 
     fun parameterValueTokenFrom(token: SentenceToken): SentenceToken =
-        regex.matchEntire(token.value)?.let { match ->
-            parameters[match.groupValues[1]]?.let { pd ->
-                renderers.renderValue(pd.resolveValue(arguments, match.groupValues[2]))
+        token.value.split(":").let { (name, path) ->
+            parameters[name]?.let { pd ->
+                renderers.renderValue(pd.resolveValue(arguments, path))
                     .asSentenceToken(ParameterValue, pd.isHighlight)
             }
-
-        } ?: throw KensaException("Token with type ParameterValue did not refer to an actual parameter")
+        } ?: throw KensaException("Token [${token.value}] with type ParameterValue did not refer to an actual parameter")
 
     private fun String.asSentenceToken(type: TokenType, shouldHighlight: Boolean) =
         SentenceToken(this, buildSet {

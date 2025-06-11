@@ -44,7 +44,7 @@ internal class JavaMethodParserTest {
             listOf(
                 aWordOf("do"),
                 aWordOf("something"),
-                aFieldValueOf("scenario.foo()")
+                aFieldValueOf("scenario:foo()")
             )
         )
 
@@ -249,7 +249,7 @@ internal class JavaMethodParserTest {
                 listOf(
                     aWordOf("assert"),
                     aWordOf("that"),
-                    aParameterValueOf("second"),
+                    aParameterValueOf("second:"),
                     aWordOf("is"),
                     aWordOf("equal"),
                     aWordOf("to"),

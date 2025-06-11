@@ -59,24 +59,24 @@ class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictio
         append(value, Operator)
     }
 
-    fun appendFixturesValue(location: Location, value: String) {
+    fun appendFixturesValue(location: Location, name: String, path: String) {
         checkLineAndIndent(location)
-        tokens.add(SentenceToken(value, tokenTypes = setOf(FixturesValue)))
+        tokens.add(SentenceToken("$name:$path", tokenTypes = setOf(FixturesValue)))
     }
 
-    fun appendMethodValue(location: Location, value: String) {
+    fun appendMethodValue(location: Location, name: String, path: String) {
         checkLineAndIndent(location)
-        tokens.add(SentenceToken(value, tokenTypes = setOf(MethodValue)))
+        tokens.add(SentenceToken("$name:$path", tokenTypes = setOf(MethodValue)))
     }
 
-    fun appendFieldValue(location: Location, value: String) {
+    fun appendFieldValue(location: Location, name: String, path: String) {
         checkLineAndIndent(location)
-        tokens.add(SentenceToken(value, tokenTypes = setOf(FieldValue)))
+        tokens.add(SentenceToken("$name:$path", tokenTypes = setOf(FieldValue)))
     }
 
-    fun appendParameterValue(location: Location, value: String) {
+    fun appendParameterValue(location: Location, name: String, path: String) {
         checkLineAndIndent(location)
-        tokens.add(SentenceToken(value, tokenTypes = setOf(ParameterValue)))
+        tokens.add(SentenceToken("$name:$path", tokenTypes = setOf(ParameterValue)))
     }
 
     fun appendIdentifier(location: Location, value: String, emphasisDescriptor: EmphasisDescriptor = EmphasisDescriptor.Default) {

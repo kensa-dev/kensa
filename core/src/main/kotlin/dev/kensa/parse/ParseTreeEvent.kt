@@ -29,9 +29,8 @@ sealed class LocatedEvent(val location: Location) : Event() {
     class EnterMethodInvocation(location: Location) : LocatedEvent(location)
     class EnterExpression(location: Location) : LocatedEvent(location)
 
-    class ScenarioExpression(location: Location, val name: String, val call: String) : LocatedEvent(location)
-    class FixturesExpression(location: Location, val name: String) : LocatedEvent(location)
-    class ChainedCallExpression(location: Location, val type: Type, val chain: String) : LocatedEvent(location) {
+    class FixturesExpression(location: Location, val name: String, val path: String) : LocatedEvent(location)
+    class ChainedCallExpression(location: Location, val type: Type, val name: String, val path: String) : LocatedEvent(location) {
         enum class Type {
             Method, Field, Parameter
         }

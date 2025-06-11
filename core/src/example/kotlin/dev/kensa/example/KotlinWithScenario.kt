@@ -22,14 +22,21 @@ class KotlinWithScenario {
     val myScenario = MyScenario("foopy")
 
     @RenderedValue
+    fun myScenarioFun() = MyScenario("foopy")
+
+    @RenderedValue
     private val myHolder = MyHolder()
 
     fun testWithScenarioHolder() = test {
         actionWith(myScenario.value)
     }
 
-    fun testWithScenario() {
+    fun testWithScenarioField() {
         actionWith(myScenario.value)
+    }
+
+    fun testWithScenarioFunction() {
+        actionWith(myScenarioFun().value)
     }
 
     fun testWithInfixScenario() {
