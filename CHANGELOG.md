@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.8
+- Chained calls after Fixture expressions are resolved
+
 ### v0.5.7
 - Make TestContextFixtures use a getter
 
