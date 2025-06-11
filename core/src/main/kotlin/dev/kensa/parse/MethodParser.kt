@@ -22,10 +22,10 @@ class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = empty
 
     private fun matchingDeclarationFor(method: Method, toSimpleTypeName: (Class<*>) -> String) = { dc: MethodDeclarationContext ->
         method.normalisedPlatformName == dc.name &&
-                // Only match on parameter simple type name - saves having to go looking in the imports
-                dc.parameterNamesAndTypes.map {
-                    it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
-                } == method.parameterTypes.map(toSimpleTypeName)
+            // Only match on parameter simple type name - saves having to go looking in the imports
+            dc.parameterNamesAndTypes.map {
+                it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
+            } == method.parameterTypes.map(toSimpleTypeName)
     }
 }
 
@@ -56,10 +56,17 @@ interface MethodParser : ParserCache, ParserDelegate {
             val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methodDescriptors))
             val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methodDescriptors, testMethodParameters.descriptors, nestedSentences, emphasisedMethods))
 
+            // For debugging intermittent Exception on
+            parameterCache[method] ?: apply {
+                println(method)
+                println("///")
+                println(parameterCache.entries)
+            }
+
             ParsedMethod(
                 indexInSource,
                 method.normalisedPlatformName,
-                parameterCache[method]!!,
+                parameterCache.getValue(method),
                 testMethodSentences,
                 nestedSentences,
                 properties,
