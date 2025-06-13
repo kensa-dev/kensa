@@ -44,20 +44,18 @@ class Fixtures {
             keyToFixture[fixture.key] = fixture
             keyToValue[fixture.key] = value
 
-            clearDependentFixtures(fixture)
+            findDependentFixturesOf(fixture)
+                .map { it.key }
+                .forEach { keyToValue.remove(it) }
         }
     }
 
-    private fun clearDependentFixtures(fixture: Fixture<*>) {
-        keyToFixture.filterValues { it is SecondaryFixture<*, *> && it.parent == fixture }
-            .map {
-                clearDependentFixtures(it.value)
-                it.key
+    fun findDependentFixturesOf(baseFixture: Fixture<*>): List<Fixture<*>> {
+        val directDependencies = keyToFixture.values.filter {
+            it is SecondaryFixture<*> && it.isDependentOf(baseFixture)
+        }
 
-            }
-            .forEach { secondaryKey ->
-                keyToValue.remove(secondaryKey)
-            }
+        return directDependencies + directDependencies.flatMap { findDependentFixturesOf(it) }
     }
 
     private fun <T> createFixtureValue(fixture: Fixture<T>): T = fixture.createValue(this)

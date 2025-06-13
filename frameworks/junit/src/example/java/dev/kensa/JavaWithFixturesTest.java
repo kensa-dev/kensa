@@ -40,9 +40,7 @@ public class JavaWithFixturesTest implements KensaTest, WithHamcrest {
     }
 
     private GivensBuilderWithFixtures somePrerequisites() {
-        return (givens, fixtures) -> {
-            givens.put("foo", fixtures(STRING_FIXTURE));
-        };
+        return (givens, fixtures) -> givens.put("foo", fixtures(STRING_FIXTURE));
     }
 
     private StateExtractor<String> theStringFixture() {
@@ -64,7 +62,7 @@ class JavaTestFixtures implements FixtureContainer {
     private static final List<String> CHILD_STRING_FIXTURES = new ArrayList<>(List.of("child1", "childe2"));
 
     public static final PrimaryFixture<String> STRING_FIXTURE = createFixture("JavaStringFixture",STRING_FIXTURES::removeFirst);
-    public static final SecondaryFixture<String, String> CHILD_STRING_FIXTURE = createFixture("JavaChildStringFixture", STRING_FIXTURE, parent -> parent + "_" + CHILD_STRING_FIXTURES.removeFirst());
+    public static final SecondaryFixture<String> CHILD_STRING_FIXTURE = createFixture("JavaChildStringFixture", STRING_FIXTURE, parent -> parent + "_" + CHILD_STRING_FIXTURES.removeFirst());
 }
 
 class MoreJavaTestFixtures implements FixtureContainer {

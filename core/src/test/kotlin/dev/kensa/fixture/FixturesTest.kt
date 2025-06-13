@@ -67,7 +67,7 @@ class FixturesTest {
     }
 
     @Test
-    fun `should update child fixture when primary fixture is updated`() {
+    fun `should update child fixture when primary fixture is updated - single parent fixture`() {
         val initialDate = LocalDate.of(2023, 1, 1)
         val dateFixture = fixture<LocalDate>("date", { initialDate })
         val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture, { date -> date.dayOfWeek })
@@ -81,6 +81,26 @@ class FixturesTest {
 
         val updatedDay: DayOfWeek = fixtures[dayFixture]
         updatedDay shouldBe MONDAY
+    }
+
+    @Test
+    fun `should update child fixture when primary fixture is updated - double parent fixture`() {
+        val string1 = "String 1"
+        val string2 = "String 2"
+
+        val stringFixture1 = fixture<String>("string1", { string1 })
+        val stringFixture2 = fixture<String>("string2", { string2 })
+        val concatFixture = fixture("concat", stringFixture1, stringFixture2, { s1, s2 -> "$s1::$s2" })
+
+        val fixtures = Fixtures()
+
+        val initialConcatValue = fixtures[concatFixture]
+        initialConcatValue shouldBe "String 1::String 2"
+
+        fixtures[stringFixture2] = "String 3"
+
+        val updatedConcatValue = fixtures[concatFixture]
+        updatedConcatValue shouldBe "String 1::String 3"
     }
 
     @Test
@@ -99,4 +119,6 @@ class FixturesTest {
         val dayValue1 = fixtures[dayPlusOneFixture]
         dayValue1 shouldBe DayOfWeek.TUESDAY
     }
+
+
 }

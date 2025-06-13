@@ -33,7 +33,7 @@ class FixtureRegistryTest {
 
         lookupFixture<DayOfWeek>("TestDayFixture").shouldNotBeNull().should {
             it.key shouldBe "TestDay"
-            it.shouldBeInstanceOf<SecondaryFixture<DayOfWeek, LocalDate>>()
+            it.shouldBeInstanceOf<SecondaryFixture<DayOfWeek>>()
         }
 
         lookupFixture<Duration>("TestDurationFixture").shouldNotBeNull().should {

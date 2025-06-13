@@ -5,8 +5,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
 /**
- * A registry for fixture keys.
- * Stores fixture keys by their variable names and allows looking them up.
+ * A registry for fixtures.
+ * Stores fixtures by their variable names and allows looking them up.
  */
 object FixtureRegistry {
     private val lock = Any()
@@ -21,10 +21,10 @@ object FixtureRegistry {
     }
 
     /**
-     * Looks up a fixture key by its variable name.
+     * Looks up a fixture by its variable name.
      *
-     * @param name The variable name of the fixture key
-     * @return The fixture key, or null if not found
+     * @param name The variable name of the fixture
+     * @return The fixture, or null if not found
      * @throws IllegalArgumentException if no fixture with the given variable name is registered
      */
     @Suppress("UNCHECKED_CAST")
