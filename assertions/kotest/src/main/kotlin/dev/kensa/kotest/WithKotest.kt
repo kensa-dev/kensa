@@ -22,6 +22,8 @@ interface WithKotest {
         }
     }
 
+    fun <T> and(spec: ThenSpec<T>): Unit = then(spec)
+
     fun <T> then(extractor: StateExtractor<T>, block: T.() -> Unit) {
         KotestThen.then(testContext(), extractor, block)
     }
