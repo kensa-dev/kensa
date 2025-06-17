@@ -1,17 +1,13 @@
 package dev.kensa.junit
 
-import dev.kensa.ActionUnderTest
-import dev.kensa.ActionUnderTestWithFixtures
-import dev.kensa.GivensBuilder
-import dev.kensa.GivensBuilderWithFixtures
-import dev.kensa.SetupSteps
+import dev.kensa.*
 import dev.kensa.context.TestContextHolder.testContext
 import dev.kensa.fixture.Fixture
 import dev.kensa.fixture.Fixtures
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(KensaExtension::class)
-interface KensaTest {
+interface KensaTest : WithFixtures {
 
     fun disableInteractionTestGroup() {
         testContext().disableInteractionTestGroup()
@@ -53,9 +49,7 @@ interface KensaTest {
         testContext().whenever(action)
     }
 
-    val fixtures: Fixtures get() = testContext().fixtures
+    override val fixtures: Fixtures get() = testContext().fixtures
 
     operator fun <T> get(key: Fixture<T>): T = fixtures[key]
-
-    fun <T> fixtures(key: Fixture<T>): T = testContext().fixture(key)
 }

@@ -17,7 +17,7 @@ interface WithKotest {
         with(spec) {
             KotestThen.then(testContext(), extractor) {
                 invokeMatcher(this, matcher)
-                onMatch(this)
+                testContext().apply { onMatch(this@then) }
             }
         }
     }
@@ -48,7 +48,7 @@ interface WithKotest {
             with(spec) {
                 KotestThen.thenEventually(duration, testContext(), extractor) {
                     invokeMatcher(this, matcher)
-                    onMatch(this)
+                    testContext().apply { onMatch(this@thenEventually) }
                 }
             }
         }
@@ -91,7 +91,7 @@ interface WithKotest {
             KotestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, block)
         }
     }
-    
+
     fun <T> then(extractor: StateExtractorWithFixtures<T>, block: T.() -> Unit) {
         KotestThen.then(testContext(), extractor, block)
     }
@@ -116,7 +116,7 @@ interface WithKotest {
             with(spec) {
                 KotestThen.thenEventually(duration, testContext(), extractor) {
                     invokeMatcher(this, matcher)
-                    onMatch(this, testContext().fixtures)
+                    testContext().apply { onMatch(this@thenEventually) }
                 }
             }
         }
