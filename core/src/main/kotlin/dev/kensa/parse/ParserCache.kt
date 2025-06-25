@@ -6,7 +6,7 @@ import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
 interface ParserCache {
-    val parsedMethodCache: MutableMap<Method, ParsedMethod>
+    val parsedMethodCache: ConcurrentHashMap<Method, ParsedMethod>
     val declarationCache: MutableMap<Class<*>, MethodDeclarations>
     val propertyCache: MutableMap<Class<*>, Map<String, ElementDescriptor>>
     val parameterCache: MutableMap<Method, MethodParameters>
@@ -17,7 +17,7 @@ interface ParserCache {
 }
 
 class RealParserCache : ParserCache {
-    override val parsedMethodCache: MutableMap<Method, ParsedMethod> = ConcurrentHashMap()
+    override val parsedMethodCache: ConcurrentHashMap<Method, ParsedMethod> = ConcurrentHashMap()
     override val declarationCache: MutableMap<Class<*>, MethodDeclarations> = HashMap()
     override val propertyCache: MutableMap<Class<*>, Map<String, ElementDescriptor>> = HashMap()
     override val parameterCache: MutableMap<Method, MethodParameters> = HashMap()

@@ -35,7 +35,7 @@ interface MethodParser : ParserCache, ParserDelegate {
     val toSimpleTypeName: (Class<*>) -> String
 
     fun parse(method: Method): ParsedMethod =
-        parsedMethodCache.getOrPut(method) {
+        parsedMethodCache.computeIfAbsent(method) {
             val testClass = method.declaringClass
             val actualDeclaringClass = method.actualDeclaringClass()
             val classToParse = testClass.takeIf { it == actualDeclaringClass } ?: actualDeclaringClass
@@ -56,17 +56,10 @@ interface MethodParser : ParserCache, ParserDelegate {
             val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methodDescriptors))
             val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methodDescriptors, testMethodParameters.descriptors, nestedSentences, emphasisedMethods))
 
-            // For debugging intermittent Exception on
-            parameterCache[method] ?: apply {
-                println(method)
-                println("///")
-                println(parameterCache.entries)
-            }
-
             ParsedMethod(
                 indexInSource,
                 method.normalisedPlatformName,
-                parameterCache.getValue(method),
+                testMethodParameters,
                 testMethodSentences,
                 nestedSentences,
                 properties,
