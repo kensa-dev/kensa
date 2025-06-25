@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.*
-import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource
 import org.junit.jupiter.params.ParameterizedTest
+import java.io.Closeable
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.reflect.KClass
@@ -191,13 +191,13 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
     }
 }
 
-class CloseableTestContainer(private val resultWriter: ResultWriter, val container: TestContainer) : CloseableResource {
+class CloseableTestContainer(private val resultWriter: ResultWriter, val container: TestContainer) : Closeable {
     override fun close() {
         resultWriter.writeTest(container)
     }
 }
 
-class CloseableKensaContext(private val resultWriter: ResultWriter, val context: KensaContext) : CloseableResource {
+class CloseableKensaContext(private val resultWriter: ResultWriter, val context: KensaContext) : Closeable {
     override fun close() {
         resultWriter.write(context.testContainers)
     }

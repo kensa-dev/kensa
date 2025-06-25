@@ -25,6 +25,8 @@ dependencies {
     implementation(libs.plantuml)
     implementation(libs.pebble)
 
+    testImplementation(platform(libs.junitBom))
+    testImplementation(libs.junitPlatformLauncher)
     testImplementation(libs.junitJupiterApi)
     testImplementation(libs.junitJupiterEngine)
     testImplementation(libs.junitJupiterParams)

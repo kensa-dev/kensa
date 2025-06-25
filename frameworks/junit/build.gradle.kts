@@ -18,6 +18,7 @@ dependencies {
     api(project(":core"))
     implementation(libs.kotlinReflect)
 
+    implementation(platform(libs.junitBom))
     implementation(libs.junitJupiterParams)
     implementation(libs.junitJupiterApi)
     implementation(libs.junitJupiterEngine)
@@ -28,6 +29,7 @@ dependencies {
     testImplementation(libs.kotestAssertionsJson)
     testImplementation(libs.hamkrest)
     testImplementation(sourceSets["example"].output)
+    testImplementation(platform(libs.junitBom))
     testImplementation(libs.junitPlatformTestKit)
     testImplementation(libs.junitPlatformEngine)
     testImplementation(libs.jsoup)
@@ -41,6 +43,7 @@ dependencies {
     "exampleImplementation"(project(":assertions-hamcrest"))
     "exampleImplementation"(project(":assertions-hamkrest"))
     "exampleImplementation"(project(":core"))
+    "exampleImplementation"(platform(libs.junitBom))
     "exampleImplementation"(libs.junitJupiterApi)
     "exampleImplementation"(libs.junitJupiterParams)
 
