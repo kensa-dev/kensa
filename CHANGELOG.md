@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.11
+- Version bumps
+- Colour fix for disabled tests
+- Intermittent test fail fix due to concurrency
+
 ### v0.5.10
 - WithFixtures as receiver for ThenSpec
 
