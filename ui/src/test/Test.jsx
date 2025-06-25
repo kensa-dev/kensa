@@ -8,7 +8,7 @@ const isDisabled = (test) => ['Disabled', 'Not Executed'].includes(test.state)
 
 const TestContent = ({test}) =>
     (isDisabled(test)) ?
-        <div className="message-body has-text-white">
+        <div className="message-body has-text-dark-grey">
             Test was not executed.
         </div>
         :
