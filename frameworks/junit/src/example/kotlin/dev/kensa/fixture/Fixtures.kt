@@ -3,7 +3,9 @@ package dev.kensa.fixture
 import dev.kensa.RenderedValue
 
 class MyScenarioHolder(@field:RenderedValue val scenario: MyScenario)
-class MyScenario(val stringValue: String = "aStringValue")
+class MyScenario(val stringValue: String = "aStringValue") {
+    override fun toString(): String = "withAScenarioContaining $stringValue"
+}
 
 private val chars = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 

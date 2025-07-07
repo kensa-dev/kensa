@@ -4,6 +4,8 @@ import dev.kensa.Configuration
 import dev.kensa.KensaConfigurationProvider
 import dev.kensa.KensaContext
 import dev.kensa.StaticKensaConfigurationProvider
+import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.context.NestedInvocationContext
 import dev.kensa.context.TestContainer
 import dev.kensa.context.TestContainerFactory
 import dev.kensa.context.TestContext
@@ -48,6 +50,9 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
             TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy, context.fixtures).also { it ->
                 TestContextHolder.bindToCurrentThread(it)
                 kensaStore.put(TEST_CONTEXT_KEY, it)
+            }
+            NestedInvocationContext().also {
+                NestedInvocationContextHolder.bindToCurrentThread(it)
             }
         }
     }
@@ -99,6 +104,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
             }
         } finally {
             TestContextHolder.clearFromThread()
+            NestedInvocationContextHolder.clearFromThread()
         }
     }
 

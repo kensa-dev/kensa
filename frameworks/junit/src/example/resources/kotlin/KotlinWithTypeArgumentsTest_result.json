@@ -24,28 +24,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a literal of",
-                "tokens": [
-                  []
-                ]
+                "value": "a literal of"
               },
               {
                 "types": [
                   "tk-sl"
                 ],
-                "value": "aStringValue",
-                "tokens": [
-                  []
-                ]
+                "value": "aStringValue"
               }
             ]
           ],

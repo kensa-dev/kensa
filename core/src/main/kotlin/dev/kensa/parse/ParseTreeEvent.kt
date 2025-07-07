@@ -1,6 +1,6 @@
 package dev.kensa.parse
 
-import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.TemplateSentence
 
 data class Location(val lineNumber: Int, val linePosition: Int)
 
@@ -21,6 +21,7 @@ sealed class Event {
     object Terminal : Event()
     object EnterTypeArguments : Event()
     object ExitTypeArguments : Event()
+    object ExitNestedWithArguments : Event()
 }
 
 sealed class LocatedEvent(val location: Location) : Event() {
@@ -35,14 +36,15 @@ sealed class LocatedEvent(val location: Location) : Event() {
             Method, Field, Parameter
         }
     }
-    class MethodName(location: Location, val name: String, val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) : LocatedEvent(location)
+
+    class Identifier(location: Location, val name: String, val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) : LocatedEvent(location)
 
     class Operator(location: Location, val text: String) : LocatedEvent(location)
     class Parameter(location: Location, val name: String) : LocatedEvent(location)
     class Method(location: Location, val name: String) : LocatedEvent(location)
     class Field(location: Location, val name: String) : LocatedEvent(location)
-    class Nested(location: Location, val name: String, val sentences: List<Sentence>) : LocatedEvent(location)
-    class Identifier(location: Location, val name: String, val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) : LocatedEvent(location)
+    class Nested(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
+    class NestedWithArguments(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
 
     class NumberLiteral(location: Location, val value: String) : LocatedEvent(location)
     class BooleanLiteral(location: Location, val value: String) : LocatedEvent(location)

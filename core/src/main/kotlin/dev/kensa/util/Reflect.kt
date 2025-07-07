@@ -36,7 +36,7 @@ fun <T> ReflectPredicate<T>.and(other: ReflectPredicate<T>): ReflectPredicate<T>
 
 private val allTheMethods: ReflectPredicate<Method> = { true }
 private fun notDeclaredIn(clazz: Class<*>): ReflectPredicate<Method> = { it.declaringClass != clazz }
-private fun named(name: String): ReflectPredicate<Method> = { it.name == name }
+private fun named(name: String): ReflectPredicate<Method> = { it.name == name || it.kotlinFunction?.name == name}
 private fun noParameters(): ReflectPredicate<Method> = { it.parameters.isEmpty() }
 private val allTheFields: ReflectPredicate<Field> = { true }
 private fun withFieldName(name: String): ReflectPredicate<Field> = { it.name == name }
@@ -70,7 +70,7 @@ internal fun <T> Any.invokeMethodOrNull(method: Method): T? = method.run {
     isAccessible = true
     try {
         invoke(this@invokeMethodOrNull) as T?
-    }catch(e: Exception) {
+    } catch (e: Exception) {
         err.println("Unable to invoke method [${method.name}] on [${this@invokeMethodOrNull::class.simpleName}"); e.printStackTrace(err)
         null
     }

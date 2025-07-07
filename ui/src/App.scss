@@ -10,7 +10,7 @@
 
 .kensa-highlight {
   background-color: yellow;
-  color: var(bulma-grey-dark)
+  color: var(--bulma-grey-dark)
 }
 
 .failure-message {
@@ -89,6 +89,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 85%;
+}
+
+div.test-passed {
+  background-color: $success;
+  border-color: $success;
 }
 
 .message.test-passed > .message-header {
@@ -178,7 +183,7 @@
   font-style: normal;
   font-weight: 400;
   text-rendering: optimizeLegibility;
-  color: var(bulma-grey);
+  color: var(--bulma-grey);
 }
 
 .buttons .button.is-selected {
@@ -227,7 +232,7 @@ pre.lowlight {
 .test-information {
   @extend .is-info;
   padding: 10px;
-  background-color: var(bulma-info-light);
-  color: var(bulma-info-dark);
+  background-color: var(--bulma-info-light);
+  color: var(--bulma-info-dark);
   margin-bottom: 5px;
 }

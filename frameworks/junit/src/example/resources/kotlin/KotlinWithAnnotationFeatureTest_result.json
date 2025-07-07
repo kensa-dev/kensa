@@ -26,19 +26,13 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some prerequisites",
-                "tokens": [
-                  []
-                ]
+                "value": "some prerequisites"
               }
             ],
             [
@@ -46,28 +40,19 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "When",
-                "tokens": [
-                  []
-                ]
+                "value": "When"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some action",
-                "tokens": [
-                  []
-                ]
+                "value": "some action"
               }
             ],
             [
@@ -75,37 +60,25 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the extracted value equal to",
-                "tokens": [
-                  []
-                ]
+                "value": "the extracted value equal to"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "aStringValue",
-                "tokens": [
-                  []
-                ]
+                "value": "aStringValue"
               }
             ]
           ],
@@ -146,19 +119,13 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some prerequisites",
-                "tokens": [
-                  []
-                ]
+                "value": "some prerequisites"
               }
             ],
             [
@@ -166,38 +133,26 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "When",
-                "tokens": [
-                  []
-                ]
+                "value": "When"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some action with",
-                "tokens": [
-                  []
-                ]
+                "value": "some action with"
               },
               {
                 "types": [
                   "tk-fv",
                   "tk-hl"
                 ],
-                "value": "givensViaHighlight",
-                "tokens": [
-                  []
-                ]
+                "value": "givensViaHighlight"
               }
             ],
             [
@@ -205,37 +160,25 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the extracted value equal to",
-                "tokens": [
-                  []
-                ]
+                "value": "the extracted value equal to"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "aStringValue",
-                "tokens": [
-                  []
-                ]
+                "value": "aStringValue"
               }
             ]
           ],
@@ -276,28 +219,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some prerequisites with",
-                "tokens": [
-                  []
-                ]
+                "value": "some prerequisites with"
               },
               {
                 "types": [
                   "tk-sl"
                 ],
-                "value": "noHighlight",
-                "tokens": [
-                  []
-                ]
+                "value": "noHighlight"
               }
             ],
             [
@@ -305,38 +239,26 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "When",
-                "tokens": [
-                  []
-                ]
+                "value": "When"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some action with",
-                "tokens": [
-                  []
-                ]
+                "value": "some action with"
               },
               {
                 "types": [
                   "tk-fv",
                   "tk-hl"
                 ],
-                "value": "givensViaHighlight",
-                "tokens": [
-                  []
-                ]
+                "value": "givensViaHighlight"
               }
             ],
             [
@@ -344,37 +266,25 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the extracted value equal to",
-                "tokens": [
-                  []
-                ]
+                "value": "the extracted value equal to"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "aStringValue",
-                "tokens": [
-                  []
-                ]
+                "value": "aStringValue"
               }
             ]
           ],
@@ -415,10 +325,7 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "When",
-                "tokens": [
-                  []
-                ]
+                "value": "When"
               },
               {
                 "types": [
@@ -429,10 +336,7 @@
                   "is-uppercase",
                   "tk-wd"
                 ],
-                "value": "some action with emphasis",
-                "tokens": [
-                  []
-                ]
+                "value": "some action with emphasis"
               }
             ],
             [
@@ -440,37 +344,25 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the extracted value equal to",
-                "tokens": [
-                  []
-                ]
+                "value": "the extracted value equal to"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "aStringValue",
-                "tokens": [
-                  []
-                ]
+                "value": "aStringValue"
               }
             ]
           ],
@@ -508,28 +400,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with",
-                "tokens": [
-                  []
-                ]
+                "value": "some something with"
               },
               {
                 "types": [
                   "tk-mv"
                 ],
-                "value": "myValue",
-                "tokens": [
-                  []
-                ]
+                "value": "myValue"
               }
             ]
           ],
@@ -567,28 +450,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with",
-                "tokens": [
-                  []
-                ]
+                "value": "some something with"
               },
               {
                 "types": [
                   "tk-mv"
                 ],
-                "value": "myValue",
-                "tokens": [
-                  []
-                ]
+                "value": "myValue"
               }
             ]
           ],
@@ -626,28 +500,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with",
-                "tokens": [
-                  []
-                ]
+                "value": "some something with"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "myFieldThing",
-                "tokens": [
-                  []
-                ]
+                "value": "myFieldThing"
               }
             ]
           ],
@@ -685,28 +550,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with",
-                "tokens": [
-                  []
-                ]
+                "value": "some something with"
               },
               {
                 "types": [
                   "tk-pv"
                 ],
-                "value": "foo",
-                "tokens": [
-                  []
-                ]
+                "value": "foo"
               }
             ]
           ],
@@ -737,28 +593,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with",
-                "tokens": [
-                  []
-                ]
+                "value": "some something with"
               },
               {
                 "types": [
                   "tk-pv"
                 ],
-                "value": "bar",
-                "tokens": [
-                  []
-                ]
+                "value": "bar"
               }
             ]
           ],

@@ -3,9 +3,8 @@ package dev.kensa.parse
 import dev.kensa.Configuration
 import dev.kensa.ElementDescriptor
 import dev.kensa.KensaException
-import dev.kensa.sentence.Sentence
-import dev.kensa.sentence.SentenceToken
-import dev.kensa.sentence.TokenType.*
+import dev.kensa.sentence.RenderedSentence
+import dev.kensa.sentence.TemplateSentence
 import dev.kensa.state.TestInvocationContext
 import dev.kensa.util.NamedValue
 
@@ -29,7 +28,7 @@ class TestInvocationParser(private val configuration: Configuration) {
                 .plus(highlightedPropertyValues(parsedMethod.properties, context.instance))
                 .plus(highlightedParameterValues)
 
-            val tokenFactory = SentenceTokenFactory(
+            val tokenFactory = TokenRenderer(
                 context.instance,
                 context.arguments,
                 configuration.renderers,
@@ -40,7 +39,7 @@ class TestInvocationParser(private val configuration: Configuration) {
                 highlightedValues
             )
 
-            val sentences = regenerateSentences(parsedMethod.sentences, tokenFactory)
+            val sentences = renderSentences(parsedMethod.sentences, tokenFactory)
 
 //                sentences.forEach { println(it.squashedTokens) }
 
@@ -51,20 +50,8 @@ class TestInvocationParser(private val configuration: Configuration) {
             throw KensaException("Unable to parse test invocation ", e)
         }
 
-    private fun regenerateSentences(source: List<Sentence>, tokenFactory: SentenceTokenFactory): List<Sentence> =
-        source.map { sentence -> Sentence(regenerateTokens(sentence.tokens, tokenFactory)) }
-
-    private fun regenerateTokens(tokens: List<SentenceToken>, tokenFactory: SentenceTokenFactory): List<SentenceToken> =
-        tokens.map { token ->
-            when {
-                token.hasType(FieldValue) -> tokenFactory.fieldValueTokenFrom(token)
-                token.hasType(MethodValue) -> tokenFactory.methodValueTokenFrom(token)
-                token.hasType(ParameterValue) -> tokenFactory.parameterValueTokenFrom(token)
-                token.hasType(FixturesValue) -> tokenFactory.fixturesValueTokenFrom(token)
-                token.hasType(Expandable) -> SentenceToken(token.value, token.tokenTypes, nestedTokens = token.nestedTokens.map { subTokens -> regenerateTokens(subTokens, tokenFactory) })
-                else -> token
-            }
-        }
+    private fun renderSentences(source: List<TemplateSentence>, renderer: TokenRenderer): List<RenderedSentence> =
+        source.map { sentence -> RenderedSentence(renderer.render(sentence.tokens)) }
 
     private fun highlightedPropertyValues(fields: Map<String, ElementDescriptor>, testInstance: Any) = fields.values
         .filter(ElementDescriptor::isHighlight)

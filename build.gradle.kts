@@ -96,9 +96,9 @@ subprojects {
                             .appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
                     }
                     from(components["java"])
-
                     artifact(tasks["sourcesJar"])
                     artifact(tasks["javadocJar"])
+                    suppressAllPomMetadataWarnings()
                 }
             }
         }

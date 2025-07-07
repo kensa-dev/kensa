@@ -2,7 +2,7 @@ package dev.kensa.state
 
 import dev.kensa.parse.ParsedInvocation
 import dev.kensa.render.diagram.SequenceDiagram
-import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.RenderedSentence
 import dev.kensa.state.TestState.Failed
 import dev.kensa.state.TestState.Passed
 import dev.kensa.util.KensaMap
@@ -18,7 +18,7 @@ class TestInvocation(
     interactions: CapturedInteractions,
     givens: Givens
 ) {
-    val sentences: List<Sentence> = parsedInvocation.sentences
+    val sentences: List<RenderedSentence> = parsedInvocation.sentences
     val parameters: Collection<NamedValue> = parsedInvocation.namedParameterValues
     val parameterizedTestDescription: String? = parsedInvocation.parameterizedTestDescription
     val highlightedValues: Collection<NamedValue> = parsedInvocation.highlightedValues

@@ -24,37 +24,25 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "assert that param get",
-                "tokens": [
-                  []
-                ]
+                "value": "assert that param get"
               },
               {
                 "types": [
                   "tk-num"
                 ],
-                "value": "0",
-                "tokens": [
-                  []
-                ]
+                "value": "0"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "has key",
-                "tokens": [
-                  []
-                ]
+                "value": "has key"
               },
               {
                 "types": [
                   "tk-sl"
                 ],
-                "value": "a",
-                "tokens": [
-                  []
-                ]
+                "value": "a"
               }
             ]
           ],

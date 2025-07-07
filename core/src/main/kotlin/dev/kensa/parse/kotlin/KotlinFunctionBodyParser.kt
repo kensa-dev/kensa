@@ -109,8 +109,17 @@ class KotlinFunctionBodyParser(
 
     override fun enterSimpleIdentifier(ctx: KotlinParser.SimpleIdentifierContext) =
         with(parseContext) {
-            stateMachine.apply(ctx.asParameter() ?: ctx.asField() ?: ctx.asMethod() ?: ctx.asNested() ?: ctx.asIdentifier())
+            stateMachine.apply(ctx.asParameter() ?: ctx.asField() ?: ctx.asMethod() ?: ctx.asNested()?.let { nested ->
+                if (ctx.hasArguments())
+                    nested.asNestedWithArguments()
+                else
+                    nested
+            } ?: ctx.asIdentifier())
         }
+
+    override fun exitValueArguments(ctx: KotlinParser.ValueArgumentsContext?) {
+        stateMachine.apply(ExitNestedWithArguments)
+    }
 
     override fun enterTypeArguments(ctx: KotlinParser.TypeArgumentsContext) {
         stateMachine.apply(EnterTypeArguments)
@@ -136,5 +145,19 @@ class KotlinFunctionBodyParser(
                 }
             }
         }
+    }
+
+    private fun ParserRuleContext.hasArguments(): Boolean {
+        fun ParserRuleContext.findValueArguments(): Boolean {
+            return children?.any { child ->
+                when (child) {
+                    is KotlinParser.ValueArgumentsContext -> true
+                    is ParserRuleContext -> child.findValueArguments()
+                    else -> false
+                }
+            } ?: false
+        }
+
+        return (parent?.parent as? ParserRuleContext)?.findValueArguments() ?: false
     }
 }

@@ -1,6 +1,6 @@
 package dev.kensa.sentence.scanner
 
-import dev.kensa.sentence.TokenType.Acronym
+import dev.kensa.sentence.TemplateToken.Type.Acronym
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import org.junit.jupiter.api.Test

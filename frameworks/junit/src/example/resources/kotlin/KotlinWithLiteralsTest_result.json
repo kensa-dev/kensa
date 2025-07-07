@@ -24,28 +24,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a literal of",
-                "tokens": [
-                  []
-                ]
+                "value": "a literal of"
               },
               {
                 "types": [
                   "tk-sl"
                 ],
-                "value": "aStringValue",
-                "tokens": [
-                  []
-                ]
+                "value": "aStringValue"
               }
             ],
             [
@@ -53,28 +44,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a literal of",
-                "tokens": [
-                  []
-                ]
+                "value": "a literal of"
               },
               {
                 "types": [
                   "tk-bo"
                 ],
-                "value": "true",
-                "tokens": [
-                  []
-                ]
+                "value": "true"
               }
             ],
             [
@@ -82,28 +64,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a literal of",
-                "tokens": [
-                  []
-                ]
+                "value": "a literal of"
               },
               {
                 "types": [
                   "tk-num"
                 ],
-                "value": "10",
-                "tokens": [
-                  []
-                ]
+                "value": "10"
               }
             ],
             [
@@ -111,28 +84,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a literal of",
-                "tokens": [
-                  []
-                ]
+                "value": "a literal of"
               },
               {
                 "types": [
                   "tk-null"
                 ],
-                "value": "null",
-                "tokens": [
-                  []
-                ]
+                "value": "null"
               }
             ],
             [
@@ -140,28 +104,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a literal of",
-                "tokens": [
-                  []
-                ]
+                "value": "a literal of"
               },
               {
                 "types": [
                   "tk-cl"
                 ],
-                "value": "a",
-                "tokens": [
-                  []
-                ]
+                "value": "a"
               }
             ],
             [
@@ -169,28 +124,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a literal of",
-                "tokens": [
-                  []
-                ]
+                "value": "a literal of"
               },
               {
                 "types": [
                   "tk-tb"
                 ],
-                "value": "                a multiline string",
-                "tokens": [
-                  []
-                ]
+                "value": "                a multiline string"
               }
             ]
           ],

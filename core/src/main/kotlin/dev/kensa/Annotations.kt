@@ -14,7 +14,7 @@ annotation class Notes(val value: String)
 annotation class Emphasise(val textStyles: Array<TextStyle> = [TextStyle.TextWeightNormal], val textColour: Colour = Colour.Default, val backgroundColor: Colour = Colour.Default)
 
 @Retention(RUNTIME)
-@Target(FIELD, VALUE_PARAMETER, PROPERTY_GETTER)
+@Target(FUNCTION, FIELD, VALUE_PARAMETER, PROPERTY_GETTER)
 annotation class Highlight(val value: String = "")
 
 @Retention(RUNTIME)

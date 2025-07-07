@@ -2,18 +2,17 @@ package dev.kensa.parse
 
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.*
-import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.*
 import dev.kensa.parse.State.*
 import dev.kensa.parse.state.Matcher
 import dev.kensa.parse.state.StateMachine
 import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
-import dev.kensa.sentence.Sentence
+import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.SentenceBuilder
 
 class ParserStateMachine(private val createSentenceBuilder: (Location) -> SentenceBuilder) {
 
-    private val _sentences: MutableList<Sentence> = ArrayList()
-    val sentences: List<Sentence>
+    private val _sentences: MutableList<TemplateSentence> = ArrayList()
+    val sentences: List<TemplateSentence>
         get() = _sentences
 
     private lateinit var sentenceBuilder: SentenceBuilder
@@ -70,6 +69,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 add(Matcher.any<Field>())
                 add(Matcher.any<EnterLambda>())
                 add(Matcher.any<ExitLambda>())
+                add(Matcher.any<ExitNestedWithArguments>())
             }
         }
         state<TestBlock> {
@@ -96,11 +96,11 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 InMethodInvocation(currentState)
             }
             on<Operator> { currentState, event ->
-                sentenceBuilder.appendOperator(event.location, event.text)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<Identifier> { currentState, event ->
-                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<FixturesExpression> { currentState, event ->
@@ -108,11 +108,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 InFixturesExpression(currentState)
             }
             on<ChainedCallExpression> { currentState, event ->
-                when (event.type) {
-                    Method -> sentenceBuilder.appendMethodValue(event.location, event.name, event.path)
-                    Field -> sentenceBuilder.appendFieldValue(event.location, event.name, event.path)
-                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.name, event.path)
-                }
+                sentenceBuilder.append(event)
 
                 InChainedCallExpression(currentState)
             }
@@ -131,7 +127,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 InFixturesExpression(currentState)
             }
             ignoreAll<Event> {
-                add(Matcher.any<MethodName>())
+                add(Matcher.any<ExitNestedWithArguments>())
                 add(Matcher.any<Terminal>())
                 add(Matcher.any<Identifier>())
             }
@@ -149,6 +145,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 add(Matcher.any<Identifier>())
                 add(Matcher.any<Parameter>())
                 add(Matcher.any<Field>())
+                add(Matcher.any<ExitNestedWithArguments>())
             }
         }
         state<InLambda> {
@@ -176,75 +173,97 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 currentState.parentState
             }
             on<ChainedCallExpression> { currentState, event ->
-                when (event.type) {
-                    Method -> sentenceBuilder.appendMethodValue(event.location, event.name, event.path)
-                    Field -> sentenceBuilder.appendFieldValue(event.location, event.name, event.path)
-                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.name, event.path)
-                }
-
+                sentenceBuilder.append(event)
                 InChainedCallExpression(currentState)
             }
             on<FixturesExpression> { currentState, event ->
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
-            on<MethodName> { currentState, event ->
-                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+            on<Identifier> { currentState, event ->
+                sentenceBuilder.append(event)
                 currentState
             }
             on<EnterTypeArguments> { currentState, event ->
                 InTypeArguments(currentState)
             }
             on<Parameter> { currentState, event ->
-                sentenceBuilder.appendParameterValue(event.location, event.name, "")
+                sentenceBuilder.append(event)
                 currentState
             }
             on<Field> { currentState, event ->
-                sentenceBuilder.appendFieldValue(event.location, event.name, "")
+                sentenceBuilder.append(event)
                 currentState
             }
             on<Method> { currentState, event ->
-                sentenceBuilder.appendMethodValue(event.location, event.name, "")
+                sentenceBuilder.append(event)
                 currentState
             }
             on<Nested> { currentState, event ->
-                sentenceBuilder.appendNested(event.location, event.name, event.sentences)
+                sentenceBuilder.appendNested(event.location, event.name, emptyList(), event.sentences)
                 currentState
             }
+            on<NestedWithArguments> { currentState, event ->
+                InNestedCallExpression(currentState, event.location, event.name, event.sentences)
+            }
             on<CharacterLiteral> { currentState, event ->
-                sentenceBuilder.appendCharacterLiteral(event.location, event.value)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<NullLiteral> { currentState, event ->
-                sentenceBuilder.appendNullLiteral(event.location)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<BooleanLiteral> { currentState, event ->
-                sentenceBuilder.appendBooleanLiteral(event.location, event.value)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<StringLiteral> { currentState, event ->
-                sentenceBuilder.appendStringLiteral(event.location, event.value)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<MultilineString> { currentState, event ->
-                sentenceBuilder.appendTextBlock(event.value)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<NumberLiteral> { currentState, event ->
-                sentenceBuilder.appendNumberLiteral(event.location, event.value)
-                currentState
-            }
-            on<Identifier> { currentState, event ->
-                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+                sentenceBuilder.append(event)
                 currentState
             }
             on<Operator> { currentState, event ->
-                sentenceBuilder.appendOperator(event.location, event.text)
+                sentenceBuilder.append(event)
                 currentState
             }
             ignoreAll<Event> {
                 add(Matcher.any<Terminal>())
+                add(Matcher.any<ExitNestedWithArguments>())
+            }
+        }
+        state<InNestedCallExpression> {
+            on<StringLiteral> { currentState, event ->
+                currentState.append(event)
+                currentState
+            }
+            on<Identifier> { currentState, event ->
+                currentState.append(event)
+                currentState
+            }
+            on<Operator> { currentState, event ->
+                currentState.append(event)
+                currentState
+            }
+            on<ChainedCallExpression> { currentState, event ->
+                currentState.append(event)
+                InChainedCallExpression(currentState)
+            }
+            on<ExitNestedWithArguments> { currentState, event ->
+                sentenceBuilder.appendNested(currentState.location, currentState.name, currentState.events, currentState.sentences)
+                currentState.parentState
+            }
+            ignoreAll<Event> {
+                add(Matcher.any<Terminal>())
+                add(Matcher.any<EnterExpression>())
+                add(Matcher.any<ExitExpression>())
             }
         }
         state<InTypeArguments> {
@@ -263,11 +282,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 }
             }
             on<ChainedCallExpression> { currentState, event ->
-                when (event.type) {
-                    Method -> sentenceBuilder.appendMethodValue(event.location, event.name, event.path)
-                    Field -> sentenceBuilder.appendFieldValue(event.location, event.name, event.path)
-                    Parameter -> sentenceBuilder.appendParameterValue(event.location, event.name, event.path)
-                }
+                sentenceBuilder.append(event)
 
                 InChainedCallExpression(currentState)
             }
@@ -275,23 +290,20 @@ class ParserStateMachine(private val createSentenceBuilder: (Location) -> Senten
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
-            on<MethodName> { currentState, event ->
-                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
+            on<Identifier> { currentState, event ->
+                sentenceBuilder.append(event)
                 currentState
             }
             on<Method> { currentState, event ->
-                sentenceBuilder.appendMethodValue(event.location, event.name, "")
+                sentenceBuilder.append(event)
                 currentState
             }
             on<EnterExpression> { currentState, event ->
                 InExpression(currentState)
             }
-            on<Identifier> { currentState, event ->
-                sentenceBuilder.appendIdentifier(event.location, event.name, event.emphasis)
-                currentState
-            }
             ignoreAll<Event> {
                 add(Matcher.any<Terminal>())
+                add(Matcher.any<ExitNestedWithArguments>())
             }
         }
     }

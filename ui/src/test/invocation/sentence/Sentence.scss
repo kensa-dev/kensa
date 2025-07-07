@@ -1,7 +1,25 @@
 // Nested Sentence
+div {
+  position: relative;
+}
+
 .ns {
-  box-shadow: inset 0 0 3px var(bulma-grey-light);
+  box-shadow: inset 0 0 3px var(--bulma-grey-light);
   padding: 10px 10px 10px 30px;
+  border-radius: 5px;
+}
+
+.ns-floating {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: max-content;
+  width: auto;
+  max-width: none;
+  background-color: hsl(var(--bulma-message-h), var(--bulma-message-s), var(--bulma-message-background-l));
+  z-index: 10;
+  box-shadow: 2px 3px 3px 2px hsla(var(--bulma-message-h), calc(var(--bulma-message-s) - 50%), calc(var(--bulma-message-background-l) - 50%), 0.2);
+  padding: 10px 30px 10px 30px;
   border-radius: 5px;
 }
 
@@ -11,7 +29,7 @@
 }
 
 .tk-wd {
-  color: var(bulma-grey-dark);
+  color: var(--bulma-grey-dark);
 }
 
 .tk-hl {
@@ -26,10 +44,6 @@
   font-weight: bold;
 }
 
-.tk-ex.expanded::after {
-  content: ':'
-}
-
 .tk-ex:hover {
   font-weight: bold;
   text-decoration: underline;
@@ -42,7 +56,7 @@
 
 .tk-sv, .tk-fv, .tk-mv, .tk-pv {
   font-weight: bold;
-  color: var(bulma-grey-dark)
+  color: var(--bulma-grey-dark)
 }
 
 .tk-sl {
@@ -61,7 +75,7 @@
   font-weight: bold;
   white-space: pre;
   padding-left: 3em;
-  box-shadow: inset 0 0 3px var(bulma-grey-light);
+  box-shadow: inset 0 0 3px var(--bulma-grey-light);
   border-radius: 5px;
 }
 

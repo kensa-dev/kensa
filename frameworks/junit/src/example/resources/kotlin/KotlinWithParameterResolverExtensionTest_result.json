@@ -24,10 +24,7 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "assert that parameter value equal to MY_PARAMETER_VALUE",
-                "tokens": [
-                  []
-                ]
+                "value": "assert that parameter value equal to MY_PARAMETER_VALUE"
               }
             ]
           ],

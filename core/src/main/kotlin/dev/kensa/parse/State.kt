@@ -1,5 +1,7 @@
 package dev.kensa.parse
 
+import dev.kensa.sentence.TemplateSentence
+
 sealed class State {
 
     data object Start : State()
@@ -14,6 +16,12 @@ sealed class State {
     data class InTypeArguments(val parentState: State) : State()
     data class InFixturesExpression(val parentState: State) : State()
     data class InChainedCallExpression(val parentState: State) : State()
+    data class InNestedCallExpression(val parentState: State, val location: Location, val name: String, val sentences: List<TemplateSentence>) : State() {
+        val events = mutableListOf<LocatedEvent>()
+        fun append(event: LocatedEvent) {
+            events.add(event)
+        }
+    }
 
     data object End : State()
 }

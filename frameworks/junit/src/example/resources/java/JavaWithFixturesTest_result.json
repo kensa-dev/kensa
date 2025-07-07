@@ -24,19 +24,13 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some prerequisites",
-                "tokens": [
-                  []
-                ]
+                "value": "some prerequisites"
               }
             ],
             [
@@ -44,37 +38,25 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the string fixture is",
-                "tokens": [
-                  []
-                ]
+                "value": "the string fixture is"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "parent1",
-                "tokens": [
-                  []
-                ]
+                "value": "parent1"
               }
             ],
             [
@@ -82,28 +64,19 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the boolean fixture is",
-                "tokens": [
-                  []
-                ]
+                "value": "the boolean fixture is"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "true",
-                "tokens": [
-                  []
-                ]
+                "value": "true"
               }
             ]
           ],
@@ -139,19 +112,13 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some prerequisites",
-                "tokens": [
-                  []
-                ]
+                "value": "some prerequisites"
               }
             ],
             [
@@ -159,37 +126,25 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the string fixture is",
-                "tokens": [
-                  []
-                ]
+                "value": "the string fixture is"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "parent2",
-                "tokens": [
-                  []
-                ]
+                "value": "parent2"
               }
             ],
             [
@@ -197,46 +152,31 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the fixture",
-                "tokens": [
-                  []
-                ]
+                "value": "the fixture"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "parent2_child1",
-                "tokens": [
-                  []
-                ]
+                "value": "parent2_child1"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "starts with",
-                "tokens": [
-                  []
-                ]
+                "value": "starts with"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "parent2",
-                "tokens": [
-                  []
-                ]
+                "value": "parent2"
               }
             ]
           ],

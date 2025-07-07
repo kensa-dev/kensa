@@ -1,22 +1,13 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.Configuration
+import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.context.NestedInvocationContext
 import dev.kensa.example.*
 import dev.kensa.parse.KotlinParser
-import dev.kensa.sentence.Sentence
-import dev.kensa.sentence.SentenceTokens.aBooleanLiteralOf
-import dev.kensa.sentence.SentenceTokens.aCharacterLiteralOf
-import dev.kensa.sentence.SentenceTokens.aFieldValueOf
-import dev.kensa.sentence.SentenceTokens.aFixturesValueOf
-import dev.kensa.sentence.SentenceTokens.aKeywordOf
-import dev.kensa.sentence.SentenceTokens.aMethodValueOf
-import dev.kensa.sentence.SentenceTokens.aNewline
-import dev.kensa.sentence.SentenceTokens.aNullLiteral
-import dev.kensa.sentence.SentenceTokens.aNumberLiteralOf
-import dev.kensa.sentence.SentenceTokens.aStringLiteralOf
-import dev.kensa.sentence.SentenceTokens.aWordOf
-import dev.kensa.sentence.SentenceTokens.anIndent
-import dev.kensa.sentence.SentenceTokens.anOperatorOf
+import dev.kensa.sentence.TemplateSentence
+import dev.kensa.sentence.TemplateToken.Type.*
+import dev.kensa.sentence.asTemplateToken
 import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
 import io.kotest.assertions.asClue
@@ -27,6 +18,8 @@ import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.antlr.v4.runtime.atn.PredictionMode
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -61,10 +54,10 @@ internal class KotlinFunctionParserTest {
             val parsedMethod = parser.parse(method)
 
             val expectedSentences = listOf(
-                Sentence(listOf(aWordOf("assert"), aWordOf("that"), aWordOf("the"), aWordOf("null"), aWordOf("result"), aWordOf("is"), aWordOf("equal"), aWordOf("to"), aNullLiteral())),
-                Sentence(listOf(aWordOf("assert"), aWordOf("that"), aWordOf("the"), aWordOf("hex"), aWordOf("result"), aWordOf("is"), aWordOf("equal"), aWordOf("to"), aNumberLiteralOf("0x123"))),
-                Sentence(listOf(aWordOf("assert"), aWordOf("that"), aWordOf("the"), aWordOf("boolean"), aWordOf("result"), aWordOf("is"), aWordOf("equal"), aWordOf("to"), aBooleanLiteralOf(true))),
-                Sentence(listOf(aWordOf("assert"), aWordOf("that"), aWordOf("the"), aWordOf("character"), aWordOf("result"), aWordOf("is"), aWordOf("equal"), aWordOf("to"), aCharacterLiteralOf('a')))
+                TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("null"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), NullLiteral.asTemplateToken("null"))),
+                TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("hex"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), NumberLiteral.asTemplateToken("0x123"))),
+                TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("boolean"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), BooleanLiteral.asTemplateToken("true"))),
+                TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("character"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), CharacterLiteral.asTemplateToken("a")))
             )
 
             parsedMethod.sentences.forEachIndexed { index, sentence ->
@@ -91,17 +84,17 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("assert"),
-                    aWordOf("that"),
-                    aWordOf("the"),
-                    aWordOf("extracted"),
-                    aWordOf("value"),
-                    aWordOf("is"),
-                    aWordOf("equal"),
-                    aWordOf("to"),
-                    aFieldValueOf("myScenario:value")
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    Word.asTemplateToken("the"),
+                    Word.asTemplateToken("extracted"),
+                    Word.asTemplateToken("value"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("equal"),
+                    Word.asTemplateToken("to"),
+                    FieldValue.asTemplateToken("myScenario:value")
                 )
             )
 
@@ -124,11 +117,11 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("action"),
-                    aWordOf("with"),
-                    aFieldValueOf("myScenario:value")
+                    Word.asTemplateToken("action"),
+                    Word.asTemplateToken("with"),
+                    FieldValue.asTemplateToken("myScenario:value")
                 )
             )
 
@@ -151,11 +144,11 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("action"),
-                    aWordOf("with"),
-                    aMethodValueOf("myScenarioFun:value")
+                    Word.asTemplateToken("action"),
+                    Word.asTemplateToken("with"),
+                    MethodValue.asTemplateToken("myScenarioFun:value")
                 )
             )
 
@@ -178,11 +171,11 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("action"),
-                    aWordOf("with"),
-                    aFieldValueOf("myScenario:value"),
+                    Word.asTemplateToken("action"),
+                    Word.asTemplateToken("with"),
+                    FieldValue.asTemplateToken("myScenario:value"),
                 )
             )
 
@@ -209,19 +202,19 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aKeywordOf("When"),
-                    aWordOf("something"),
-                    aWordOf("with"),
-                    aNewline(),
-                    anIndent(),
-                    anIndent(),
-                    aWordOf("a"),
-                    aWordOf("data"),
-                    aWordOf("item"),
-                    anOperatorOf("="),
-                    aFixturesValueOf("MyFixture:")
+                    Keyword.asTemplateToken("When"),
+                    Word.asTemplateToken("something"),
+                    Word.asTemplateToken("with"),
+                    NewLine.asTemplateToken(),
+                    Indent.asTemplateToken(),
+                    Indent.asTemplateToken(),
+                    Word.asTemplateToken("a"),
+                    Word.asTemplateToken("data"),
+                    Word.asTemplateToken("item"),
+                    Operator.asTemplateToken("="),
+                    FixturesValue.asTemplateToken("MyFixture:")
                 )
             )
 
@@ -245,17 +238,17 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("assert"),
-                    aWordOf("that"),
-                    aWordOf("the"),
-                    aWordOf("extracted"),
-                    aWordOf("value"),
-                    aWordOf("is"),
-                    aWordOf("equal"),
-                    aWordOf("to"),
-                    aFixturesValueOf("MyFixture:")
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    Word.asTemplateToken("the"),
+                    Word.asTemplateToken("extracted"),
+                    Word.asTemplateToken("value"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("equal"),
+                    Word.asTemplateToken("to"),
+                    FixturesValue.asTemplateToken("MyFixture:")
                 )
             )
 
@@ -278,11 +271,11 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("action"),
-                    aWordOf("with"),
-                    aFixturesValueOf("MyFixture:")
+                    Word.asTemplateToken("action"),
+                    Word.asTemplateToken("with"),
+                    FixturesValue.asTemplateToken("MyFixture:")
                 )
             )
 
@@ -305,17 +298,17 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("assert"),
-                    aWordOf("that"),
-                    aWordOf("the"),
-                    aWordOf("extracted"),
-                    aWordOf("character"),
-                    aWordOf("is"),
-                    aWordOf("equal"),
-                    aWordOf("to"),
-                    aFixturesValueOf("MyFixture:toString().last()")
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    Word.asTemplateToken("the"),
+                    Word.asTemplateToken("extracted"),
+                    Word.asTemplateToken("character"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("equal"),
+                    Word.asTemplateToken("to"),
+                    FixturesValue.asTemplateToken("MyFixture:toString().last()")
                 )
             )
 
@@ -341,13 +334,13 @@ internal class KotlinFunctionParserTest {
             val method = javaClass.findMethod("simpleTest")
             val parsedMethod = parser.parse(method)
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aKeywordOf("When"),
-                    aWordOf("some"),
-                    aWordOf("action"),
-                    aWordOf("is"),
-                    aWordOf("performed")
+                    Keyword.asTemplateToken("When"),
+                    Word.asTemplateToken("some"),
+                    Word.asTemplateToken("action"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("performed")
                 )
             )
 
@@ -472,16 +465,16 @@ internal class KotlinFunctionParserTest {
                 configuration.antlrPredicationMode,
             )
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aKeywordOf("Given"),
-                    aWordOf("some"),
-                    aWordOf("action"),
-                    aWordOf("name"),
-                    aWordOf("is"),
-                    aWordOf("added"),
-                    aWordOf("to"),
-                    aWordOf("givens"),
+                    Keyword.asTemplateToken("Given"),
+                    Word.asTemplateToken("some"),
+                    Word.asTemplateToken("action"),
+                    Word.asTemplateToken("name"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("added"),
+                    Word.asTemplateToken("to"),
+                    Word.asTemplateToken("givens"),
                 )
             )
 
@@ -511,13 +504,13 @@ internal class KotlinFunctionParserTest {
                 configuration.antlrPredicationMode,
             )
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("assert"),
-                    aWordOf("that"),
-                    aStringLiteralOf("abc"),
-                    aWordOf("contains"),
-                    aStringLiteralOf("a")
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    StringLiteral.asTemplateToken("abc"),
+                    Word.asTemplateToken("contains"),
+                    StringLiteral.asTemplateToken("a")
                 )
             )
 
@@ -546,13 +539,13 @@ internal class KotlinFunctionParserTest {
                 configuration.antlrPredicationMode,
             )
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("assert"),
-                    aWordOf("that"),
-                    aStringLiteralOf("xyz"),
-                    aWordOf("contains"),
-                    aStringLiteralOf("x")
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    StringLiteral.asTemplateToken("xyz"),
+                    Word.asTemplateToken("contains"),
+                    StringLiteral.asTemplateToken("x")
                 )
             )
 
@@ -597,15 +590,15 @@ internal class KotlinFunctionParserTest {
                 configuration.antlrPredicationMode,
             )
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("assert"),
-                    aWordOf("that"),
-                    aStringLiteralOf("true"),
-                    aWordOf("is"),
-                    aWordOf("equal"),
-                    aWordOf("to"),
-                    aStringLiteralOf("true")
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    StringLiteral.asTemplateToken("true"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("equal"),
+                    Word.asTemplateToken("to"),
+                    StringLiteral.asTemplateToken("true")
                 )
             )
 
@@ -632,15 +625,15 @@ internal class KotlinFunctionParserTest {
                 configuration.antlrPredicationMode,
             )
 
-            val expectedSentence = Sentence(
+            val expectedSentence = TemplateSentence(
                 listOf(
-                    aWordOf("assert"),
-                    aWordOf("that"),
-                    aWordOf("first"),
-                    aWordOf("is"),
-                    aWordOf("in"),
-                    aStringLiteralOf("a"),
-                    aStringLiteralOf("b")
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    Word.asTemplateToken("first"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("in"),
+                    StringLiteral.asTemplateToken("a"),
+                    StringLiteral.asTemplateToken("b")
                 )
             )
 
@@ -668,4 +661,18 @@ internal class KotlinFunctionParserTest {
 
     private fun KClass<*>.propertyNamed(name: String): KProperty<*> = allProperties.find { it.name == name } ?: throw IllegalArgumentException("Property $name not found in class ${this.qualifiedName}")
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }
+
+    companion object {
+        @BeforeAll
+        @JvmStatic
+        fun beforeAll() {
+            NestedInvocationContextHolder.bindToCurrentThread(NestedInvocationContext())
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun afterAll() {
+            NestedInvocationContextHolder.clearFromThread()
+        }
+    }
 }

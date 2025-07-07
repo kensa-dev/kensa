@@ -3,12 +3,12 @@ package dev.kensa.output.json
 import com.eclipsesource.json.Json
 import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonValue
-import com.eclipsesource.json.WriterConfig
+import com.eclipsesource.json.WriterConfig.MINIMAL
 import dev.kensa.KensaException
 import dev.kensa.context.TestContainer
 import dev.kensa.render.Renderers
-import dev.kensa.sentence.Sentence
-import dev.kensa.sentence.SentenceToken
+import dev.kensa.sentence.RenderedSentence
+import dev.kensa.sentence.RenderedToken
 import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
 import dev.kensa.state.TestInvocation
 import dev.kensa.state.TestMethodContainer
@@ -84,7 +84,7 @@ object JsonTransforms {
     fun toJsonString(): (JsonValue) -> String = { jv: JsonValue ->
         try {
             StringWriter().let {
-                jv.writeTo(it, WriterConfig.MINIMAL)
+                jv.writeTo(it, MINIMAL)
                 it.toString()
             }
         } catch (e: IOException) {
@@ -92,18 +92,27 @@ object JsonTransforms {
         }
     }
 
-    private fun sentenceAsJson(): (Sentence) -> JsonValue = { sentence: Sentence ->
-        asJsonArray(sentence.squashedTokens) { token: SentenceToken ->
-            jsonObject()
-                .add("types", asJsonArray(token.cssClasses))
-                .add("value", token.value)
-                .add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<SentenceToken> ->
-                    asJsonArray(sentenceTokens) { sentenceToken ->
+    private fun sentenceAsJson(): (RenderedSentence) -> JsonValue = { sentence: RenderedSentence ->
+        asJsonArray(sentence.tokens) { token: RenderedToken ->
+            jsonObject().apply {
+                add("types", asJsonArray(token.cssClasses))
+                add("value", token.value)
+
+                if (token is RenderedToken.RenderedNestedToken) {
+                    add("parameterTokens", asJsonArray(token.parameterTokens) { token ->
                         jsonObject()
-                            .add("types", asJsonArray(sentenceToken.cssClasses))
-                            .add("value", sentenceToken.value)
-                    }
-                })
+                            .add("types", asJsonArray(token.cssClasses))
+                            .add("value", token.value)
+                    })
+                    add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<RenderedToken> ->
+                        asJsonArray(sentenceTokens) { sentenceToken ->
+                            jsonObject()
+                                .add("types", asJsonArray(sentenceToken.cssClasses))
+                                .add("value", sentenceToken.value)
+                        }
+                    })
+                }
+            }
         }
     }
 

@@ -16,6 +16,7 @@ minimalJson = "0.9.5"
 antlr = "4.13.2"
 nexusPublish = "2.0.0"
 jsoup = "1.19.1"
+byteBuddy = "1.14.3"
 
 [libraries]
 kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -42,6 +43,7 @@ junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher" 
 junitPlatformEngine = { module = "org.junit.platform:junit-platform-engine" }
 junitPlatformTestKit = { module = "org.junit.platform:junit-platform-testkit" }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
+byteBuddyCore = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

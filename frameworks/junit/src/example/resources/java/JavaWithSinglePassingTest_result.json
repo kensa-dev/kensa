@@ -24,19 +24,13 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some prerequisites",
-                "tokens": [
-                  []
-                ]
+                "value": "some prerequisites"
               }
             ],
             [
@@ -44,28 +38,19 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "When",
-                "tokens": [
-                  []
-                ]
+                "value": "When"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some action",
-                "tokens": [
-                  []
-                ]
+                "value": "some action"
               }
             ],
             [
@@ -73,37 +58,25 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Then",
-                "tokens": [
-                  []
-                ]
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "the extracted value is",
-                "tokens": [
-                  []
-                ]
+                "value": "the extracted value is"
               },
               {
                 "types": [
                   "tk-fv"
                 ],
-                "value": "aStringValue",
-                "tokens": [
-                  []
-                ]
+                "value": "aStringValue"
               }
             ]
           ],

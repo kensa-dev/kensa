@@ -1,55 +1,51 @@
-/* Tooltip container */
 .tooltip {
-  position: relative; /* Ensure that the tooltip content is positioned relative to this element */
+  position: relative;
   cursor: pointer;
 }
 
-/* Tooltip text (invisible by default) */
 .tooltip::after {
-  content: attr(data-tooltip); /* Display the data-tooltip attribute's value */
+  content: attr(data-tooltip);
   position: absolute;
-  bottom: 150%; /* Place the tooltip above the element */
+  bottom: 150%;
   left: 50%;
   transform: translateX(-50%);
 
-  background-color: rgba(74, 74, 74, .9); /* Tooltip background color */
-  color: #fff; /* Text color */
-  padding: 8px 12px; /* Padding for better readability */
-  border-radius: 4px; /* Rounded corners for a softer look */
-  white-space: nowrap; /* Prevent text from wrapping */
+  background-color: rgba(74, 74, 74, .9);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
 
   font-size: 12px;
   line-height: 1.4;
 
-  opacity: 0; /* Initially hidden */
+  opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease-in-out; /* Smooth fade-in effect */
-  z-index: 1000; /* Ensure it appears above other elements */
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1000;
 }
 
-/* Tooltip arrow (visible downward triangle) */
 .tooltip::before {
   content: '';
   position: absolute;
-  bottom: 94%; /* Slightly below the tooltip text */
+  bottom: 94%;
   left: 50%;
   transform: translateX(-50%);
 
-  border-width: 5px; /* Size of the arrow */
+  border-width: 5px;
   border-style: solid;
-  border-color: rgba(74, 74, 74, .9) transparent transparent transparent; /* Proper orientation for a downward arrow */
+  border-color: rgba(74, 74, 74, .9) transparent transparent transparent;
 
-  z-index: 1000; /* Ensure it appears above the triggering element */
-  opacity: 0; /* Initially hidden */
+  z-index: 1000;
+  opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease-in-out;
 }
 
-/* Show tooltip on hover or focus */
 .tooltip:hover::after,
 .tooltip:hover::before,
 .tooltip:focus::after,
 .tooltip:focus::before {
-  opacity: 1; /* Fully visible */
+  opacity: 1;
   visibility: visible;
 }

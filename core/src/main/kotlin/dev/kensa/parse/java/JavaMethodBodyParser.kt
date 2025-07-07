@@ -17,6 +17,7 @@ import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
 import org.antlr.v4.runtime.ParserRuleContext
+import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class JavaMethodBodyParser(
@@ -67,8 +68,16 @@ class JavaMethodBodyParser(
 
     override fun enterMethodName(ctx: Java20Parser.MethodNameContext) =
         with(parseContext) {
-            stateMachine.apply(ctx.asMethod() ?: ctx.asNested() ?: ctx.asMethodName())
+            stateMachine.apply(ctx.asMethod() ?: ctx.asNested()?.let { nested ->
+                if (ctx.hasArguments())
+                    nested.asNestedWithArguments()
+                else nested
+            } ?: ctx.asIdentifier())
         }
+
+    override fun exitArgumentList(ctx: Java20Parser.ArgumentListContext?) {
+        stateMachine.apply(ExitNestedWithArguments)
+    }
 
     override fun enterIdentifier(ctx: Java20Parser.IdentifierContext) =
         with(parseContext) {
@@ -108,4 +117,9 @@ class JavaMethodBodyParser(
             }
         }
     }
+
+    // Looks for appropriate sibling
+    private fun ParserRuleContext.hasArguments(): Boolean = (parent as ParserRuleContext).hasChildOfType<Java20Parser.ArgumentListContext>()
+    private inline fun <reified T : ParseTree> ParserRuleContext.hasChildOfType(): Boolean = children.any { it is T }
+
 }

@@ -7,7 +7,6 @@ import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Field
 import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Method
 import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Parameter
-import dev.kensa.sentence.Sentence
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
@@ -16,7 +15,7 @@ class ParseContext(
     private val properties: Map<String, ElementDescriptor>,
     private val methods: Map<String, ElementDescriptor>,
     private val parameters: Map<String, ElementDescriptor> = emptyMap(),
-    private val nestedMethods: Map<String, List<Sentence>> = emptyMap(),
+    private val nestedMethods: Map<String, ParsedNestedMethod> = emptyMap(),
     private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()
 ) {
 
@@ -29,15 +28,18 @@ class ParseContext(
     private val chainedCallPattern = """^(\w+)(\(\))?(\.(.+))?$""".toRegex()
 
     private fun emphasis(name: String) = emphasisedMethods[name] ?: EmphasisDescriptor.Default
-    private fun nestedSentences(name: String) = nestedMethods[name] ?: error("No nested method found with name [$name]")
+    private fun nestedSentences(name: String) = nestedMethods[name]?.sentences ?: error("No nested method found with name [$name]")
 
-    internal fun ParseTree.asMethodName() = MethodName(location, text, emphasis(text))
     internal fun ParseTree.asIdentifier() = Identifier(location, text, emphasis(text))
     internal fun ParseTree.asNested() = takeIf { nestedMethodNames.contains(text) }?.let { Nested(location, text, nestedSentences(text)) }
     internal fun ParseTree.asParameter() = takeIf { parameterNames.contains(text) }?.let { Parameter(location, text) }
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
     internal fun ParseTree.asFixture() = fixturesPattern.matchEntire(text)?.let { FixturesExpression(location, it.groupValues[2], it.groupValues[4]) }
+
+    fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, nestedMethods, emphasisedMethods)
+
+    internal fun Nested.asNestedWithArguments() = NestedWithArguments(location, name, sentences)
 
     internal fun ParseTree.asChainedCall(): ChainedCallExpression? =
         chainedCallPattern.matchEntire(text)?.let { matchResult ->

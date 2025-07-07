@@ -1,7 +1,7 @@
 package dev.kensa.sentence.scanner
 
 import dev.kensa.sentence.Dictionary
-import dev.kensa.sentence.TokenType.*
+import dev.kensa.sentence.TemplateToken.Type.*
 
 class TokenScanner(private val dictionary: Dictionary) {
 

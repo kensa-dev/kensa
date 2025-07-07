@@ -13,7 +13,7 @@ dd.idx-disabled {
 }
 
 dd.idx-not-executed {
-  color: var(bulma-grey-dark);
+  color: var(--bulma-grey-dark);
 }
 
 .idx {
@@ -43,7 +43,7 @@ dl.idx-disabled {
 dl.idx-not-executed {
   @extend .idx;
 
-  color: var(bulma-grey-dark)
+  color: var(--bulma-grey-dark)
 }
 
 .idx-icon {

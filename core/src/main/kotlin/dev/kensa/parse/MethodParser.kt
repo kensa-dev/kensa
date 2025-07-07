@@ -1,7 +1,8 @@
 package dev.kensa.parse
 
 import dev.kensa.*
-import dev.kensa.sentence.Sentence
+import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.util.*
 import java.lang.reflect.Method
@@ -52,9 +53,9 @@ interface MethodParser : ParserCache, ParserDelegate {
             val emphasisedMethods = emphasisedMethodCache.getOrPut(testClass) {
                 prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
             }
-            val methodDescriptors = methodCache.getOrPut(testClass) { prepareMethodAccessorsFor(testClass) }
-            val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methodDescriptors))
-            val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methodDescriptors, testMethodParameters.descriptors, nestedSentences, emphasisedMethods))
+            val methods = methodCache.getOrPut(testClass) { prepareMethodsFor(testClass) }
+            val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methods))
+            val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methods, testMethodParameters.descriptors, nestedSentences, emphasisedMethods))
 
             ParsedMethod(
                 indexInSource,
@@ -63,8 +64,10 @@ interface MethodParser : ParserCache, ParserDelegate {
                 testMethodSentences,
                 nestedSentences,
                 properties,
-                methodDescriptors
+                methods
             )
+        }.also {
+            NestedInvocationContextHolder.nestedSentenceInvocationContext().update(it.nestedMethods)
         }
 
     private fun Class<*>.findSourcesMethodDeclarations(): MethodDeclarations =
@@ -78,22 +81,26 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     private fun sentenceBuilder(): (Location) -> SentenceBuilder = { location -> SentenceBuilder(location, configuration.dictionary, configuration.tabSize) }
 
-    private fun prepareNestedSentences(testClass: Class<*>, nestedSentenceDeclarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, List<Sentence>> {
-        nestedSentenceCache[testClass] = nestedSentenceDeclarations
+    private fun prepareNestedSentences(testClass: Class<*>, nestedSentenceDeclarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
+        nestedMethodCache[testClass] = nestedSentenceDeclarations
             .map {
-                Pair(
+                val parameters = prepareParametersFor(testClass.findMethod(it.name), it.parameterNamesAndTypes)
+                val parsedNestedMethod = ParsedNestedMethod(
                     it.name,
+                    parameters,
                     ParserStateMachine(sentenceBuilder()).run {
-                        parse(this, parseContext, it)
+                        parse(this, parseContext.copy(parameters.descriptors), it)
                         sentences
                     }
                 )
+                parsedNestedMethod
             }
-            .associateBy({ it.first }, { it.second })
-        return nestedSentenceCache[testClass] ?: emptyMap()
+            .associateBy({it.name}, { it })
+
+        return nestedMethodCache[testClass] ?: emptyMap()
     }
 
-    private fun MethodDeclarationContext.prepareTestMethodSentences(parseContext: ParseContext): List<Sentence> =
+    private fun MethodDeclarationContext.prepareTestMethodSentences(parseContext: ParseContext): List<TemplateSentence> =
         ParserStateMachine(sentenceBuilder()).run {
             parse(this, parseContext, this@prepareTestMethodSentences)
             sentences
@@ -115,7 +122,7 @@ interface MethodParser : ParserCache, ParserDelegate {
             }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
         )
 
-    private fun prepareMethodAccessorsFor(clazz: Class<*>) =
+    private fun prepareMethodsFor(clazz: Class<*>) =
         clazz.allMethods
             .map { ElementDescriptor.forMethod(it) }
             .associateBy(ElementDescriptor::name)

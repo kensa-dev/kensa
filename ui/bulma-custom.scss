@@ -14,7 +14,6 @@ $divider-thickness: .2rem;
   $danger: $kensa_danger,
 );
 
-
 @forward "bulma/sass/utilities/derived-variables";
 @forward "bulma/sass/base";
 @forward "bulma/sass/helpers/color";

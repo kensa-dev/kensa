@@ -24,37 +24,25 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "Given",
-                "tokens": [
-                  []
-                ]
+                "value": "Given"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a method name with",
-                "tokens": [
-                  []
-                ]
+                "value": "a method name with"
               },
               {
                 "types": [
                   "tk-ac"
                 ],
-                "value": "FTTP",
-                "tokens": [
-                  []
-                ]
+                "value": "FTTP"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "acronym",
-                "tokens": [
-                  []
-                ]
+                "value": "acronym"
               }
             ],
             [
@@ -62,46 +50,31 @@
                 "types": [
                   "tk-bl"
                 ],
-                "value": "",
-                "tokens": [
-                  []
-                ]
+                "value": ""
               },
               {
                 "types": [
                   "tk-kw"
                 ],
-                "value": "And",
-                "tokens": [
-                  []
-                ]
+                "value": "And"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a method name with",
-                "tokens": [
-                  []
-                ]
+                "value": "a method name with"
               },
               {
                 "types": [
                   "tk-ac"
                 ],
-                "value": "FUBAR",
-                "tokens": [
-                  []
-                ]
+                "value": "FUBAR"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "acronym",
-                "tokens": [
-                  []
-                ]
+                "value": "acronym"
               }
             ]
           ],
