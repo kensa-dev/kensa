@@ -56,8 +56,7 @@ dependencies {
 }
 
 tasks.named<Test>("test") {
-    useJUnitPlatform() // Ensure you're using JUnit Platform (if needed)
+    dependsOn(":core:agentJar")
 
-    // Add the --javaagent flag with the path to the agent JAR
     jvmArgs("""-javaagent:${project(":core").tasks.named<Jar>("agentJar").get().archiveFile.get().asFile.absolutePath}""")
 }

@@ -32,23 +32,28 @@ const NestedSentence = ({value, tokenCls, parameterTokens, tokens}) => {
     return <>
         <span style={{position: "relative"}} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <span onClick={toggle} className={tokenCls}>{value}</span>{" "}
-                {
-                    parameterTokens && parameterTokens.length > 0 && parameterTokens.map((parameterToken, idx) =>
-                        <Token key={idx} token={parameterToken}/>
-                    ).reduce((prev, curr) => [prev, " ", curr])
-                }
-                {
-                    isExpanded && tokens.map((tokens, idx) =>
-                        <Sentence key={idx} isNested={true} sentence={tokens}/>)
-                }
-                {
-                    isFloated &&
-                    <div className="ns-floating">
-                        {tokens.map((token, idx) => (
-                            <Sentence key={idx} sentence={token}/>
-                        ))}
+            {
+                parameterTokens && parameterTokens.length > 0 && parameterTokens.map((parameterToken, idx) =>
+                    <Token key={idx} token={parameterToken}/>
+                ).reduce((prev, curr) => [prev, " ", curr])
+            }
+            {
+                isExpanded && (
+                    <div className="ns">
+                        {tokens.map((token, idx) =>
+                            <Sentence key={idx} isNested={true} sentence={token} />
+                        )}
                     </div>
-                }
+                )
+            }
+            {
+                isFloated &&
+                <div className="ns-floating">
+                    {tokens.map((token, idx) => (
+                        <Sentence key={idx} sentence={token}/>
+                    ))}
+                </div>
+            }
             </span>
     </>
 }
