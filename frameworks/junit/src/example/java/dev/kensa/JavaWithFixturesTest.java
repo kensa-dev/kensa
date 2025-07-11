@@ -39,6 +39,11 @@ public class JavaWithFixturesTest implements KensaTest, WithHamcrest {
         then(theFixture(fixtures(CHILD_STRING_FIXTURE)), startsWith(fixtures(STRING_FIXTURE)));
     }
 
+    @Test
+    void test3() {
+        then(theFixture(fixtures(JavaTestFixtures.PUBLIC_FIXTURE)), is(222));
+    }
+
     private GivensBuilderWithFixtures somePrerequisites() {
         return (givens, fixtures) -> givens.put("foo", fixtures(STRING_FIXTURE));
     }
@@ -51,18 +56,20 @@ public class JavaWithFixturesTest implements KensaTest, WithHamcrest {
         return interactions -> fixtures(MoreJavaTestFixtures.BOOLEAN_FIXTURE);
     }
 
-    private StateExtractor<String> theFixture(String value){
+    private <T> StateExtractor<T> theFixture(T value) {
         return interactions -> value;
     }
 }
-
 
 class JavaTestFixtures implements FixtureContainer {
     private static final List<String> STRING_FIXTURES = new ArrayList<>(List.of("parent1", "parent2"));
     private static final List<String> CHILD_STRING_FIXTURES = new ArrayList<>(List.of("child1", "childe2"));
 
-    public static final PrimaryFixture<String> STRING_FIXTURE = createFixture("JavaStringFixture",STRING_FIXTURES::removeFirst);
+    public static final PrimaryFixture<String> STRING_FIXTURE = createFixture("JavaStringFixture", STRING_FIXTURES::removeFirst);
     public static final SecondaryFixture<String> CHILD_STRING_FIXTURE = createFixture("JavaChildStringFixture", STRING_FIXTURE, parent -> parent + "_" + CHILD_STRING_FIXTURES.removeFirst());
+
+    private static final PrimaryFixture<Integer> PRIVATE_FIXTURE = createFixture("JavaPrivateFixture", () -> 111);
+    public static final SecondaryFixture<Integer> PUBLIC_FIXTURE = createFixture("JavaPublicFixture", PRIVATE_FIXTURE, parent -> parent + 111);
 }
 
 class MoreJavaTestFixtures implements FixtureContainer {

@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "3 Ms",
+      "elapsedTime": "18 Ms",
       "testMethod": "test1",
       "displayName": "Test 1",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "3 Ms",
+          "elapsedTime": "18 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "test2",
       "displayName": "Test 2",
       "notes": null,
@@ -104,7 +104,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -191,6 +191,62 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "test2()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test3",
+      "displayName": "Test 3",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the fixture"
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "222"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "is"
+              },
+              {
+                "types": [
+                  "tk-num"
+                ],
+                "value": "222"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test3()"
         }
       ]
     }

@@ -195,7 +195,7 @@
       ]
     },
     {
-      "elapsedTime": "3 Ms",
+      "elapsedTime": "",
       "testMethod": "test3",
       "displayName": "Test 3",
       "notes": null,
@@ -204,7 +204,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "3 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             [
@@ -235,6 +235,50 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "test3()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test4",
+      "displayName": "Test 4",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the private sourced fixture equal to"
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "222"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test4()"
         }
       ]
     }

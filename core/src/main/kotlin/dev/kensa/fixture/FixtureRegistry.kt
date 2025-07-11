@@ -3,6 +3,7 @@ package dev.kensa.fixture
 import dev.kensa.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * A registry for fixtures.
@@ -52,16 +53,29 @@ object FixtureRegistry {
 
     private fun KClass<out FixtureContainer>.registerFixtureProperties() {
         memberProperties.forEach { property ->
-            if (property.isPublic() && property.hasType<Fixture<*>>()) {
-                val newFixture = property.getter.call(objectInstance) as Fixture<*>
+            if (property.hasType<Fixture<*>>()) {
+                val newFixture = with(property) {
+                    if (isPublic()) {
+                        getter.call(objectInstance) as Fixture<*>
+                    } else if(isCompanion) {
+                        isAccessible = true
+                        getter.call(objectInstance) as Fixture<*>
+                    } else {
+                        java.getDeclaredField(property.name)
+                            .apply { isAccessible = true }
+                            .get(objectInstance)
+                    }
+                } as Fixture<*>
+
                 newFixture.register(property.name)
             }
+
         }
     }
 
     private fun Class<out FixtureContainer>.registerFixtureFields() {
         for (field in this.declaredFields) {
-            if (field.isPublicStatic() && field.hasType<Fixture<*>>()) {
+            if (field.isStatic() && field.hasType<Fixture<*>>()) {
                 val newFixture = field.valueOfJavaStaticField<Fixture<*>>() ?: error("Fixture field [${field.declaringClass.simpleName}.${field.name}] contains a null value")
                 newFixture.register(field.name)
 

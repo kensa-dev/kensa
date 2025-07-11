@@ -26,6 +26,18 @@ class FixtureRegistryTest {
     fun `should register and lookup fixture keys by variable name`() {
         registerFixtures(TestFixtureObject, TestFixtureContainer.Companion)
 
+        // Inside Companion Object
+        lookupFixture<LocalDate>("PrivateFixture").shouldNotBeNull().should {
+            it.key shouldBe "PrivateFixture"
+            it.shouldBeInstanceOf<PrimaryFixture<String>>()
+        }
+
+        // Inside Object (These private properties require a different mechanism to get the value successfully)
+        lookupFixture<LocalDate>("PrivateFixture2").shouldNotBeNull().should {
+            it.key shouldBe "PrivateFixture2"
+            it.shouldBeInstanceOf<PrimaryFixture<String>>()
+        }
+
         lookupFixture<LocalDate>("TestDateFixture").shouldNotBeNull().should {
             it.key shouldBe "TestDate"
             it.shouldBeInstanceOf<PrimaryFixture<LocalDate>>()
@@ -50,6 +62,11 @@ class FixtureRegistryTest {
             it.key shouldBe "JavaDurationFixture"
             it.shouldBeInstanceOf<PrimaryFixture<Duration>>()
         }
+
+        lookupFixture<Duration>("PRIVATE_FIXTURE").shouldNotBeNull().should {
+            it.key shouldBe "JavaPrivateFixture"
+            it.shouldBeInstanceOf<PrimaryFixture<Integer>>()
+        }
     }
 
     @Test
@@ -73,32 +90,32 @@ class FixtureRegistryTest {
     @Suppress("unused")
     class TestFixtureContainer {
         companion object : FixtureContainer {
-            val TestDateFixture = fixture<LocalDate>(key = "TestDate", factory = { LocalDate.now() })
-            val TestDayFixture = fixture<DayOfWeek, LocalDate>(
-                key = "TestDay",
-                parentFixture = TestDateFixture,
-                factory = { date -> date.dayOfWeek }
-            )
+            private val PrivateFixture = fixture<String>("PrivateFixture") { "Private Fixture" }
+            val PublicFixture = fixture<String, String>("PublicFixture", PrivateFixture) { "Public Fixture based on $it" }
+            val TestDateFixture = fixture<LocalDate>("TestDate") { LocalDate.now() }
+            val TestDayFixture = fixture<DayOfWeek, LocalDate>("TestDay", TestDateFixture) { date -> date.dayOfWeek }
         }
     }
 
     @Suppress("unused")
     object TestFixtureObject : FixtureContainer {
-        val TestDurationFixture = fixture<Duration>(key = "TestDuration", factory = { Duration.ofDays(1) })
+        private val PrivateFixture2 = fixture<String>("PrivateFixture2") { "Private Fixture 2" }
+        val PublicFixture2 = fixture<String, String>("PublicFixture2", PrivateFixture2) { "Public Fixture 2 based on $it" }
+        val TestDurationFixture = fixture<Duration>("TestDuration") { Duration.ofDays(1) }
     }
 
     @Suppress("unused")
     object TestFixtureObject1 : FixtureContainer {
-        val TestDurationFixture1 = fixture<Duration>(key = "TestDuration", factory = { Duration.ofDays(1) })
+        val TestDurationFixture1 = fixture<Duration>("TestDuration") { Duration.ofDays(1) }
     }
 
     @Suppress("unused")
     object FixtureContainerWithDuplicatePropertyName : FixtureContainer {
-        val DuplicateNameFixture = fixture<String>(key = "FirstKey", factory = { "First Value" })
+        val DuplicateNameFixture = fixture<String>("FirstKey") { "First Value" }
     }
 
     @Suppress("unused")
     object FixtureContainerWithDuplicateProperty1 : FixtureContainer {
-        val DuplicateNameFixture = fixture<String>(key = "SecondKey", factory = { "Second Value" })
+        val DuplicateNameFixture = fixture<String>("SecondKey") { "Second Value" }
     }
 }

@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.startsWith
 import dev.kensa.MoreKotlinTestFixtures.BooleanFixture
 import dev.kensa.KotlinTestFixtures.ChildStringFixture
+import dev.kensa.KotlinTestFixtures.PublicFixture
 import dev.kensa.KotlinTestFixtures.StringFixture
 import dev.kensa.fixture.*
 import dev.kensa.fixture.FixtureRegistry.registerFixtures
@@ -40,9 +41,15 @@ class KotlinWithFixturesTest : KensaTest, WithHamkrest {
         then(theIntegerFixture(), equalTo(fixtures[IntegerFixture]))
     }
 
+    @Test
+    fun test4() {
+        then(thePrivateSourcedFixture(), equalTo(fixtures[PublicFixture]))
+    }
+
     private fun theBooleanFixture(): StateExtractor<Boolean> = StateExtractor { interactions: CapturedInteractions -> fixtures[BooleanFixture] }
     private fun theIntegerFixture(): StateExtractor<Int> = StateExtractor { interactions: CapturedInteractions -> fixtures[IntegerFixture] }
     private fun theStringFixture(): StateExtractor<String> = StateExtractor { interactions: CapturedInteractions -> fixtures[StringFixture] }
+    private fun thePrivateSourcedFixture(): StateExtractor<Int> = StateExtractor { interactions: CapturedInteractions -> fixtures[PublicFixture] }
     private fun theFixture(value: String): StateExtractor<String> = StateExtractor { interactions: CapturedInteractions -> value }
     private fun somePrerequisites() = GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("foo", fixtures[StringFixture]) }
 
@@ -57,6 +64,9 @@ object KotlinTestFixtures : FixtureContainer {
 
     val StringFixture = fixture("KotlinStringFixture") { stringFixtures.removeFirst() }
     val ChildStringFixture = fixture("KotlinChildStringFixture", StringFixture) { "${it}_${childStringFixtures.removeFirst()}" }
+
+    private val PrivateFixture = fixture("KotlinPrivateFixture") { 111 }
+    val PublicFixture = fixture("KotlinPublicFixture", PrivateFixture) { 111 + it }
 }
 
 object MoreKotlinTestFixtures : FixtureContainer {
