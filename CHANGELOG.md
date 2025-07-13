@@ -1,5 +1,13 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.12
+- Improved nested sentences:  
+  - Parameters are no longer bound to share the parent test arguments (requires *kensa-agent*)
+  - Arguments are rendered on the test output as part of the call
+  - Arguments are rendered within the nested sentence as expected 
+- Add ability to define private fixtures to use as parents of other secondary fixtures.
+- Add some syntactic sugar for SetupSteps.
+
 ### v0.5.11
 - Version bumps
 - Colour fix for disabled tests
