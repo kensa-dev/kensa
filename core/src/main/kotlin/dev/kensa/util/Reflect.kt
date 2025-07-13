@@ -1,5 +1,6 @@
 package dev.kensa.util
 
+import dev.kensa.Sources
 import java.lang.System.err
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Field
@@ -36,7 +37,7 @@ fun <T> ReflectPredicate<T>.and(other: ReflectPredicate<T>): ReflectPredicate<T>
 
 private val allTheMethods: ReflectPredicate<Method> = { true }
 private fun notDeclaredIn(clazz: Class<*>): ReflectPredicate<Method> = { it.declaringClass != clazz }
-private fun named(name: String): ReflectPredicate<Method> = { it.name == name || it.kotlinFunction?.name == name}
+private fun named(name: String): ReflectPredicate<Method> = { it.name == name || it.kotlinFunction?.name == name }
 private fun noParameters(): ReflectPredicate<Method> = { it.parameters.isEmpty() }
 private val allTheFields: ReflectPredicate<Field> = { true }
 private fun withFieldName(name: String): ReflectPredicate<Field> = { it.name == name }
@@ -76,10 +77,23 @@ internal fun <T> Any.invokeMethodOrNull(method: Method): T? = method.run {
     }
 }
 
-fun Class<*>.findMethod(name: String) =
+fun Class<*>.findLocalOrSourcesMethod(name: String): Method =
+    findMethodOrNull(name) ?: findSourcesMethodOrNull(name) ?: throw IllegalArgumentException("No method [$name] found in class [${this}] or any sources class")
+
+fun Class<*>.findSourcesMethodOrNull(name: String): Method? =
+    findAnnotation<Sources>()?.value
+        ?.map { it.java }
+        ?.firstNotNullOfOrNull {
+            it.findMethodOrNull(name)
+        }
+
+fun Class<*>.findMethodOrNull(name: String) =
     findMethodsInHierarchy(named(name))
         .firstOrNull()
-        ?: throw IllegalArgumentException("No method [$name] found in class [${this}]")
+
+
+fun Class<*>.findMethod(name: String) =
+    findMethodOrNull(name) ?: throw IllegalArgumentException("No method [$name] found in class [${this}]")
 
 internal fun Class<*>.findRequiredField(name: String) = this.findField(withFieldName(name)) ?: throw IllegalArgumentException("Did not find field [$name] in class [$simpleName]")
 

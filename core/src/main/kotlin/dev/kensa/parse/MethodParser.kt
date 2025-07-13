@@ -86,7 +86,9 @@ interface MethodParser : ParserCache, ParserDelegate {
     private fun prepareNestedSentences(testClass: Class<*>, nestedSentenceDeclarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
         nestedMethodCache[testClass] = nestedSentenceDeclarations
             .map {
-                val parameters = prepareParametersFor(testClass.findMethod(it.name), it.parameterNamesAndTypes)
+                val parameters = prepareParametersFor(
+                    testClass.findLocalOrSourcesMethod(it.name),
+                    it.parameterNamesAndTypes)
                 val parsedNestedMethod = ParsedNestedMethod(
                     it.name,
                     parameters,
