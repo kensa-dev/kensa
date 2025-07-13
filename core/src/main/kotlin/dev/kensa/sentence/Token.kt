@@ -49,9 +49,10 @@ sealed interface TemplateToken {
         override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
         override val types: Set<Type>,
         val name: String,
-        val parameterTokens: List<TemplateToken>,
         val nestedTokens: List<List<TemplateToken>>
-    ) : TemplateToken
+    ) : TemplateToken {
+        var parameterTokens: List<TemplateToken> = emptyList()
+    }
 }
 
 sealed interface RenderedToken {

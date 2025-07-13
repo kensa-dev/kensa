@@ -75,8 +75,8 @@ class JavaMethodBodyParser(
             } ?: ctx.asIdentifier())
         }
 
-    override fun exitArgumentList(ctx: Java20Parser.ArgumentListContext?) {
-        stateMachine.apply(ExitNestedWithArguments)
+    override fun exitArgumentList(ctx: Java20Parser.ArgumentListContext) {
+        stateMachine.apply(ExitValueArguments)
     }
 
     override fun enterIdentifier(ctx: Java20Parser.IdentifierContext) =

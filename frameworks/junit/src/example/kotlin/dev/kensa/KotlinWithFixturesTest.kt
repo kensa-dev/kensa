@@ -3,9 +3,9 @@ package dev.kensa
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.startsWith
 import dev.kensa.MoreKotlinTestFixtures.BooleanFixture
-import dev.kensa.KotlinTestFixtures.ChildStringFixture
-import dev.kensa.KotlinTestFixtures.PublicFixture
-import dev.kensa.KotlinTestFixtures.StringFixture
+import dev.kensa.fixture.KotlinTestFixtures.ChildStringFixture
+import dev.kensa.fixture.KotlinTestFixtures.PublicFixture
+import dev.kensa.fixture.KotlinTestFixtures.StringFixture
 import dev.kensa.fixture.*
 import dev.kensa.fixture.FixtureRegistry.registerFixtures
 import dev.kensa.hamkrest.WithHamkrest
@@ -56,17 +56,6 @@ class KotlinWithFixturesTest : KensaTest, WithHamkrest {
     companion object : FixtureContainer {
         val IntegerFixture = fixture("KotlinIntegerFixture") { 23 }
     }
-}
-
-object KotlinTestFixtures : FixtureContainer {
-    private val stringFixtures = mutableListOf("parent1", "parent2")
-    private val childStringFixtures = mutableListOf("child1", "child2")
-
-    val StringFixture = fixture("KotlinStringFixture") { stringFixtures.removeFirst() }
-    val ChildStringFixture = fixture("KotlinChildStringFixture", StringFixture) { "${it}_${childStringFixtures.removeFirst()}" }
-
-    private val PrivateFixture = fixture("KotlinPrivateFixture") { 111 }
-    val PublicFixture = fixture("KotlinPublicFixture", PrivateFixture) { 111 + it }
 }
 
 object MoreKotlinTestFixtures : FixtureContainer {

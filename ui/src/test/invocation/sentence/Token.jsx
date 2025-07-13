@@ -6,11 +6,13 @@ import './Token.scss'
 const NestedSentence = ({value, tokenCls, parameterTokens, tokens}) => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [isFloated, setIsFloated] = useState(false)
+    const leaveTimeoutRef = useRef(null);
     const timeoutRef = useRef(null);
 
     const toggle = () => setIsExpanded(prev => !prev)
     useEffect(() => {
         clearTimeout(timeoutRef.current);
+        clearTimeout(leaveTimeoutRef.current);
         if (isExpanded) {
             setIsFloated(false);
         }
@@ -18,6 +20,7 @@ const NestedSentence = ({value, tokenCls, parameterTokens, tokens}) => {
 
     const handleMouseEnter = () => {
         if (isExpanded) return;
+        clearTimeout(leaveTimeoutRef.current);
         timeoutRef.current = setTimeout(() => {
             setIsFloated(true);
         }, 500);
@@ -26,16 +29,31 @@ const NestedSentence = ({value, tokenCls, parameterTokens, tokens}) => {
     const handleMouseLeave = () => {
         if (isExpanded) return;
         clearTimeout(timeoutRef.current);
-        setIsFloated(false);
+        leaveTimeoutRef.current = setTimeout(() => {
+            setIsFloated(false);
+        }, 100);
     };
 
+    useEffect(() => {
+        return () => {
+            clearTimeout(timeoutRef.current);
+            clearTimeout(leaveTimeoutRef.current);
+        };
+    }, []);
+
     return <>
-        <span style={{position: "relative"}} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <span onClick={toggle} className={tokenCls}>{value}</span>{" "}
+        <span className="ns-wrapper">
+            <span onClick={toggle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className={tokenCls}>{value}</span>{" "}
             {
-                parameterTokens && parameterTokens.length > 0 && parameterTokens.map((parameterToken, idx) =>
-                    <Token key={idx} token={parameterToken}/>
-                ).reduce((prev, curr) => [prev, " ", curr])
+                parameterTokens && parameterTokens.length > 0 && (
+                    React.createElement(
+                        parameterTokens[0].types.includes('tk-nl') ? 'div' : 'span',
+                        { className: "ns-parameters" },
+                        parameterTokens.map((parameterToken, idx) =>
+                            <Token key={idx} token={parameterToken}/>
+                        ).reduce((prev, curr) => [prev, " ", curr])
+                    )
+                )
             }
             {
                 isExpanded && (
@@ -48,7 +66,10 @@ const NestedSentence = ({value, tokenCls, parameterTokens, tokens}) => {
             }
             {
                 isFloated &&
-                <div className="ns-floating">
+                <div className="ns-floating"
+                     onMouseEnter={handleMouseEnter}
+                     onMouseLeave={handleMouseLeave}
+                >
                     {tokens.map((token, idx) => (
                         <Sentence key={idx} sentence={token}/>
                     ))}

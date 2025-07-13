@@ -117,8 +117,20 @@ class KotlinFunctionBodyParser(
             } ?: ctx.asIdentifier())
         }
 
-    override fun exitValueArguments(ctx: KotlinParser.ValueArgumentsContext?) {
-        stateMachine.apply(ExitNestedWithArguments)
+    override fun enterValueArgument(ctx: KotlinParser.ValueArgumentContext) {
+        stateMachine.apply(EnterValueArgument)
+    }
+
+    override fun exitValueArgument(ctx: KotlinParser.ValueArgumentContext) {
+        stateMachine.apply(ExitValueArgument)
+    }
+
+    override fun enterValueArguments(ctx: KotlinParser.ValueArgumentsContext) {
+        stateMachine.apply(EnterValueArguments)
+    }
+
+    override fun exitValueArguments(ctx: KotlinParser.ValueArgumentsContext) {
+        stateMachine.apply(ExitValueArguments)
     }
 
     override fun enterTypeArguments(ctx: KotlinParser.TypeArgumentsContext) {
@@ -151,7 +163,7 @@ class KotlinFunctionBodyParser(
         fun ParserRuleContext.findValueArguments(): Boolean {
             return children?.any { child ->
                 when (child) {
-                    is KotlinParser.ValueArgumentsContext -> true
+                    is KotlinParser.ValueArgumentContext -> true
                     is ParserRuleContext -> child.findValueArguments()
                     else -> false
                 }

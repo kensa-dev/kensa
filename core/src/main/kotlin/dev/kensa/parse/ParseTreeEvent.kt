@@ -19,9 +19,12 @@ sealed class Event {
     class MultilineString(val value: String) : Event()
 
     object Terminal : Event()
+    object EnterValueArgument : Event()
+    object ExitValueArgument : Event()
+    object EnterValueArguments : Event()
+    object ExitValueArguments : Event()
     object EnterTypeArguments : Event()
     object ExitTypeArguments : Event()
-    object ExitNestedWithArguments : Event()
 }
 
 sealed class LocatedEvent(val location: Location) : Event() {
@@ -30,10 +33,12 @@ sealed class LocatedEvent(val location: Location) : Event() {
     class EnterMethodInvocation(location: Location) : LocatedEvent(location)
     class EnterExpression(location: Location) : LocatedEvent(location)
 
-    class FixturesExpression(location: Location, val name: String, val path: String) : LocatedEvent(location)
-    class ChainedCallExpression(location: Location, val type: Type, val name: String, val path: String) : LocatedEvent(location) {
-        enum class Type {
-            Method, Field, Parameter
+    sealed class PathExpression(location: Location, val name: String, val path: String) : LocatedEvent(location) {
+        class FixturesExpression(location: Location, name: String, path: String) : PathExpression(location, name, path)
+        class ChainedCallExpression(location: Location, val type: Type, name: String, path: String) : PathExpression(location, name, path) {
+            enum class Type {
+                Method, Field, Parameter
+            }
         }
     }
 

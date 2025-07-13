@@ -8,6 +8,8 @@ import dev.kensa.util.*
 import java.lang.reflect.Method
 import kotlin.collections.buildList
 import kotlin.reflect.KClass
+import kotlin.reflect.full.extensionReceiverParameter
+import kotlin.reflect.jvm.kotlinFunction
 
 val greedyGenericPattern = "<.*>".toRegex()
 
@@ -79,7 +81,7 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     private fun Class<*>.findMethodDeclarations(): MethodDeclarations = declarationCache.getOrPut(this) { findMethodDeclarationsIn(this) }
 
-    private fun sentenceBuilder(): (Location) -> SentenceBuilder = { location -> SentenceBuilder(location, configuration.dictionary, configuration.tabSize) }
+    private fun sentenceBuilder(): (Location, Location) -> SentenceBuilder = { location, previousLocation -> SentenceBuilder(location, previousLocation, configuration.dictionary, configuration.tabSize) }
 
     private fun prepareNestedSentences(testClass: Class<*>, nestedSentenceDeclarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
         nestedMethodCache[testClass] = nestedSentenceDeclarations
@@ -115,12 +117,19 @@ interface MethodParser : ParserCache, ParserDelegate {
             }
             .associateBy({ it.first }, { it.second })
 
-    private fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
-        MethodParameters(
+    private fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
+        val parameterNamesAndTypesWithReceiverParameter: List<Pair<String, String>> = method.kotlinFunction?.extensionReceiverParameter?.let {
+            ArrayList(parameterNamesAndTypes).apply {
+                add(it.index - 1, Pair("this", (it.type.classifier as KClass<*>).simpleName!!))
+            }
+        } ?: parameterNamesAndTypes
+
+        return MethodParameters(
             method.parameters.mapIndexed { index, parameter ->
-                ElementDescriptor.forParameter(parameter, parameterNamesAndTypes[index].first, index)
+                ElementDescriptor.forParameter(parameter, parameterNamesAndTypesWithReceiverParameter[index].first, index)
             }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
         )
+    }
 
     private fun prepareMethodsFor(clazz: Class<*>) =
         clazz.allMethods

@@ -7,16 +7,16 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "2 Ms",
-      "testMethod": "passingTest",
-      "displayName": "Passing Test",
+      "elapsedTime": "5 Ms",
+      "testMethod": "simpleNested",
+      "displayName": "Simple Nested",
       "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "2 Ms",
+          "elapsedTime": "5 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -157,21 +157,425 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "passingTest()"
+          "displayName": "simpleNested()"
         }
       ]
     },
     {
-      "elapsedTime": "3 Ms",
-      "testMethod": "testWithNestedScenarioParameter",
-      "displayName": "Test With Nested Scenario Parameter",
+      "elapsedTime": "1 Ms",
+      "testMethod": "nestedWithMultiLineParameters",
+      "displayName": "Nested With Multi Line Parameters",
       "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "3 Ms",
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When"
+              },
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "some Action With 2",
+                "parameterTokens": [
+                  {
+                    "types": [
+                      "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter1"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-sl"
+                    ],
+                    "value": "my parameter"
+                  },
+                  {
+                    "types": [
+                      "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter2"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-sl"
+                    ],
+                    "value": "my parameter2"
+                  }
+                ],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action with"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "my parameter2"
+                    }
+                  ],
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action under test"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "my parameter"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "my lambda block"
+              },
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "some Action With 2",
+                "parameterTokens": [
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter1"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "myString"
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter2"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "myString"
+                  }
+                ],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action with"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "myStringThing"
+                    }
+                  ],
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action under test"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "myStringThing"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "my lambda block"
+              },
+              {
+                "types": [
+                  "tk-nl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "some Action With 2",
+                "parameterTokens": [
+                  {
+                    "types": [
+                      "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter1"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "myString"
+                  },
+                  {
+                    "types": [
+                      "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter2"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "myString"
+                  }
+                ],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action with"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "myStringThing"
+                    }
+                  ],
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action under test"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "myStringThing"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value equal to"
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "aStringValue"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "nestedWithMultiLineParameters()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "nestedWithScenarioParameters",
+      "displayName": "Nested With Scenario Parameters",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             [
@@ -235,12 +639,6 @@
             [
               {
                 "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
                   "tk-kw"
                 ],
                 "value": "When"
@@ -275,6 +673,32 @@
                   ]
                 ]
               }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value equal to"
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "aStringValue"
+              }
             ]
           ],
           "parameters": [],
@@ -287,7 +711,249 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "testWithNestedScenarioParameter()"
+          "displayName": "nestedWithScenarioParameters()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "nestedWithFixtureAndScenarioParameters",
+      "displayName": "Nested With Fixture And Scenario Parameters",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some prerequisites"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When"
+              },
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "some Action With 3",
+                "parameterTokens": [
+                  {
+                    "types": [
+                      "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter1"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-fv"
+                    ],
+                    "value": "aStringValue"
+                  },
+                  {
+                    "types": [
+                      "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter2"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-fv"
+                    ],
+                    "value": "parent1"
+                  },
+                  {
+                    "types": [
+                      "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter3"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-fv"
+                    ],
+                    "value": "parent1_child1"
+                  }
+                ],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action with"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "parent1"
+                    }
+                  ],
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action with"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "parent1_child1"
+                    }
+                  ],
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action under test"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "aStringValue"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value equal to"
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "aStringValue"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "foo": "bar"
+            }
+          ],
+          "capturedInteractions": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "nestedWithFixtureAndScenarioParameters()"
         }
       ]
     }

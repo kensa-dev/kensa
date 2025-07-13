@@ -3,168 +3,199 @@ package dev.kensa.sentence
 import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent
-import dev.kensa.parse.LocatedEvent.BooleanLiteral
-import dev.kensa.parse.LocatedEvent.ChainedCallExpression
-import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Field
-import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Method
-import dev.kensa.parse.LocatedEvent.ChainedCallExpression.Type.Parameter
-import dev.kensa.parse.LocatedEvent.Field
-import dev.kensa.parse.LocatedEvent.Identifier
-import dev.kensa.parse.LocatedEvent.Method
-import dev.kensa.parse.LocatedEvent.Operator
-import dev.kensa.parse.LocatedEvent.Parameter
-import dev.kensa.parse.LocatedEvent.StringLiteral
+import dev.kensa.parse.LocatedEvent.*
+import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
+import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
 import dev.kensa.parse.Location
-import dev.kensa.sentence.TemplateToken.NestedTemplateToken
-import dev.kensa.sentence.TemplateToken.SimpleTemplateToken
-import dev.kensa.sentence.TemplateToken.Type
-import dev.kensa.sentence.TemplateToken.Type.NullLiteral
+import dev.kensa.sentence.TemplateToken.*
+import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.scanner.Index
 import dev.kensa.sentence.scanner.TokenScanner
 import java.util.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
-class SentenceBuilder(var lastLocation: Location, private val dictionary: Dictionary, private val tabSize: Int) {
+class SentenceBuilder(private val startingLocation: Location, previousLocation: Location, private val dictionary: Dictionary, private val tabSize: Int) {
+    var lastLocation = startingLocation
+
     private val tokens: MutableList<TemplateToken> = ArrayList()
     private val scanner: TokenScanner = TokenScanner(dictionary)
+    private var currentNestedTemplateToken: NestedTemplateToken? = null
+    private var currentNestedLocation: Location? = null
 
-    fun appendNested(location: Location, placeholder: String, parameterEvents: List<LocatedEvent>, sentences: List<TemplateSentence>) {
-        checkLineAndIndent(location)
+    init {
+        if (startingLocation.lineNumber - previousLocation.lineNumber > 1) {
+            tokens.append("", BlankLine)
+        }
+    }
 
+    fun beginNested(location: Location, placeholder: String, sentences: List<TemplateSentence>) {
+        currentNestedLocation = location
+        lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         val (scanned, indices) = scanner.scan(placeholder, false)
         val scannedPlaceholder = indices.joinToString(separator = " ") { index -> scanned.substring(index.start, index.end) }
 
-        val parameterTokens = parameterEvents.mapNotNull { event ->
+        val nestedTemplateToken = NestedTemplateToken(
+            scannedPlaceholder,
+            EmphasisDescriptor.Default,
+            setOf(Expandable),
+            name = placeholder,
+            nestedTokens = sentences.map { it.tokens }
+        )
+
+        currentNestedTemplateToken = nestedTemplateToken
+
+        tokens.add(nestedTemplateToken)
+    }
+
+    fun finishNested(parameterEvents: List<LocatedEvent> = emptyList()) {
+        var lastLocation = requireForNestedSentence(currentNestedLocation)
+        val currentNestedTemplate = requireForNestedSentence(currentNestedTemplateToken)
+
+        val parameterTokens = mutableListOf<TemplateToken>()
+
+        parameterEvents.mapNotNullTo(parameterTokens) { event ->
+            lastLocation = parameterTokens.checkLineAndIndent(event.location, lastLocation)
             when (event) {
                 is ChainedCallExpression -> when (event.type) {
-                    Method -> event.asSentenceToken(Type.MethodValue)
-                    Field -> event.asSentenceToken(Type.FieldValue)
-                    Parameter -> event.asSentenceToken(Type.ParameterValue)
+                    Method -> event.asSentenceToken(MethodValue)
+                    Field -> event.asSentenceToken(FieldValue)
+                    Parameter -> event.asSentenceToken(ParameterValue)
                 }
 
-                is StringLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(Type.StringLiteral))
-                is Identifier -> SimpleTemplateToken(event.name, event.emphasis, setOf(Type.Identifier))
-                is Operator -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Type.Operator))
+                is FixturesExpression -> event.asSentenceToken(FixturesValue)
+                is StringLiteral -> {
+                    if (dictionary.isAcronym(event.value)) {
+                        SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(StringLiteral, Type.Acronym))
+                    } else {
+                        SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(StringLiteral))
+                    }
+                }
+
+                is Identifier -> SimpleTemplateToken(event.name, event.emphasis, setOf(Identifier))
+                is Operator -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Operator))
+                is NullLiteral -> SimpleTemplateToken("null", EmphasisDescriptor.Default, setOf(NullLiteral))
+                is NumberLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(NumberLiteral))
+                is CharacterLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(CharacterLiteral))
+                is BooleanLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(BooleanLiteral))
+
                 else -> null
             }
         }
-        tokens.add(NestedTemplateToken(
-            scannedPlaceholder,
-            EmphasisDescriptor.Default,
-            setOf(Type.Expandable),
-            name = placeholder,
-            parameterTokens = parameterTokens,
-            nestedTokens = sentences.map { it.tokens }
-        ))
+
+        currentNestedTemplate.parameterTokens = parameterTokens
+        currentNestedTemplateToken = null
     }
 
-    fun append(event: LocatedEvent.NumberLiteral) {
-        checkLineAndIndent(event.location)
-        append(event.value, Type.NumberLiteral)
-    }
+    fun append(event: NumberLiteral) = appendLiteral(event, event.value, NumberLiteral)
 
-    fun append(event: LocatedEvent.NullLiteral) {
-        checkLineAndIndent(event.location)
-        append("null", NullLiteral)
-    }
+    fun append(event: NullLiteral) = appendLiteral(event, "null", NullLiteral)
 
-    fun append(event: LocatedEvent.CharacterLiteral) {
-        checkLineAndIndent(event.location)
-        append(event.value.trim('\''), Type.CharacterLiteral)
-    }
+    fun append(event: CharacterLiteral) = appendLiteral(event, event.value.trim('\''), CharacterLiteral)
 
-    fun append(event: BooleanLiteral) {
-        checkLineAndIndent(event.location)
-        append(event.value, Type.BooleanLiteral)
-    }
+    fun append(event: BooleanLiteral) = appendLiteral(event, event.value, BooleanLiteral)
 
     fun append(event: StringLiteral) {
-        checkLineAndIndent(event.location)
+        lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
         if (dictionary.isAcronym(event.value)) {
-            append(event.value, Type.StringLiteral, Type.Acronym)
+            tokens.append(event.value, StringLiteral, Type.Acronym)
         } else {
-            append(event.value, Type.StringLiteral)
+            tokens.append(event.value, StringLiteral)
         }
     }
 
     fun append(event: MultilineString) {
-        append(event.value, Type.TextBlock)
+        tokens.append(event.value, TextBlock)
     }
 
-    fun append(event: Operator) {
-        checkLineAndIndent(event.location)
-        append(event.text, Type.Operator)
-    }
+    fun append(event: Operator) = appendLiteral(event, event.text, Operator)
 
     fun appendFixturesValue(location: Location, name: String, path: String) {
-        checkLineAndIndent(location)
-        tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(Type.FixturesValue)))
+        lastLocation = tokens.checkLineAndIndent(location, lastLocation)
+        tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(FixturesValue)))
     }
 
     fun append(event: ChainedCallExpression) {
-        checkLineAndIndent(event.location)
         when (event.type) {
-            Method -> tokens.add(event.asSentenceToken(Type.MethodValue))
-            Field -> tokens.add(event.asSentenceToken(Type.FieldValue))
-            Parameter -> tokens.add(event.asSentenceToken(Type.ParameterValue))
+            Method -> appendPathExpression(event, MethodValue)
+            Field -> appendPathExpression(event, FieldValue)
+            Parameter -> appendPathExpression(event, ParameterValue)
         }
     }
 
-    fun append(event: Parameter) {
-        checkLineAndIndent(event.location)
-        tokens.add(SimpleTemplateToken("${event.name}:", EmphasisDescriptor.Default, types = setOf(Type.ParameterValue)))
-    }
+    fun append(event: Parameter) = appendNamedValue(event, event.name, ParameterValue)
 
-    fun append(event: Field) {
-        checkLineAndIndent(event.location)
-        tokens.add(SimpleTemplateToken("${event.name}:", EmphasisDescriptor.Default, types = setOf(Type.FieldValue)))
-    }
+    fun append(event: Field) = appendNamedValue(event, event.name, FieldValue)
 
-    fun append(event: Method) {
-        checkLineAndIndent(event.location)
-        tokens.add(SimpleTemplateToken("${event.name}:", EmphasisDescriptor.Default, types = setOf(Type.MethodValue)))
-    }
+    fun append(event: Method) = appendNamedValue(event, event.name, MethodValue)
 
     fun append(event: Identifier) {
-        checkLineAndIndent(event.location)
+        lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
 
         val (scanned, indices) = scanner.scan(event.name, isFirstInSentence())
         indices.forEach { index: Index ->
-            append(valueFor(index, scanned.substring(index.start, index.end)), index.type, emphasis = index.emphasis ?: event.emphasis)
+            tokens.append(valueFor(index, scanned.substring(index.start, index.end)), index.type, emphasis = index.emphasis ?: event.emphasis)
         }
     }
 
     fun build(): TemplateSentence = TemplateSentence(tokens)
 
-    private fun ChainedCallExpression.asSentenceToken(tokenType: Type) = SimpleTemplateToken("${name}:${path}", EmphasisDescriptor.Default, types = setOf(tokenType))
+    @OptIn(ExperimentalContracts::class)
+    private  fun <T : Any> requireForNestedSentence(value: T?): T {
+        contract {
+            returns() implies (value != null)
+        }
+        return requireNotNull(value) {
+            "Attempted to finish a nested sentence but no location was available"
+        }
+    }
 
     private fun isFirstInSentence() =
         tokens.find { token -> token.types.any { !it.isWhitespace } } == null
 
-    private fun checkLineAndIndent(location: Location) {
-        if (location.lineNumber - lastLocation.lineNumber > 1) {
-            append("", Type.BlankLine)
-        }
-        if (location.lineNumber > lastLocation.lineNumber && location.linePosition > lastLocation.linePosition) {
-            append("", Type.NewLine)
-            repeat(location.linePosition / tabSize) {
-                append("", Type.Indent)
+    private fun MutableList<TemplateToken>.checkLineAndIndent(thisLocation: Location, lastLocation: Location): Location =
+        thisLocation.apply {
+            if (lineNumber > lastLocation.lineNumber) {
+                append("", NewLine)
+
+                if (linePosition - startingLocation.linePosition > 0) {
+                    repeat(linePosition / tabSize) {
+                        append("", Indent)
+                    }
+                }
             }
         }
-        lastLocation = Location(location.lineNumber, lastLocation.linePosition)
-    }
-
-    private fun append(value: String, vararg tokenTypes: Type, emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) {
-        tokens.add(SimpleTemplateToken(value, emphasis = emphasis, types = setOf(*tokenTypes)))
-    }
 
     private fun valueFor(index: Index, rawValue: String): String =
         when (index.type) {
             Type.Acronym -> rawValue.uppercase(Locale.getDefault())
-            Type.Keyword -> rawValue.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            Type.Word -> if (rawValue.length > 1 && rawValue.matches(ALPHANUMERIC_UNDERSCORE)) rawValue else rawValue.replaceFirstChar { it.lowercase(Locale.getDefault()) }
+            Keyword -> rawValue.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            Word -> if (rawValue.length > 1 && rawValue.matches(ALPHANUMERIC_UNDERSCORE)) rawValue else rawValue.replaceFirstChar { it.lowercase(Locale.getDefault()) }
 
             else -> rawValue
         }
+
+    private fun appendLiteral(event: LocatedEvent, value: String, type: Type) {
+        lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
+        tokens.append(value, type)
+    }
+
+    private fun appendPathExpression(event: ChainedCallExpression, tokenType: Type) {
+        lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
+        tokens.add(event.asSentenceToken(tokenType))
+    }
+
+    private fun appendNamedValue(event: LocatedEvent, name: String, tokenType: Type) {
+        lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
+        tokens.add(SimpleTemplateToken("$name:", EmphasisDescriptor.Default, types = setOf(tokenType)))
+    }
+
+    private fun PathExpression.asSentenceToken(tokenType: Type) = SimpleTemplateToken("${name}:${path}", EmphasisDescriptor.Default, types = setOf(tokenType))
+
+    private fun MutableList<TemplateToken>.append(value: String, vararg tokenTypes: Type, emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) {
+        add(SimpleTemplateToken(value, emphasis = emphasis, types = setOf(*tokenTypes)))
+    }
 
     companion object {
         private val ALPHANUMERIC_UNDERSCORE = "^[A-Z0-9_]+$".toRegex()
