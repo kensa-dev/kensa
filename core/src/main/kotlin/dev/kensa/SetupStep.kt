@@ -13,6 +13,9 @@ interface SetupStep {
     fun verify(): Verification = Verification.Companion.verify()
 }
 
+fun SetupStep.and(other: SetupStep): SetupSteps = SetupSteps(this).apply { add(other) }
+fun SetupSteps.and(step: SetupStep): SetupSteps = apply { add(step) }
+
 class GivensHolder {
 
     val list = mutableListOf<Any>()
@@ -88,7 +91,11 @@ class Verification private constructor(private val block: (Fixtures) -> Unit) {
 
 class SetupSteps(vararg steps: SetupStep) {
 
-    private val steps = steps.toList()
+    private val steps = mutableListOf(*steps)
+
+    internal fun add(step: SetupStep) {
+        steps.add(step)
+    }
 
     fun execute() {
         with(testContext()) {

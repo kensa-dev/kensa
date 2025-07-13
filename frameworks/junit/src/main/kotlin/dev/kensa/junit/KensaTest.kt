@@ -17,6 +17,10 @@ interface KensaTest : WithFixtures {
         steps.execute()
     }
 
+    fun given(step: SetupStep) {
+        SetupSteps(step).execute()
+    }
+
     fun given(builder: GivensBuilder) {
         testContext().given(builder)
     }
@@ -35,6 +39,10 @@ interface KensaTest : WithFixtures {
 
     fun and(steps: SetupSteps) {
         steps.execute()
+    }
+
+    fun and(step: SetupStep) {
+        SetupSteps(step).execute()
     }
 
     fun `when`(action: ActionUnderTest) = whenever(action)
