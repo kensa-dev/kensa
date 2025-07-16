@@ -12,6 +12,7 @@ import dev.kensa.context.TestContext
 import dev.kensa.context.TestContextHolder
 import dev.kensa.fixture.Fixtures
 import dev.kensa.output.ResultWriter
+import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaMethodParser
 import dev.kensa.parse.kotlin.KotlinFunctionParser
@@ -47,7 +48,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
 
     override fun beforeEach(context: ExtensionContext) {
         with(context) {
-            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy, context.fixtures).also { it ->
+            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy, context.fixtures, context.capturedOutputs).also { it ->
                 TestContextHolder.bindToCurrentThread(it)
                 kensaStore.put(TEST_CONTEXT_KEY, it)
             }
@@ -81,7 +82,8 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                         arguments,
                         context.displayName,
                         System.currentTimeMillis(),
-                        context.fixtures
+                        context.fixtures,
+                        context.capturedOutputs
                     )
                 )
             }
@@ -161,6 +163,13 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                 Fixtures::class.java
             )
 
+        internal val ExtensionContext.capturedOutputs
+            get() = kensaStore.getOrComputeIfAbsent(
+                KENSA_OUTPUTS_KEY,
+                { CapturedOutputs() },
+                CapturedOutputs::class.java
+            )
+
         private fun testInvocationFactory(configuration: Configuration) = TestInvocationFactory(
             TestInvocationParser(configuration),
             JavaMethodParser(isJavaClassTest, isJavaInterfaceTest, configuration),
@@ -189,6 +198,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
 
         private const val KENSA_CONTEXT_KEY = "KensaContext"
         private const val KENSA_FIXTURES_KEY = "KensaFixtures"
+        private const val KENSA_OUTPUTS_KEY = "KensaOutputs"
         private const val KENSA_CONFIGURATION_KEY = "KensaConfiguration"
         private const val TEST_CONTEXT_KEY = "TestContext"
         private const val TEST_CONTAINER_KEY = "TestContainer"

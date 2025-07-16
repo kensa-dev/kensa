@@ -2,9 +2,9 @@ package dev.kensa
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import dev.kensa.ActionsUnderTest.Companion.buildActions
-import dev.kensa.GivensBuilders.Companion.buildGivens
-import dev.kensa.Verification.Companion.verify
+import dev.kensa.ActionBlockBuilder.Companion.buildActions
+import dev.kensa.GivensBlockBuilder.Companion.buildGivens
+import dev.kensa.VerificationBlockBuilder.Companion.verify
 import dev.kensa.hamkrest.HamkrestSetupStep
 import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
@@ -14,8 +14,10 @@ class KotlinWithSetupStepsTest : KensaTest, WithHamkrest {
 
     private lateinit var aValue: String
     private lateinit var aValue2: String
+
     @field:RenderedValue
     private val expectedValue = "aStringValue"
+
     @field:RenderedValue
     private val expectedValue2 = "aStringValue2"
 
@@ -39,9 +41,9 @@ class KotlinWithSetupStepsTest : KensaTest, WithHamkrest {
 
     private fun aTask() = object : HamkrestSetupStep {
         override fun givens() = buildGivens {
-            add { givens ->
+            add(GivensBuilder { givens ->
                 givens.put("key", expectedValue)
-            }
+            })
         }
 
         override fun actions() = buildActions {
@@ -57,9 +59,9 @@ class KotlinWithSetupStepsTest : KensaTest, WithHamkrest {
 
     private fun anotherTask() = object : HamkrestSetupStep {
         override fun givens() = buildGivens {
-            add { givens ->
+            add(GivensBuilder { givens ->
                 givens.put("key2", expectedValue2)
-            }
+            })
         }
 
         override fun actions() = buildActions {

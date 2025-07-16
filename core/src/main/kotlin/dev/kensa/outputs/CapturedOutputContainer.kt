@@ -1,0 +1,3 @@
+package dev.kensa.outputs
+
+interface CapturedOutputContainer

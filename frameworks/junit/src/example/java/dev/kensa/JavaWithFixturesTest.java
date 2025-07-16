@@ -44,8 +44,8 @@ public class JavaWithFixturesTest implements KensaTest, WithHamcrest {
         then(theFixture(fixtures(JavaTestFixtures.PUBLIC_FIXTURE)), is(222));
     }
 
-    private GivensBuilderWithFixtures somePrerequisites() {
-        return (givens, fixtures) -> givens.put("foo", fixtures(STRING_FIXTURE));
+    private GivensBuilder somePrerequisites() {
+        return (givens) -> givens.put("foo", fixtures(STRING_FIXTURE));
     }
 
     private StateExtractor<String> theStringFixture() {

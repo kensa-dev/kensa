@@ -27,6 +27,7 @@ class ParseContext(
     private val nestedMethodNames = nestedMethods.keys
 
     private val fixturesPattern = """^fixtures[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
+    private val outputsPattern = """^outputs[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
     private val chainedCallPattern = """^(\w+)(\(\))?(\.(.+))?$""".toRegex()
 
     private fun emphasis(name: String) = emphasisedMethods[name] ?: EmphasisDescriptor.Default
@@ -38,6 +39,7 @@ class ParseContext(
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
     internal fun ParseTree.asFixture() = fixturesPattern.matchEntire(text)?.let { FixturesExpression(location, it.groupValues[2], it.groupValues[4]) }
+    internal fun ParseTree.asOutputs() = outputsPattern.matchEntire(text)?.let { PathExpression.OutputsExpression(location, it.groupValues[2], it.groupValues[4]) }
 
     fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, nestedMethods, emphasisedMethods)
 
@@ -58,7 +60,8 @@ class ParseContext(
             else -> null
         }
 
-    internal fun ParseTree?.matchesFixture() = this?.text?.matches(fixturesPattern) ?: false
+    internal fun ParseTree?.matchesFixturesExpression() = this?.text?.matches(fixturesPattern) ?: false
+    internal fun ParseTree?.matchesOutputsExpression() = this?.text?.matches(outputsPattern) ?: false
     internal fun ParseTree?.matchesChainedCall(): Boolean {
         if (this == null) return false
         val text = this.text ?: return false

@@ -35,6 +35,7 @@ sealed class LocatedEvent(val location: Location) : Event() {
 
     sealed class PathExpression(location: Location, val name: String, val path: String) : LocatedEvent(location) {
         class FixturesExpression(location: Location, name: String, path: String) : PathExpression(location, name, path)
+        class OutputsExpression(location: Location, name: String, path: String) : PathExpression(location, name, path)
         class ChainedCallExpression(location: Location, val type: Type, name: String, path: String) : PathExpression(location, name, path) {
             enum class Type {
                 Method, Field, Parameter

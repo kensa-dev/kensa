@@ -11,8 +11,6 @@ class Fixtures {
     private val keyToValue = mutableMapOf<String, Any?>()
     private val keyToFixture = mutableMapOf<String, Fixture<*>>()
 
-    fun hasValue(fixture: Fixture<*>): Boolean = synchronized(lock) { keyToValue.containsKey(fixture.key) }
-
     /**
      * Gets the value of a fixture by key.
      * The fixture is created lazily when first accessed.
@@ -29,34 +27,6 @@ class Fixtures {
                 createFixtureValue(fixture)
             } as T
         }
-
-    /**
-     * Sets the value of a primary fixture.
-     * Secondary fixtures cannot be written to.
-     * When a primary fixture is updated, all its dependent secondary fixtures are cleared.
-     *
-     * @param fixture The key of the fixture
-     * @param value The new value for the fixture
-     * @throws IllegalArgumentException if the fixture is a secondary fixture
-     */
-    operator fun <T> set(fixture: PrimaryFixture<T>, value: T) {
-        synchronized(lock) {
-            keyToFixture[fixture.key] = fixture
-            keyToValue[fixture.key] = value
-
-            findDependentFixturesOf(fixture)
-                .map { it.key }
-                .forEach { keyToValue.remove(it) }
-        }
-    }
-
-    fun findDependentFixturesOf(baseFixture: Fixture<*>): List<Fixture<*>> {
-        val directDependencies = keyToFixture.values.filter {
-            it is SecondaryFixture<*> && it.isDependentOf(baseFixture)
-        }
-
-        return directDependencies + directDependencies.flatMap { findDependentFixturesOf(it) }
-    }
 
     private fun <T> createFixtureValue(fixture: Fixture<T>): T = fixture.createValue(this)
 }

@@ -25,7 +25,7 @@ class KotlinWithAcronymsTest : KensaTest, WithHamkrest {
         and(aMethodNameWithFubarAcronym())
     }
 
-    fun aMethodNameWithFttpAcronym(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { _, _ -> }
+    fun aMethodNameWithFttpAcronym(): GivensBuilder = GivensBuilder { }
 
-    fun aMethodNameWithFubarAcronym(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { _, _ -> }
+    fun aMethodNameWithFubarAcronym(): GivensBuilder = GivensBuilder {}
 }

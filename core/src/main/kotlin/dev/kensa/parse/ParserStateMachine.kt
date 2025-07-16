@@ -4,6 +4,7 @@ import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.OutputsExpression
 import dev.kensa.parse.State.*
 import dev.kensa.parse.State.WithAppendable.InNestedWithArguments
 import dev.kensa.parse.State.WithAppendable.InNestedWithArgumentsParameter
@@ -110,6 +111,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
+            on<OutputsExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsValue(event.location, event.name, event.path)
+                InOutputsExpression(currentState)
+            }
             on<ChainedCallExpression> { currentState, event ->
                 sentenceBuilder.append(event)
 
@@ -126,6 +131,24 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             }
             on<EnterExpression> { currentState, event ->
                 InFixturesExpression(currentState)
+            }
+            ignoreAll(any<EnterValueArguments>(),
+                any<ExitValueArguments>(),
+                any<EnterValueArgument>(),
+                any<ExitValueArgument>(),
+                any<Terminal>(),
+                any<Identifier>()
+            )
+        }
+        state<InOutputsExpression> {
+            on<ExitExpression> { currentState, event ->
+                currentState.parentState
+            }
+            on<OutputsExpression> { currentState, event ->
+                InOutputsExpression(currentState)
+            }
+            on<EnterExpression> { currentState, event ->
+                InOutputsExpression(currentState)
             }
             ignoreAll(any<EnterValueArguments>(),
                 any<ExitValueArguments>(),
@@ -182,6 +205,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             on<FixturesExpression> { currentState, event ->
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
+            }
+            on<OutputsExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsValue(event.location, event.name, event.path)
+                InOutputsExpression(currentState)
             }
             on<Identifier> { currentState, event ->
                 sentenceBuilder.append(event)
@@ -299,6 +326,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
+            on<OutputsExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsValue(event.location, event.name, event.path)
+                InOutputsExpression(currentState)
+            }
             on<Identifier> { currentState, event ->
                 sentenceBuilder.append(event)
                 currentState
@@ -321,6 +352,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
         on<FixturesExpression> { currentState, event ->
             currentState.append(event)
             InFixturesExpression(currentState)
+        }
+        on<OutputsExpression> { currentState, event ->
+            currentState.append(event)
+            InOutputsExpression(currentState)
         }
         on<BooleanLiteral> { currentState, event ->
             currentState.apply { append(event) }

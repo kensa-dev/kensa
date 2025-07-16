@@ -10,14 +10,14 @@ import dev.kensa.util.NamedValue
 
 class TestInvocationParser(private val configuration: Configuration) {
 
-    fun parse(context: TestInvocationContext, methodParser: MethodParser): ParsedInvocation =
+    fun parse(testInvocationContext: TestInvocationContext, methodParser: MethodParser): ParsedInvocation =
         try {
-            val parsedMethod = methodParser.parse(context.method)
+            val parsedMethod = methodParser.parse(testInvocationContext.method)
 
             val namedParameterValues = parsedMethod.parameters.descriptors
                 .filterValues { !it.isParameterizedTestDescription }
                 .map { (key, value) ->
-                    NamedValue(key, configuration.renderers.renderValue(value.resolveValue(context.arguments)))
+                    NamedValue(key, configuration.renderers.renderValue(value.resolveValue(testInvocationContext.arguments)))
                 }
 
             val highlightedParameterValues = namedParameterValues.filter { namedValue: NamedValue ->
@@ -25,14 +25,14 @@ class TestInvocationParser(private val configuration: Configuration) {
             }
 
             val highlightedValues = LinkedHashSet<NamedValue>()
-                .plus(highlightedPropertyValues(parsedMethod.properties, context.instance))
+                .plus(highlightedPropertyValues(parsedMethod.properties, testInvocationContext.instance))
                 .plus(highlightedParameterValues)
 
             val tokenFactory = TokenRenderer(
-                context.instance,
-                context.arguments,
+                testInvocationContext.instance,
+                testInvocationContext.arguments,
                 configuration.renderers,
-                FixturesAccessor(context.fixtures),
+                FixtureAndOutputAccessor(testInvocationContext.fixturesAndOutputs),
                 parsedMethod.parameters.descriptors,
                 parsedMethod.properties,
                 parsedMethod.methods,
@@ -43,7 +43,7 @@ class TestInvocationParser(private val configuration: Configuration) {
 
 //                sentences.forEach { println(it.squashedTokens) }
 
-            val parameterizedTestDescription: String? = parsedMethod.parameters.descriptors.values.find { it.isParameterizedTestDescription }?.resolveValue(context.arguments, null)?.toString()
+            val parameterizedTestDescription: String? = parsedMethod.parameters.descriptors.values.find { it.isParameterizedTestDescription }?.resolveValue(testInvocationContext.arguments, null)?.toString()
 
             ParsedInvocation(parsedMethod.indexInSource, parsedMethod.name, namedParameterValues, sentences, highlightedValues, parameterizedTestDescription)
         } catch (e: Exception) {

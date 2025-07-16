@@ -1,7 +1,6 @@
 package dev.kensa.context
 
 import dev.kensa.ActionUnderTest
-import dev.kensa.ActionUnderTestWithFixtures
 import dev.kensa.StateExtractor
 
 object TestContextUtil {
@@ -11,10 +10,6 @@ object TestContextUtil {
 }
 
 class TestContextRunner(private val testContext: TestContext) {
-    fun execute(action: ActionUnderTestWithFixtures) {
-        with(testContext) { action.execute(givens, fixtures, interactions) }
-    }
-
     fun execute(action: ActionUnderTest) {
         with(testContext) { action.execute(givens, interactions) }
     }

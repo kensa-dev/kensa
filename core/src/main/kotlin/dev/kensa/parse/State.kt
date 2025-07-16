@@ -15,6 +15,7 @@ sealed interface State {
     data class InLambda(val parentState: State) : State
     data class InTypeArguments(val parentState: State) : State
     data class InFixturesExpression(val parentState: State) : State
+    data class InOutputsExpression(val parentState: State) : State
     data class InChainedCallExpression(val parentState: State) : State
 
     sealed interface WithAppendable : State {

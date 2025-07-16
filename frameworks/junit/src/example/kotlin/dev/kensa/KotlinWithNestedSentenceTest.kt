@@ -86,8 +86,8 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
         return StateExtractor { interactions: CapturedInteractions? -> aValue }
     }
 
-    private fun somePrerequisites(): GivensBuilderWithFixtures {
-        return GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): GivensBuilder {
+        return GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
     }
 
     @NestedSentence

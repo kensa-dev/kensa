@@ -1,6 +1,6 @@
 package dev.kensa.example
 
-import dev.kensa.GivensBuilderWithFixtures
+import dev.kensa.GivensBuilder
 
 class KotlinWithExpressionFunction {
 
@@ -8,7 +8,7 @@ class KotlinWithExpressionFunction {
         given(someActionNameIsAddedToGivens())
     }
 
-    private fun someActionNameIsAddedToGivens() = GivensBuilderWithFixtures { _, _ -> }
+    private fun someActionNameIsAddedToGivens() = GivensBuilder { }
 
-    private fun given(givensBuilder: GivensBuilderWithFixtures) = Unit
+    private fun given(givensBuilder: GivensBuilder) = Unit
 }

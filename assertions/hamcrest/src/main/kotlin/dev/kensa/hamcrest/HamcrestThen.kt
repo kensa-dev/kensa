@@ -1,7 +1,6 @@
 package dev.kensa.hamcrest
 
 import dev.kensa.StateExtractor
-import dev.kensa.StateExtractorWithFixtures
 import dev.kensa.context.TestContext
 import org.awaitility.kotlin.await
 import org.hamcrest.Matcher
@@ -21,17 +20,5 @@ object HamcrestThen {
     fun <T> thenEventually(timeout: Long = 10, timeUnit: ChronoUnit = SECONDS, context: TestContext, extractor: StateExtractor<T>, matcher: Matcher<in T>) {
         await.atMost(Duration.of(timeout, timeUnit)).untilAsserted { MatcherAssert.assertThat(extractor.execute(context.interactions), matcher) }
         MatcherAssert.assertThat(extractor.execute(context.interactions), matcher)
-    }
-
-    @JvmStatic
-    fun <T> then(context: TestContext, extractor: StateExtractorWithFixtures<T>, matcher: Matcher<in T>) {
-        MatcherAssert.assertThat(extractor.execute(context.fixtures, context.interactions), matcher)
-    }
-
-    @JvmStatic
-    @JvmOverloads
-    fun <T> thenEventually(timeout: Long = 10, timeUnit: ChronoUnit = SECONDS, context: TestContext, extractor: StateExtractorWithFixtures<T>, matcher: Matcher<in T>) {
-        await.atMost(Duration.of(timeout, timeUnit)).untilAsserted { MatcherAssert.assertThat(extractor.execute(context.fixtures, context.interactions), matcher) }
-        MatcherAssert.assertThat(extractor.execute(context.fixtures, context.interactions), matcher)
     }
 }

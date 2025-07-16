@@ -5,7 +5,7 @@ import dev.kensa.state.Givens
 class SomeBuilder {
     fun withSomething(): SomeBuilder = this
 
-    fun build(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("notImportant", "") }
+    fun build(): GivensBuilder = GivensBuilder { givens: Givens -> givens.put("notImportant", "") }
 
     companion object {
         @JvmStatic

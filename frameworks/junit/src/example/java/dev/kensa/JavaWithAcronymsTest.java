@@ -22,13 +22,13 @@ public class JavaWithAcronymsTest implements KensaTest {
         and(aMethodNameWithFubarAcronym());
     }
 
-    GivensBuilderWithFixtures aMethodNameWithFttpAcronym() {
-        return (givens, fixtures) -> {
+    GivensBuilder aMethodNameWithFttpAcronym() {
+        return (givens) -> {
         };
     }
 
-    GivensBuilderWithFixtures aMethodNameWithFubarAcronym() {
-        return (givens, fixtures) -> {
+    GivensBuilder aMethodNameWithFubarAcronym() {
+        return (givens) -> {
         };
     }
 

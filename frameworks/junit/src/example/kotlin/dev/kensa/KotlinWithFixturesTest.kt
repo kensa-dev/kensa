@@ -3,11 +3,13 @@ package dev.kensa
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.startsWith
 import dev.kensa.MoreKotlinTestFixtures.BooleanFixture
+import dev.kensa.fixture.FixtureContainer
+import dev.kensa.fixture.FixtureRegistry.registerFixtures
+import dev.kensa.fixture.KotlinTestFixtures
 import dev.kensa.fixture.KotlinTestFixtures.ChildStringFixture
 import dev.kensa.fixture.KotlinTestFixtures.PublicFixture
 import dev.kensa.fixture.KotlinTestFixtures.StringFixture
-import dev.kensa.fixture.*
-import dev.kensa.fixture.FixtureRegistry.registerFixtures
+import dev.kensa.fixture.fixture
 import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
 import dev.kensa.state.CapturedInteractions
@@ -51,7 +53,7 @@ class KotlinWithFixturesTest : KensaTest, WithHamkrest {
     private fun theStringFixture(): StateExtractor<String> = StateExtractor { interactions: CapturedInteractions -> fixtures[StringFixture] }
     private fun thePrivateSourcedFixture(): StateExtractor<Int> = StateExtractor { interactions: CapturedInteractions -> fixtures[PublicFixture] }
     private fun theFixture(value: String): StateExtractor<String> = StateExtractor { interactions: CapturedInteractions -> value }
-    private fun somePrerequisites() = GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("foo", fixtures[StringFixture]) }
+    private fun somePrerequisites() = GivensBuilder { givens: Givens -> givens.put("foo", fixtures[StringFixture]) }
 
     companion object : FixtureContainer {
         val IntegerFixture = fixture("KotlinIntegerFixture") { 23 }

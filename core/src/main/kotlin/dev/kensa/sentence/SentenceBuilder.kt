@@ -7,6 +7,7 @@ import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.OutputsExpression
 import dev.kensa.parse.Location
 import dev.kensa.sentence.TemplateToken.*
 import dev.kensa.sentence.TemplateToken.Type.*
@@ -65,6 +66,7 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
                 }
 
                 is FixturesExpression -> event.asSentenceToken(FixturesValue)
+                is OutputsExpression -> event.asSentenceToken(OutputsValue)
                 is StringLiteral -> {
                     if (dictionary.isAcronym(event.value)) {
                         SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(StringLiteral, Type.Acronym))
@@ -114,6 +116,11 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
     fun appendFixturesValue(location: Location, name: String, path: String) {
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(FixturesValue)))
+    }
+
+    fun appendOutputsValue(location: Location, name: String, path: String) {
+        lastLocation = tokens.checkLineAndIndent(location, lastLocation)
+        tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(OutputsValue)))
     }
 
     fun append(event: ChainedCallExpression) {

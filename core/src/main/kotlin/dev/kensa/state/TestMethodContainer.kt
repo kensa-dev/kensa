@@ -3,6 +3,7 @@ package dev.kensa.state
 import dev.kensa.Tab
 import dev.kensa.context.TestContext
 import dev.kensa.fixture.Fixtures
+import dev.kensa.outputs.CapturedOutputs
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
@@ -15,7 +16,7 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
     //    val indexInSource: Int by lazy { invocations.first().indexInSource }
     val indexInSource: Int by lazy { invocations.firstOrNull()?.indexInSource ?: 100 }
 
-    fun startTestInvocation(testInstance: Any, arguments: List<Any?>, displayName: String, startTimeMs: Long, fixtures: Fixtures): UUID {
+    fun startTestInvocation(testInstance: Any, arguments: List<Any?>, displayName: String, startTimeMs: Long, fixtures: Fixtures, capturedOutputs: CapturedOutputs): UUID {
         val testId = UUID.randomUUID()
 
         invocationContexts[testId] = TestInvocationContext(
@@ -24,7 +25,8 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
             arguments.toTypedArray(),
             displayName,
             startTimeMs,
-            fixtures
+            fixtures,
+            capturedOutputs
         )
 
         return testId

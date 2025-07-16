@@ -43,7 +43,7 @@ class KotlinFunctionBodyParser(
     override fun enterInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
         with(parseContext) {
             val rhExpression = ctx.rangeExpression(1)
-            if (rhExpression.matchesFixture() || rhExpression.matchesChainedCall()) {
+            if (rhExpression.matchesFixturesExpression() || rhExpression.matchesOutputsExpression() || rhExpression.matchesChainedCall()) {
                 stateMachine.apply(ctx.asEnterExpression())
             }
         }
@@ -52,7 +52,7 @@ class KotlinFunctionBodyParser(
     override fun exitInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
         with(parseContext) {
             val rhExpression = ctx.rangeExpression(1)
-            if (rhExpression.matchesFixture() || rhExpression.matchesChainedCall()) {
+            if (rhExpression.matchesFixturesExpression() || rhExpression.matchesOutputsExpression() || rhExpression.matchesChainedCall()) {
                 stateMachine.apply(ExitExpression)
             }
         }
@@ -60,15 +60,15 @@ class KotlinFunctionBodyParser(
 
     override fun enterRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
         with(parseContext) {
-            if (ctx.matchesFixture() || ctx.matchesChainedCall()) {
-                (ctx.asFixture() ?: ctx.asChainedCall())?.also { stateMachine.apply(it) }
+            if (ctx.matchesFixturesExpression() || ctx.matchesOutputsExpression() || ctx.matchesChainedCall()) {
+                (ctx.asFixture() ?: ctx.asOutputs() ?: ctx.asChainedCall())?.also { stateMachine.apply(it) }
             }
         }
     }
 
     override fun exitRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
         with(parseContext) {
-            if (ctx.matchesFixture() || ctx.matchesChainedCall()) {
+            if (ctx.matchesFixturesExpression() || ctx.matchesOutputsExpression() || ctx.matchesChainedCall()) {
                 stateMachine.apply(ExitExpression)
             }
         }

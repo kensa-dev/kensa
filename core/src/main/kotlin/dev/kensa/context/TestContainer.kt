@@ -1,6 +1,7 @@
 package dev.kensa.context
 
 import dev.kensa.fixture.Fixtures
+import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.state.TestMethodContainer
 import dev.kensa.state.TestState
 import dev.kensa.state.TestState.NotExecuted
@@ -26,8 +27,8 @@ class TestContainer(
 
     fun <T> transform(transformer: (TestContainer) -> T): T = transformer(this)
 
-    fun startTestInvocation(testInstance: Any, method: Method, arguments: List<Any?>, displayName: String, startTimeMs: Long, fixtures: Fixtures): UUID =
-        methodContainers.getValue(method).startTestInvocation(testInstance, arguments, displayName, startTimeMs, fixtures)
+    fun startTestInvocation(testInstance: Any, method: Method, arguments: List<Any?>, displayName: String, startTimeMs: Long, fixtures: Fixtures, capturedOutputs: CapturedOutputs): UUID =
+        methodContainers.getValue(method).startTestInvocation(testInstance, arguments, displayName, startTimeMs, fixtures, capturedOutputs)
 
     fun endTestInvocation(method: Method, testContext: TestContext, testId: UUID, executionException: Throwable?, endTimeMs: Long) {
         methodContainers.getValue(method).endTestInvocation(testContext, testId, executionException, endTimeMs)

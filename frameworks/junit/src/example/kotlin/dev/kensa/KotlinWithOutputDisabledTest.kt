@@ -21,7 +21,7 @@ class KotlinWithOutputDisabledTest : KensaTest, WithHamkrest {
 
     private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { _ -> aValue }
 
-    private fun somePrerequisites(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
 
     private fun someAction(): ActionUnderTest = ActionUnderTest { _, _ -> }
 }

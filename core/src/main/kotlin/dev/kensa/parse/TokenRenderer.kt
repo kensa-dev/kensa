@@ -20,7 +20,7 @@ class TokenRenderer(
     private val testInstance: Any,
     private val arguments: Array<Any?>,
     private val renderers: Renderers,
-    private val fixturesAccessor: FixturesAccessor,
+    private val fixtureAndOutputAccessor: FixtureAndOutputAccessor,
     private val parameters: Map<String, ElementDescriptor>,
     private val properties: Map<String, ElementDescriptor>,
     private val methods: Map<String, ElementDescriptor>,
@@ -34,6 +34,7 @@ class TokenRenderer(
                 token.hasType(MethodValue) -> token.asMethodValue()
                 token.hasType(ParameterValue) -> token.asParameterValue()
                 token.hasType(FixturesValue) -> token.asFixtureValue()
+                token.hasType(OutputsValue) -> token.asOutputValue()
                 token is NestedTemplateToken -> token.asNested()
 
                 else -> token.asRenderedValue()
@@ -95,7 +96,12 @@ class TokenRenderer(
 
     private fun TemplateToken.asFixtureValue() =
         template.split(":").let { (name, path) ->
-            RenderedValueToken(renderers.renderValue(fixturesAccessor.valueOf(name, path)), (types.map { it.asCss() } + emphasis.asCss()).toSortedSet())
+            RenderedValueToken(renderers.renderValue(fixtureAndOutputAccessor.fixtureValue(name, path)), (types.map { it.asCss() } + emphasis.asCss()).toSortedSet())
+        }
+
+    private fun TemplateToken.asOutputValue() =
+        template.split(":").let { (name, path) ->
+            RenderedValueToken(renderers.renderValue(fixtureAndOutputAccessor.outputValue(name, path)), (types.map { it.asCss() } + emphasis.asCss()).toSortedSet())
         }
 
     private fun TemplateToken.asFieldValue(): RenderedToken =
@@ -135,7 +141,7 @@ class TokenRenderer(
         )
 
     private fun RealNestedInvocation.rebuildRenderer() =
-        TokenRenderer(testInstance, this.arguments, renderers, fixturesAccessor, this.parameters, properties, methods, highlightedValues)
+        TokenRenderer(testInstance, this.arguments, renderers, fixtureAndOutputAccessor, this.parameters, properties, methods, highlightedValues)
 
     private fun Type.asCss(): String = "tk-$code"
 

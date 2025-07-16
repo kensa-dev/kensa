@@ -1,12 +1,14 @@
 package dev.kensa.parse
 
 import dev.kensa.ElementDescriptor
+import dev.kensa.FixturesAndOutputs
 import dev.kensa.Highlight
 import dev.kensa.TextStyle.Italic
 import dev.kensa.fixture.FixtureContainer
 import dev.kensa.fixture.FixtureRegistry
 import dev.kensa.fixture.Fixtures
 import dev.kensa.fixture.fixture
+import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.render.Renderers
 import dev.kensa.render.ValueRenderer
 import dev.kensa.sentence.TemplateToken.Type.*
@@ -82,6 +84,7 @@ class TokenRendererTest {
     }
 
     private val fixtures = Fixtures()
+    private val outputs = CapturedOutputs()
 
     private val testInstance = TheTestClass()
 
@@ -89,7 +92,7 @@ class TokenRendererTest {
         testInstance,
         arguments,
         renderers,
-        FixturesAccessor(fixtures),
+        FixtureAndOutputAccessor(FixturesAndOutputs(fixtures, outputs)),
         parameters,
         properties,
         methods,

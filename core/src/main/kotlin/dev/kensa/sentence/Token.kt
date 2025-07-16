@@ -27,6 +27,7 @@ sealed interface TemplateToken {
         Operator("op"),
         ParameterValue("pv"),
         FixturesValue("fv"),
+        OutputsValue("ov"),
         StringLiteral("sl"),
         TextBlock("tb"),
         Word("wd");

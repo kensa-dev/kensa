@@ -13,14 +13,12 @@ class KotlinWithLiteralsTest : KensaTest {
         given(aLiteralOf(null))
         given(aLiteralOf('a'))
         given(aLiteralOf(
-                """
+            """
                 a multiline string
                 """
-            )
+        )
         )
     }
 
-    private fun <T> aLiteralOf(aValue: T?): GivensBuilderWithFixtures {
-        return GivensBuilderWithFixtures { _, _ -> }
-    }
+    private fun <T> aLiteralOf(aValue: T?): GivensBuilder = GivensBuilder { }
 }

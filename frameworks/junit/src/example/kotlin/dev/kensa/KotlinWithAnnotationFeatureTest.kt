@@ -104,13 +104,13 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
     @RenderedValue
     private fun aSentenceValueFunction() = MyThing("myValue")
 
-    private fun someSomethingWith(value: String): GivensBuilderWithFixtures = GivensBuilderWithFixtures { _, _ -> }
+    private fun someSomethingWith(value: String): GivensBuilder = GivensBuilder { }
 
     private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { interactions: CapturedInteractions -> aValue }
 
-    private fun somePrerequisites(): GivensBuilderWithFixtures = GivensBuilderWithFixtures { givens: Givens, _ -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
 
-    private fun somePrerequisitesWith(vararg values: String): GivensBuilderWithFixtures = GivensBuilderWithFixtures { givens: Givens, _ ->
+    private fun somePrerequisitesWith(vararg values: String): GivensBuilder = GivensBuilder { givens: Givens ->
         values.forEach { givens.put("key_$it", it) }
     }
 
