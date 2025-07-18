@@ -27,6 +27,7 @@ export const Section = {
 
 export const Tab = {
     Givens: 'givens',
+    CapturedOutputs: 'capturedOutputs',
     CapturedInteractions: 'capturedInteractions',
     Parameters: 'parameters',
     SequenceDiagram: 'sequenceDiagram',

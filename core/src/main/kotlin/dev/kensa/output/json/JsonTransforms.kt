@@ -45,6 +45,7 @@ object JsonTransforms {
                         .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
                         .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
                         .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
+                        .add("capturedOutputs", asJsonArray(i.outputs, nvAsJson(renderers)))
                         .add("sequenceDiagram", i.sequenceDiagram?.toString())
                         .add("state", i.state.description)
                         .add("executionException", executionExceptionFrom(i))

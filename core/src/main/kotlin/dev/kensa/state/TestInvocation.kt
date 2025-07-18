@@ -1,5 +1,6 @@
 package dev.kensa.state
 
+import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.parse.ParsedInvocation
 import dev.kensa.render.diagram.SequenceDiagram
 import dev.kensa.sentence.RenderedSentence
@@ -16,7 +17,8 @@ class TestInvocation(
     val sequenceDiagram: SequenceDiagram?,
     parsedInvocation: ParsedInvocation,
     interactions: CapturedInteractions,
-    givens: Givens
+    givens: Givens,
+    outputs: CapturedOutputs
 ) {
     val sentences: List<RenderedSentence> = parsedInvocation.sentences
     val parameters: Collection<NamedValue> = parsedInvocation.namedParameterValues
@@ -24,6 +26,8 @@ class TestInvocation(
     val highlightedValues: Collection<NamedValue> = parsedInvocation.highlightedValues
     val indexInSource : Int = parsedInvocation.indexInSource
     val state: TestState
+
+    val outputs = outputs.values()
 
     private val _givens = givens
     val givens: Set<KensaMap.Entry>

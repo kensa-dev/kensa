@@ -8,6 +8,7 @@ import dev.kensa.outputs.CapturedOutputsRegistry;
 import org.junit.jupiter.api.Test;
 
 import static dev.kensa.JavaCapturedOutputs.STRING_OUTPUT;
+import static dev.kensa.MoreJavaCapturedOutputs.BOOLEAN_OUTPUT;
 import static dev.kensa.outputs.CapturedOutputsKt.createCapturedOutput;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -17,12 +18,17 @@ public class JavaWithCapturedOutputsTest implements KensaTest, WithHamcrest {
         CapturedOutputsRegistry.registerCapturedOutputs(JavaCapturedOutputs.class, MoreJavaCapturedOutputs.class);
     }
 
+    private String theStringOutput = "theOutput";
+    private Boolean theBooleanOutput = true;
+
     @Test
     void test1() {
         given(somePrerequisites());
 
+        whenever(theOutputsAreGenerated());
+
         then(theStringOutput(), is(outputs(STRING_OUTPUT)));
-        then(theBooleanFixture(), is(outputs(MoreJavaCapturedOutputs.BOOLEAN_OUTPUT)));
+        then(theBooleanFixture(), is(outputs(BOOLEAN_OUTPUT)));
     }
 
     private Action<GivensContext> somePrerequisites() {
@@ -30,12 +36,19 @@ public class JavaWithCapturedOutputsTest implements KensaTest, WithHamcrest {
         };
     }
 
+    private Action<ActionContext> theOutputsAreGenerated() {
+        return (context) -> {
+            context.getOutputs().put(STRING_OUTPUT, theStringOutput);
+            context.getOutputs().put(BOOLEAN_OUTPUT, theBooleanOutput);
+        };
+    }
+
     private StateCollector<String> theStringOutput() {
-        return interactions -> outputs(STRING_OUTPUT);
+        return context -> context.getOutputs().get(STRING_OUTPUT);
     }
 
     private StateCollector<Boolean> theBooleanFixture() {
-        return interactions -> outputs(MoreJavaCapturedOutputs.BOOLEAN_OUTPUT);
+        return context -> context.getOutputs().get(BOOLEAN_OUTPUT);
     }
 }
 

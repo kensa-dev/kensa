@@ -105,6 +105,7 @@ enum class Section {
 
 enum class Tab {
     CapturedInteractions,
+    CapturedOutputs,
     Givens,
     Parameters,
     SequenceDiagram,

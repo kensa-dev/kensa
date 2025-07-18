@@ -35,6 +35,7 @@
           ],
           "givens": [],
           "capturedInteractions": [],
+          "capturedOutputs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

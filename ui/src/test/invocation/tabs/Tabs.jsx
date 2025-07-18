@@ -23,6 +23,10 @@ const TabContent = ({selected, invocation}) => {
         case 'capturedInteractions':
             return <CapturedInteractions capturedInteractions={invocation.capturedInteractions}
                                          highlights={invocation.highlights}/>
+        case 'capturedOutputs':
+            return <NamedValueTable showHeader={true}
+                                    highlights={invocation.highlights}
+                                    namedValues={invocation.capturedOutputs}/>
         case 'sequenceDiagram':
             return <SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}
                                     capturedInteractions={invocation.capturedInteractions}

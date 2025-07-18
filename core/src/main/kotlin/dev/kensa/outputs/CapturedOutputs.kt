@@ -1,5 +1,6 @@
 package dev.kensa.outputs
 
+import dev.kensa.util.NamedValue
 import kotlin.jvm.kotlin
 import kotlin.reflect.KClass
 
@@ -8,6 +9,8 @@ class CapturedOutput<T : Any>(val key: String, val type: KClass<T>)
 class CapturedOutputs {
     private val lock = Any()
     private val values: MutableMap<String, Any> = LinkedHashMap()
+
+    fun values(): Set<NamedValue> = values.entries.map { NamedValue(it.key, it.value) }.toSet()
 
     fun contains(key: String): Boolean = synchronized(lock) { values.containsKey(key) }
     fun contains(key: CapturedOutput<*>): Boolean = contains(key.key)

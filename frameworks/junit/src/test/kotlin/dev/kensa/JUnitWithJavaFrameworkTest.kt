@@ -104,6 +104,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
                 JavaWithLiteralsTest::class,
                 JavaWithTypeArgumentsTest::class,
                 JavaWithFixturesTest::class,
+                JavaWithCapturedOutputsTest::class,
             ]
         )
         fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {

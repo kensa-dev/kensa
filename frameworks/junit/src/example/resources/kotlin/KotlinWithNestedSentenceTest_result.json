@@ -154,6 +154,7 @@
             }
           ],
           "capturedInteractions": [],
+          "capturedOutputs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -558,6 +559,7 @@
           "parameters": [],
           "givens": [],
           "capturedInteractions": [],
+          "capturedOutputs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -708,6 +710,7 @@
             }
           ],
           "capturedInteractions": [],
+          "capturedOutputs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -950,6 +953,7 @@
             }
           ],
           "capturedInteractions": [],
+          "capturedOutputs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

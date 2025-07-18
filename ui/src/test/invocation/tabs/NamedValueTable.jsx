@@ -14,7 +14,7 @@ export function NamedValueTable({showHeader, highlights, namedValues}) {
                 showHeader &&
                 <thead>
                 <tr>
-                    <th>Name</th>
+                    <th className="is-narrow">Name</th>
                     <th>Value</th>
                 </tr>
                 </thead>

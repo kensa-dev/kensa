@@ -1,22 +1,22 @@
 {
-  "testClass": "dev.kensa.JavaWithAcronymsTest",
-  "displayName": "Java With Acronyms Test",
+  "testClass": "dev.kensa.KotlinWithCapturedOutputsTest",
+  "displayName": "Kotlin With Captured Outputs Test",
   "state": "Passed",
   "notes": null,
   "minimumUniquePackageName": "",
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "19 Ms",
-      "testMethod": "passingTest",
-      "displayName": "Passing Test",
+      "elapsedTime": "5 Ms",
+      "testMethod": "test1",
+      "displayName": "Test 1",
       "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "19 Ms",
+          "elapsedTime": "5 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -30,19 +30,7 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a method name with"
-              },
-              {
-                "types": [
-                  "tk-ac"
-                ],
-                "value": "FTTP"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "acronym"
+                "value": "some prerequisites"
               }
             ],
             [
@@ -56,36 +44,77 @@
                 "types": [
                   "tk-kw"
                 ],
-                "value": "And"
+                "value": "When"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "a method name with"
+                "value": "the outputs are generated"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
               },
               {
                 "types": [
-                  "tk-ac"
+                  "tk-kw"
                 ],
-                "value": "FUBAR"
+                "value": "Then"
               },
               {
                 "types": [
                   "tk-wd"
                 ],
-                "value": "acronym"
+                "value": "the string output equal to"
+              },
+              {
+                "types": [
+                  "tk-ov"
+                ],
+                "value": "theOutput"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the boolean fixture equal to"
+              },
+              {
+                "types": [
+                  "tk-ov"
+                ],
+                "value": "true"
               }
             ]
           ],
           "parameters": [],
           "givens": [],
           "capturedInteractions": [],
-          "capturedOutputs": [],
+          "capturedOutputs": [
+            {
+              "JavaStringOutput": "theOutput"
+            },
+            {
+              "JavaBooleanOutput": "true"
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "passingTest()"
+          "displayName": "test1()"
         }
       ]
     }

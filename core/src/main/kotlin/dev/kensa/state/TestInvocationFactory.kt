@@ -15,7 +15,7 @@ class TestInvocationFactory(
     private val sequenceDiagramFactory: SequenceDiagramFactory
 ) {
 
-    fun create(elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?, displayName: String): TestInvocation =
+    fun create(elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?, displayName: String) =
         TestInvocation(
             elapsedTime,
             displayName,
@@ -23,7 +23,8 @@ class TestInvocationFactory(
             sequenceDiagramFactory.create(testContext.interactions),
             testInvocationContext.parse(),
             testContext.interactions,
-            testContext.givens
+            testContext.givens,
+            testContext.outputs
         )
 
     private fun TestInvocationContext.parse(): ParsedInvocation =
