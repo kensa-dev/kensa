@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.14 - Interim testing release ** DO NOT USE **
+- Rethinking fixtures. No longer mutable.
+- Introduce CapturedOutputs
+
 ### v0.5.13
 - Improved nested sentences:
   - Parameters are no longer bound to share the parent test arguments (requires *kensa-agent*)
