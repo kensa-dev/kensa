@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - 'master'
-      - '0.5'
+    paths-ignore:
+      - 'kensa.dev/**'
   pull_request:
     branches:
       - '*'
+    paths-ignore:
+      - 'kensa.dev/**'
+
 jobs:
   build:
     runs-on: ubuntu-latest
