@@ -4,7 +4,8 @@ import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.OutputsExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByKeyExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByNameExpression
 import dev.kensa.parse.State.*
 import dev.kensa.parse.State.WithAppendable.InNestedWithArguments
 import dev.kensa.parse.State.WithAppendable.InNestedWithArgumentsParameter
@@ -111,8 +112,12 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
-            on<OutputsExpression> { currentState, event ->
-                sentenceBuilder.appendOutputsValue(event.location, event.name, event.path)
+            on<OutputsByNameExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsByNameValue(event.location, event.name, event.path)
+                InOutputsExpression(currentState)
+            }
+            on<OutputsByKeyExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsByKeyValue(event.location, event.name, event.path)
                 InOutputsExpression(currentState)
             }
             on<ChainedCallExpression> { currentState, event ->
@@ -144,7 +149,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             on<ExitExpression> { currentState, event ->
                 currentState.parentState
             }
-            on<OutputsExpression> { currentState, event ->
+            on<OutputsByNameExpression> { currentState, event ->
+                InOutputsExpression(currentState)
+            }
+            on<OutputsByKeyExpression> { currentState, event ->
                 InOutputsExpression(currentState)
             }
             on<EnterExpression> { currentState, event ->
@@ -155,7 +163,8 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 any<EnterValueArgument>(),
                 any<ExitValueArgument>(),
                 any<Terminal>(),
-                any<Identifier>()
+                any<Identifier>(),
+                any<StringLiteral>(),
             )
         }
         state<InChainedCallExpression> {
@@ -206,8 +215,12 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
-            on<OutputsExpression> { currentState, event ->
-                sentenceBuilder.appendOutputsValue(event.location, event.name, event.path)
+            on<OutputsByNameExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsByNameValue(event.location, event.name, event.path)
+                InOutputsExpression(currentState)
+            }
+            on<OutputsByKeyExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsByKeyValue(event.location, event.name, event.path)
                 InOutputsExpression(currentState)
             }
             on<Identifier> { currentState, event ->
@@ -326,8 +339,12 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
-            on<OutputsExpression> { currentState, event ->
-                sentenceBuilder.appendOutputsValue(event.location, event.name, event.path)
+            on<OutputsByNameExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsByNameValue(event.location, event.name, event.path)
+                InOutputsExpression(currentState)
+            }
+            on<OutputsByKeyExpression> { currentState, event ->
+                sentenceBuilder.appendOutputsByKeyValue(event.location, event.name, event.path)
                 InOutputsExpression(currentState)
             }
             on<Identifier> { currentState, event ->
@@ -353,8 +370,12 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             currentState.append(event)
             InFixturesExpression(currentState)
         }
-        on<OutputsExpression> { currentState, event ->
+        on<OutputsByNameExpression> { currentState, event ->
             currentState.append(event)
+            InOutputsExpression(currentState)
+        }
+        on<OutputsByKeyExpression> { currentState, event ->
+            sentenceBuilder.appendOutputsByKeyValue(event.location, event.name, event.path)
             InOutputsExpression(currentState)
         }
         on<BooleanLiteral> { currentState, event ->

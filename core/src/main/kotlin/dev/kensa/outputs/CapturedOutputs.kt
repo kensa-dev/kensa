@@ -32,7 +32,7 @@ class CapturedOutputs {
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getOrNull(key: String): T? =
         synchronized(lock) {
-            values[key] as T
+            values[key] as? T
         }
 
     @Suppress("UNCHECKED_CAST")

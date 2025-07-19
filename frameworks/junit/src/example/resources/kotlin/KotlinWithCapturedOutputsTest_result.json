@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "5 Ms",
+      "elapsedTime": "3 Ms",
       "testMethod": "test1",
       "displayName": "Test 1",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "5 Ms",
+          "elapsedTime": "3 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -105,16 +105,128 @@
           "capturedInteractions": [],
           "capturedOutputs": [
             {
-              "JavaStringOutput": "theOutput"
+              "KotlinStringOutput": "theOutput"
             },
             {
-              "JavaBooleanOutput": "true"
+              "KotlinBooleanOutput": "true"
             }
           ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test1()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "test2",
+      "displayName": "Test 2",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some prerequisites"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the outputs are generated"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the string output equal to"
+              },
+              {
+                "types": [
+                  "tk-ov"
+                ],
+                "value": "theOutput"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the boolean fixture equal to"
+              },
+              {
+                "types": [
+                  "tk-ov"
+                ],
+                "value": "true"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [
+            {
+              "KotlinStringOutput": "theOutput"
+            },
+            {
+              "KotlinBooleanOutput": "true"
+            }
+          ],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test2()"
         }
       ]
     }

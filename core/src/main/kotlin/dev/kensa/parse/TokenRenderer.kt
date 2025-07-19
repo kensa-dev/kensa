@@ -34,7 +34,8 @@ class TokenRenderer(
                 token.hasType(MethodValue) -> token.asMethodValue()
                 token.hasType(ParameterValue) -> token.asParameterValue()
                 token.hasType(FixturesValue) -> token.asFixtureValue()
-                token.hasType(OutputsValue) -> token.asOutputValue()
+                token.hasType(OutputsValueByName) -> token.asOutputValueByName()
+                token.hasType(OutputsValueByKey) -> token.asOutputValueByKey()
                 token is NestedTemplateToken -> token.asNested()
 
                 else -> token.asRenderedValue()
@@ -95,13 +96,17 @@ class TokenRenderer(
         )
 
     private fun TemplateToken.asFixtureValue() =
-        template.split(":").let { (name, path) ->
-            RenderedValueToken(renderers.renderValue(fixtureAndOutputAccessor.fixtureValue(name, path)), (types.map { it.asCss() } + emphasis.asCss()).toSortedSet())
-        }
+        asRenderedValueToken { name, path -> fixtureAndOutputAccessor.fixtureValue(name, path) }
 
-    private fun TemplateToken.asOutputValue() =
+    private fun TemplateToken.asOutputValueByName() =
+        asRenderedValueToken { name, path -> fixtureAndOutputAccessor.outputValueByName(name, path) }
+
+    private fun TemplateToken.asOutputValueByKey() =
+        asRenderedValueToken { name, path -> fixtureAndOutputAccessor.outputValueByKey(name, path) }
+
+    private fun TemplateToken.asRenderedValueToken(getIt: (String, String) -> Any?) =
         template.split(":").let { (name, path) ->
-            RenderedValueToken(renderers.renderValue(fixtureAndOutputAccessor.outputValue(name, path)), (types.map { it.asCss() } + emphasis.asCss()).toSortedSet())
+            RenderedValueToken(renderers.renderValue(getIt(name, path)), (types.map { it.asCss() } + emphasis.asCss()).toSortedSet())
         }
 
     private fun TemplateToken.asFieldValue(): RenderedToken =

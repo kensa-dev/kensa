@@ -11,7 +11,8 @@ interface WithFixturesAndOutputs : WithFixtures {
     val outputs: CapturedOutputs get() = fixturesAndOutputs.outputs
     override val fixtures get() = fixturesAndOutputs.fixtures
 
-    fun <T : Any> outputs(output: CapturedOutput<T>) = fixturesAndOutputs.outputs[output]
+    fun <T : Any> outputs(key: String) = fixturesAndOutputs.outputs[key] as? T
+    fun <T : Any> outputs(name: CapturedOutput<T>) = fixturesAndOutputs.outputs[name]
     override fun <T> fixtures(fixture: Fixture<T>) = fixtures[fixture]
 }
 

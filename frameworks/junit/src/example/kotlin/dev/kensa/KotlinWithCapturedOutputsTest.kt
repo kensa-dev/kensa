@@ -29,24 +29,34 @@ class KotlinWithCapturedOutputsTest : KensaTest, WithHamkrest {
         then(theBooleanFixture(), equalTo(outputs(MoreKotlinCapturedOutputs.BooleanOutput)))
     }
 
+    @Test
+    fun test2() {
+        given(somePrerequisites())
+
+        whenever(theOutputsAreGenerated())
+
+        then(theStringOutput(), equalTo(outputs("KotlinStringOutput")))
+        then(theBooleanFixture(), equalTo(outputs("KotlinBooleanOutput")))
+    }
+
     private fun somePrerequisites(): Action<GivensContext> = Action { context: GivensContext? -> }
 
     private fun theOutputsAreGenerated(): Action<ActionContext> {
-        return Action { context: ActionContext ->
-            context.outputs.put(StringOutput, theStringOutput)
-            context.outputs.put(BooleanOutput, theBooleanOutput)
+        return Action { (_, _, outputs) ->
+            outputs.put(StringOutput, theStringOutput)
+            outputs.put(BooleanOutput, theBooleanOutput)
         }
     }
 
     private fun theStringOutput() = StateCollector { it.outputs[StringOutput] }
 
-    private fun theBooleanFixture() = StateCollector {it.outputs[BooleanOutput] }
+    private fun theBooleanFixture() = StateCollector { it.outputs[BooleanOutput] }
 }
 
 internal object KotlinCapturedOutputs : CapturedOutputContainer {
-    val StringOutput = capturedOutput<String>("JavaStringOutput")
+    val StringOutput = capturedOutput<String>("KotlinStringOutput")
 }
 
 internal object MoreKotlinCapturedOutputs : CapturedOutputContainer {
-    val BooleanOutput = capturedOutput<Boolean>("JavaBooleanOutput")
+    val BooleanOutput = capturedOutput<Boolean>("KotlinBooleanOutput")
 }

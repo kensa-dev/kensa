@@ -15,11 +15,16 @@ class FixtureAndOutputAccessor(private val fixturesAndOutputs: FixturesAndOutput
         return resolvePath(fixturesAndOutputs.fixtures[key], path)
     }
 
-    fun outputValue(outputName: String, path: String?): Any? {
+    fun outputValueByName(outputName: String, path: String?): Any? {
         val key: CapturedOutput<Any> = CapturedOutputsRegistry.lookupCapturedOutput(outputName)
 
-        return fixturesAndOutputs.outputs[key]?.let {
+        return fixturesAndOutputs.outputs.getOrNull(key)?.let {
             resolvePath(it, path)
         }
     }
+
+    fun outputValueByKey(key: String, path: String?): Any? =
+        fixturesAndOutputs.outputs.getOrNull<Any>(key)?.let {
+            resolvePath(it, path)
+        }
 }
