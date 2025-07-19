@@ -17,8 +17,8 @@ class KensaContext(private val testContainerFactory: TestContainerFactory) {
     fun createTestContainer(testClass: Class<*>, displayName: String, commonBasePackage: String): TestContainer =
         testContainerFactory.createFor(testClass, displayName, commonBasePackage).also { _testContainers.getOrPut(testClass) { it } }
 
-    fun startTestInvocation(testInstance: Any, testClass: Class<*>, testMethod: Method, arguments: List<Any?>, displayName: String, startTimeMs: Long, fixtures: Fixtures, capturedOutputs: CapturedOutputs): UUID =
-        _testContainers.getValue(testClass).startTestInvocation(testInstance, testMethod, arguments, displayName, startTimeMs, fixtures, capturedOutputs)
+    fun startTestInvocation(testInstance: Any, testClass: Class<*>, testMethod: Method, arguments: List<Any?>, displayName: String, startTimeMs: Long, testContext: TestContext): UUID =
+        _testContainers.getValue(testClass).startTestInvocation(testInstance, testMethod, arguments, displayName, startTimeMs, testContext)
 
     fun endTestInvocation(testClass: Class<*>, testMethod: Method, testContext: TestContext, testId: UUID, executionException: Throwable?, endTimeMs: Long) {
         _testContainers.getValue(testClass).endTestInvocation(testMethod, testContext, testId, executionException, endTimeMs)

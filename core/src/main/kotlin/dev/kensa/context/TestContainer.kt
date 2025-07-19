@@ -27,8 +27,8 @@ class TestContainer(
 
     fun <T> transform(transformer: (TestContainer) -> T): T = transformer(this)
 
-    fun startTestInvocation(testInstance: Any, method: Method, arguments: List<Any?>, displayName: String, startTimeMs: Long, fixtures: Fixtures, capturedOutputs: CapturedOutputs): UUID =
-        methodContainers.getValue(method).startTestInvocation(testInstance, arguments, displayName, startTimeMs, fixtures, capturedOutputs)
+    fun startTestInvocation(testInstance: Any, method: Method, arguments: List<Any?>, displayName: String, startTimeMs: Long, testContext: TestContext): UUID =
+        methodContainers.getValue(method).startTestInvocation(testInstance, arguments, displayName, startTimeMs, testContext)
 
     fun endTestInvocation(method: Method, testContext: TestContext, testId: UUID, executionException: Throwable?, endTimeMs: Long) {
         methodContainers.getValue(method).endTestInvocation(testContext, testId, executionException, endTimeMs)

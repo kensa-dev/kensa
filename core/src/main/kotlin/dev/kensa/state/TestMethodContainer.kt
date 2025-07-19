@@ -16,7 +16,7 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
     //    val indexInSource: Int by lazy { invocations.first().indexInSource }
     val indexInSource: Int by lazy { invocations.firstOrNull()?.indexInSource ?: 100 }
 
-    fun startTestInvocation(testInstance: Any, arguments: List<Any?>, displayName: String, startTimeMs: Long, fixtures: Fixtures, capturedOutputs: CapturedOutputs): UUID {
+    fun startTestInvocation(testInstance: Any, arguments: List<Any?>, displayName: String, startTimeMs: Long, testContext: TestContext): UUID {
         val testId = UUID.randomUUID()
 
         invocationContexts[testId] = TestInvocationContext(
@@ -25,8 +25,8 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
             arguments.toTypedArray(),
             displayName,
             startTimeMs,
-            fixtures,
-            capturedOutputs
+            testContext.fixtures,
+            testContext.outputs
         )
 
         return testId

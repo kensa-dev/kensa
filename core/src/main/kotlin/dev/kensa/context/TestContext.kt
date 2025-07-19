@@ -59,8 +59,8 @@ class TestContext(val givens: Givens, val interactions: CapturedInteractions, ov
     }
 
     companion object {
-        operator fun invoke(testClass: Class<*>, testMethod: Method, setupStrategy: SetupStrategy, fixtures: Fixtures, capturedOutputs: CapturedOutputs) =
-            TestContext(Givens(), CapturedInteractions(testMethod.setupStrategy(testClass.setupStrategy(setupStrategy))), fixtures, capturedOutputs)
+        operator fun invoke(testClass: Class<*>, testMethod: Method, setupStrategy: SetupStrategy) =
+            TestContext(Givens(), CapturedInteractions(testMethod.setupStrategy(testClass.setupStrategy(setupStrategy))), Fixtures(), CapturedOutputs())
 
         private fun AnnotatedElement.setupStrategy(default: SetupStrategy): SetupStrategy = findAnnotation<UseSetupStrategy>()?.value ?: default
     }

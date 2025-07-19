@@ -48,7 +48,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
 
     override fun beforeEach(context: ExtensionContext) {
         with(context) {
-            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy, context.fixtures, context.capturedOutputs).also { it ->
+            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy).also { it ->
                 TestContextHolder.bindToCurrentThread(it)
                 kensaStore.put(TEST_CONTEXT_KEY, it)
             }
@@ -82,8 +82,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                         arguments,
                         context.displayName,
                         System.currentTimeMillis(),
-                        context.fixtures,
-                        context.capturedOutputs
+                        TestContextHolder.testContext(),
                     )
                 )
             }
@@ -156,20 +155,6 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                 ResultWriter::class.java
             )
 
-        internal val ExtensionContext.fixtures
-            get() = kensaStore.getOrComputeIfAbsent(
-                KENSA_FIXTURES_KEY,
-                { Fixtures() },
-                Fixtures::class.java
-            )
-
-        internal val ExtensionContext.capturedOutputs
-            get() = kensaStore.getOrComputeIfAbsent(
-                KENSA_OUTPUTS_KEY,
-                { CapturedOutputs() },
-                CapturedOutputs::class.java
-            )
-
         private fun testInvocationFactory(configuration: Configuration) = TestInvocationFactory(
             TestInvocationParser(configuration),
             JavaMethodParser(isJavaClassTest, isJavaInterfaceTest, configuration),
@@ -197,8 +182,6 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
         private val kensaNamespace: ExtensionContext.Namespace = ExtensionContext.Namespace.create("dev", "kensa")
 
         private const val KENSA_CONTEXT_KEY = "KensaContext"
-        private const val KENSA_FIXTURES_KEY = "KensaFixtures"
-        private const val KENSA_OUTPUTS_KEY = "KensaOutputs"
         private const val KENSA_CONFIGURATION_KEY = "KensaConfiguration"
         private const val TEST_CONTEXT_KEY = "TestContext"
         private const val TEST_CONTAINER_KEY = "TestContainer"
