@@ -1,6 +1,5 @@
 package dev.kensa.parse
 
-import dev.kensa.ElementDescriptor
 import dev.kensa.FixturesAndOutputs
 import dev.kensa.Highlight
 import dev.kensa.TextStyle.Italic

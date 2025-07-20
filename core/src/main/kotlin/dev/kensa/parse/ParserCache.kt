@@ -1,6 +1,5 @@
 package dev.kensa.parse
 
-import dev.kensa.ElementDescriptor
 import dev.kensa.sentence.TemplateSentence
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap

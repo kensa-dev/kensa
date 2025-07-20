@@ -7,9 +7,23 @@ import dev.kensa.util.Attributes.Companion.emptyAttributes
 import dev.kensa.util.Attributes.Key.Group
 import dev.kensa.util.KensaMap
 
+/**
+ * Defines how setup interactions are rendered in the Sequence Diagram.
+ */
 enum class SetupStrategy {
+    /**
+     * Setup interactions are grouped into separate boxes from the main interactions under test.
+     */
     Grouped,
+
+    /**
+     * Setup interactions are not displayed in the Sequence Diagram.
+     */
     Ignored,
+
+    /**
+     * Setup interactions are displayed but not grouped into a box.
+     */
     Ungrouped,
 }
 

@@ -1,7 +1,16 @@
-package dev.kensa
+package dev.kensa.parse
 
-import dev.kensa.util.*
-import java.lang.System.err
+import dev.kensa.Highlight
+import dev.kensa.ParameterizedTestDescription
+import dev.kensa.RenderedValue
+import dev.kensa.RenderedValueContainer
+import dev.kensa.util.findAnnotation
+import dev.kensa.util.findKotlinOrJavaAnnotation
+import dev.kensa.util.hasAnnotation
+import dev.kensa.util.hasKotlinOrJavaAnnotation
+import dev.kensa.util.invokeMethodOrNull
+import dev.kensa.util.resolvePath
+import dev.kensa.util.valueOfKotlinPropertyIn
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import kotlin.reflect.KProperty
@@ -50,7 +59,7 @@ sealed interface ElementDescriptor {
             val initialValue: Any = try {
                 target.invokeMethodOrNull(method)
             } catch (e: Exception) {
-                err.println("Accessor threw an exception: "); e.printStackTrace(err); null
+                System.err.println("Accessor threw an exception: "); e.printStackTrace(System.err); null
             } ?: return null
 
             return resolvePath(initialValue, path)
@@ -68,7 +77,7 @@ sealed interface ElementDescriptor {
             val initialValue = try {
                 property.valueOfKotlinPropertyIn(target)
             } catch (e: Exception) {
-                err.println("Accessor threw an exception: "); e.printStackTrace(err); null
+                System.err.println("Accessor threw an exception: "); e.printStackTrace(System.err); null
             } ?: return null
 
             return resolvePath(initialValue, path)
@@ -89,4 +98,3 @@ sealed interface ElementDescriptor {
         }
     }
 }
-

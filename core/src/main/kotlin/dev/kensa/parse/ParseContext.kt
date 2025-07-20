@@ -1,13 +1,10 @@
 package dev.kensa.parse
 
-import dev.kensa.ElementDescriptor
 import dev.kensa.KensaException
 import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.Field
-import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.Method
-import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.Parameter
+import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree

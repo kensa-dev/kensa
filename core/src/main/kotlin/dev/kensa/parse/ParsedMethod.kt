@@ -1,6 +1,5 @@
 package dev.kensa.parse
 
-import dev.kensa.ElementDescriptor
 import dev.kensa.sentence.TemplateSentence
 
 data class ParsedMethod(

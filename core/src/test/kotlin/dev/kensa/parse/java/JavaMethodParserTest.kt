@@ -1,7 +1,7 @@
 package dev.kensa.parse.java
 
 import dev.kensa.Configuration
-import dev.kensa.ElementDescriptor
+import dev.kensa.parse.ElementDescriptor
 import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.context.NestedInvocationContext
 import dev.kensa.example.JavaWithInterface

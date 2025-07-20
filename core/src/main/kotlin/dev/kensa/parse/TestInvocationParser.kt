@@ -1,7 +1,6 @@
 package dev.kensa.parse
 
 import dev.kensa.Configuration
-import dev.kensa.ElementDescriptor
 import dev.kensa.KensaException
 import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.TemplateSentence

@@ -1,10 +1,9 @@
 package dev.kensa.parse
 
-import dev.kensa.ElementDescriptor
-import dev.kensa.ElementDescriptor.ResolveHolderElementDescriptor
 import dev.kensa.KensaException
-import dev.kensa.context.RealNestedInvocation
 import dev.kensa.context.NestedInvocationContextHolder.nestedSentenceInvocationContext
+import dev.kensa.context.RealNestedInvocation
+import dev.kensa.parse.ElementDescriptor.ResolveHolderElementDescriptor
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedToken
 import dev.kensa.sentence.RenderedToken.RenderedNestedToken
@@ -14,7 +13,6 @@ import dev.kensa.sentence.TemplateToken.NestedTemplateToken
 import dev.kensa.sentence.TemplateToken.Type
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.util.NamedValue
-import java.util.ArrayList
 
 class TokenRenderer(
     private val testInstance: Any,

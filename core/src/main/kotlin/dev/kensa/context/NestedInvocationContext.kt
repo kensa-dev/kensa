@@ -1,6 +1,6 @@
 package dev.kensa.context
 
-import dev.kensa.ElementDescriptor
+import dev.kensa.parse.ElementDescriptor
 import dev.kensa.parse.ParsedNestedMethod
 import java.lang.reflect.Method
 
