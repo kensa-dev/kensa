@@ -13,10 +13,10 @@ import kotlin.DeprecationLevel.WARNING
 
 class TestContext(val givens: Givens, val interactions: CapturedInteractions, override val fixtures: Fixtures, override val outputs: CapturedOutputs) : WithFixturesAndOutputs {
 
-    val collectorContext = CollectorContext(fixtures, interactions, outputs)
     override val fixturesAndOutputs = FixturesAndOutputs(fixtures, outputs)
-    private val givensContext = GivensContext(fixtures)
-    private val actionContext = ActionContext(fixtures, interactions, outputs)
+    val givensContext = GivensContext(fixtures)
+    val actionContext = ActionContext(fixtures, interactions, outputs)
+    val collectorContext = CollectorContext(fixtures, interactions, outputs)
 
     fun given(action: Action<GivensContext>) {
         action.execute(givensContext)
