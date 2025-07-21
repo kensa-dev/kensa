@@ -1,3 +1,4 @@
+import "./NamedValueTable.scss";
 import React from "react";
 import {highlight} from "../Highlighting";
 
@@ -26,7 +27,7 @@ export function NamedValueTable({showHeader, highlights, namedValues}) {
                         <tr key={idx}>
                             <td>{name}</td>
                             <td>
-                                <div ref={setCodeRef.bind(this)}>{value}</div>
+                                <div className="named-value" ref={setCodeRef.bind(this)}>{value}</div>
                             </td>
                         </tr>
                     )
