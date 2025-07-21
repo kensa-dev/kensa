@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.15
+- Captured Outputs can be rendered by the string key as well as typed name
+
 ### v0.5.14 - Interim testing release ** DO NOT USE **
 - Rethinking fixtures. No longer mutable.
 - Introduce CapturedOutputs
