@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.16
+- AssertJ with StateCollectors
+- TestContextUtil with Action & StateCollector
+
 ### v0.5.15
 - Captured Outputs can be rendered by the string key as well as typed name
 
