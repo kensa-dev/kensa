@@ -1,5 +1,7 @@
 import org.gradle.api.JavaVersion.VERSION_17
+import org.gradle.api.JavaVersion.VERSION_21
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -26,17 +28,20 @@ subprojects {
         apply(plugin = "maven-publish")
         apply(plugin = "signing")
 
+        var javaVersion = if(name == "adoptabot") VERSION_21 else VERSION_17
+        var kotlinJvmTarget = if(name == "adoptabot") JVM_21 else JVM_17
+
         plugins.withId("org.jetbrains.kotlin.jvm") {
             configure<JavaPluginExtension> {
-                sourceCompatibility = VERSION_17
-                targetCompatibility = VERSION_17
+                sourceCompatibility = javaVersion
+                targetCompatibility = javaVersion
             }
         }
 
         tasks {
             withType<KotlinCompile> {
                 compilerOptions {
-                    jvmTarget.set(JVM_17)
+                    jvmTarget.set(kotlinJvmTarget)
                     freeCompilerArgs.addAll(listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts", "-Xnon-local-break-continue"))
                 }
             }

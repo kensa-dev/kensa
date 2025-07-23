@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/assertions/kotest" />
             <option value="$PROJECT_DIR$/bom" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/examples/adoptabot" />
             <option value="$PROJECT_DIR$/frameworks/junit" />
             <option value="$PROJECT_DIR$/frameworks/kotest" />
             <option value="$PROJECT_DIR$/frameworks/testng" />

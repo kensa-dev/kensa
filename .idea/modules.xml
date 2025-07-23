@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/examples/adoptabot/kensa.adoptabot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/examples/adoptabot/kensa.adoptabot.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/frameworks/junit/kensa.framework-junit.example.iml" filepath="$PROJECT_DIR$/.idea/modules/frameworks/junit/kensa.framework-junit.example.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/frameworks/junit/kensa.framework-junit.test.iml" filepath="$PROJECT_DIR$/.idea/modules/frameworks/junit/kensa.framework-junit.test.iml" />
     </modules>

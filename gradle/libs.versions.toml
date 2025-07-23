@@ -18,6 +18,9 @@ nexusPublish = "2.0.0"
 jsoup = "1.19.1"
 byteBuddy = "1.14.3"
 
+http4k = "6.15.1.0"
+jackson = "2.14.2"
+
 [libraries]
 kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
@@ -44,6 +47,13 @@ junitPlatformEngine = { module = "org.junit.platform:junit-platform-engine" }
 junitPlatformTestKit = { module = "org.junit.platform:junit-platform-testkit" }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
 byteBuddyCore = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
+
+## for adoptabot example
+http4kCore = { module = "org.http4k:http4k-core", version.ref = "http4k" }
+http4kJackson = { module = "org.http4k:http4k-format-jackson", version.ref = "http4k" }
+http4kClientOkHttp = { module = "org.http4k:http4k-client-okhttp", version.ref = "http4k" }
+http4kKotest = { module = "org.http4k:http4k-testing-kotest ", version.ref = "http4k" }
+jacksonKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
