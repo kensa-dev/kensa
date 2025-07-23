@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.17
+- Preserve whitespace in value block of tables
+- Add CapturedOutputs to GivensContext to allow chaining of givens steps
+
 ### v0.5.16
 - AssertJ with StateCollectors
 - TestContextUtil with Action & StateCollector
