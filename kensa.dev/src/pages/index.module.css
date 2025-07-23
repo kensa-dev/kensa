@@ -1,0 +1,37 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:root {
+  --logo-fill: black; /* Default text fill for light theme */
+}
+
+[data-theme='dark'] {
+  --logo-fill: white; /* Text fill for dark theme */
+}
+
+.invertLogo {
+  width: 100px;
+  height: 100px;
+  fill: var(--logo-fill); /* Apply dynamic fill color */
+}
