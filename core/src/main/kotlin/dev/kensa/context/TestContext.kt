@@ -2,8 +2,8 @@ package dev.kensa.context
 
 import dev.kensa.*
 import dev.kensa.fixture.Fixtures
-import dev.kensa.state.CapturedInteractions
 import dev.kensa.outputs.CapturedOutputs
+import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Givens
 import dev.kensa.state.SetupStrategy
 import dev.kensa.util.findAnnotation
@@ -14,7 +14,7 @@ import kotlin.DeprecationLevel.WARNING
 class TestContext(val givens: Givens, val interactions: CapturedInteractions, override val fixtures: Fixtures, override val outputs: CapturedOutputs) : WithFixturesAndOutputs {
 
     override val fixturesAndOutputs = FixturesAndOutputs(fixtures, outputs)
-    val givensContext = GivensContext(fixtures)
+    val givensContext = GivensContext(fixtures, outputs)
     val actionContext = ActionContext(fixtures, interactions, outputs)
     val collectorContext = CollectorContext(fixtures, interactions, outputs)
 
