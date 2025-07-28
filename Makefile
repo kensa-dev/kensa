@@ -55,4 +55,4 @@ publish-to-sonatype-snapshot:
 create-release-note:
 	@echo "Creating Release Note"
 	@echo "Changelog:" > RN.md
-	@sed -n "/^### v${GIT_TAG_NAME}$$/,/###/p" CHANGELOG.md | sed '1d' | sed '$$d' | sed '$$d' >> RN.md
+	@sed -n "/^### v${GIT_TAG_NAME}[[:space:]]*.*$$/,/###/p" CHANGELOG.md | sed '1d' | sed '$$d' | sed '$$d' >> RN.md
