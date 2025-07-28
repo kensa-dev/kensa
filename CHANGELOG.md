@@ -1,5 +1,11 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.18
+- Removing some unused deprecations
+- Improve exception handling for `onMatch` in ThenSpec
+- Adding Adoptabot example project to be used in docs
+- Adding more docs
+
 ### v0.5.17
 - Preserve whitespace in value block of tables
 - Add CapturedOutputs to GivensContext to allow chaining of givens steps
