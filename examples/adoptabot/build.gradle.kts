@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.junitJupiterApi)
     implementation(libs.junitJupiterEngine)
 
+    testImplementation(project(":assertions-hamcrest"))
     testImplementation(project(":assertions-kotest"))
     testImplementation(project(":framework-junit"))
 }

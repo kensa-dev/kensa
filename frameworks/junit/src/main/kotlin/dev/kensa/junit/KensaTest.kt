@@ -55,14 +55,6 @@ interface KensaTest : WithFixturesAndOutputs {
         testContext().whenever(action)
     }
 
-    @Deprecated("use when(Action) instead", ReplaceWith("when(action)"), WARNING)
-    fun `when`(action: ActionUnderTestWithFixtures) = whenever(action)
-
-    @Deprecated("use when(Action) instead", ReplaceWith("when(action)"), WARNING)
-    fun whenever(action: ActionUnderTestWithFixtures) {
-        testContext().whenever(action)
-    }
-
     fun disableInteractionTestGroup() {
         testContext().disableInteractionTestGroup()
     }

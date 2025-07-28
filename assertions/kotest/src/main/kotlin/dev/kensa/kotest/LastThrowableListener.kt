@@ -3,7 +3,7 @@ package dev.kensa.kotest
 import io.kotest.assertions.nondeterministic.EventuallyListener
 
 internal class LastThrowableListener : EventuallyListener {
-    var lastThrowable: Throwable? = null
+    lateinit var lastThrowable: Throwable
         private set
 
     override suspend fun invoke(iteration: Int, throwable: Throwable) {

@@ -49,11 +49,6 @@ class TestContext(val givens: Givens, val interactions: CapturedInteractions, ov
         action.execute(givens, interactions)
     }
 
-    fun whenever(action: ActionUnderTestWithFixtures) {
-        interactions.isUnderTest = true
-        action.execute(givens, fixtures, interactions)
-    }
-
     fun disableInteractionTestGroup() {
         interactions.isUnderTestEnabled = false
     }
