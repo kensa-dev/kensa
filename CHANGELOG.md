@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.20
+- Fix an issue with Nested Sentences not parsing correctly when top level expression
+
 ### v0.5.19
 - Adding a copy button to rendered captured output
 
