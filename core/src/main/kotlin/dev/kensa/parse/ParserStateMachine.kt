@@ -291,6 +291,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             on<ExitValueArgument> { currentState, event ->
                 currentState.parentState
             }
+
             registerAppendableEvents()
 
             ignoreAll(
@@ -354,6 +355,15 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             on<Method> { currentState, event ->
                 sentenceBuilder.append(event)
                 currentState
+            }
+            on<Nested> { currentState, event ->
+                sentenceBuilder.beginNested(event.location, event.name, event.sentences)
+                sentenceBuilder.finishNested()
+                currentState
+            }
+            on<NestedWithArguments> { currentState, event ->
+                sentenceBuilder.beginNested(event.location, event.name, event.sentences)
+                InNestedWithArguments(currentState, event.location, event.name, event.sentences)
             }
             on<EnterExpression> { currentState, event ->
                 InExpression(currentState)

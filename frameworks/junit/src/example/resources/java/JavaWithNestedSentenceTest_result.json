@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "2 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -28,9 +28,32 @@
               },
               {
                 "types": [
-                  "tk-wd"
+                  "tk-ex"
                 ],
-                "value": "some prerequisites"
+                "value": "some Prerequisites",
+                "parameterTokens": [],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "givens givens put"
+                    },
+                    {
+                      "types": [
+                        "tk-sl"
+                      ],
+                      "value": "foo"
+                    },
+                    {
+                      "types": [
+                        "tk-sl"
+                      ],
+                      "value": "bar"
+                    }
+                  ]
+                ]
               }
             ],
             [
@@ -120,7 +143,7 @@
       ]
     },
     {
-      "elapsedTime": "20 Ms",
+      "elapsedTime": "14 Ms",
       "testMethod": "testWithNestedScenarioParameter",
       "displayName": "Test With Nested Scenario Parameter",
       "notes": null,
@@ -129,7 +152,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "20 Ms",
+          "elapsedTime": "14 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -141,9 +164,32 @@
               },
               {
                 "types": [
-                  "tk-wd"
+                  "tk-ex"
                 ],
-                "value": "some prerequisites"
+                "value": "some Prerequisites",
+                "parameterTokens": [],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "givens givens put"
+                    },
+                    {
+                      "types": [
+                        "tk-sl"
+                      ],
+                      "value": "foo"
+                    },
+                    {
+                      "types": [
+                        "tk-sl"
+                      ],
+                      "value": "bar"
+                    }
+                  ]
+                ]
               }
             ],
             [
@@ -247,6 +293,154 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithNestedScenarioParameter()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithNestedSentenceExpression",
+      "displayName": "Test With Nested Sentence Expression",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "given Some Prerequisites",
+                "parameterTokens": [],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-kw"
+                      ],
+                      "value": "Given"
+                    },
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "givens givens put"
+                    },
+                    {
+                      "types": [
+                        "tk-sl"
+                      ],
+                      "value": "foo"
+                    },
+                    {
+                      "types": [
+                        "tk-sl"
+                      ],
+                      "value": "bar"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "when Some Action",
+                "parameterTokens": [
+                  {
+                    "types": [
+                      "tk-fv"
+                    ],
+                    "value": "withAScenarioContaining aStringValue"
+                  }
+                ],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action under test"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "aStringValue"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When"
+              },
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "some Action",
+                "parameterTokens": [
+                  {
+                    "types": [
+                      "tk-fv"
+                    ],
+                    "value": "withAScenarioContaining Meh"
+                  }
+                ],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action under test"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "Meh"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "foo": "bar"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithNestedSentenceExpression()"
         }
       ]
     }

@@ -37,13 +37,33 @@ public class JavaWithNestedSentenceTest implements KensaTest, WithHamcrest {
         whenever(someAction(myScenario2));
     }
 
+    @Test
+    void testWithNestedSentenceExpression() {
+        givenSomePrerequisites();
+
+        wheneverSomeAction(myScenario);
+
+        whenever(someAction(myScenario2));
+    }
+
     @NotNull
     private StateExtractor<String> theExtractedValue() {
         return interactions -> aValue;
     }
 
+    @NestedSentence
+    private void givenSomePrerequisites() {
+         given((GivensBuilder) (givens) -> givens.put("foo", "bar"));
+    }
+
+    @NestedSentence
     private GivensBuilder somePrerequisites() {
         return (givens) -> givens.put("foo", "bar");
+    }
+
+    @NestedSentence
+    private ActionUnderTest wheneverSomeAction(@RenderedValue MyScenario aScenarioOf) {
+        return someActionUnderTest(aScenarioOf.getStringValue());
     }
 
     @NestedSentence

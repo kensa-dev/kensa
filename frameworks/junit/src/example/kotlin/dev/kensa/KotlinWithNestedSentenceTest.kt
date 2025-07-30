@@ -8,8 +8,6 @@ import dev.kensa.fixture.KotlinTestFixtures.StringFixture
 import dev.kensa.fixture.MyScenario
 import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
-import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 
 class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
@@ -41,10 +39,12 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
 
     @Test
     fun nestedWithMultiLineParameters() {
-        whenever(someActionWith2(
-            parameter1 = "my parameter",
-            parameter2 = "my parameter2"
-        ))
+        whenever(
+            someActionWith2(
+                parameter1 = "my parameter",
+                parameter2 = "my parameter2"
+            )
+        )
 
         myLambdaBlock { someActionWith2(parameter1 = myString(), parameter2 = myString()) }
         myLambdaBlock {
@@ -71,55 +71,75 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
     fun nestedWithFixtureAndScenarioParameters() {
         given(somePrerequisites())
 
-        whenever(someActionWith3(
-            parameter1 = myScenario.stringValue,
-            parameter2 = fixtures(StringFixture),
-            parameter3 = fixtures(ChildStringFixture)
-        ))
+        whenever(
+            someActionWith3(
+                parameter1 = myScenario.stringValue,
+                parameter2 = fixtures(StringFixture),
+                parameter3 = fixtures(ChildStringFixture)
+            )
+        )
 
         then(theExtractedValue(), equalTo(aValue))
     }
 
+    @Test
+    fun nestedWithNestedExpression() {
+        givenSomePrerequisites()
+
+        wheneverSomeActionWith(aScenarioOf = myScenario)
+
+        then(theExtractedValue(), equalTo(aValue))
+    }
+
+    @NestedSentence
+    private fun givenSomePrerequisites() {
+        given(somePrerequisites())
+    }
+
+    @NestedSentence
+    private fun wheneverSomeActionWith(@RenderedValue aScenarioOf: MyScenario) {
+        whenever(someAction(aScenarioOf))
+    }
+
     private fun myLambdaBlock(block: () -> Unit) = block()
 
-    private fun theExtractedValue(): StateExtractor<String?> {
-        return StateExtractor { interactions: CapturedInteractions? -> aValue }
+    private fun theExtractedValue(): StateCollector<String?> {
+        return StateCollector { aValue }
     }
 
-    private fun somePrerequisites(): GivensBuilder {
-        return GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
-    }
-
-    @NestedSentence
-    private fun someActionWith(@RenderedValue parameter1: String): ActionUnderTest {
-        return someActionUnderTest(parameter1)
+    private fun somePrerequisites(): Action<GivensContext> {
+        return Action { }
     }
 
     @NestedSentence
-    private fun someActionWith2(@RenderedValue parameter1: String, @RenderedValue parameter2: String): ActionUnderTest {
+    private fun someActionWith(@RenderedValue parameter1: String): Action<ActionContext> {
+        return someAction(parameter1)
+    }
+
+    @NestedSentence
+    private fun someActionWith2(@RenderedValue parameter1: String, @RenderedValue parameter2: String): Action<ActionContext> {
         someActionWith(parameter2)
-        return someActionUnderTest(parameter1)
+        return someAction(parameter1)
     }
 
     @NestedSentence
-    private fun someActionWith3(@RenderedValue parameter1: String, @RenderedValue parameter2: String, @RenderedValue parameter3: String): ActionUnderTest {
+    private fun someActionWith3(@RenderedValue parameter1: String, @RenderedValue parameter2: String, @RenderedValue parameter3: String): Action<ActionContext> {
         someActionWith(parameter2)
         someActionWith(parameter3)
-        return someActionUnderTest(parameter1)
+        return someAction(parameter1)
     }
 
     @NestedSentence
-    private fun someAction(@RenderedValue aScenarioOf: MyScenario): ActionUnderTest {
-        return someActionUnderTest(aScenarioOf.stringValue)
+    private fun someAction(@RenderedValue aScenarioOf: MyScenario): Action<ActionContext> {
+        return someAction(aScenarioOf.stringValue)
     }
 
     @NestedSentence
-    private fun someActionNoParameters(): ActionUnderTest {
-        return someActionUnderTest("anAction")
+    private fun someActionNoParameters(): Action<ActionContext> {
+        return someAction("anAction")
     }
 
-    private fun someActionUnderTest(withAParam: String): ActionUnderTest {
-        return ActionUnderTest { _, _ -> }
+    private fun someAction(withAParam: String): Action<ActionContext> {
+        return Action { }
     }
-
 }
