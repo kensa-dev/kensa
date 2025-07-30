@@ -51,6 +51,8 @@ subprojects {
 
                 systemProperty("junit.jupiter.execution.parallel.enabled", "true")
                 systemProperty("junit.jupiter.execution.parallel.config.strategy", "dynamic")
+
+                jvmArgumentProviders.add(CommandLineArgumentProvider { listOf("-Djava.awt.headless=true") })
             }
 
             if (names.contains("javadoc")) {
