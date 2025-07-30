@@ -32,7 +32,9 @@ data class ActionContext(val fixtures: Fixtures, val interactions: CapturedInter
  * @property interactions The captured interactions available during state collection.
  * @property outputs The outputs available for capturing during state collection.
  */
-data class CollectorContext(val fixtures: Fixtures, val interactions: CapturedInteractions, val outputs: CapturedOutputs)
+data class CollectorContext(val fixtures: Fixtures, val interactions: CapturedInteractions, val outputs: CapturedOutputs) {
+    val fixturesAndOutputs = FixturesAndOutputs(fixtures, outputs)
+}
 
 /**
  * A wrapper for fixtures and outputs, as these two components are often used together in extension functions.

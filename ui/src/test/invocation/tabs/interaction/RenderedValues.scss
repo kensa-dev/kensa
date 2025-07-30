@@ -1,0 +1,32 @@
+.rendered-value {
+  position: relative;
+
+  .bd-copy {
+    opacity: 0;
+    position: absolute;
+    right: .75em;
+    top: .75em;
+    transition-duration: var(--bulma-duration);
+    transition-property: opacity, background-color;
+  }
+
+  &:hover {
+    .bd-copy {
+      opacity: 0.7;
+    }
+  }
+}
+
+.bd-copy:hover {
+  opacity: 1 !important;
+  background-color: var(--theme-color-hover);
+}
+
+.bd-copy, .bd-show {
+  background-color: var(--theme-color);
+  border: none;
+  border-radius: .5em !important;
+  color: var(--hl-background);
+  font-size: 1em;
+  font-weight: var(--bulma-weight-semibold);
+}

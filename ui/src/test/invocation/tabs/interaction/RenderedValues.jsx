@@ -1,6 +1,9 @@
 import React, {createRef, useEffect, useState} from "react";
 import Lowlight from "react-lowlight";
 import {highlight} from "../../Highlighting";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCopy} from "@fortawesome/free-solid-svg-icons";
+import "./RenderedValues.scss"
 
 const RenderedValue = ({highlights, value}) => {
     const interactionRef = createRef();
@@ -8,14 +11,32 @@ const RenderedValue = ({highlights, value}) => {
 
     useEffect(() => {
         const parent = interactionRef.current.children[0].firstChild
-
         highlight(language, parent, highlights)
     }, []);
 
-    return <div className={"rendered-value"} ref={interactionRef}>
-        <Lowlight className={"scrollable-value"} language={language} value={value.value}/>
-    </div>
-}
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(value.value);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+    };
+
+    return (
+        <div
+            className="rendered-value"
+            ref={interactionRef}
+            style={{position: 'relative'}}
+        >
+            <button className="button bd-copy" onClick={handleCopy}>
+                <span className="icon">
+                    <FontAwesomeIcon icon={faCopy}/>
+                </span>
+            </button>
+            <Lowlight className="scrollable-value" language={language} value={value.value}/>
+        </div>
+    );
+};
 
 const RenderedValues = ({values, highlights}) => {
 
