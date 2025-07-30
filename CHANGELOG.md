@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.19
+- Adding a copy button to rendered captured output
+
 ### v0.5.18
 - Removing some unused deprecations
 - Improve exception handling for `onMatch` in ThenSpec
