@@ -25,7 +25,7 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
     @RenderedValue
     private val myScenario2 = MyScenario("Meh")
 
-    private fun myString(): String = "myStringThing"
+    private fun myString(foo: String = ""): String = "myStringThing"
 
     @Test
     fun simpleNested() {
@@ -46,11 +46,11 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
             )
         )
 
-        myLambdaBlock { someActionWith2(parameter1 = myString(), parameter2 = myString()) }
+        myLambdaBlock { someActionWith2(parameter1 = myString(), parameter2 = myString("Foo")) }
         myLambdaBlock {
             someActionWith2(
-                parameter1 = myString(),
-                parameter2 = myString()
+                parameter1 = myString("1"),
+                parameter2 = myString("2")
             )
         }
 

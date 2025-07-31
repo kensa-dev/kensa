@@ -373,6 +373,12 @@
                       "tk-id"
                     ],
                     "value": "myString"
+                  },
+                  {
+                    "types": [
+                      "tk-sl"
+                    ],
+                    "value": "Foo"
                   }
                 ],
                 "tokens": [
@@ -482,6 +488,12 @@
                   },
                   {
                     "types": [
+                      "tk-sl"
+                    ],
+                    "value": "1"
+                  },
+                  {
+                    "types": [
                       "tk-nl"
                     ],
                     "value": ""
@@ -521,6 +533,12 @@
                       "tk-id"
                     ],
                     "value": "myString"
+                  },
+                  {
+                    "types": [
+                      "tk-sl"
+                    ],
+                    "value": "2"
                   }
                 ],
                 "tokens": [
@@ -741,7 +759,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "nestedWithFixtureAndScenarioParameters",
       "displayName": "Nested With Fixture And Scenario Parameters",
       "notes": null,
@@ -750,7 +768,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -1016,7 +1034,7 @@
       ]
     },
     {
-      "elapsedTime": "3 Ms",
+      "elapsedTime": "4 Ms",
       "testMethod": "nestedWithNestedExpression",
       "displayName": "Nested With Nested Expression",
       "notes": null,
@@ -1025,7 +1043,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "3 Ms",
+          "elapsedTime": "4 Ms",
           "highlights": [],
           "sentences": [
             [

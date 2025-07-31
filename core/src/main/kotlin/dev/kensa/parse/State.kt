@@ -21,7 +21,7 @@ sealed interface State {
     sealed interface WithAppendable : State {
         fun append(event: LocatedEvent)
 
-        data class InNestedWithArgumentsParameter(val parentState: InNestedWithArguments) : WithAppendable {
+        data class InNestedWithArgumentsParameter(val parentState: WithAppendable) : WithAppendable {
             override fun append(event: LocatedEvent) {
                 parentState.append(event)
             }

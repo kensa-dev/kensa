@@ -291,6 +291,12 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             on<ExitValueArgument> { currentState, event ->
                 currentState.parentState
             }
+            on<EnterValueArguments> { currentState, event ->
+                InNestedWithArgumentsParameter(currentState)
+            }
+            on<ExitValueArguments> { currentState, event ->
+                currentState.parentState
+            }
 
             registerAppendableEvents()
 
@@ -299,8 +305,6 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 any<EnterExpression>(),
                 any<ExitExpression>(),
                 any<EnterValueArgument>(),
-                any<EnterValueArguments>(),
-                any<ExitValueArguments>(),
             )
         }
         state<InNestedWithArguments> {
@@ -317,7 +321,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
 
             registerAppendableEvents()
 
-            ignoreAll(any<Terminal>(), any<EnterExpression>(), any<ExitExpression>())
+            ignoreAll(any<Terminal>(), any<EnterExpression>(), any<ExitExpression>(), any<ExitValueArgument>())
         }
         state<InTypeArguments> {
             on<ExitTypeArguments> { currentState, event ->
