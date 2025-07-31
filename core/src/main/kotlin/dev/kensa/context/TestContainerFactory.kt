@@ -38,7 +38,7 @@ class TestContainerFactory(
         TestMethodContainer(
             testInvocationFactory,
             this,
-            deriveDisplayName { normalisedPlatformName.unCamel() },
+            deriveDisplayName { derivedTestName },
             notes(),
             issues(),
             initialState(),

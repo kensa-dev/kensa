@@ -1,0 +1,192 @@
+{
+  "testClass": "dev.kensa.KotlinWithVariousNamingTest",
+  "displayName": "Kotlin With Various Naming Test",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "myTest1",
+      "displayName": "My Named Test 1",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "My Named Test 1"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test1",
+      "displayName": "Test 1",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test1()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test 1",
+      "displayName": "test 1",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test 1()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "Test 1",
+      "displayName": "Test 1",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "Test 1()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "Test 1 🤡",
+      "displayName": "Test 1 🤡",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "Test 1 🤡()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "Test 1 🤡😱",
+      "displayName": "Test 1 🤡😱",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [
+            {
+              "value": "one"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] one"
+        },
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [
+            {
+              "value": "two"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[2] two"
+        },
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [],
+          "parameters": [
+            {
+              "value": "three 3️⃣"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[3] three 3️⃣"
+        }
+      ]
+    }
+  ]
+}

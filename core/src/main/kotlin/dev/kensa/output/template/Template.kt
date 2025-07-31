@@ -57,7 +57,7 @@ sealed class FileTemplate(mode: Mode, configuration: Configuration, private val 
         private var indexCounter = 1
 
         fun addIndex(container: TestContainer) {
-            add("indices", container.transform(toIndexJson("test-result-${indexCounter}++").andThen(toJsonString()).andThen(::Index)))
+            add("indices", container.transform(toIndexJson("test-result-${indexCounter++}").andThen(toJsonString()).andThen(::Index)))
         }
     }
 
