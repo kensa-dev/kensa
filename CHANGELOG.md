@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.21
+- Adding better support for Kotlin backticked test names.
+- Fix issue with Nested Sentences with parameters that are function calls with parameters.
+
 ### v0.5.20
 - Fix an issue with Nested Sentences not parsing correctly when top level expression
 
