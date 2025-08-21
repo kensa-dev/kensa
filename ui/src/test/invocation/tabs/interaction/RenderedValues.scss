@@ -1,32 +1,70 @@
 .rendered-value {
   position: relative;
 
-  .bd-copy {
-    opacity: 0;
+  .controls {
+    display: flex;
+    align-items: center;
     position: absolute;
-    right: .75em;
     top: .75em;
-    transition-duration: var(--bulma-duration);
-    transition-property: opacity, background-color;
+    right: 2em;
+    z-index: 10;
+    background-color: #fff;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity var(--bulma-duration);
+    min-width: auto;
+    gap: 0.5em;
   }
 
-  &:hover {
-    .bd-copy {
-      opacity: 0.7;
+  &:hover .controls {
+    opacity: 1;
+  }
+
+  .controls:hover,
+  .controls:focus-within {
+    opacity: 1 !important;
+  }
+
+  .scrollable-container {
+    position: relative;
+  }
+
+  &.maximized {
+    .controls {
+      opacity: 1;
+      position: fixed;
+      top: calc(5vh + 0.75rem);
+      right: calc(5vw + 2.5rem);
+      z-index: 1003;
+    }
+
+    .scrollable-container {
+      position: fixed;
+      top: 5vh;
+      left: 5vw;
+      width: 90vw;
+      height: 90vh;
+      z-index: 1002;
+      background-color: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      padding: 2rem;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .scrollable-value {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      overflow: auto;
     }
   }
 }
 
-.bd-copy:hover {
-  opacity: 1 !important;
-  background-color: var(--theme-color-hover);
-}
-
-.bd-copy, .bd-show {
-  background-color: var(--theme-color);
-  border: none;
-  border-radius: .5em !important;
-  color: var(--hl-background);
-  font-size: 1em;
-  font-weight: var(--bulma-weight-semibold);
+.search-highlight {
+  background-color: yellow;
+  color: black;
 }

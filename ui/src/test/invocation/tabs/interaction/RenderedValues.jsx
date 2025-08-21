@@ -1,20 +1,191 @@
-import React, {createRef, useEffect, useState} from "react";
+import React, {createRef, memo, useEffect, useMemo, useState} from "react";
 import Lowlight from "react-lowlight";
 import {highlight} from "../../Highlighting";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCopy} from "@fortawesome/free-solid-svg-icons";
-import "./RenderedValues.scss"
+import {faCode, faCopy, faFileLines, faMaximize, faMinimize, faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
+import "./RenderedValues.scss";
 
-const RenderedValue = ({highlights, value}) => {
+const escapeHtml = (s) => s.replace(/[&<>"']/g, (ch) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch]));
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const buildRawHighlightedHtml = (text, query, matchIndex) => {
+    if (!query || matchIndex < 0) return escapeHtml(text);
+    const pattern = new RegExp(escapeRegex(query), "gi");
+    let count = -1;
+    return escapeHtml(text).replace(pattern, (m) => {
+        count++;
+        if (count === matchIndex) {
+            return `<span class="search-highlight">${m}</span>`;
+        }
+        return m;
+    });
+};
+
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => clearTimeout(handler);
+    }, [value]);
+    return debouncedValue;
+};
+
+const unhighlight = (root) => {
+    const span = root?.querySelector('.search-highlight');
+    if (span) {
+        const parent = span.parentNode;
+        while (span.firstChild) {
+            parent.insertBefore(span.firstChild, span);
+        }
+        parent.removeChild(span);
+        parent.normalize();
+    }
+};
+
+const getAllTextNodes = (root) => {
+    const textNodes = [];
+    const stack = [root];
+    while (stack.length) {
+        const node = stack.pop();
+        if (node.nodeType === 3) {
+            textNodes.push(node);
+        } else {
+            for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                stack.push(node.childNodes[i]);
+            }
+        }
+    }
+    return textNodes;
+};
+
+const findAllMatches = (root, query, maxMatches = Infinity) => {
+    if (!query) return [];
+    const matches = [];
+    const textNodes = getAllTextNodes(root);
+    let count = 0;
+    for (const textNode of textNodes) {
+        const text = textNode.data;
+        if (!text) continue;
+        const lowerText = text.toLowerCase();
+        const lowerQuery = query.toLowerCase();
+        let index = 0;
+        while ((index = lowerText.indexOf(lowerQuery, index)) !== -1) {
+            matches.push({textNode, start: index, length: query.length});
+            index += lowerQuery.length;
+            count++;
+            if (count >= maxMatches) return matches;
+        }
+    }
+    return matches;
+};
+
+const findTextMatches = (text, query, maxMatches = Infinity) => {
+    if (!query) return [];
+    const matches = [];
+    let index = 0;
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    let count = 0;
+    while ((index = lowerText.indexOf(lowerQuery, index)) !== -1) {
+        matches.push({start: index, length: query.length});
+        index += lowerQuery.length;
+        count++;
+        if (count >= maxMatches) break;
+    }
+    return matches;
+};
+
+const highlightMatch = ({textNode, start, length}) => {
+    let current = textNode;
+    const end = start + length;
+    const after = current.splitText(end);
+    const match = current.splitText(start);
+    const span = document.createElement('span');
+    span.className = 'search-highlight';
+    span.appendChild(match);
+    current.parentNode.insertBefore(span, after);
+};
+
+const RenderedValueComponent = ({highlights, value, searchQuery, setSearchQuery}) => {
     const interactionRef = createRef();
+    const [isMaximised, setIsMaximised] = useState(false);
+    const [isRaw, setIsRaw] = useState(false);
+    const [matches, setMatches] = useState([]);
+    const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
     const language = value.language ? value.language : "plainText";
 
-    useEffect(() => {
-        const parent = interactionRef.current.children[0].firstChild
-        highlight(language, parent, highlights)
-    }, []);
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-    const handleCopy = async () => {
+    useEffect(() => {
+        if (isRaw) return;
+        const parent = interactionRef.current?.children[1].firstChild;
+        if (parent) highlight(language, parent, highlights);
+    }, [highlights, language, isRaw]);
+
+    useEffect(() => {
+        const root = interactionRef.current?.querySelector('.scrollable-value');
+        if (!root) return;
+
+        unhighlight(root);
+        setMatches([]);
+        setCurrentMatchIndex(-1);
+
+        if (!debouncedSearchQuery) return;
+
+        const newMatches = isRaw
+            ? findTextMatches(value.value, debouncedSearchQuery)
+            : findAllMatches(root, debouncedSearchQuery);
+
+        setMatches(newMatches);
+        setCurrentMatchIndex(newMatches.length > 0 ? 0 : -1);
+    }, [debouncedSearchQuery, isRaw]);
+
+    useEffect(() => {
+        if (currentMatchIndex < 0) return;
+        const root = interactionRef.current?.querySelector('.scrollable-value');
+        if (!root) return;
+
+        if (!isRaw) {
+            const match = matches[currentMatchIndex];
+            if (match) {
+                highlightMatch(match);
+            }
+        }
+
+        const highlightEl = root.querySelector('.search-highlight');
+        if (highlightEl) {
+            highlightEl.scrollIntoView({block: 'center', inline: 'nearest', behavior: 'smooth'});
+        }
+    }, [currentMatchIndex, matches]);
+
+    const rawInnerHtml = useMemo(() => ({
+        __html: buildRawHighlightedHtml(value.value, debouncedSearchQuery, currentMatchIndex)
+    }), [value.value, debouncedSearchQuery, currentMatchIndex]);
+
+    useEffect(() => {
+        if (!isRaw) return;
+        const root = interactionRef.current?.querySelector('.scrollable-value');
+        const highlightEl = root?.querySelector('.search-highlight');
+        if (highlightEl) {
+            highlightEl.scrollIntoView({block: 'center', inline: 'nearest', behavior: 'smooth'});
+        }
+    }, [rawInnerHtml, isRaw]);
+
+    const navigateMatch = (direction) => {
+        if (matches.length === 0) return;
+        const root = interactionRef.current?.querySelector('.scrollable-value');
+        if (!isRaw) {
+            unhighlight(root);
+        }
+        let newIndex = currentMatchIndex + direction;
+        if (newIndex < 0) newIndex = matches.length - 1;
+        if (newIndex >= matches.length) newIndex = 0;
+        setCurrentMatchIndex(newIndex);
+    };
+
+    const onCopy = async () => {
         try {
             await navigator.clipboard.writeText(value.value);
         } catch (err) {
@@ -22,56 +193,203 @@ const RenderedValue = ({highlights, value}) => {
         }
     };
 
+    const toggleMaximise = () => setIsMaximised(!isMaximised);
+    const onRaw = () => setIsRaw(!isRaw);
+
     return (
         <div
-            className="rendered-value"
+            className={`rendered-value ${isMaximised ? 'maximized' : ''}`}
             ref={interactionRef}
-            style={{position: 'relative'}}
+            tabIndex={isMaximised ? 0 : -1}
+            onKeyDown={(e) => {
+                if (e.key === "Escape" && isMaximised) {
+                    setIsMaximised(false);
+                    e.stopPropagation();
+                }
+            }}
         >
-            <button className="button bd-copy" onClick={handleCopy}>
-                <span className="icon">
-                    <FontAwesomeIcon icon={faCopy}/>
-                </span>
-            </button>
-            <Lowlight className="scrollable-value" language={language} value={value.value}/>
+            <Controls
+                onRaw={onRaw}
+                toggleMaximise={toggleMaximise}
+                onCopy={onCopy}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                isMaximised={isMaximised}
+                isRaw={isRaw}
+                interactionRef={interactionRef}
+                navigateMatch={navigateMatch}
+                matchCount={matches.length}
+                currentMatchIndex={currentMatchIndex}
+            />
+            <div className="scrollable-container">
+                {isRaw ? (
+                    <pre
+                        className="scrollable-value"
+                        data-raw="true"
+                        style={{whiteSpace: 'pre-wrap', margin: 0, padding: '1em', color: 'black'}}
+                        dangerouslySetInnerHTML={rawInnerHtml}
+                    />
+                ) : (
+                    <Lowlight className="scrollable-value" language={language} value={value.value}/>
+                )}
+            </div>
         </div>
     );
 };
 
-const RenderedValues = ({values, highlights}) => {
+const RenderedValue = memo(RenderedValueComponent);
 
-    const WithTabs = () => {
-        const [selectedTab, selectTab] = useState(values[0]);
-
-        const btnClass = (name) => "button " + (selectedTab === name ? "is-selected" : "has-selected")
-        const btnClick = (name) => () => selectTab(prev => (prev === name) ? "" : name)
-
-        return <>
-            <div className="buttons has-addons are-small">
-                {
-                    values.map((value, idx) =>
-                        <button key={idx} className={btnClass(value.name)} onClick={btnClick(value.name)}>{value.name}</button>
-                    )
-                }
+const Controls = ({onRaw, toggleMaximise, onCopy, searchQuery, setSearchQuery, isMaximised, isRaw, interactionRef, navigateMatch, matchCount, currentMatchIndex}) => (
+    <div className="controls">
+        <div className="field is-grouped">
+            <div className="control is-expanded">
+                <input
+                    className="input is-small"
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Escape") {
+                            if (searchQuery.trim() === '') {
+                                interactionRef.current.focus();
+                            } else {
+                                setSearchQuery('');
+                                e.stopPropagation()
+                            }
+                        } else if (e.key === 'Enter') {
+                            if (e.shiftKey) {
+                                navigateMatch(-1);
+                            } else {
+                                navigateMatch(1);
+                            }
+                            e.preventDefault();
+                        }
+                    }}
+                    placeholder="Search..."
+                />
             </div>
-            {
-                values.map((value, idx) =>
-                    <RenderedValue key={idx}
-                                   value={value}
-                                   highlights={highlights}
+            <div className="control">
+                <div className="field has-addons">
+                    <div className="control">
+                        <button
+                            className="button is-small"
+                            onClick={() => navigateMatch(-1)}
+                            disabled={matchCount <= 1}
+                            title="Previous match"
+                            tabIndex={-1}
+                        >
+                            <span className="icon">
+                                <FontAwesomeIcon icon={faArrowLeft}/>
+                            </span>
+                        </button>
+                    </div>
+                    <div className="control">
+                        <button
+                            className="button is-small"
+                            onClick={() => navigateMatch(1)}
+                            disabled={matchCount <= 1}
+                            title="Next match"
+                            tabIndex={-1}
+                        >
+                            <span className="icon">
+                                <FontAwesomeIcon icon={faArrowRight}/>
+                            </span>
+                        </button>
+                    </div>
+                    <div className="control">
+                        <span className="button is-small is-static">
+                            {matchCount > 0 ? (matchCount === 1 ? '1 match' : `${currentMatchIndex + 1} of ${matchCount}`) : 'No matches'}
+                        </span>
+                    </div>
+                    <div className="control">
+                        <button className="button is-small" title="Copy" onClick={onCopy}>
+                            <span className="icon">
+                                <FontAwesomeIcon icon={faCopy}/>
+                            </span>
+                        </button>
+                    </div>
+                    <div className="control">
+                        <button className="button is-small" onClick={toggleMaximise} title={isMaximised ? 'Minimise' : 'Maximise'}>
+                            <span className="icon">
+                                <FontAwesomeIcon icon={isMaximised ? faMinimize : faMaximize}/>
+                            </span>
+                        </button>
+                    </div>
+                    <div className="control">
+                        <button
+                            className={`button is-small ${isRaw ? 'has-background-grey-light is-selected' : ''}`}
+                            aria-pressed={isRaw}
+                            title={isRaw ? 'Formatted' : 'Raw'}
+                            onClick={onRaw}
+                        >
+                            <span className="icon">
+                                <FontAwesomeIcon icon={isRaw ? faCode : faFileLines}/>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const WithTabs = ({values, highlights, searchQuery, setSearchQuery}) => {
+    const [selectedTab, setSelectedTab] = useState(values[0].name);
+
+    return (
+        <>
+            <div className="buttons has-addons are-small">
+                {values.map((value, idx) => (
+                    <button
+                        key={idx}
+                        className={`button ${selectedTab === value.name ? 'is-selected' : ''}`}
+                        onClick={() => setSelectedTab(value.name)}
+                    >
+                        {value.name}
+                    </button>
+                ))}
+            </div>
+            {values.map((value, idx) => (
+                <div key={idx} style={{display: selectedTab === value.name ? 'block' : 'none'}}>
+                    <RenderedValue
+                        highlights={highlights}
+                        value={value}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
                     />
-                )
-            }
+                </div>
+            ))}
         </>
-    }
+    );
+};
 
-    const NoTabs = () =>
-        <RenderedValue key={0}
-                       value={values[0]}
-                       highlights={highlights}
+const NoTabs = ({values, highlights, searchQuery, setSearchQuery}) => (
+    <RenderedValue
+        highlights={highlights}
+        value={values[0]}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+    />
+);
+
+const RenderedValues = ({values, highlights}) => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    return values.length > 1 ? (
+        <WithTabs
+            values={values}
+            highlights={highlights}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
         />
+    ) : (
+        <NoTabs
+            values={values}
+            highlights={highlights}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+        />
+    );
+};
 
-    return values.length > 1 ? <WithTabs/> : <NoTabs/>
-}
-
-export default RenderedValues
+export default RenderedValues;
