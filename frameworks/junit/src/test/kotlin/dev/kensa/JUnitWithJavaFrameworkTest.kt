@@ -100,6 +100,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
                 JavaWithSinglePassingTest::class,
                 JavaWithGenericParameterizedTest::class,
                 JavaWithAnnotationFeatureTest::class,
+                JavaWithRecordTest::class,
                 JavaWithNestedSentenceTest::class,
                 JavaWithLiteralsTest::class,
                 JavaWithTypeArgumentsTest::class,

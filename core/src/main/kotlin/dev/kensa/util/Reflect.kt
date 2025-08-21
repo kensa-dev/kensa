@@ -255,7 +255,7 @@ private fun resolveSegment(target: Any, segment: String): Any? =
                 ?: throw NoSuchMethodException("Method $methodName not found on ${target::class.java.name}")
             method.apply { isAccessible = true }.invoke(target)
         } else {
-            val property = target::class.members.find { it.name == segment } as? KProperty<*>
+            val property = target::class.memberProperties.find { it.name == segment }
                 ?: throw NoSuchFieldException("Property $segment not found on ${target::class.java.name}")
             property.javaField?.apply { isAccessible = true }?.get(target)
                 ?: property.javaGetter?.apply { isAccessible = true }?.invoke(target)
