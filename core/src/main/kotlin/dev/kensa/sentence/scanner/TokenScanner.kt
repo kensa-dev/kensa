@@ -22,7 +22,7 @@ class TokenScanner(private val dictionary: Dictionary) {
 
     private fun scanForProtectedPhrases(string: String, indices: Indices) {
         dictionary.indexProtectedPhrases(string).forEach {
-            indices.put(ProtectedPhrase, it.first, it.second, it.third)
+            indices.put(ProtectedPhrase, it.start, it.end, it.emphasisDescriptor)
         }
     }
 

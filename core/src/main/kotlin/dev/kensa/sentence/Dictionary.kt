@@ -1,6 +1,7 @@
 package dev.kensa.sentence
 
-import dev.kensa.parse.EmphasisDescriptor
+import java.util.TreeMap
+import kotlin.text.RegexOption.IGNORE_CASE
 
 class Dictionary {
     private val protectedPhrases: MutableSet<ProtectedPhrase> = LinkedHashSet()
@@ -54,17 +55,43 @@ class Dictionary {
         keywords.forEach(this::putKeyword)
     }
 
-    fun indexProtectedPhrases(value: String): List<Triple<Int, Int, EmphasisDescriptor>> {
-        val indices = mutableListOf<Triple<Int, Int, EmphasisDescriptor>>()
-        protectedPhrases.forEach {
-            var result = Regex(Regex.escape(it.value)).find(value)
-            while (result != null) {
-                indices.add(Triple(result.range.first, result.range.last + 1, it.emphasisDescriptor))
-                result = result.next()
+    fun indexProtectedPhrases(value: String): List<ProtectedPhraseMatch> {
+        val matchesByStartIndex = TreeMap<Int, ProtectedPhraseMatch>()
+
+        protectedPhrases.forEach { protectedPhrase ->
+            val singular = protectedPhrase.value
+            val plural = createPluralForm(singular)
+            val patterns = listOf(
+                Regex(Regex.escape(singular), IGNORE_CASE),
+                Regex(Regex.escape(plural), IGNORE_CASE)
+            )
+
+            patterns.forEach { pattern ->
+                var result = pattern.find(value)
+                while (result != null) {
+                    val start = result.range.first
+                    val end = result.range.last + 1
+                    val match = ProtectedPhraseMatch(start, end, protectedPhrase.emphasisDescriptor)
+                    // Update if no existing match or if new match is longer (higher end index)
+                    val existingMatch = matchesByStartIndex[start]
+                    if (existingMatch == null || existingMatch.end < end) {
+                        matchesByStartIndex[start] = match
+                    }
+                    result = result.next()
+                }
             }
         }
 
-        return indices
+        return matchesByStartIndex.values.toList()
+    }
+
+    private val yEndingPattern = Regex(".*[bcdfghjklmnpqrstvwxz]y$")
+    private val sibilantEndingPattern = Regex(".*(s|x|z|ch|sh)$")
+
+    private fun createPluralForm(word: String): String = when {
+        word.matches(yEndingPattern) -> word.substring(0, word.length - 1) + "ies"
+        word.matches(sibilantEndingPattern) -> word + "es"
+        else -> word + "s"
     }
 
     fun isAcronym(value: String) = acronyms.any { it.acronym.equals(value, ignoreCase = true) }
