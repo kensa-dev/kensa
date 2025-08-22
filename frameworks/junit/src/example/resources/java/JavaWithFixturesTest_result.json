@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "18 Ms",
+      "elapsedTime": "21 Ms",
       "testMethod": "test1",
       "displayName": "Test 1",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "18 Ms",
+          "elapsedTime": "21 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -88,6 +88,14 @@
           ],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [
+            {
+              "JavaStringFixture": "parent1"
+            },
+            {
+              "JavaBooleanFixture": "true"
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -189,6 +197,14 @@
           ],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [
+            {
+              "JavaStringFixture": "parent2"
+            },
+            {
+              "JavaChildStringFixture": "parent2_child1"
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -197,7 +213,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "test3",
       "displayName": "Test 3",
       "notes": null,
@@ -206,7 +222,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -246,6 +262,14 @@
           "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [
+            {
+              "JavaPrivateFixture": "111"
+            },
+            {
+              "JavaPublicFixture": "222"
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

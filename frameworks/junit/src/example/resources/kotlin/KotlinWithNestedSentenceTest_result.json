@@ -151,6 +151,7 @@
           "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -604,6 +605,7 @@
           "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -751,6 +753,7 @@
           "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1026,6 +1029,14 @@
           "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [
+            {
+              "KotlinStringFixture": "parent1"
+            },
+            {
+              "KotlinChildStringFixture": "parent1_child1"
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1158,6 +1169,7 @@
           "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
+          "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

@@ -24,7 +24,8 @@ class TestInvocationFactory(
             testInvocationContext.parse(),
             testContext.interactions,
             testContext.givens,
-            testContext.outputs
+            testContext.outputs,
+            testContext.fixtures
         )
 
     private fun TestInvocationContext.parse(): ParsedInvocation =

@@ -111,6 +111,7 @@
               "KotlinBooleanOutput": "true"
             }
           ],
+          "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -223,6 +224,7 @@
               "KotlinBooleanOutput": "true"
             }
           ],
+          "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

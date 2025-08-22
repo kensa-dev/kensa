@@ -27,6 +27,10 @@ const TabContent = ({selected, invocation}) => {
             return <NamedValueTable showHeader={true}
                                     highlights={invocation.highlights}
                                     namedValues={invocation.capturedOutputs}/>
+        case 'fixtures':
+            return <NamedValueTable showHeader={true}
+                                    highlights={invocation.highlights}
+                                    namedValues={invocation.fixtures}/>
         case 'sequenceDiagram':
             return <SequenceDiagram sequenceDiagram={invocation.sequenceDiagram}
                                     capturedInteractions={invocation.capturedInteractions}

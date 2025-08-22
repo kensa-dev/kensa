@@ -1,5 +1,7 @@
 package dev.kensa.fixture
 
+import dev.kensa.util.NamedValue
+
 /**
  * A type-safe map for managing test fixtures.
  * Fixtures are created lazily when first accessed.
@@ -10,6 +12,8 @@ class Fixtures {
     private val lock = Any()
     private val keyToValue = mutableMapOf<String, Any?>()
     private val keyToFixture = mutableMapOf<String, Fixture<*>>()
+
+    fun values(): Set<NamedValue> = keyToValue.entries.map { NamedValue(it.key, it.value) }.toSet()
 
     /**
      * Gets the value of a fixture by key.

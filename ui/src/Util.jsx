@@ -26,9 +26,10 @@ export const Section = {
 }
 
 export const Tab = {
-    Givens: 'givens',
     CapturedOutputs: 'capturedOutputs',
     CapturedInteractions: 'capturedInteractions',
+    Fixtures: 'fixtures',
+    Givens: 'givens',
     Parameters: 'parameters',
     SequenceDiagram: 'sequenceDiagram',
 }

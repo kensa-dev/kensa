@@ -111,6 +111,7 @@
               "JavaBooleanOutput": "true"
             }
           ],
+          "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

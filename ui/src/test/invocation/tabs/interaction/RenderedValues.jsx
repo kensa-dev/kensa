@@ -1,9 +1,8 @@
 import React, {createRef, memo, useEffect, useMemo, useState} from "react";
 import Lowlight from "react-lowlight";
 import {highlight} from "../../Highlighting";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCode, faCopy, faFileLines, faMaximize, faMinimize, faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
 import "./RenderedValues.scss";
+import {Controls} from "./Controls";
 
 const escapeHtml = (s) => s.replace(/[&<>"']/g, (ch) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch]));
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -193,7 +192,10 @@ const RenderedValueComponent = ({highlights, value, searchQuery, setSearchQuery}
         }
     };
 
-    const toggleMaximise = () => setIsMaximised(!isMaximised);
+    const toggleMaximise = () => {
+        setIsMaximised(!isMaximised);
+    };
+
     const onRaw = () => setIsRaw(!isRaw);
 
     return (
@@ -238,100 +240,6 @@ const RenderedValueComponent = ({highlights, value, searchQuery, setSearchQuery}
 };
 
 const RenderedValue = memo(RenderedValueComponent);
-
-const Controls = ({onRaw, toggleMaximise, onCopy, searchQuery, setSearchQuery, isMaximised, isRaw, interactionRef, navigateMatch, matchCount, currentMatchIndex}) => (
-    <div className="controls">
-        <div className="field is-grouped">
-            <div className="control is-expanded">
-                <input
-                    className="input is-small"
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Escape") {
-                            if (searchQuery.trim() === '') {
-                                interactionRef.current.focus();
-                            } else {
-                                setSearchQuery('');
-                                e.stopPropagation()
-                            }
-                        } else if (e.key === 'Enter') {
-                            if (e.shiftKey) {
-                                navigateMatch(-1);
-                            } else {
-                                navigateMatch(1);
-                            }
-                            e.preventDefault();
-                        }
-                    }}
-                    placeholder="Search..."
-                />
-            </div>
-            <div className="control">
-                <div className="field has-addons">
-                    <div className="control">
-                        <button
-                            className="button is-small"
-                            onClick={() => navigateMatch(-1)}
-                            disabled={matchCount <= 1}
-                            title="Previous match"
-                            tabIndex={-1}
-                        >
-                            <span className="icon">
-                                <FontAwesomeIcon icon={faArrowLeft}/>
-                            </span>
-                        </button>
-                    </div>
-                    <div className="control">
-                        <button
-                            className="button is-small"
-                            onClick={() => navigateMatch(1)}
-                            disabled={matchCount <= 1}
-                            title="Next match"
-                            tabIndex={-1}
-                        >
-                            <span className="icon">
-                                <FontAwesomeIcon icon={faArrowRight}/>
-                            </span>
-                        </button>
-                    </div>
-                    <div className="control">
-                        <span className="button is-small is-static">
-                            {matchCount > 0 ? (matchCount === 1 ? '1 match' : `${currentMatchIndex + 1} of ${matchCount}`) : 'No matches'}
-                        </span>
-                    </div>
-                    <div className="control">
-                        <button className="button is-small" title="Copy" onClick={onCopy}>
-                            <span className="icon">
-                                <FontAwesomeIcon icon={faCopy}/>
-                            </span>
-                        </button>
-                    </div>
-                    <div className="control">
-                        <button className="button is-small" onClick={toggleMaximise} title={isMaximised ? 'Minimise' : 'Maximise'}>
-                            <span className="icon">
-                                <FontAwesomeIcon icon={isMaximised ? faMinimize : faMaximize}/>
-                            </span>
-                        </button>
-                    </div>
-                    <div className="control">
-                        <button
-                            className={`button is-small ${isRaw ? 'has-background-grey-light is-selected' : ''}`}
-                            aria-pressed={isRaw}
-                            title={isRaw ? 'Formatted' : 'Raw'}
-                            onClick={onRaw}
-                        >
-                            <span className="icon">
-                                <FontAwesomeIcon icon={isRaw ? faCode : faFileLines}/>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-);
 
 const WithTabs = ({values, highlights, searchQuery, setSearchQuery}) => {
     const [selectedTab, setSelectedTab] = useState(values[0].name);
