@@ -1,11 +1,9 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import InteractionContent from "./InteractionContent";
 
 export const InteractionPopup = ({onHide, capturedInteraction, highlights}) => {
-    const fontSizes = ["font-normal", "font-large"]
-    const [fontSizeIdx, setFontSizeIdx] = useState(0);
     const modalRef = useRef(null);
 
     useEffect(() => {
@@ -14,10 +12,6 @@ export const InteractionPopup = ({onHide, capturedInteraction, highlights}) => {
             modalRef.current.focus();
         }
     }, []);
-
-    const togglePresentationSize = () => {
-        setFontSizeIdx(fontSizeIdx === 0 ? 1 : 0)
-    }
 
     const handleEscape = (event) => {
         if (event.key === "Escape") {
@@ -32,12 +26,11 @@ export const InteractionPopup = ({onHide, capturedInteraction, highlights}) => {
                 <div className="modal-card">
                     <header className="modal-card-head">
                         <p className="modal-card-title">{capturedInteraction.name}</p>
-                        <button className={"button is-info is-small mr-5"} onClick={togglePresentationSize}>Demo</button>
                         <span className="icon is-small has-text-grey">
                             <a onClick={onHide}><FontAwesomeIcon icon={faTimesCircle}/></a>
                         </span>
                     </header>
-                    <section className={"modal-card-body " + fontSizes[fontSizeIdx]}>
+                    <section className="modal-card-body">
                         <InteractionContent interaction={capturedInteraction["rendered"]} highlights={highlights}/>
                     </section>
                 </div>
