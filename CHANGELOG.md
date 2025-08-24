@@ -1,5 +1,13 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.22
+- Fix issue with Java record rendering
+- Adding used fixtures tab the test output
+- Adding ability to search captured interactions
+- Improvements to captured interactions ui (with placeholder for raw rendering)
+- Experimental CLI to spin up a local server for viewing the test output
+- Protected phrases now recognise their plural form
+
 ### v0.5.21
 - Adding better support for Kotlin backticked test names.
 - Fix issue with Nested Sentences with parameters that are function calls with parameters.
