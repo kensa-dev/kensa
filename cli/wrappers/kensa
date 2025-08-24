@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Configuration
+REPO_URL="https://github.com/kensa-dev/kensa/releases/latest/download"
+BIN_DIR=".kensa/bin"
+VERSION_FILE=".kensa/version.txt"
+REMOTE_VERSION_URL="${REPO_URL}/version.txt"
+
+# Detect OS and architecture
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
+if [ "$OS" = "darwin" ]; then OS="darwin"; fi
+if [ "$OS" = "linux" ]; then OS="linux"; fi
+# Assume amd64 for simplicity; add arm64 if needed
+BIN_NAME="kensa-${OS}-amd64"
+if [ "$OS" = "windows" ]; then BIN_NAME="${BIN_NAME}.exe"; fi  # Handled by kensa.bat on Windows
+
+# Create directory for binaries
+mkdir -p "$BIN_DIR"
+
+# Check or update version
+if [ -f "$VERSION_FILE" ]; then
+    LOCAL_VERSION=$(cat "$VERSION_FILE")
+else
+    LOCAL_VERSION="0.0.0"
+fi
+
+REMOTE_VERSION=$(curl -sL "$REMOTE_VERSION_URL")
+if [ $? -ne 0 ]; then
+    echo "Failed to check for updates. Please check your internet connection. Using local version if available."
+    REMOTE_VERSION="$LOCAL_VERSION"
+fi
+
+if [ "$REMOTE_VERSION" != "$LOCAL_VERSION" ] || [ ! -f "$BIN_DIR/$BIN_NAME" ]; then
+    echo "Downloading kensa $REMOTE_VERSION for $OS-$ARCH..."
+    curl -L -o "$BIN_DIR/$BIN_NAME" "${REPO_URL}/${BIN_NAME}"
+    if [ $? -ne 0 ]; then
+        echo "Failed to download kensa $REMOTE_VERSION. Please check your connection or the repository."
+        exit 1
+    fi
+    chmod +x "$BIN_DIR/$BIN_NAME"
+    echo "$REMOTE_VERSION" > "$VERSION_FILE"
+    echo "Successfully updated to kensa $REMOTE_VERSION."
+fi
+
+# Run the CLI
+"$BIN_DIR/$BIN_NAME" "$@"

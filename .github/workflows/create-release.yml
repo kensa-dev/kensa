@@ -16,6 +16,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - run: make create-release-note
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Build Go binaries
+        run: |
+          cd cli
+          go mod tidy
+          mkdir -p build/bin
+          GOOS=darwin GOARCH=amd64 go build -o build/bin/kensa-darwin-amd64 cmd/kensa/main.go
+          GOOS=darwin GOARCH=arm64 go build -o build/bin/kensa-darwin-arm64 cmd/kensa/main.go
+          GOOS=linux GOARCH=amd64 go build -o build/bin/kensa-linux-amd64 cmd/kensa/main.go
+          GOOS=linux GOARCH=arm64 go build -o build/bin/kensa-linux-arm64 cmd/kensa/main.go
+          GOOS=windows GOARCH=amd64 go build -o build/bin/kensa-windows-amd64.exe cmd/kensa/main.go
+          GOOS=windows GOARCH=arm64 go build -o build/bin/kensa-windows-arm64.exe cmd/kensa/main.go
+          cd ..
+          echo "${GIT_TAG_NAME}" > cli/build/bin/version.txt
       - uses: softprops/action-gh-release@v2.0.4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -24,3 +40,11 @@ jobs:
           body_path: RN.md
           draft: false
           prerelease: false
+          files: |
+            cli/build/bin/kensa-darwin-amd64
+            cli/build/bin/kensa-darwin-arm64
+            cli/build/bin/kensa-linux-amd64
+            cli/build/bin/kensa-linux-arm64
+            cli/build/bin/kensa-windows-amd64.exe
+            cli/build/bin/kensa-windows-arm64.exe
+            cli/build/bin/version.txt

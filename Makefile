@@ -29,7 +29,7 @@ tag-if-release:
 		echo "New version was not committed - skipping tag creation.";\
 	fi
 
-.PHONY: publish-to-sonatype-staging
+.PHONY: publish-to-sonatype
 publish-to-sonatype:
 	./gradlew --build-cache --no-daemon publishToSonatype closeAndReleaseSonatypeStagingRepository\
 		-Psign=true \
@@ -56,3 +56,7 @@ create-release-note:
 	@echo "Creating Release Note"
 	@echo "Changelog:" > RN.md
 	@sed -n "/^### v${GIT_TAG_NAME}[[:space:]]*.*$$/,/###/p" CHANGELOG.md | sed '1d' | sed '$$d' | sed '$$d' >> RN.md
+
+.PHONY: build-cli
+build-cli:
+	cd cli && go mod tidy && mkdir -p build/bin && go build -o build/bin/kensa cmd/kensa/main.go
