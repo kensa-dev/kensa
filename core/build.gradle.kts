@@ -41,6 +41,7 @@ dependencies {
     testImplementation(libs.junitJupiterEngine)
     testImplementation(libs.junitJupiterParams)
 
+    testImplementation(platform(libs.kotestBom))
     testImplementation(libs.kotestAssertionsCoreJvm)
     testImplementation(libs.hamcrestCore)
     testImplementation(libs.junitJupiterEngine)

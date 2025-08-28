@@ -4,13 +4,13 @@ import dev.kensa.CollectorContext
 import dev.kensa.StateCollector
 import dev.kensa.StateExtractor
 import dev.kensa.context.TestContext
-import io.kotest.assertions.failure
+import io.kotest.assertions.AssertionErrorBuilder
 import io.kotest.assertions.nondeterministic.EventuallyConfiguration
 import io.kotest.assertions.nondeterministic.continually
 import io.kotest.assertions.nondeterministic.eventually
 import io.kotest.assertions.nondeterministic.eventuallyConfig
 import io.kotest.matchers.Matcher
-import io.kotest.matchers.invokeMatcher
+import io.kotest.matchers.should
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
@@ -79,7 +79,7 @@ object KotestThen {
                 when (val lastThrowable = listener.lastThrowable) {
                     is OnMatchException -> throw lastThrowable.cause!!
                     is AssertionError -> throw lastThrowable
-                    else -> throw failure(lastThrowable.message ?: "eventually block failed", lastThrowable)
+                    else -> throw failure(lastThrowable)
                 }
             }
             throw e
@@ -146,10 +146,17 @@ object KotestThen {
             if (listener is LastThrowableListener) {
                 listener.lastThrowable.let {
                     if (it is AssertionError) throw it
-                    else throw failure(it.message ?: "eventually block failed", it)
+                    else throw failure(it)
                 }
             }
             throw e
         }
     }
+
+    private fun <T> invokeMatcher(t: T, matcher: Matcher<T>): T = t.apply { should(matcher) }
+
+    private fun failure(throwable: Throwable): AssertionError = AssertionErrorBuilder.create()
+        .withMessage(throwable.message ?: "eventually block failed")
+        .withCause(throwable)
+        .build()
 }

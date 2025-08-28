@@ -117,7 +117,7 @@ class KotestThenTest {
                 this shouldBe "wrong"
             }
         }
-        error shouldHaveMessage """expected:<"wrong"> but was:<"result">"""
+        error shouldHaveMessage """expected:<wrong> but was:<result>"""
 
         // Kotest eventually doesn't play completely with `runTest` and keeps running for the full duration (probably due to the step calculation using a real time source)
         // so need to only check the first segment of the actualTimes
