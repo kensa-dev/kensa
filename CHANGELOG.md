@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.23
+- Support for Kotest 6.
+
 ### v0.5.22
 - Fix issue with Java record rendering
 - Adding used fixtures tab the test output
