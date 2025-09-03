@@ -9,13 +9,13 @@ import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
 import java.util.function.Function
 
-object NestedSentenceAgent {
+object KensaAgent {
     private val DISABLED = net.bytebuddy.dynamic.scaffold.TypeValidation.DISABLED
 
     @Suppress("UNUSED_PARAMETER")
     @JvmStatic
     fun premain(arguments: String?, instrumentation: Instrumentation) {
-        val classLoader = NestedSentenceAgent::class.java.classLoader
+        val classLoader = KensaAgent::class.java.classLoader
         install(
             AgentBuilder.Default(ByteBuddy().with(DISABLED)),
             instrumentation
@@ -32,7 +32,7 @@ object NestedSentenceAgent {
     }
 
     private fun install(agentBuilder: AgentBuilder, instrumentation: Instrumentation, typeNarrower: Function<AgentBuilder, AgentBuilder.Identified.Narrowable>): ClassFileTransformer {
-        // val agentBuilder = agentBuilder.with(AgentBuilder.Listener.StreamWriting.toSystemOut());
+//         val agentBuilder = agentBuilder.with(AgentBuilder.Listener.StreamWriting.toSystemOut());
         return typeNarrower.apply(agentBuilder)
             .transform { builder, _, _, _, _ ->
                 builder.method(isAnnotatedWith(NestedSentence::class.java))

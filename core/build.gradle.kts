@@ -55,13 +55,13 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Premain-Class" to "dev.kensa.agent.NestedSentenceAgent",
-                    "Agent-Class" to "dev.kensa.agent.NestedSentenceAgent",
+                    "Premain-Class" to "dev.kensa.agent.KensaAgent",
+                    "Agent-Class" to "dev.kensa.agent.KensaAgent",
                     "Boot-Class-Path" to "",
                     "Can-Redefine-Classes" to "true",
                     "Can-Retransform-Classes" to "true",
                     "Can-Set-Native-Method-Prefix" to "true",
-                    "Implementation-Title" to "Kensa Nested Sentence Agent",
+                    "Implementation-Title" to "Kensa Agent",
                     "Implementation-Version" to rootProject.version
                 )
             )
