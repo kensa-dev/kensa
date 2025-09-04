@@ -63,14 +63,11 @@ internal class DictionaryTest {
 
     @Test
     fun `indexProtectedPhrases finds singular form of protected phrase`() {
-        // Given a dictionary with a protected phrase
         dictionary.putProtectedPhrases(ProtectedPhrase("cat"))
         
-        // When indexing a sentence containing the protected phrase
         val sentence = "I have a cat at home"
         val indices = dictionary.indexProtectedPhrases(sentence)
         
-        // Then the indices should contain the start and end positions of the protected phrase
         indices shouldHaveSize 1
         indices[0].start shouldBe 9  // Start index of "cat"
         indices[0].end shouldBe 12  // End index of "cat"
@@ -79,30 +76,38 @@ internal class DictionaryTest {
     
     @Test
     fun `indexProtectedPhrases finds plural form of protected phrase with regular plural`() {
-        // Given a dictionary with a protected phrase
         dictionary.putProtectedPhrases(ProtectedPhrase("cat"))
         
-        // When indexing a sentence containing the plural form of the protected phrase
         val sentence = "Ihavetwocatsathome"
         val indices = dictionary.indexProtectedPhrases(sentence)
 
-        // Then the indices should contain the start and end positions of the plural form
         indices shouldHaveSize 1
         indices[0].start shouldBe 8  // Start index of "cats"
         indices[0].end shouldBe 12  // End index of "cats" (exclusive end index)
         indices[0].emphasisDescriptor shouldBe defaultEmphasis
     }
-    
+
+    @Test
+    fun `indexProtectedPhrases ignores fake plural form of protected phrase made with CamelCased words`() {
+        dictionary.putProtectedPhrases(ProtectedPhrase("p2p"))
+
+        val sentence = "thereIsAp2pSubnetInHere"
+
+        val indices = dictionary.indexProtectedPhrases(sentence)
+
+        indices shouldHaveSize 1
+        indices[0].start shouldBe 8
+        indices[0].end shouldBe 11
+        indices[0].emphasisDescriptor shouldBe defaultEmphasis
+    }
+
     @Test
     fun `indexProtectedPhrases finds plural form of protected phrase ending in y`() {
-        // Given a dictionary with a protected phrase ending in 'y'
         dictionary.putProtectedPhrases(ProtectedPhrase("city"))
         
-        // When indexing a sentence containing the plural form of the protected phrase
         val sentence = "There are many cities in the world"
         val indices = dictionary.indexProtectedPhrases(sentence)
         
-        // Then the indices should contain the start and end positions of the plural form
         indices shouldHaveSize 1
         indices[0].start shouldBe 15  // Start index of "cities"
         indices[0].end shouldBe 21  // End index of "cities" (exclusive end index)
@@ -111,7 +116,6 @@ internal class DictionaryTest {
     
     @Test
     fun `indexProtectedPhrases finds plural form of protected phrase ending in s, x, z, ch, sh`() {
-        // Given a dictionary with protected phrases ending in 's', 'x', 'z', 'ch', 'sh'
         dictionary.putProtectedPhrases(
             ProtectedPhrase("box"),
             ProtectedPhrase("bus"),
@@ -120,7 +124,6 @@ internal class DictionaryTest {
             ProtectedPhrase("dish")
         )
         
-        // When indexing sentences containing the plural forms of the protected phrases
         val sentence1 = "I have many boxes in my room"
         val indices1 = dictionary.indexProtectedPhrases(sentence1)
         
@@ -136,7 +139,6 @@ internal class DictionaryTest {
         val sentence5 = "The dishes are clean"
         val indices5 = dictionary.indexProtectedPhrases(sentence5)
         
-        // Then the indices should contain the start and end positions of the plural forms
         indices1 shouldHaveSize 1
         indices1[0].start shouldBe 12  // Start index of "boxes"
         indices1[0].end shouldBe 17  // End index of "boxes" (exclusive end index)
@@ -160,14 +162,11 @@ internal class DictionaryTest {
     
     @Test
     fun `indexProtectedPhrases finds both singular and plural forms in the same sentence`() {
-        // Given a dictionary with a protected phrase
         dictionary.putProtectedPhrases(ProtectedPhrase("dog"))
         
-        // When indexing a sentence containing both singular and plural forms
         val sentence = "I have a dog and two dogs at home"
         val indices = dictionary.indexProtectedPhrases(sentence)
         
-        // Then the indices should contain the start and end positions of both forms
         indices shouldHaveSize 2
         indices[0].start shouldBe 9  // Start index of "dog"
         indices[0].end shouldBe 12  // End index of "dog" (exclusive end index)
@@ -178,23 +177,18 @@ internal class DictionaryTest {
     
     @Test
     fun `indexProtectedPhrases finds multiple occurrences of protected phrases`() {
-        // Given a dictionary with multiple protected phrases
         dictionary.putProtectedPhrases(
             ProtectedPhrase("cat"),
             ProtectedPhrase("dog")
         )
         
-        // When indexing a sentence containing multiple occurrences
         val sentence = "I have cats and dogs, a cat and a dog"
         val indices = dictionary.indexProtectedPhrases(sentence)
         
-        // Then the indices should contain all occurrences
         indices shouldHaveSize 4
         
-        // Sort the indices by start position to ensure consistent order for comparison
         val sortedIndices = indices.sortedBy { it.start }
         
-        // Check each index individually to make debugging easier
         sortedIndices[0].start shouldBe 7   // Start index of "cats"
         sortedIndices[0].end shouldBe 11  // End index of "cats" (exclusive end index)
         sortedIndices[0].emphasisDescriptor shouldBe defaultEmphasis

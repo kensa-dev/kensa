@@ -66,16 +66,22 @@ class Dictionary {
                 Regex(Regex.escape(plural), IGNORE_CASE)
             )
 
-            patterns.forEach { pattern ->
+            patterns.forEachIndexed { index, pattern ->
                 var result = pattern.find(value)
                 while (result != null) {
-                    val start = result.range.first
-                    val end = result.range.last + 1
-                    val match = ProtectedPhraseMatch(start, end, protectedPhrase.emphasisDescriptor)
-                    // Update if no existing match or if new match is longer (higher end index)
-                    val existingMatch = matchesByStartIndex[start]
-                    if (existingMatch == null || existingMatch.end < end) {
-                        matchesByStartIndex[start] = match
+                    val matchedText = result.value
+                    val isSingularPattern = index == 0
+                    
+                    // Only match if this is a singlular pattern match or plural match contains no upper case characters (CamelCase?)
+                    if (isSingularPattern || !matchedText.any { it.isUpperCase() }) {
+                        val start = result.range.first
+                        val end = result.range.last + 1
+                        val match = ProtectedPhraseMatch(start, end, protectedPhrase.emphasisDescriptor)
+                        // Update if no existing match or if new match is longer (higher end index)
+                        val existingMatch = matchesByStartIndex[start]
+                        if (existingMatch == null || existingMatch.end < end) {
+                            matchesByStartIndex[start] = match
+                        }
                     }
                     result = result.next()
                 }
