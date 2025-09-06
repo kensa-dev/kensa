@@ -39,6 +39,15 @@ class KotlinWithCapturedOutputsTest : KensaTest, WithHamkrest {
         then(theBooleanFixture(), equalTo(outputs("KotlinBooleanOutput")))
     }
 
+    @Test
+    fun test3() {
+        given(somePrerequisites())
+
+        whenever(theOutputsAreGenerated())
+
+        then(theConcatenatedOutputs(), equalTo(concatenate(outputs(StringOutput), outputs(BooleanOutput))))
+    }
+
     private fun somePrerequisites(): Action<GivensContext> = Action { context: GivensContext? -> }
 
     private fun theOutputsAreGenerated(): Action<ActionContext> {
@@ -47,6 +56,10 @@ class KotlinWithCapturedOutputsTest : KensaTest, WithHamkrest {
             outputs.put(BooleanOutput, theBooleanOutput)
         }
     }
+
+    @RenderedValue
+    private fun concatenate(string: String, boolean: Boolean) = "$string-$boolean"
+    private fun theConcatenatedOutputs() = StateCollector { concatenate(outputs(StringOutput), outputs(BooleanOutput)) }
 
     private fun theStringOutput() = StateCollector { it.outputs[StringOutput] }
 

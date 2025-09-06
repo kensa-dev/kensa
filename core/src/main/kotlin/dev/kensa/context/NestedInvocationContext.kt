@@ -6,7 +6,7 @@ import java.lang.reflect.Method
 
 class NestedInvocationContext {
 
-    private lateinit var nestedMethods: Map<String, ParsedNestedMethod>
+    private lateinit var methods: Map<String, ParsedNestedMethod>
 
     private val invocations = mutableMapOf<String, MutableList<Array<Any?>>>()
 
@@ -17,16 +17,16 @@ class NestedInvocationContext {
     }
 
     fun update(nestedSentences: Map<String, ParsedNestedMethod>) {
-        nestedMethods = nestedSentences
+        methods = nestedSentences
     }
 
     fun nextInvocationFor(name: String): NestedInvocation =
         if(invocations[name] == null)
-            NoInvocation(Array(nestedMethods.getValue(name).parameters.descriptors.size) { name })
+            NoNestedInvocation(Array(methods.getValue(name).parameters.descriptors.size) { name })
         else {
             RealNestedInvocation(
                 invocations.getValue(name).removeFirst(),
-                nestedMethods.getValue(name).parameters.descriptors
+                methods.getValue(name).parameters.descriptors
             )
         }
 }
@@ -36,9 +36,7 @@ sealed interface NestedInvocation {
     val parameters: Map<String, ElementDescriptor>
 }
 
-class NoInvocation(
-    override val arguments: Array<Any?> = emptyArray()
-) : NestedInvocation {
+class NoNestedInvocation(override val arguments: Array<Any?> = emptyArray()) : NestedInvocation {
     override val parameters: Map<String, ElementDescriptor> = emptyMap()
 }
 

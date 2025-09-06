@@ -3,6 +3,7 @@ package dev.kensa.parse
 import dev.kensa.KensaException
 import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent.*
+import dev.kensa.parse.LocatedEvent.Literal.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
@@ -12,17 +13,19 @@ import org.antlr.v4.runtime.tree.TerminalNode
 
 class ParseContext(
     private val properties: Map<String, ElementDescriptor>,
-    private val methods: Map<String, ElementDescriptor>,
+    private val methods: Map<String, ElementDescriptor.MethodElementDescriptor>,
     private val parameters: Map<String, ElementDescriptor> = emptyMap(),
     private val nestedMethods: Map<String, ParsedNestedMethod> = emptyMap(),
     private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()
 ) {
 
+    private val renderedValueMethodNames = methods.filterValues { it.isRenderedValue && it.hasParameters }.keys
     private val methodNames = methods.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val fieldNames = properties.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val parameterNames = parameters.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val nestedMethodNames = nestedMethods.keys
 
+    private val singleCallWithArgumentsPattern = """^(\w+)\(.+\)$""".toRegex()
     private val fixturesPattern = """^fixtures[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
     private val outputsByNamePattern = """^outputs[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
     private val outputsByKeyPattern = """^outputs\("([a-zA-Z0-9_]+)"\)(\.(.+))?$""".toRegex()
@@ -48,8 +51,13 @@ class ParseContext(
     internal fun ParseTree.asChainedCall(): ChainedCallExpression? =
         chainedCallPattern.matchEntire(text)?.let { matchResult ->
             callTypeFor(matchResult.groupValues[1])?.let { type ->
-                ChainedCallExpression(location, type, matchResult.groupValues[1],matchResult.groupValues[4])
+                ChainedCallExpression(location, type, matchResult.groupValues[1], matchResult.groupValues[4])
             }
+        }
+
+    internal fun ParseTree.asRenderedValueMethodExpression(): RenderedValue? =
+        singleCallWithArgumentsPattern.matchEntire(text)?.let { matchResult ->
+            RenderedValue(location, matchResult.groupValues[1])
         }
 
     private fun ParseContext.callTypeFor(key: String): ChainedCallExpression.Type? =
@@ -60,6 +68,7 @@ class ParseContext(
             else -> null
         }
 
+    internal fun ParseTree?.matchesRenderedValueMethodExpression() = this?.text?.let { singleCallWithArgumentsPattern.matchEntire(it)?.let { result -> result.groupValues[1] in renderedValueMethodNames } } ?: false
     internal fun ParseTree?.matchesFixturesExpression() = this?.text?.matches(fixturesPattern) ?: false
     internal fun ParseTree?.matchesOutputsExpression() = this?.matchesOutputsByNameExpression() ?: false || this?.matchesOutputsByKeyExpression() ?: false
     private fun ParseTree.matchesOutputsByNameExpression() = text?.matches(outputsByNamePattern) ?: false

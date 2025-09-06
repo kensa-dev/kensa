@@ -28,11 +28,11 @@ sealed interface ElementDescriptor {
     companion object {
         fun forProperty(property: KProperty<*>): PropertyElementDescriptor = PropertyElementDescriptor(property)
 
-        fun forResolveHolder(parentDescriptor: PropertyElementDescriptor, property: KProperty<*>): ElementDescriptor = ResolveHolderElementDescriptor(parentDescriptor, property)
+        fun forResolveHolder(parentDescriptor: PropertyElementDescriptor, property: KProperty<*>): ResolveHolderElementDescriptor = ResolveHolderElementDescriptor(parentDescriptor, property)
 
-        fun forMethod(method: Method): ElementDescriptor = MethodElementDescriptor(method)
+        fun forMethod(method: Method): MethodElementDescriptor = MethodElementDescriptor(method)
 
-        fun forParameter(parameter: Parameter, name: String, index: Int): ElementDescriptor = ParameterElementDescriptor(name, parameter, index)
+        fun forParameter(parameter: Parameter, name: String, index: Int): ParameterElementDescriptor = ParameterElementDescriptor(name, parameter, index)
 
     }
 
@@ -54,6 +54,8 @@ sealed interface ElementDescriptor {
         override val isRenderedValue: Boolean = method.hasAnnotation<RenderedValue>()
         override val isHighlight: Boolean = method.hasAnnotation<Highlight>()
         override val highlight: Highlight? = method.findAnnotation<Highlight>()
+
+        val hasParameters: Boolean = method.parameters.isNotEmpty()
 
         override fun resolveValue(target: Any, path: String?): Any? {
             val initialValue: Any = try {

@@ -44,9 +44,8 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                 TestContextHolder.bindToCurrentThread(it)
                 kensaStore.put(TEST_CONTEXT_KEY, it)
             }
-            NestedInvocationContext().also {
-                NestedInvocationContextHolder.bindToCurrentThread(it)
-            }
+            NestedInvocationContextHolder.bindToCurrentThread(NestedInvocationContext())
+            RenderedValueInvocationContextHolder.bindToCurrentThread(RenderedValueInvocationContext())
         }
     }
 
@@ -98,6 +97,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
         } finally {
             TestContextHolder.clearFromThread()
             NestedInvocationContextHolder.clearFromThread()
+            RenderedValueInvocationContextHolder.clearFromThread()
         }
     }
 

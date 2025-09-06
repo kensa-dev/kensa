@@ -1,5 +1,6 @@
 package dev.kensa.parse
 
+import dev.kensa.parse.ElementDescriptor.MethodElementDescriptor
 import dev.kensa.sentence.TemplateSentence
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
@@ -11,8 +12,9 @@ interface ParserCache {
     val parameterCache: MutableMap<Method, MethodParameters>
     val testMethodSentenceCache: MutableMap<Method, List<TemplateSentence>>
     val nestedMethodCache: MutableMap<Class<*>, Map<String, ParsedNestedMethod>>
+    val renderedValueMethodCache: MutableMap<Class<*>, Map<String, RenderedValueMethod>>
     val emphasisedMethodCache: MutableMap<Class<*>, Map<String, EmphasisDescriptor>>
-    val methodCache: MutableMap<Class<*>, Map<String, ElementDescriptor>>
+    val methodCache: MutableMap<Class<*>, Map<String, MethodElementDescriptor>>
 }
 
 class RealParserCache : ParserCache {
@@ -22,6 +24,7 @@ class RealParserCache : ParserCache {
     override val parameterCache: MutableMap<Method, MethodParameters> = HashMap()
     override val testMethodSentenceCache: MutableMap<Method, List<TemplateSentence>> = HashMap()
     override val nestedMethodCache: MutableMap<Class<*>, Map<String, ParsedNestedMethod>> = HashMap()
+    override val renderedValueMethodCache: MutableMap<Class<*>, Map<String, RenderedValueMethod>> = HashMap()
     override val emphasisedMethodCache: MutableMap<Class<*>, Map<String, EmphasisDescriptor>> = HashMap()
-    override val methodCache: MutableMap<Class<*>, Map<String, ElementDescriptor>> = HashMap()
+    override val methodCache: MutableMap<Class<*>, Map<String, MethodElementDescriptor>> = HashMap()
 }

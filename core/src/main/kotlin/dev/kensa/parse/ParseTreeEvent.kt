@@ -51,11 +51,14 @@ sealed class LocatedEvent(val location: Location) : Event() {
     class Method(location: Location, val name: String) : LocatedEvent(location)
     class Field(location: Location, val name: String) : LocatedEvent(location)
     class Nested(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
+    class RenderedValue(location: Location, val name: String) : LocatedEvent(location)
     class NestedWithArguments(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
 
-    class NumberLiteral(location: Location, val value: String) : LocatedEvent(location)
-    class BooleanLiteral(location: Location, val value: String) : LocatedEvent(location)
-    class CharacterLiteral(location: Location, val value: String) : LocatedEvent(location)
-    class StringLiteral(location: Location, val value: String) : LocatedEvent(location)
-    class NullLiteral(location: Location) : LocatedEvent(location)
+    sealed class Literal(location: Location, val value: String) : LocatedEvent(location) {
+        class NumberLiteral(location: Location, value: String) : Literal(location, value)
+        class BooleanLiteral(location: Location, value: String) : Literal(location, value)
+        class CharacterLiteral(location: Location, value: String) : Literal(location, value)
+        class StringLiteral(location: Location, value: String) : Literal(location, value)
+        class NullLiteral(location: Location) : Literal(location, value = "null")
+    }
 }

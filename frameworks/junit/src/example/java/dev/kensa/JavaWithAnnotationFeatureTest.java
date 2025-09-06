@@ -46,6 +46,16 @@ class JavaWithAnnotationFeatureTest implements KensaTest, WithHamcrest {
         then(theExtractedValue(), is(aValue));
     }
 
+    @Test
+    void testWithRenderedValueFunctionWithParameters() {
+        given(somePrerequisitesWith(renderTheReturnValue("foo", "bar")));
+    }
+
+    @RenderedValue
+    private String renderTheReturnValue(String one, String two) {
+        return String.format("%s-%s", one, two);
+    }
+
     private StateExtractor<String> theExtractedValue() {
         return interactions -> aValue;
     }

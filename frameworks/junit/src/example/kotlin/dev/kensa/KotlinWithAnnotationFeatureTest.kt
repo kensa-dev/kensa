@@ -35,14 +35,6 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
     @RenderedValue
     private val myThing = MyThing("myFieldThing")
 
-    @BeforeEach
-    fun setUp() {
-        configure()
-            .withValueRenderer(MyThing::class.java) {
-                """MyThing"""
-            }
-    }
-
     @Test
     fun testWithScenario() {
         given(somePrerequisites())
@@ -79,24 +71,32 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
 
     @Test
     fun testWithSimpleFunctionSentenceValue() {
-        given(someSomethingWith(aSimpleSentenceValueFunction()))
+        given(somethingWith(aSimpleSentenceValueFunction()))
     }
 
     @Test
     fun testWithChainedFunctionSentenceValue() {
-        given(someSomethingWith(aSentenceValueFunction().value))
+        given(somethingWith(aSentenceValueFunction().value))
     }
 
     @Test
     fun testWithChainedFieldSentenceValue() {
-        given(someSomethingWith(myThing.value))
+        given(somethingWith(myThing.value))
     }
 
     @ParameterizedTest
     @MethodSource("myThing")
     fun testWithChainedFunctionSentenceValueParameter(@RenderedValue value: MyThing) {
-        given(someSomethingWith(value.value))
+        given(somethingWith(value.value))
     }
+
+    @Test
+    fun testWithRenderedValueFunctionWithParameters() {
+        given(somethingWith(renderTheReturnValue("foo", "bar")))
+    }
+
+    @RenderedValue
+    fun renderTheReturnValue(one: String, two: String): String = "$one-$two"
 
     @RenderedValue
     private fun aSimpleSentenceValueFunction() = "myValue"
@@ -104,7 +104,7 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
     @RenderedValue
     private fun aSentenceValueFunction() = MyThing("myValue")
 
-    private fun someSomethingWith(value: String): GivensBuilder = GivensBuilder { }
+    private fun somethingWith(value: String): GivensBuilder = GivensBuilder { }
 
     private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { interactions: CapturedInteractions -> aValue }
 

@@ -2,6 +2,7 @@ package dev.kensa.parse
 
 import dev.kensa.*
 import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.parse.ElementDescriptor.MethodElementDescriptor
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.util.*
@@ -25,10 +26,10 @@ class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = empty
 
     private fun matchingDeclarationFor(method: Method, toSimpleTypeName: (Class<*>) -> String) = { dc: MethodDeclarationContext ->
         method.normalisedPlatformName == dc.name &&
-            // Only match on parameter simple type name - saves having to go looking in the imports
-            dc.parameterNamesAndTypes.map {
-                it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
-            } == method.parameterTypes.map(toSimpleTypeName)
+                // Only match on parameter simple type name - saves having to go looking in the imports
+                dc.parameterNamesAndTypes.map {
+                    it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
+                } == method.parameterTypes.map(toSimpleTypeName)
     }
 }
 
@@ -83,13 +84,14 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     private fun sentenceBuilder(): (Location, Location) -> SentenceBuilder = { location, previousLocation -> SentenceBuilder(location, previousLocation, configuration.dictionary, configuration.tabSize) }
 
-    private fun prepareNestedSentences(testClass: Class<*>, nestedSentenceDeclarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
-        nestedMethodCache[testClass] = nestedSentenceDeclarations
+    private fun prepareNestedSentences(testClass: Class<*>, declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
+        nestedMethodCache[testClass] = declarations
             .map {
                 val parameters = prepareParametersFor(
                     testClass.findLocalOrSourcesMethod(it.name),
-                    it.parameterNamesAndTypes)
-                val parsedNestedMethod = ParsedNestedMethod(
+                    it.parameterNamesAndTypes
+                )
+                ParsedNestedMethod(
                     it.name,
                     parameters,
                     ParserStateMachine(sentenceBuilder()).run {
@@ -97,9 +99,8 @@ interface MethodParser : ParserCache, ParserDelegate {
                         sentences
                     }
                 )
-                parsedNestedMethod
             }
-            .associateBy({it.name}, { it })
+            .associateBy({ it.name }, { it })
 
         return nestedMethodCache[testClass] ?: emptyMap()
     }
@@ -133,7 +134,7 @@ interface MethodParser : ParserCache, ParserDelegate {
         )
     }
 
-    private fun prepareMethodsFor(clazz: Class<*>) =
+    private fun prepareMethodsFor(clazz: Class<*>): Map<String, MethodElementDescriptor> =
         clazz.allMethods
             .map { ElementDescriptor.forMethod(it) }
             .associateBy(ElementDescriptor::name)

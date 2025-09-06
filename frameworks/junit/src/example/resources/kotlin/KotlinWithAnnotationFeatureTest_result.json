@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "3 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "3 Ms",
+          "elapsedTime": "2 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -414,7 +414,7 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with"
+                "value": "something with"
               },
               {
                 "types": [
@@ -441,7 +441,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "testWithChainedFunctionSentenceValue",
       "displayName": "Test With Chained Function Sentence Value",
       "notes": null,
@@ -450,7 +450,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -466,7 +466,7 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with"
+                "value": "something with"
               },
               {
                 "types": [
@@ -493,7 +493,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "testWithChainedFieldSentenceValue",
       "displayName": "Test With Chained Field Sentence Value",
       "notes": null,
@@ -502,7 +502,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -518,7 +518,7 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with"
+                "value": "something with"
               },
               {
                 "types": [
@@ -570,7 +570,7 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with"
+                "value": "something with"
               },
               {
                 "types": [
@@ -582,7 +582,7 @@
           ],
           "parameters": [
             {
-              "value": "MyThing(value=foo)"
+              "value": "MyThing"
             }
           ],
           "givens": [
@@ -615,7 +615,7 @@
                 "types": [
                   "tk-wd"
                 ],
-                "value": "some something with"
+                "value": "something with"
               },
               {
                 "types": [
@@ -627,7 +627,7 @@
           ],
           "parameters": [
             {
-              "value": "MyThing(value=bar)"
+              "value": "MyThing"
             }
           ],
           "givens": [
@@ -642,6 +642,58 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "[2] MyThing(value=bar)"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "16 Ms",
+      "testMethod": "testWithRenderedValueFunctionWithParameters",
+      "displayName": "Test With Rendered Value Function With Parameters",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "16 Ms",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "something with"
+              },
+              {
+                "types": [
+                  "tk-mv"
+                ],
+                "value": "foo-bar"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithRenderedValueFunctionWithParameters()"
         }
       ]
     }

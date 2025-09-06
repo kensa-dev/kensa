@@ -3,6 +3,8 @@ package dev.kensa.parse
 import dev.kensa.KensaException
 import dev.kensa.context.NestedInvocationContextHolder.nestedSentenceInvocationContext
 import dev.kensa.context.RealNestedInvocation
+import dev.kensa.context.RealRenderedValueInvocation
+import dev.kensa.context.RenderedValueInvocationContextHolder.renderedValueInvocationContext
 import dev.kensa.parse.ElementDescriptor.ResolveHolderElementDescriptor
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedToken
@@ -28,6 +30,7 @@ class TokenRenderer(
     fun render(tokens: List<TemplateToken>): List<RenderedToken> =
         tokens.squash().map { token ->
             when {
+                token is TemplateToken.RenderedValueToken1 -> token.asSpecialRenderedValueToken()
                 token.hasType(FieldValue) -> token.asFieldValue()
                 token.hasType(MethodValue) -> token.asMethodValue()
                 token.hasType(ParameterValue) -> token.asParameterValue()
@@ -73,6 +76,17 @@ class TokenRenderer(
             currentEmphasis = token.emphasis
         }
         finishCurrentWord()
+    }
+
+    private fun TemplateToken.asSpecialRenderedValueToken(): RenderedValueToken {
+        val returnValue = when (val invocation = renderedValueInvocationContext().nextInvocationFor(template)) {
+            is RealRenderedValueInvocation -> invocation.returnValue
+            else -> template
+        }
+        return RenderedValueToken(
+            returnValue.toString(),
+            (types.map { it.asCss() } + emphasis.asCss()).toSortedSet()
+        )
     }
 
     private fun TemplateToken.asRenderedValue() =

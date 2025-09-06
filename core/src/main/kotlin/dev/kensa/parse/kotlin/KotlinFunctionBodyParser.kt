@@ -4,6 +4,7 @@ import dev.kensa.parse.Event.*
 import dev.kensa.parse.KotlinLexer.*
 import dev.kensa.parse.KotlinParser
 import dev.kensa.parse.KotlinParserBaseListener
+import dev.kensa.parse.LocatedEvent
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
@@ -60,15 +61,20 @@ class KotlinFunctionBodyParser(
 
     override fun enterRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
         with(parseContext) {
-            if (ctx.matchesFixturesExpression() || ctx.matchesOutputsExpression() || ctx.matchesChainedCall()) {
-                (ctx.asFixture() ?: ctx.asOutputs() ?: ctx.asChainedCall())?.also { stateMachine.apply(it) }
-            }
+            when {
+                ctx.matchesFixturesExpression() -> ctx.asFixture()
+                ctx.matchesOutputsExpression() -> ctx.asOutputs()
+                ctx.matchesChainedCall() -> ctx.asChainedCall()
+                else -> null
+            }?.also { stateMachine.apply(it) }
         }
     }
 
     override fun exitRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
         with(parseContext) {
-            if (ctx.matchesFixturesExpression() || ctx.matchesOutputsExpression() || ctx.matchesChainedCall()) {
+            if (ctx.matchesFixturesExpression()
+                || ctx.matchesOutputsExpression()
+                || ctx.matchesChainedCall()) {
                 stateMachine.apply(ExitExpression)
             }
         }
@@ -98,16 +104,23 @@ class KotlinFunctionBodyParser(
         stateMachine.apply(ExitStatement)
     }
 
-    override fun enterExpression(ctx: KotlinParser.ExpressionContext) =
-        with(parseContext) {
-            stateMachine.apply(ctx.asFixture() ?: ctx.asChainedCall() ?: ctx.asEnterExpression())
+    override fun enterExpression(ctx: KotlinParser.ExpressionContext) {
+        return with(parseContext) {
+            when {
+                ctx.matchesFixturesExpression() -> ctx.asFixture()
+                ctx.matchesOutputsExpression() -> ctx.asOutputs()
+                ctx.matchesRenderedValueMethodExpression() -> ctx.asRenderedValueMethodExpression()
+                ctx.matchesChainedCall() -> ctx.asChainedCall()
+                else -> ctx.asEnterExpression()
+            }?.also { stateMachine.apply(it) }
         }
+    }
 
     override fun exitExpression(ctx: KotlinParser.ExpressionContext) {
         stateMachine.apply(ExitExpression)
     }
 
-    override fun enterSimpleIdentifier(ctx: KotlinParser.SimpleIdentifierContext) =
+    override fun enterSimpleIdentifier(ctx: KotlinParser.SimpleIdentifierContext) {
         with(parseContext) {
             stateMachine.apply(ctx.asParameter() ?: ctx.asField() ?: ctx.asMethod() ?: ctx.asNested()?.let { nested ->
                 if (ctx.hasArguments())
@@ -116,6 +129,7 @@ class KotlinFunctionBodyParser(
                     nested
             } ?: ctx.asIdentifier())
         }
+    }
 
     override fun enterValueArgument(ctx: KotlinParser.ValueArgumentContext) {
         stateMachine.apply(EnterValueArgument)

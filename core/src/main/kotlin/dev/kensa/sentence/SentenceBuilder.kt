@@ -4,6 +4,7 @@ import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent
 import dev.kensa.parse.LocatedEvent.*
+import dev.kensa.parse.LocatedEvent.Literal.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
@@ -126,6 +127,11 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
     fun appendOutputsByKeyValue(location: Location, name: String, path: String) {
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(OutputsValueByKey)))
+    }
+
+    fun append(location: Location, event: RenderedValue) {
+        lastLocation = tokens.checkLineAndIndent(location, lastLocation)
+        tokens.add(RenderedValueToken1(event.name, EmphasisDescriptor.Default))
     }
 
     fun append(event: ChainedCallExpression) {

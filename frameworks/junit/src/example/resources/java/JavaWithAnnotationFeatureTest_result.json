@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -102,7 +102,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithHighlight",
       "displayName": "Test With Highlight",
       "notes": null,
@@ -111,7 +111,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -283,6 +283,61 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithEmphasis()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "29 Ms",
+      "testMethod": "testWithRenderedValueFunctionWithParameters",
+      "displayName": "Test With Rendered Value Function With Parameters",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "29 Ms",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "some prerequisites with"
+              },
+              {
+                "types": [
+                  "tk-mv"
+                ],
+                "value": "foo-bar"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "key_foo-bar": "foo-bar"
+            },
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithRenderedValueFunctionWithParameters()"
         }
       ]
     }

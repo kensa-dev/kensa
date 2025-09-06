@@ -48,6 +48,15 @@ class KotlinWithFixturesTest : KensaTest, WithHamkrest {
         then(thePrivateSourcedFixture(), equalTo(fixtures[PublicFixture]))
     }
 
+    @Test
+    fun test5() {
+        then(theConcatenatedFixtures(), equalTo(concatenate(fixtures(StringFixture), fixtures(BooleanFixture))))
+    }
+
+    @RenderedValue
+    private fun concatenate(string: String, boolean: Boolean) = "$string-$boolean"
+    private fun theConcatenatedFixtures() = StateCollector { concatenate(fixtures(StringFixture), fixtures(BooleanFixture)) }
+
     private fun theBooleanFixture(): StateExtractor<Boolean> = StateExtractor { interactions: CapturedInteractions -> fixtures[BooleanFixture] }
     private fun theIntegerFixture(): StateExtractor<Int> = StateExtractor { interactions: CapturedInteractions -> fixtures[IntegerFixture] }
     private fun theStringFixture(): StateExtractor<String> = StateExtractor { interactions: CapturedInteractions -> fixtures[StringFixture] }

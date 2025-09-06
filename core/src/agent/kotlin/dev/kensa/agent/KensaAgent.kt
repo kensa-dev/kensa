@@ -1,6 +1,7 @@
 package dev.kensa.agent
 
 import dev.kensa.NestedSentence
+import dev.kensa.RenderedValue
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.agent.builder.AgentBuilder
 import net.bytebuddy.asm.Advice
@@ -23,7 +24,7 @@ object KensaAgent {
             builder.type(
                 declaresMethod(
                     isAnnotatedWith(
-                        named(NestedSentence::class.java.name)
+                        anyOf(NestedSentence::class.java, RenderedValue::class.java)
                     )
                 ),
                 `is`(classLoader)
@@ -35,8 +36,9 @@ object KensaAgent {
 //         val agentBuilder = agentBuilder.with(AgentBuilder.Listener.StreamWriting.toSystemOut());
         return typeNarrower.apply(agentBuilder)
             .transform { builder, _, _, _, _ ->
-                builder.method(isAnnotatedWith(NestedSentence::class.java))
-                    .intercept(Advice.to(NestedSentenceAdvice::class.java))
+                builder
+                    .method(isAnnotatedWith(NestedSentence::class.java)).intercept(Advice.to(NestedSentenceAdvice::class.java))
+                    .method(not(takesNoArguments()).and(isAnnotatedWith(RenderedValue::class.java))).intercept(Advice.to(RenderedValueAdvice::class.java))
             }
             .installOn(instrumentation)
     }

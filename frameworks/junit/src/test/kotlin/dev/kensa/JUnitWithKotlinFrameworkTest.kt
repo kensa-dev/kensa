@@ -122,9 +122,12 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         }
 
         @Test
-        fun embeddedJsonIsCorrectForTestWihVariousAnnotationsParameter() {
+        fun embeddedJsonIsCorrectForTestWithVariousAnnotationsParameter() {
             testConfiguration {
                 renderers.addValueRenderer(MyArgument::class.java, MyArgumentRenderer)
+                renderers.addValueRenderer(MyThing::class.java) {
+                    """MyThing"""
+                }
             }
             executeTestAndVerifyJson(KotlinWithAnnotationFeatureTest::class.java)
         }

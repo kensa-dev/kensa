@@ -46,6 +46,13 @@ sealed interface TemplateToken {
         override val types: Set<Type>,
     ) : TemplateToken
 
+    data class RenderedValueToken1(
+        override val template: String,
+        override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
+    ) : TemplateToken {
+        override val types: Set<Type> = setOf(Type.MethodValue)
+    }
+
     data class NestedTemplateToken(
         override val template: String,
         override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,

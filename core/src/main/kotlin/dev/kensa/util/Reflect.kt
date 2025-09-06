@@ -81,7 +81,7 @@ internal fun <T> Any.invokeMethodOrNull(method: Method): T? = method.run {
     try {
         invoke(this@invokeMethodOrNull) as T?
     } catch (e: Exception) {
-        err.println("Unable to invoke method [${method.name}] on [${this@invokeMethodOrNull::class.simpleName}"); e.printStackTrace(err)
+        err.println("Unable to invoke method [${method.name}] on [${this@invokeMethodOrNull::class.simpleName}]"); e.printStackTrace(err)
         null
     }
 }

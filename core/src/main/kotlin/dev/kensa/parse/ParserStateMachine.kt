@@ -2,6 +2,7 @@ package dev.kensa.parse
 
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.*
+import dev.kensa.parse.LocatedEvent.Literal.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByKeyExpression
@@ -39,28 +40,28 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
         initialState = Start
 
         state<Start> {
-            on<EnterMethod> { _, event ->
+            on<EnterMethod> { _, _ ->
                 InMethod
             }
         }
         state<InMethod> {
             on<ExitMethod>(transitionTo(End))
-            on<EnterBlock> { currentState, event ->
+            on<EnterBlock> { currentState, _ ->
                 TestBlock(currentState)
             }
-            on<EnterExpression> { currentState, event ->
+            on<EnterExpression> { currentState, _ ->
                 ExpressionFn(currentState)
             }
             ignoreAll(any<Operator>(), any<Terminal>())
         }
         state<ExpressionFn> {
-            on<EnterExpression> { currentState, event ->
+            on<EnterExpression> { currentState, _ ->
                 ExpressionFn(currentState)
             }
-            on<ChainedCallExpression> { currentState, event ->
+            on<ChainedCallExpression> { currentState, _ ->
                 ExpressionFn(currentState)
             }
-            on<ExitExpression> { currentState, event ->
+            on<ExitExpression> { currentState, _ ->
                 currentState.parentState
             }
             on<EnterStatement> { currentState, event ->
@@ -80,7 +81,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             )
         }
         state<TestBlock> {
-            on<ExitBlock> { currentState, event -> currentState.parentState }
+            on<ExitBlock> { currentState, _ -> currentState.parentState }
 
             on<EnterStatement> { currentState, event ->
                 beginSentence(event.location)
@@ -90,14 +91,18 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             ignoreAll(any<Terminal>())
         }
         state<InStatement> {
-            on<ExitStatement> { currentState, event ->
+            on<ExitStatement> { currentState, _ ->
                 if (currentState.didBegin) finishSentence()
                 currentState.parentState
             }
-            on<EnterExpression> { currentState, event ->
+            on<RenderedValue> { currentState, event ->
+                sentenceBuilder.append(event.location, event)
+                InRenderedValueExpression(currentState)
+            }
+            on<EnterExpression> { currentState, _ ->
                 InExpression(currentState)
             }
-            on<EnterMethodInvocation> { currentState, event ->
+            on<EnterMethodInvocation> { currentState, _ ->
                 InMethodInvocation(currentState)
             }
             on<Operator> { currentState, event ->
@@ -128,13 +133,13 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             ignoreAll(any<Terminal>())
         }
         state<InFixturesExpression> {
-            on<ExitExpression> { currentState, event ->
+            on<ExitExpression> { currentState, _ ->
                 currentState.parentState
             }
-            on<FixturesExpression> { currentState, event ->
+            on<FixturesExpression> { currentState, _ ->
                 InFixturesExpression(currentState)
             }
-            on<EnterExpression> { currentState, event ->
+            on<EnterExpression> { currentState, _ ->
                 InFixturesExpression(currentState)
             }
             ignoreAll(any<EnterValueArguments>(),
@@ -146,16 +151,16 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             )
         }
         state<InOutputsExpression> {
-            on<ExitExpression> { currentState, event ->
+            on<ExitExpression> { currentState, _ ->
                 currentState.parentState
             }
-            on<OutputsByNameExpression> { currentState, event ->
+            on<OutputsByNameExpression> { currentState, _ ->
                 InOutputsExpression(currentState)
             }
-            on<OutputsByKeyExpression> { currentState, event ->
+            on<OutputsByKeyExpression> { currentState, _ ->
                 InOutputsExpression(currentState)
             }
-            on<EnterExpression> { currentState, event ->
+            on<EnterExpression> { currentState, _ ->
                 InOutputsExpression(currentState)
             }
             ignoreAll(any<EnterValueArguments>(),
@@ -164,14 +169,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 any<ExitValueArgument>(),
                 any<Terminal>(),
                 any<Identifier>(),
-                any<StringLiteral>(),
+                any<Literal>(),
             )
         }
         state<InChainedCallExpression> {
-            on<ExitExpression> { currentState, event ->
+            on<ExitExpression> { currentState, _ ->
                 currentState.parentState
             }
-            on<ChainedCallExpression> { currentState, event ->
+            on<ChainedCallExpression> { currentState, _ ->
                 InChainedCallExpression(currentState)
             }
             ignoreAll(any<Method>(),
@@ -186,26 +191,54 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             )
         }
         state<InLambda> {
-            on<ExitLambda> { currentState, event ->
+            on<ExitLambda> { currentState, _ ->
                 currentState.parentState
             }
-            on<EnterStatement> { currentState, event ->
+            on<EnterStatement> { currentState, _ ->
                 InStatement(currentState, didBegin = false)
             }
             ignoreAll(any<Terminal>())
         }
+        state<InRenderedValueExpression> {
+            on<ExitExpression> { currentState, _ ->
+                currentState.parentState
+            }
+            onAny(
+                EnterExpression::class,
+                ChainedCallExpression::class,
+                FixturesExpression::class,
+                OutputsByKeyExpression::class,
+                OutputsByNameExpression::class
+            ) { currentState, _ -> InRenderedValueExpression(currentState) }
+            ignoreAll(
+                any<Method>(),
+                any<Terminal>(),
+                any<Literal>(),
+                any<EnterValueArguments>(),
+                any<EnterValueArgument>(),
+                any<ExitValueArgument>(),
+                any<ExitValueArguments>(),
+                any<ChainedCallExpression>(),
+                any<Field>(),
+                any<Identifier>(),
+            )
+        }
         state<InExpression> {
-            on<EnterLambda> { currentState, event ->
+            on<EnterLambda> { currentState, _ ->
                 InLambda(currentState)
             }
-            on<EnterStatement> { currentState, event ->
+            on<EnterStatement> { currentState, _ ->
                 InStatement(currentState)
             }
-            on<EnterExpression> { currentState, event ->
+            on<EnterExpression> { currentState, _ ->
                 InExpression(currentState)
             }
             on<ExitExpression> { currentState, _ ->
                 currentState.parentState
+            }
+            on<RenderedValue> { currentState, event ->
+                sentenceBuilder.append(event.location, event)
+                InRenderedValueExpression(currentState)
             }
             on<ChainedCallExpression> { currentState, event ->
                 sentenceBuilder.append(event)
@@ -227,7 +260,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.append(event)
                 currentState
             }
-            on<EnterTypeArguments> { currentState, event ->
+            on<EnterTypeArguments> { currentState, _ ->
                 InTypeArguments(currentState)
             }
             on<Parameter> { currentState, event ->
@@ -288,13 +321,13 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             )
         }
         state<InNestedWithArgumentsParameter> {
-            on<ExitValueArgument> { currentState, event ->
+            on<ExitValueArgument> { currentState, _ ->
                 currentState.parentState
             }
-            on<EnterValueArguments> { currentState, event ->
+            on<EnterValueArguments> { currentState, _ ->
                 InNestedWithArgumentsParameter(currentState)
             }
-            on<ExitValueArguments> { currentState, event ->
+            on<ExitValueArguments> { currentState, _ ->
                 currentState.parentState
             }
 
@@ -308,13 +341,13 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             )
         }
         state<InNestedWithArguments> {
-            on<EnterValueArguments> { currentState, event ->
+            on<EnterValueArguments> { currentState, _ ->
                 InNestedWithArgumentsParameter(currentState)
             }
-            on<EnterValueArgument> { currentState, event ->
+            on<EnterValueArgument> { currentState, _ ->
                 InNestedWithArgumentsParameter(currentState)
             }
-            on<ExitValueArguments> { currentState, event ->
+            on<ExitValueArguments> { currentState, _ ->
                 sentenceBuilder.finishNested(currentState.parameterEvents)
                 currentState.parentState
             }
@@ -324,7 +357,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             ignoreAll(any<Terminal>(), any<EnterExpression>(), any<ExitExpression>(), any<ExitValueArgument>())
         }
         state<InTypeArguments> {
-            on<ExitTypeArguments> { currentState, event ->
+            on<ExitTypeArguments> { currentState, _ ->
                 currentState.parentState
             }
             ignoreAll(any<Terminal>(), any<Identifier>())
@@ -334,6 +367,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 currentState.parentState.also {
                     if (it is InMethodInvocation && it.didBegin) finishSentence()
                 }
+            }
+            on<RenderedValue> { currentState, event ->
+                sentenceBuilder.append(event.location, event)
+                InRenderedValueExpression(currentState)
             }
             on<ChainedCallExpression> { currentState, event ->
                 sentenceBuilder.append(event)
@@ -369,7 +406,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.beginNested(event.location, event.name, event.sentences)
                 InNestedWithArguments(currentState, event.location, event.name, event.sentences)
             }
-            on<EnterExpression> { currentState, event ->
+            on<EnterExpression> { currentState, _ ->
                 InExpression(currentState)
             }
             ignoreAll(any<Terminal>(), any<ExitValueArguments>())

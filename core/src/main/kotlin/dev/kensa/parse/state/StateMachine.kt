@@ -1,5 +1,7 @@
 package dev.kensa.parse.state
 
+import kotlin.reflect.KClass
+
 class StateMachine<STATE : Any, EVENT : Any>(initialState: STATE, private val transitions: Map<Matcher<STATE>, Set<StateMachineBuilder<STATE, EVENT>.Transition<EVENT, STATE>>>) {
 
     var state: STATE = initialState
@@ -30,6 +32,7 @@ class Matcher<T> private constructor(private val clazz: Class<T>) {
 
     companion object {
         fun <T> any(clazz: Class<T>): Matcher<T> = Matcher(clazz)
+        fun <T : Any> any(clazz: KClass<T>): Matcher<T> = Matcher(clazz.java)
 
         inline fun <reified T> any(): Matcher<T> = any(T::class.java)
 
@@ -72,6 +75,10 @@ class StateMachineBuilder<STATE : Any, EVENT : Any> {
         fun <E : EVENT> on(matcher: Matcher<E>, transition: (S, E) -> STATE) {
             @Suppress("UNCHECKED_CAST")
             transitions += Transition(matcher, transition) as Transition<EVENT, S>
+        }
+
+        fun <E : EVENT> onAny(vararg event: KClass<out E>, transition: (S, E) -> STATE) {
+            event.forEach { on(Matcher.any(it), transition) }
         }
 
         inline fun <reified E : EVENT> on(noinline transition: (S, E) -> STATE) {

@@ -66,7 +66,7 @@ class JavaMethodBodyParser(
         stateMachine.apply(ExitMethodInvocation)
     }
 
-    override fun enterMethodName(ctx: Java20Parser.MethodNameContext) =
+    override fun enterMethodName(ctx: Java20Parser.MethodNameContext) {
         with(parseContext) {
             stateMachine.apply(ctx.asMethod() ?: ctx.asNested()?.let { nested ->
                 if (ctx.hasArguments())
@@ -74,20 +74,29 @@ class JavaMethodBodyParser(
                 else nested
             } ?: ctx.asIdentifier())
         }
+    }
 
     override fun exitArgumentList(ctx: Java20Parser.ArgumentListContext) {
         stateMachine.apply(ExitValueArguments)
     }
 
-    override fun enterIdentifier(ctx: Java20Parser.IdentifierContext) =
+    override fun enterIdentifier(ctx: Java20Parser.IdentifierContext) {
         with(parseContext) {
             stateMachine.apply(ctx.asField() ?: ctx.asParameter() ?: ctx.asIdentifier())
         }
+    }
 
-    override fun enterExpression(ctx: Java20Parser.ExpressionContext) =
+    override fun enterExpression(ctx: Java20Parser.ExpressionContext) {
         with(parseContext) {
-            stateMachine.apply(ctx.asFixture() ?: ctx.asOutputs() ?: ctx.asChainedCall() ?: ctx.asEnterExpression())
+            when {
+                ctx.matchesFixturesExpression() -> ctx.asFixture()
+                ctx.matchesOutputsExpression() -> ctx.asOutputs()
+                ctx.matchesRenderedValueMethodExpression() -> ctx.asRenderedValueMethodExpression()
+                ctx.matchesChainedCall() -> ctx.asChainedCall()
+                else -> ctx.asEnterExpression()
+            }?.also { stateMachine.apply(it) }
         }
+    }
 
     override fun exitExpression(ctx: Java20Parser.ExpressionContext) {
         stateMachine.apply(ExitExpression)
