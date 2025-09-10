@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.24
+- Tweak alignment of nested sentence floating and embedded block.
+- Experimental support for rendering return values of methods/functions that take parameters. Currently only matches on method/function name.  Requires kensa-agent.
+- Fix for fake plurals of ProtectedPhrases.
+
 ### v0.5.23
 - Support for Kotest 6.
 
