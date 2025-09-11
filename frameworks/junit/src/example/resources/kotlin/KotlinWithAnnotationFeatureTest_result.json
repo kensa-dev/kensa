@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "2 Ms",
+      "elapsedTime": "3 Ms",
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "2 Ms",
+          "elapsedTime": "3 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -204,7 +204,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "testWithHighlight",
       "displayName": "Test With Highlight",
       "notes": null,
@@ -213,7 +213,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -441,7 +441,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithChainedFunctionSentenceValue",
       "displayName": "Test With Chained Function Sentence Value",
       "notes": null,
@@ -450,7 +450,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -646,7 +646,7 @@
       ]
     },
     {
-      "elapsedTime": "16 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "testWithRenderedValueFunctionWithParameters",
       "displayName": "Test With Rendered Value Function With Parameters",
       "notes": null,
@@ -655,7 +655,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "16 Ms",
+          "elapsedTime": "2 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
@@ -694,6 +694,126 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithRenderedValueFunctionWithParameters()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "parameterisedTestWithRenderedValueFunctionWithParameters",
+      "displayName": "Parameterised Test With Rendered Value Function With Parameters",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "something with"
+              },
+              {
+                "types": [
+                  "tk-mv"
+                ],
+                "value": "meh-bar"
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "shouldNotBeRendered": "meh"
+            }
+          ],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] meh"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithInfixStyleRenderedValueFunctionWithParameters",
+      "displayName": "Test With Infix Style Rendered Value Function With Parameters",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "something with"
+              },
+              {
+                "types": [
+                  "tk-sl"
+                ],
+                "value": "prefix"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "then"
+              },
+              {
+                "types": [
+                  "tk-mv"
+                ],
+                "value": "foo-bar"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "highlightMe": "givensViaHighlight"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithInfixStyleRenderedValueFunctionWithParameters()"
         }
       ]
     }

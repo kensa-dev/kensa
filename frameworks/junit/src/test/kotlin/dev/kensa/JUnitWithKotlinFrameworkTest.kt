@@ -12,6 +12,7 @@ import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.paths.shouldExist
 import io.kotest.matchers.paths.shouldNotExist
 import org.jsoup.Jsoup
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -23,6 +24,11 @@ import kotlin.io.path.Path
 import kotlin.jvm.optionals.getOrNull
 
 internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
+
+    @AfterEach
+    fun tearDown() {
+        ThreadLocalKensaConfigurationProvider.remove()
+    }
 
     @Nested
     inner class FileCreation {
@@ -102,7 +108,6 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 KotlinWithNestedSentenceTest::class,
                 KotlinWithLiteralsTest::class,
                 KotlinWithTypeArgumentsTest::class,
-                KotlinWithCapturedOutputsTest::class,
                 KotlinWithCapturedOutputsTest::class,
                 KotlinWithSetupStepsTest::class,
                 KotlinWithVariousNamingTest::class,

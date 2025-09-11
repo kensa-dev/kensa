@@ -4,7 +4,6 @@ import dev.kensa.parse.Event.*
 import dev.kensa.parse.KotlinLexer.*
 import dev.kensa.parse.KotlinParser
 import dev.kensa.parse.KotlinParserBaseListener
-import dev.kensa.parse.LocatedEvent
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
@@ -44,7 +43,10 @@ class KotlinFunctionBodyParser(
     override fun enterInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
         with(parseContext) {
             val rhExpression = ctx.rangeExpression(1)
-            if (rhExpression.matchesFixturesExpression() || rhExpression.matchesOutputsExpression() || rhExpression.matchesChainedCall()) {
+            if (rhExpression.matchesFixturesExpression()
+                || rhExpression.matchesOutputsExpression()
+                || rhExpression.matchesChainedCall()
+            ) {
                 stateMachine.apply(ctx.asEnterExpression())
             }
         }
@@ -53,7 +55,10 @@ class KotlinFunctionBodyParser(
     override fun exitInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
         with(parseContext) {
             val rhExpression = ctx.rangeExpression(1)
-            if (rhExpression.matchesFixturesExpression() || rhExpression.matchesOutputsExpression() || rhExpression.matchesChainedCall()) {
+            if (rhExpression.matchesFixturesExpression()
+                || rhExpression.matchesOutputsExpression()
+                || rhExpression.matchesChainedCall()
+            ) {
                 stateMachine.apply(ExitExpression)
             }
         }
@@ -64,6 +69,7 @@ class KotlinFunctionBodyParser(
             when {
                 ctx.matchesFixturesExpression() -> ctx.asFixture()
                 ctx.matchesOutputsExpression() -> ctx.asOutputs()
+                ctx.matchesRenderedValueMethodExpression() -> ctx.asRenderedValueMethodExpression()
                 ctx.matchesChainedCall() -> ctx.asChainedCall()
                 else -> null
             }?.also { stateMachine.apply(it) }
@@ -74,7 +80,9 @@ class KotlinFunctionBodyParser(
         with(parseContext) {
             if (ctx.matchesFixturesExpression()
                 || ctx.matchesOutputsExpression()
-                || ctx.matchesChainedCall()) {
+                || ctx.matchesRenderedValueMethodExpression()
+                || ctx.matchesChainedCall()
+            ) {
                 stateMachine.apply(ExitExpression)
             }
         }

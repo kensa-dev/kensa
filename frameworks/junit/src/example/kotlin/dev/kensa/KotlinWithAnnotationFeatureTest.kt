@@ -3,7 +3,6 @@ package dev.kensa
 import com.natpryce.hamkrest.equalTo
 import dev.kensa.Colour.BackgroundDanger
 import dev.kensa.Colour.TextLight
-import dev.kensa.Kensa.configure
 import dev.kensa.TextStyle.Italic
 import dev.kensa.TextStyle.TextWeightBold
 import dev.kensa.TextStyle.Uppercase
@@ -13,10 +12,10 @@ import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Givens
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 
 class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
 
@@ -93,6 +92,21 @@ class KotlinWithAnnotationFeatureTest : KensaTest, WithHamkrest {
     @Test
     fun testWithRenderedValueFunctionWithParameters() {
         given(somethingWith(renderTheReturnValue("foo", "bar")))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["meh"])
+    fun parameterisedTestWithRenderedValueFunctionWithParameters(@RenderedValue shouldNotBeRendered: String) {
+        given(somethingWith(renderTheReturnValue(shouldNotBeRendered, "bar")))
+    }
+
+    @Test
+    fun testWithInfixStyleRenderedValueFunctionWithParameters() {
+        given(somethingWith("prefix" then renderTheReturnValue("foo", "bar")))
+    }
+
+    infix fun String.then(expectedValue: String) : String{
+        return expectedValue
     }
 
     @RenderedValue

@@ -204,6 +204,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 currentState.parentState
             }
             onAny(
+                RenderedValue::class,
                 EnterExpression::class,
                 ChainedCallExpression::class,
                 FixturesExpression::class,
@@ -220,6 +221,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 any<ExitValueArguments>(),
                 any<ChainedCallExpression>(),
                 any<Field>(),
+                any<Parameter>(),
                 any<Identifier>(),
             )
         }
