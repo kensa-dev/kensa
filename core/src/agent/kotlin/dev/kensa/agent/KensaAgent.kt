@@ -37,7 +37,7 @@ object KensaAgent {
         return typeNarrower.apply(agentBuilder)
             .transform { builder, _, _, _, _ ->
                 builder
-                    .method(isAnnotatedWith(NestedSentence::class.java)).intercept(Advice.to(NestedSentenceAdvice::class.java))
+                    .method(not(takesNoArguments()).and(isAnnotatedWith(NestedSentence::class.java))).intercept(Advice.to(NestedSentenceAdvice::class.java))
                     .method(not(takesNoArguments()).and(isAnnotatedWith(RenderedValue::class.java))).intercept(Advice.to(RenderedValueAdvice::class.java))
             }
             .installOn(instrumentation)
