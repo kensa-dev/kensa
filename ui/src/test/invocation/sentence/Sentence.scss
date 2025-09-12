@@ -1,37 +1,37 @@
+.ns-container {
+  width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+}
+
 .ns-wrapper {
   position: relative;
-  display: inline-block;
-  margin: 0;
-  padding: 0;
 }
 
 .ns {
-  display: block;
-  margin-top: 0.25rem;
-  margin-left: 0;
-  padding: 0.5rem 1rem;
   background-color: hsl(var(--bulma-message-h), var(--bulma-message-s), calc(var(--bulma-message-background-l) - 2%));
   border: 1px solid hsla(0, 0%, 0%, 0.05);
   border-radius: var(--bulma-border-radius, 4px);
-  min-width: max-content;
-  max-width: 90vw;
-  color: hsl(var(--bulma-message-h), var(--bulma-message-s), var(--bulma-message-text-l, 20%));
-  z-index: 1;
+  padding: 0.5rem 1rem;
+  max-width: max-content;
+  margin-top: 0.25rem;
 }
 
 .ns-floating {
   position: absolute;
   top: calc(100% + 0.25rem);
   left: 0;
+  min-width: max-content;
   margin: 0;
   padding: 0.5rem 1rem;
   background-color: hsl(var(--bulma-message-h), var(--bulma-message-s), calc(var(--bulma-message-background-l) - 2%));
   z-index: var(--bulma-z-index-floating, 100);
   box-shadow: 0.125rem 0.1875rem 0.1875rem 0.125rem hsla(var(--bulma-message-h), calc(var(--bulma-message-s) - 50%), calc(var(--bulma-message-background-l) - 50%), 0.2);
   border-radius: var(--bulma-border-radius-floating, 5px);
-  min-width: max-content;
   max-width: 90vw;
-  color: hsl(var(--bulma-message-h), var(--bulma-message-s), var(--bulma-message-text-l, 20%));
 }
 
 .ns-parameters {
@@ -41,6 +41,12 @@
   border-radius: 4px;
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.space {
+  white-space: pre;
+  display: inline;
+  width: 4px;
 }
 
 .tk-kw {
