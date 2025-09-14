@@ -1,14 +1,15 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.Configuration
-import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.context.NestedInvocationContext
+import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.example.*
+import dev.kensa.parse.ElementDescriptor.*
 import dev.kensa.parse.KotlinParser
+import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
-import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
 import io.kotest.assertions.asClue
 import io.kotest.assertions.assertSoftly
@@ -17,14 +18,8 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import org.antlr.v4.runtime.atn.PredictionMode
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
+import io.kotest.matchers.types.shouldBeInstanceOf
+import org.junit.jupiter.api.*
 
 internal class KotlinFunctionParserTest {
 
@@ -33,7 +28,63 @@ internal class KotlinFunctionParserTest {
     @BeforeEach
     internal fun setUp() {
         configuration.apply {
-            antlrPredicationMode = PredictionMode.LL
+            protectedPhrases(
+                ProtectedPhrase("House"),
+                ProtectedPhrase("City"),
+                ProtectedPhrase("Bus"),
+                ProtectedPhrase("Dish"),
+                ProtectedPhrase("Box"),
+                ProtectedPhrase("Toy"),
+            )
+        }
+    }
+
+    @Nested
+    inner class ProtectedPhrases {
+
+        @Test
+        fun `recognises various protected phrases`() {
+            val functionName = "protectedPhrasesTest"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val method = KotlinWithProtectedPhrases::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentences = listOf(
+                TemplateSentence(listOf(Word.asTemplateToken("there"), Word.asTemplateToken("are"), ProtectedPhrase.asTemplateToken("Houses"), Word.asTemplateToken("in"), Word.asTemplateToken("this"), Word.asTemplateToken("street"))),
+                TemplateSentence(listOf(Word.asTemplateToken("there"), Word.asTemplateToken("is"), Word.asTemplateToken("a"), ProtectedPhrase.asTemplateToken("House"), Word.asTemplateToken("in"), Word.asTemplateToken("this"), Word.asTemplateToken("street"))),
+                TemplateSentence(listOf(Word.asTemplateToken("there"), Word.asTemplateToken("are"), ProtectedPhrase.asTemplateToken("Houses"), Word.asTemplateToken("in"), Word.asTemplateToken("the"), ProtectedPhrase.asTemplateToken("Cities"))),
+                TemplateSentence(listOf(Word.asTemplateToken("the"), ProtectedPhrase.asTemplateToken("House"), Word.asTemplateToken("sits"), Word.asTemplateToken("in"), Word.asTemplateToken("the"), ProtectedPhrase.asTemplateToken("City"))),
+                TemplateSentence(listOf(Word.asTemplateToken("i"), Word.asTemplateToken("missed"), Word.asTemplateToken("the"), ProtectedPhrase.asTemplateToken("Bus"))),
+                TemplateSentence(listOf(Word.asTemplateToken("global"), ProtectedPhrase.asTemplateToken("City"), Word.asTemplateToken("stats"))),
+                TemplateSentence(listOf(Word.asTemplateToken("the"), ProtectedPhrase.asTemplateToken("City"), Word.asTemplateToken("of"), Word.asTemplateToken("lights"), Word.asTemplateToken("is"), Word.asTemplateToken("unlike"), Word.asTemplateToken("other"), ProtectedPhrase.asTemplateToken("Cities"))),
+                TemplateSentence(listOf(Word.asTemplateToken("a"), Word.asTemplateToken("tasty"), ProtectedPhrase.asTemplateToken("Dish"))),
+                TemplateSentence(listOf(Word.asTemplateToken("a"), ProtectedPhrase.asTemplateToken("Box"), Word.asTemplateToken("of"), Word.asTemplateToken("chocolates"))),
+                TemplateSentence(
+                    listOf(
+                        Word.asTemplateToken("wash"),
+                        Word.asTemplateToken("the"),
+                        ProtectedPhrase.asTemplateToken("Dishes"),
+                        Word.asTemplateToken("and"),
+                        Word.asTemplateToken("open"),
+                        Word.asTemplateToken("the"),
+                        ProtectedPhrase.asTemplateToken("Box"),
+                        Word.asTemplateToken("of"),
+                        ProtectedPhrase.asTemplateToken("Boxes")
+                    )
+                ),
+                TemplateSentence(listOf(Word.asTemplateToken("a"), ProtectedPhrase.asTemplateToken("Toy"), Word.asTemplateToken("car"))),
+                TemplateSentence(listOf(Word.asTemplateToken("the"), Word.asTemplateToken("kids"), Word.asTemplateToken("shared"), Word.asTemplateToken("their"), ProtectedPhrase.asTemplateToken("Toys"))),
+            )
+
+            parsedMethod.sentences.forEachIndexed { index, sentence ->
+                sentence.tokens shouldBe expectedSentences[index].tokens
+            }
         }
     }
 
@@ -56,8 +107,32 @@ internal class KotlinFunctionParserTest {
             val expectedSentences = listOf(
                 TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("null"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), NullLiteral.asTemplateToken("null"))),
                 TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("hex"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), NumberLiteral.asTemplateToken("0x123"))),
-                TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("boolean"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), BooleanLiteral.asTemplateToken("true"))),
-                TemplateSentence(listOf(Word.asTemplateToken("assert"), Word.asTemplateToken("that"), Word.asTemplateToken("the"), Word.asTemplateToken("character"), Word.asTemplateToken("result"), Word.asTemplateToken("is"), Word.asTemplateToken("equal"), Word.asTemplateToken("to"), CharacterLiteral.asTemplateToken("a")))
+                TemplateSentence(
+                    listOf(
+                        Word.asTemplateToken("assert"),
+                        Word.asTemplateToken("that"),
+                        Word.asTemplateToken("the"),
+                        Word.asTemplateToken("boolean"),
+                        Word.asTemplateToken("result"),
+                        Word.asTemplateToken("is"),
+                        Word.asTemplateToken("equal"),
+                        Word.asTemplateToken("to"),
+                        BooleanLiteral.asTemplateToken("true")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Word.asTemplateToken("assert"),
+                        Word.asTemplateToken("that"),
+                        Word.asTemplateToken("the"),
+                        Word.asTemplateToken("character"),
+                        Word.asTemplateToken("result"),
+                        Word.asTemplateToken("is"),
+                        Word.asTemplateToken("equal"),
+                        Word.asTemplateToken("to"),
+                        CharacterLiteral.asTemplateToken("a")
+                    )
+                )
             )
 
             parsedMethod.sentences.forEachIndexed { index, sentence ->
@@ -487,7 +562,7 @@ internal class KotlinFunctionParserTest {
 
                 assertSoftly(methods[functionName]) {
                     shouldNotBeNull()
-//                    asClue { shouldBe(MethodAccessor(method)) }
+                    shouldBeInstanceOf<MethodElementDescriptor>()
                 }
 
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
@@ -523,7 +598,7 @@ internal class KotlinFunctionParserTest {
 
                 assertSoftly(methods[functionName]) {
                     shouldNotBeNull()
-//                    asClue { shouldBe(MethodAccessor(method)) }
+                    shouldBeInstanceOf<MethodElementDescriptor>()
                 }
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
             }
@@ -559,21 +634,21 @@ internal class KotlinFunctionParserTest {
                 with(properties) {
                     assertSoftly(get("field1")) {
                         shouldNotBeNull()
-//                        asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field1"))) }
+                        shouldBeInstanceOf<PropertyElementDescriptor>()
                     }
                     assertSoftly(get("field2")) {
                         shouldNotBeNull()
-//                        asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field2"))) }
+                        shouldBeInstanceOf<PropertyElementDescriptor>()
                     }
                     assertSoftly(get("field3")) {
                         shouldNotBeNull()
-//                        asClue { shouldBe(PropertyAccessor(JavaWithInterface::class.propertyNamed("field3"))) }
+                        shouldBeInstanceOf<PropertyElementDescriptor>()
                     }
                 }
 
                 assertSoftly(methods[functionName]) {
                     shouldNotBeNull()
-//                    asClue { shouldBe(MethodAccessor(method)) }
+                    shouldBeInstanceOf<MethodElementDescriptor>()
                 }
 
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
@@ -638,8 +713,6 @@ internal class KotlinFunctionParserTest {
             )
 
             val method = KotlinWithParameters::class.java.findMethod(functionName)
-            val firstParameter = method.parameters.first()
-            val secondParameter = method.parameters.last()
             val parsedMethod = parser.parse(method)
 
             with(parsedMethod) {
@@ -647,19 +720,17 @@ internal class KotlinFunctionParserTest {
 
                 assertSoftly(parameters.descriptors["first"]) {
                     shouldNotBeNull()
-
-//                    asClue { shouldBe(ValueAccessor.ParameterAccessor(firstParameter, "first", 0)) }
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
                 }
                 assertSoftly(parameters.descriptors["second"]) {
                     shouldNotBeNull()
-//                    asClue { shouldBe(ValueAccessor.ParameterAccessor(secondParameter, "second", 1)) }
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
                 }
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
             }
         }
     }
 
-    private fun KClass<*>.propertyNamed(name: String): KProperty<*> = allProperties.find { it.name == name } ?: throw IllegalArgumentException("Property $name not found in class ${this.qualifiedName}")
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }
 
     companion object {

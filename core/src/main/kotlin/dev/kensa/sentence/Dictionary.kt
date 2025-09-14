@@ -55,50 +55,43 @@ class Dictionary {
         keywords.forEach(this::putKeyword)
     }
 
-    fun indexProtectedPhrases(value: String): List<ProtectedPhraseMatch> {
+    fun indexProtectedPhrases(text: String): List<ProtectedPhraseMatch> {
         val matchesByStartIndex = TreeMap<Int, ProtectedPhraseMatch>()
-
-        protectedPhrases.forEach { protectedPhrase ->
-            val singular = protectedPhrase.value
-            val plural = createPluralForm(singular)
-            val patterns = listOf(
-                Regex(Regex.escape(singular), IGNORE_CASE),
-                Regex(Regex.escape(plural), IGNORE_CASE)
-            )
-
-            patterns.forEachIndexed { index, pattern ->
-                var result = pattern.find(value)
-                while (result != null) {
-                    val matchedText = result.value
-                    val isSingularPattern = index == 0
-                    
-                    // Only match if this is a singlular pattern match or plural match contains no upper case characters (CamelCase?)
-                    if (isSingularPattern || !matchedText.any { it.isUpperCase() }) {
-                        val start = result.range.first
-                        val end = result.range.last + 1
-                        val match = ProtectedPhraseMatch(start, end, protectedPhrase.emphasisDescriptor)
-                        // Update if no existing match or if new match is longer (higher end index)
-                        val existingMatch = matchesByStartIndex[start]
-                        if (existingMatch == null || existingMatch.end < end) {
-                            matchesByStartIndex[start] = match
-                        }
+        for (protectedPhrase in protectedPhrases) {
+            val patterns = buildSearchPatterns(protectedPhrase.value)
+            for (pattern in patterns) {
+                for (match in pattern.findAll(text)) {
+                    val start = match.range.first
+                    val endExclusive = match.range.last + 1
+                    val existing = matchesByStartIndex[start]
+                    if (existing == null || existing.end < endExclusive) {
+                        matchesByStartIndex[start] = ProtectedPhraseMatch(start, endExclusive, protectedPhrase.emphasisDescriptor)
                     }
-                    result = result.next()
                 }
             }
         }
-
         return matchesByStartIndex.values.toList()
+    }
+
+    private fun buildSearchPatterns(singular: String): List<Regex> {
+        val (pluralStem, pluralSuffix) = pluralPartsOf(singular)
+        val base = Regex.escape(singular)
+        val stem = Regex.escape(pluralStem)
+        val suffix = Regex.escape(pluralSuffix)
+        return listOf(
+            Regex("(?i)$base"),
+            Regex("(?i)$stem(?-i)$suffix")
+        )
+    }
+
+    private fun pluralPartsOf(singular: String): Pair<String, String> = when {
+        singular.matches(yEndingPattern) -> singular.dropLast(1) to "ies"
+        singular.matches(sibilantEndingPattern) -> singular to "es"
+        else -> singular to "s"
     }
 
     private val yEndingPattern = Regex(".*[bcdfghjklmnpqrstvwxz]y$")
     private val sibilantEndingPattern = Regex(".*(s|x|z|ch|sh)$")
-
-    private fun createPluralForm(word: String): String = when {
-        word.matches(yEndingPattern) -> word.substring(0, word.length - 1) + "ies"
-        word.matches(sibilantEndingPattern) -> word + "es"
-        else -> word + "s"
-    }
 
     fun isAcronym(value: String) = acronyms.any { it.acronym.equals(value, ignoreCase = true) }
     fun findKeywordOrNull(value: String) = keywords.firstOrNull { it.value == value }
