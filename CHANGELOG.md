@@ -1,5 +1,11 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.26
+- Fix issue with plural ProtectedPhrases
+- Fix issue with Kensa agent and Kotlin 2.2.20 (ByteBuddy Advice problems)
+- Fixing more layout issues with nested sentences
+- Bump to Kotlin 2.2.20
+
 ### v0.5.25
 - Correcting the rendering of nested sentences.
 - Improving the rendering & parsing of RenderedValue functions with parameters.
