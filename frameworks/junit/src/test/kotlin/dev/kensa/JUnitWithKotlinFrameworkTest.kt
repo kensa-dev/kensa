@@ -26,7 +26,7 @@ import kotlin.jvm.optionals.getOrNull
 internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
 
     @AfterEach
-    fun tearDown() {
+    fun afterEach() {
         ThreadLocalKensaConfigurationProvider.remove()
     }
 

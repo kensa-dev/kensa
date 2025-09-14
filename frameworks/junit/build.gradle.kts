@@ -25,6 +25,11 @@ dependencies {
     // TODO - Remove when package stuff not reliant on JUnit
     implementation(libs.junitPlatformLauncher)
 
+    testImplementation(project(":core")) {
+        capabilities {
+            requireCapability("dev.kensa:core-test-support")
+        }
+    }
     testImplementation(platform(libs.kotestBom))
     testImplementation(libs.kotestAssertionsCoreJvm)
     testImplementation(libs.kotestAssertionsJson)

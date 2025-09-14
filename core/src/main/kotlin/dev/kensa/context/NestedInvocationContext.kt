@@ -11,7 +11,7 @@ class NestedInvocationContext {
     private val invocations = mutableMapOf<String, MutableList<Array<Any?>>>()
 
     fun recordInvocation(method: Method, args: Array<Any?>) {
-        invocations.compute(method.name) { key, current ->
+        invocations.compute(method.name) { _, current ->
             current?.also { it.add(args) } ?: mutableListOf(args)
         }
     }

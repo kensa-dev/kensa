@@ -20,10 +20,21 @@ sourceSets {
 
         compileClasspath += sourceSets["main"].output
     }
+
+    create("testSupport") {
+        kotlin.srcDir("src/testSupport/kotlin")
+
+        compileClasspath += sourceSets["test"].output
+    }
 }
 
 extensions.getByType(JavaPluginExtension::class.java).registerFeature("agent") {
     usingSourceSet(sourceSets.getByName("agent"))
+}
+
+extensions.getByType(JavaPluginExtension::class.java).registerFeature("testSupport") {
+    usingSourceSet(sourceSets.getByName("testSupport"))
+    capability("dev.kensa", "core-test-support", "$version")
 }
 
 dependencies {
@@ -47,6 +58,8 @@ dependencies {
     testImplementation(libs.junitJupiterEngine)
     testImplementation(libs.mockitoKotlin)
     testImplementation(sourceSets["example"].output)
+
+    "testSupportImplementation"(project(":core"))
 }
 
 tasks {
@@ -82,15 +95,6 @@ tasks {
 
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
             into("/")
-        }
-
-        manifest {
-            attributes(
-                "Premain-Class" to "dev.kensa.agent.NestedSentenceAgent",
-                "Can-Redefine-Classes" to "true",
-                "Can-Retransform-Classes" to "true",
-                "Can-Set-Native-Method-Prefix" to "false"
-            )
         }
     }
 }

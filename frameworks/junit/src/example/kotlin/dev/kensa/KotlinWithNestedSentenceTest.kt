@@ -113,33 +113,33 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
 
     @NestedSentence
     private fun someActionWith(@RenderedValue parameter1: String): Action<ActionContext> {
-        return someAction(parameter1)
+        return someOtherAction(parameter1)
     }
 
     @NestedSentence
     private fun someActionWith2(@RenderedValue parameter1: String, @RenderedValue parameter2: String): Action<ActionContext> {
         someActionWith(parameter2)
-        return someAction(parameter1)
+        return someOtherAction(parameter1)
     }
 
     @NestedSentence
     private fun someActionWith3(@RenderedValue parameter1: String, @RenderedValue parameter2: String, @RenderedValue parameter3: String): Action<ActionContext> {
         someActionWith(parameter2)
         someActionWith(parameter3)
-        return someAction(parameter1)
+        return someOtherAction(parameter1)
     }
 
     @NestedSentence
     private fun someAction(@RenderedValue aScenarioOf: MyScenario): Action<ActionContext> {
-        return someAction(aScenarioOf.stringValue)
+        return someOtherAction(aScenarioOf.stringValue)
     }
 
     @NestedSentence
     private fun someActionNoParameters(): Action<ActionContext> {
-        return someAction("anAction")
+        return someOtherAction("anAction")
     }
 
-    private fun someAction(withAParam: String): Action<ActionContext> {
+    private fun someOtherAction(withAParam: String): Action<ActionContext> {
         return Action { }
     }
 }
