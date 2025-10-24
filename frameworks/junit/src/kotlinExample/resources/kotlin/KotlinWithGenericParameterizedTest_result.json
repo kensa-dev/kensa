@@ -7,6 +7,7 @@
   "issues": [],
   "tests": [
     {
+      "elapsedTime": "18 Ms",
       "testMethod": "theTest",
       "displayName": "The Test",
       "notes": null,
@@ -15,6 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "18 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -57,6 +59,82 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "[1] [{a=b}]"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnSameLineAsParameter",
+      "displayName": "The Test With Optional Parameter And Closing Function Brace On Same Line As Parameter",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "assert that param absent"
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "param": "NULL"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] null"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnDifferentLineAsParameter",
+      "displayName": "The Test With Optional Parameter And Closing Function Brace On Different Line As Parameter",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "assert that param absent"
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "param": "NULL"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] null"
         }
       ]
     }

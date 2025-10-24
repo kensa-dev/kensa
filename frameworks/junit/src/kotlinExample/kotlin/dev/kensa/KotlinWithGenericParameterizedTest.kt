@@ -1,12 +1,14 @@
 package dev.kensa
 
 import com.natpryce.hamkrest.Matcher
+import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.NullSource
 import java.util.List
 import java.util.Map
 
@@ -18,6 +20,20 @@ class KotlinWithGenericParameterizedTest : KensaTest, WithHamkrest {
     @MethodSource("genericParameters")
     fun theTest(param: List<Map<String, String>>) {
         assertThat(param.get(0), hasKey("a"))
+    }
+
+    @ParameterizedTest
+    @NullSource
+    fun theTestWithOptionalParameterAndClosingFunctionBraceOnSameLineAsParameter(param: String?) {
+        assertThat(param, absent())
+    }
+
+    @ParameterizedTest
+    @NullSource
+    fun theTestWithOptionalParameterAndClosingFunctionBraceOnDifferentLineAsParameter(
+        param: String?
+    ) {
+        assertThat(param, absent())
     }
 
     private fun hasKey(key: String) = Matcher(Map<String, String>::containsKey, key)
