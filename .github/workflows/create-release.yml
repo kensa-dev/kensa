@@ -14,7 +14,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
       - run: make create-release-note
       - uses: actions/setup-go@v5
         with:
@@ -32,7 +32,7 @@ jobs:
           GOOS=windows GOARCH=arm64 go build -o build/bin/kensa-windows-arm64.exe cmd/kensa/main.go
           cd ..
           echo "${GIT_TAG_NAME}" > cli/build/bin/version.txt
-      - uses: softprops/action-gh-release@v2.0.4
+      - uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ github.event.client_payload.version }}

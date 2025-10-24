@@ -17,17 +17,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
           persist-credentials: false
       - name: Set up JDK
-        uses: actions/setup-java@v4.0.0
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
       - name: Cache JavaScript Build Output
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v4
         env:
           cache-name: cache-js-output
         with:
@@ -36,7 +36,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-output-${{ env.cache-name }}-
       - name: Cache Node Modules
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Cache Gradle packages
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -70,7 +70,7 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v4.1.0
+        uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
