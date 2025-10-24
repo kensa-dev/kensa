@@ -2,6 +2,9 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="17">
+      <module name="kensa.gradle-plugin" target="21" />
+      <module name="kensa.gradle-plugin.main" target="21" />
+      <module name="kensa.gradle-plugin.test" target="21" />
       <module name="kensa.java" target="17" />
       <module name="kensa.java.main" target="17" />
       <module name="kensa.java.test" target="17" />

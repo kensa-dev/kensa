@@ -169,7 +169,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
             )
         }
 
-        internal const val CONFIGURATION_PROVIDER_PROPERTY = "dev.kensa.ConfigurationProvider"
+        const val CONFIGURATION_PROVIDER_PROPERTY = "dev.kensa.ConfigurationProvider"
 
         private val kensaNamespace: ExtensionContext.Namespace = ExtensionContext.Namespace.create("dev", "kensa")
 

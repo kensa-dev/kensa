@@ -55,7 +55,7 @@ class KotlinMethodDeclarationContext(private val delegate: KotlinParser.Function
     override val parameterNamesAndTypes: List<Pair<String, String>> by lazy {
         delegate.functionValueParameters().functionValueParameter()
             .map { it.parameter() }
-            .map { it.simpleIdentifier().text to it.type().text.trimEnd('?') }
+            .map { it.simpleIdentifier().text to it.type().text.trimEnd('\n').trimEnd('?') }
             .toList()
     }
 }

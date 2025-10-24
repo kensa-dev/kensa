@@ -7,25 +7,36 @@ plugins {
 }
 
 sourceSets {
-    create("example") {
+    create("hooks", Action {
+        java.srcDir("src/hooks/java")
+        kotlin.srcDir("src/hooks/kotlin")
+
+        compileClasspath += sourceSets["main"].output
+    })
+
+    create("example", Action {
         java.srcDir("src/example/java")
         kotlin.srcDir("src/example/kotlin")
 
         compileClasspath += sourceSets["main"].output
         runtimeClasspath += sourceSets["main"].output
-    }
+    })
 
-    create("agent") {
+    create("agent", Action {
         kotlin.srcDir("src/agent/kotlin")
 
         compileClasspath += sourceSets["main"].output
-    }
+    })
 
-    create("testSupport") {
+    create("testSupport", Action {
         kotlin.srcDir("src/testSupport/kotlin")
 
         compileClasspath += sourceSets["test"].output
-    }
+    })
+}
+
+extensions.getByType(JavaPluginExtension::class.java).registerFeature("hooks") {
+    usingSourceSet(sourceSets.getByName("hooks"))
 }
 
 extensions.getByType(JavaPluginExtension::class.java).registerFeature("agent") {
@@ -55,7 +66,6 @@ dependencies {
     testImplementation(platform(libs.kotestBom))
     testImplementation(libs.kotestAssertionsCoreJvm)
     testImplementation(libs.hamcrestCore)
-    testImplementation(libs.junitJupiterEngine)
     testImplementation(libs.mockitoKotlin)
     testImplementation(sourceSets["example"].output)
 

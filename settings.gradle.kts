@@ -4,6 +4,9 @@ include("core")
 
 include("ui")
 
+include("compiler-plugin")
+project(":compiler-plugin").projectDir = file("compiler/compiler-plugin")
+
 include("assertions-assertj")
 project(":assertions-assertj").projectDir = file("assertions/assertj")
 
