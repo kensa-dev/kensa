@@ -26,6 +26,8 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - name: Publish to Sonatype
+        env:
+          GIT_TAG_NAME: ${{ github.ref_name }}
         run: make publish-to-sonatype
 
   PublishToSnapshot:
@@ -42,6 +44,8 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - name: Publish to Sonatype Snapshot
+        env:
+          GIT_TAG_NAME: ${{ github.ref_name }}
         run: make publish-to-sonatype-snapshot
 
   DispatchReleaseEvent:

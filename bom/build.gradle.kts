@@ -23,7 +23,6 @@ publishing {
     publications {
         create<MavenPublication>("bomPublication") {
             artifactId = "${rootProject.name}-bom"
-            version = "${rootProject.version}"
             from(components["javaPlatform"])
             pom {
                 name.set("Kensa BOM")

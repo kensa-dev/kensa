@@ -87,7 +87,6 @@ subprojects {
             publications {
                 create<MavenPublication>("mavenJava") {
                     artifactId = "${rootProject.name}-${project.name}"
-                    version = "${rootProject.version}"
                     pom.withXml {
                         asNode().appendNode("name", "kensa")
                         asNode().appendNode("description", description)
