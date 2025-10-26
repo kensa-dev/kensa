@@ -19,7 +19,7 @@ jsoup = "1.21.2"
 byteBuddy = "1.14.3"
 
 http4k = "6.17.0.0"
-jackson = "2.14.2"
+jackson = "2.20.0"
 
 [libraries]
 kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
