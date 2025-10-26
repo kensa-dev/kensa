@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.27
+- Introduce Kotlin compiler plugin to support advanced rendering for @RenderedValue & @NestedSentence annotated functions.
+- Fix issue where parameters were not being recognised when closing bracket was on a new line. (Thanks to Neil Massey)
+
 ### v0.5.26
 - Fix issue with plural ProtectedPhrases
 - Fix issue with Kensa agent and Kotlin 2.2.20 (ByteBuddy Advice problems)
