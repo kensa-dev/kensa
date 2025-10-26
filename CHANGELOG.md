@@ -1,9 +1,10 @@
 <h2 class="github">Changelog</h2>
 
-### v0.5.29
+### v0.5.30
 - Introduce Kotlin compiler plugin to support advanced rendering for @RenderedValue & @NestedSentence annotated functions.
 - Fix issue where parameters were not being recognised when closing bracket was on a new line. (Thanks to Neil Massey)
 
+### v0.5.29 - cancelled
 ### v0.5.28 - cancelled
 ### v0.5.27 - cancelled
 
