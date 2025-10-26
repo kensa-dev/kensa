@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # Keep GitHub Actions up to date
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  # Keep Gradle dependencies (including version catalog) up to date
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  # Keep npm dependencies up to date in each frontend package
+  - package-ecosystem: npm
+    directory: "/ui"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
