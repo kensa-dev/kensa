@@ -10,8 +10,6 @@ env:
   SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
   NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-  GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
-  GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
 
 jobs:
   PublishToStaging:
@@ -46,26 +44,9 @@ jobs:
       - name: Publish to Sonatype Snapshot
         run: make publish-to-sonatype-snapshot
 
-  PublishGradlePlugin:
-    runs-on: ubuntu-latest
-    needs: [PublishToStaging]
-    if: ${{ !endsWith(github.ref_name, '-SNAPSHOT') && needs.PublishToStaging.result == 'success' }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'gradle'
-      - name: Publish to Gradle Plugin Portal
-        run: make publish-gradle-plugin
-
   DispatchReleaseEvent:
     runs-on: ubuntu-latest
-    needs: [PublishToStaging, PublishToSnapshot, PublishGradlePlugin]
+    needs: [PublishToStaging, PublishToSnapshot]
     if: ${{ always() && (needs.PublishToStaging.result == 'success' || needs.PublishToSnapshot.result == 'success') }}
     steps:
       - uses: actions/checkout@v4
