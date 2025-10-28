@@ -28,7 +28,7 @@ Configure (optional)
 kensa {
     enabled.set(true)                                 // default true
     debug.set(false)                                  // default false
-    sourceSets.set(setOf("test", "acceptanceTest))    // default "test"
+    sourceSets.set(setOf("test", "acceptanceTest"))    // default "test"
 }
 ```
 
