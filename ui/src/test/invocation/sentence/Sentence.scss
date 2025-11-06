@@ -82,6 +82,7 @@
 }
 
 .tk-sv, .tk-fv, .tk-ov, .tk-mv, .tk-pv {
+  white-space: pre;
   font-weight: bold;
   color: var(--bulma-grey-dark)
 }
