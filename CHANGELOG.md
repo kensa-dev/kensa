@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.32
+- Improvements to how the Kotlin compiler plugin handles extension functions and context parameters in nested sentences.
+
 ### v0.5.31
 - Allow nested sentences to be defined in Interfaces when using the Kotlin compiler plugin.
 - Honour whitespace when displaying field and parameter values (Thanks to Michael Orr)
