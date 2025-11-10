@@ -33,7 +33,7 @@ tag-if-release:
 publish-to-sonatype:
 	./gradlew --build-cache --no-daemon publishToSonatype closeAndReleaseSonatypeStagingRepository\
 		-Psign=true \
-		-PreleaseVersion="$(GIT_TAG_NAME)" \
+		-PreleaseVersion="$${GIT_TAG_NAME}" \
 		-PsigningKeyId="$${SIGNING_KEY_ID}" \
 		-PsigningKey="$${SIGNING_KEY}" \
 		-PsigningPassword="$${SIGNING_PASSWORD}" \
@@ -44,7 +44,7 @@ publish-to-sonatype:
 publish-to-sonatype-snapshot:
 	./gradlew --build-cache --no-daemon publishToSonatype \
 		-Psign=true \
-		-PreleaseVersion="$(GIT_TAG_NAME)" \
+		-PreleaseVersion="$${GIT_TAG_NAME}" \
 		-PsigningKeyId="$${SIGNING_KEY_ID}" \
 		-PsigningKey="$${SIGNING_KEY}" \
 		-PsigningPassword="$${SIGNING_PASSWORD}" \
