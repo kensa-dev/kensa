@@ -57,20 +57,18 @@ interface MethodParser : ParserCache, ParserDelegate {
                 prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
             }
             val methods = methodCache.getOrPut(testClass) { prepareMethodsFor(testClass) }
-            val nestedSentences = prepareNestedSentences(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methods))
-            val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methods, testMethodParameters.descriptors, nestedSentences, emphasisedMethods))
+            val nestedMethods = prepareNestedMethods(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methods))
+            val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
 
             ParsedMethod(
                 indexInSource,
                 method.normalisedPlatformName,
                 testMethodParameters,
                 testMethodSentences,
-                nestedSentences,
+                nestedMethods,
                 properties,
                 methods
             )
-        }.also {
-            NestedInvocationContextHolder.nestedSentenceInvocationContext().update(it.nestedMethods)
         }
 
     private fun Class<*>.findSourcesMethodDeclarations(): MethodDeclarations =
@@ -84,8 +82,8 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     private fun sentenceBuilder(): (Location, Location) -> SentenceBuilder = { location, previousLocation -> SentenceBuilder(location, previousLocation, configuration.dictionary, configuration.tabSize) }
 
-    private fun prepareNestedSentences(testClass: Class<*>, declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
-        nestedMethodCache[testClass] = declarations
+    private fun prepareNestedMethods(testClass: Class<*>, declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
+        val nestedMethods = declarations
             .map {
                 val parameters = prepareParametersFor(
                     testClass.findLocalOrSourcesMethod(it.name),
@@ -102,7 +100,10 @@ interface MethodParser : ParserCache, ParserDelegate {
             }
             .associateBy({ it.name }, { it })
 
-        return nestedMethodCache[testClass] ?: emptyMap()
+        NestedInvocationContextHolder.nestedSentenceInvocationContext().update(nestedMethods)
+        nestedMethodCache[testClass] = nestedMethods
+
+        return nestedMethods
     }
 
     private fun MethodDeclarationContext.prepareTestMethodSentences(parseContext: ParseContext): List<TemplateSentence> =

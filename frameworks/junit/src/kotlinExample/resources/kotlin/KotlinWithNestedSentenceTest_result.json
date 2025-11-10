@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "",
+      "elapsedTime": "2 Ms",
       "testMethod": "simpleNested",
       "displayName": "Simple Nested",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "2 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -160,7 +160,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "nestedWithMultiLineParameters",
       "displayName": "Nested With Multi Line Parameters",
       "notes": null,
@@ -169,7 +169,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -614,7 +614,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "nestedWithScenarioParameters",
       "displayName": "Nested With Scenario Parameters",
       "notes": null,
@@ -623,7 +623,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             [
@@ -1045,7 +1045,7 @@
       ]
     },
     {
-      "elapsedTime": "4 Ms",
+      "elapsedTime": "28 Ms",
       "testMethod": "nestedWithNestedExpression",
       "displayName": "Nested With Nested Expression",
       "notes": null,
@@ -1054,7 +1054,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "4 Ms",
+          "elapsedTime": "28 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -1174,6 +1174,175 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "nestedWithNestedExpression()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "nestedWithNestedExpressionInInterface",
+      "displayName": "Nested With Nested Expression In Interface",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "given Some Prerequisites",
+                "parameterTokens": [],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-kw"
+                      ],
+                      "value": "Given"
+                    },
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some prerequisites"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When"
+              },
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "some Action With 4",
+                "parameterTokens": [
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter1"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-fv"
+                    ],
+                    "value": "aStringValue"
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter2"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-sl"
+                    ],
+                    "value": "aParameter"
+                  },
+                  {
+                    "types": [
+                      "tk-id"
+                    ],
+                    "value": "parameter3"
+                  },
+                  {
+                    "types": [
+                      "tk-op"
+                    ],
+                    "value": "="
+                  },
+                  {
+                    "types": [
+                      "tk-sl"
+                    ],
+                    "value": "anotherParameter"
+                  }
+                ],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some action with"
+                    },
+                    {
+                      "types": [
+                        "tk-pv"
+                      ],
+                      "value": "aStringValue"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "the extracted value equal to"
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "aStringValue"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "nestedWithNestedExpressionInInterface()"
         }
       ]
     }

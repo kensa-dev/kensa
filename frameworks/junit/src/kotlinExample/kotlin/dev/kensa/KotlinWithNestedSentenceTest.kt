@@ -10,7 +10,7 @@ import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
-class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
+class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest, InterfaceWithNestedSentence {
 
     init {
         registerFixtures(KotlinTestFixtures)
@@ -91,6 +91,15 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
         then(theExtractedValue(), equalTo(aValue))
     }
 
+    @Test
+    fun nestedWithNestedExpressionInInterface() {
+        givenSomePrerequisites()
+
+        whenever { someActionWith4(parameter1 = myScenario.stringValue, parameter2 = "aParameter", parameter3 = "anotherParameter") }
+
+        then(theExtractedValue(), equalTo(aValue))
+    }
+
     @NestedSentence
     private fun givenSomePrerequisites() {
         given(somePrerequisites())
@@ -142,4 +151,13 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest {
     private fun someOtherAction(withAParam: String): Action<ActionContext> {
         return Action { }
     }
+}
+
+interface InterfaceWithNestedSentence {
+    @NestedSentence
+    fun someActionWith4(@RenderedValue parameter1: String, @RenderedValue parameter2: String, @RenderedValue parameter3: String): Action<ActionContext> {
+        return someActionWith(parameter1)
+    }
+
+    private fun someActionWith(@RenderedValue parameter1: String): Action<ActionContext> = Action { }
 }
