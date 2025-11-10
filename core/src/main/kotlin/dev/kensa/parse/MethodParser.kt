@@ -3,14 +3,11 @@ package dev.kensa.parse
 import dev.kensa.*
 import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.parse.ElementDescriptor.MethodElementDescriptor
-import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.SentenceBuilder
+import dev.kensa.sentence.TemplateSentence
 import dev.kensa.util.*
 import java.lang.reflect.Method
-import kotlin.collections.buildList
 import kotlin.reflect.KClass
-import kotlin.reflect.full.extensionReceiverParameter
-import kotlin.reflect.jvm.kotlinFunction
 
 val greedyGenericPattern = "<.*>".toRegex()
 
@@ -120,20 +117,6 @@ interface MethodParser : ParserCache, ParserDelegate {
                 }
             }
             .associateBy({ it.first }, { it.second })
-
-    private fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
-        val parameterNamesAndTypesWithReceiverParameter: List<Pair<String, String>> = method.kotlinFunction?.extensionReceiverParameter?.let {
-            ArrayList(parameterNamesAndTypes).apply {
-                add(it.index - 1, Pair("this", (it.type.classifier as KClass<*>).simpleName!!))
-            }
-        } ?: parameterNamesAndTypes
-
-        return MethodParameters(
-            method.parameters.mapIndexed { index, parameter ->
-                ElementDescriptor.forParameter(parameter, parameterNamesAndTypesWithReceiverParameter[index].first, index)
-            }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
-        )
-    }
 
     private fun prepareMethodsFor(clazz: Class<*>): Map<String, MethodElementDescriptor> =
         clazz.allMethods

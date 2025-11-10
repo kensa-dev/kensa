@@ -6,6 +6,11 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
+import java.lang.reflect.Method
+import kotlin.reflect.KClass
+import kotlin.reflect.full.contextParameters
+import kotlin.reflect.full.extensionReceiverParameter
+import kotlin.reflect.jvm.kotlinFunction
 
 class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean, private val antlrErrorListenerDisabled: Boolean, private val antlrPredicationMode: PredictionMode) : ParserDelegate {
 
@@ -27,6 +32,31 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
 
         return MethodDeclarations(testFunctions, nestedFunctions, emphasisedFunctions)
     }
+
+    override fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
+        val combined = method.syntheticKotlinReceivers() + parameterNamesAndTypes
+
+        return MethodParameters(
+            method.parameters.mapIndexed { index, parameter ->
+                ElementDescriptor.forParameter(parameter, combined[index].first, index)
+            }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
+        )
+    }
+
+    @OptIn(ExperimentalContextParameters::class)
+    fun Method.syntheticKotlinReceivers(): List<Pair<String, String>> =
+        kotlinFunction?.let { kfun ->
+            buildList {
+                kfun.contextParameters.forEachIndexed { idx, p ->
+                    val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
+                    add("context$${idx + 1}" to t)
+                }
+                kfun.extensionReceiverParameter?.let { p ->
+                    val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
+                    add("receiver" to t)
+                }
+            }
+        } ?: emptyList()
 
     private fun findFunctionDeclarations(it: ParserRuleContext, result: MutableList<KotlinParser.FunctionDeclarationContext>) {
         it.children?.forEach {
@@ -67,9 +97,10 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
 
     companion object {
         fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> {
-            val annotationContexts = modifiers()?.annotation()?.takeIf { it.isNotEmpty() }
-                ?: parent?.parent?.takeIf { it is KotlinParser.StatementContext }?.let { (it as KotlinParser.StatementContext).annotation() }
-                ?: emptyList()
+            val functionAnnotations = modifiers().flatMap { it.annotation() }
+            val statementAnnotations = parent?.parent?.takeIf { it is KotlinParser.StatementContext }?.let { (it as KotlinParser.StatementContext).annotation() }.orEmpty()
+
+            val annotationContexts = functionAnnotations + statementAnnotations
 
             return annotationContexts.mapNotNull {
                 val namedWithConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.constructorInvocation()?.userType()?.text

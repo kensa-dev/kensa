@@ -6,6 +6,7 @@ import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.example.*
 import dev.kensa.parse.ElementDescriptor.*
 import dev.kensa.parse.KotlinParser
+import dev.kensa.parse.ParsedNestedMethod
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.TemplateToken.Type.*
@@ -16,7 +17,9 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.maps.shouldBeEmpty
+import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.*
@@ -691,7 +694,7 @@ internal class KotlinFunctionParserTest {
     @Nested
     inner class Parameters {
         @Test
-        internal fun parsesTestMethodWithExtensionParameters() {
+        internal fun parsesFunctionWithParameters() {
             val functionName = "parameterizedTest"
             val parser = KotlinFunctionParser(
                 isTest = aFunctionNamed(functionName),
@@ -727,6 +730,86 @@ internal class KotlinFunctionParserTest {
                     shouldBeInstanceOf<ParameterElementDescriptor>()
                 }
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
+            }
+        }
+
+        @Test
+        internal fun parsesVariousNestedSentenceStyles() {
+            // Need to hook into the parser via a standard test function...
+            val functionName = "parameterizedTest"
+            val parser = KotlinFunctionParser(
+                isTest = aFunctionNamed(functionName),
+                configuration,
+                configuration.antlrErrorListenerDisabled,
+                configuration.antlrPredicationMode,
+            )
+
+            val testMethod = KotlinWithParameters::class.java.findMethod(functionName)
+            val parsedTestMethod = parser.parse(testMethod)
+
+            parsedTestMethod.nestedMethods
+                .shouldHaveSize(4)
+                .should {
+                    verifyExtensionFunction(it, "anExtensionFunction")
+                    verifyFunctionWithContextParameter(it, "aFunctionWithContextParametersBeforeFn")
+                    verifyFunctionWithContextParameter(it, "aFunctionWithContextParametersBeforeContext")
+                    verifyExtensionFunctionWithContextParameters(it, "anExtensionFunctionWithContextParameters")
+                }
+
+        }
+
+        private fun verifyExtensionFunction(map: Map<String, ParsedNestedMethod>, functionName: String) {
+            map[functionName].shouldNotBeNull {
+                assertSoftly(parameters.descriptors["receiver"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["first"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["second"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+            }
+        }
+
+        private fun verifyFunctionWithContextParameter(map: Map<String, ParsedNestedMethod>, functionName: String) {
+            map[functionName].shouldNotBeNull {
+                assertSoftly(parameters.descriptors["context$1"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["first"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["second"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+            }
+        }
+
+        private fun verifyExtensionFunctionWithContextParameters(map: Map<String, ParsedNestedMethod>, functionName: String) {
+            map[functionName].shouldNotBeNull {
+                assertSoftly(parameters.descriptors["context$1"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["receiver"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["first"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["second"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
             }
         }
     }

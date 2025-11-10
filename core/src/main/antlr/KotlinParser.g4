@@ -56,6 +56,10 @@ declaration
     | typeAlias
     ;
 
+contextReceiverList
+: CONTEXT NL* LPAREN NL* (parameter (NL* COMMA NL* parameter)* (NL* COMMA)?)? NL* RPAREN
+;
+
 // SECTION: classes
 
 classDeclaration
@@ -95,7 +99,7 @@ delegationSpecifier
     ;
 
 constructorInvocation
-    : userType valueArguments
+    : userType NL* valueArguments
     ;
 
 annotatedDelegationSpecifier
@@ -140,7 +144,7 @@ anonymousInitializer
     ;
 
 companionObject
-    : modifiers? COMPANION NL* OBJECT
+    : modifiers? COMPANION NL* DATA? NL* OBJECT
       (NL* simpleIdentifier)?
       (NL* COLON NL* delegationSpecifiers)?
       (NL* classBody)?
@@ -155,7 +159,7 @@ functionValueParameter
     ;
 
 functionDeclaration
-    : modifiers?
+    : modifiers? (contextReceiverList NL*)? modifiers?
       FUN (NL* typeParameters)? (NL* receiverType NL* DOT)? NL* simpleIdentifier
       NL* functionValueParameters
       (NL* COLON NL* type)?
@@ -183,7 +187,7 @@ propertyDeclaration
       (NL* (multiVariableDeclaration | variableDeclaration))
       (NL* typeConstraints)?
       (NL* (ASSIGNMENT NL* expression | propertyDelegate))?
-      (NL+ SEMICOLON)? NL* (getter? (NL* semi? setter)? | setter? (NL* semi? getter)?)
+      (NL* SEMICOLON)? NL* (getter? (NL* semi? setter)? | setter? (NL* semi? getter)?)
     ;
 
 propertyDelegate
@@ -408,7 +412,7 @@ infixFunctionCall
     ;
 
 rangeExpression
-    : additiveExpression (RANGE NL* additiveExpression)*
+    : additiveExpression ((RANGE | RANGE_UNTIL) NL* additiveExpression)*
     ;
 
 additiveExpression
@@ -582,7 +586,9 @@ lambdaParameter
     ;
 
 anonymousFunction
-    : FUN
+    : SUSPEND?
+      NL*
+      FUN
       (NL* type NL* DOT)?
       NL* parametersWithOptionalType
       (NL* COLON NL* type)?
@@ -596,7 +602,7 @@ functionLiteral
     ;
 
 objectLiteral
-    : OBJECT (NL* COLON NL* delegationSpecifiers NL*)? (NL* classBody)?
+    : DATA? NL* OBJECT (NL* COLON NL* delegationSpecifiers NL*)? (NL* classBody)?
     ;
 
 thisExpression
@@ -919,6 +925,7 @@ simpleIdentifier
     | CONST
     | SUSPEND
     | VALUE
+    | CONTEXT
     ;
 
 identifier

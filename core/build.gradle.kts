@@ -100,6 +100,12 @@ tasks {
         dependsOn("generateGrammarSource")
     }
 
+    named<KotlinCompile>("compileExampleKotlin") {
+        compilerOptions {
+            freeCompilerArgs.addAll("-Xcontext-parameters")
+        }
+    }
+
     named<Jar>("jar") {
         dependsOn(":ui:viteBuild")
 

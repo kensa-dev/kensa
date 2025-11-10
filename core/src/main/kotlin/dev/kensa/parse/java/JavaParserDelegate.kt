@@ -8,6 +8,7 @@ import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
+import java.lang.reflect.Method
 
 class JavaParserDelegate(
     private val isClassTest: (Java20Parser.MethodDeclarationContext) -> Boolean,
@@ -51,6 +52,13 @@ class JavaParserDelegate(
 
         return MethodDeclarations(testMethods, nestedMethods, emphasisedMethods)
     }
+
+    override fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
+        MethodParameters(
+            method.parameters.mapIndexed { index, parameter ->
+                ElementDescriptor.forParameter(parameter, parameterNamesAndTypes[index].first, index)
+            }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
+        )
 
     private fun compilationUnitFor(target: Class<out Any>): Java20Parser.CompilationUnitContext =
         Java20Parser(

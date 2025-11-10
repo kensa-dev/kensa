@@ -107,11 +107,18 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         val builder = DeclarationIrBuilder(pluginContext, fn.symbol, fn.startOffset, fn.endOffset)
         val ownerExpr = fn.dispatchReceiverParameter?.let { builder.irGet(it) } ?: builder.irNull()
 
+        val contextParams = fn.parameters.filter { it.kind == IrParameterKind.Context }
+        val extensionParam = fn.parameters.firstOrNull { it.kind == IrParameterKind.ExtensionReceiver }
         val valueParameters = fn.parameters.filter { it.kind == IrParameterKind.Regular }
+        val allParams: List<IrValueParameter> = buildList {
+            addAll(contextParams)
+            extensionParam?.let { add(it) }
+            addAll(valueParameters)
+        }
 
         val ownerFqName = builder.irString(fn.parentClassOrNull?.fqNameWhenAvailable?.asString() ?: "${file.packageFqName.asString()}.${fn.name.asString()}")
         val simpleName = builder.irString(fn.name.asString())
-        val paramTypesArray = builder.buildParamTypesArray(arrayOf, valueParameters)
+        val paramTypesArray = builder.buildParamTypesArray(arrayOf, allParams)
 
         val tempVar = builder.scope.createTemporaryVariableDeclaration(
             startOffset = builder.startOffset,
@@ -182,12 +189,19 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         val builder = DeclarationIrBuilder(pluginContext, fn.symbol, fn.startOffset, fn.endOffset)
         val ownerExpr = fn.dispatchReceiverParameter?.let { builder.irGet(it) } ?: builder.irNull()
 
+        val contextParams = fn.parameters.filter { it.kind == IrParameterKind.Context }
+        val extensionParam = fn.parameters.firstOrNull { it.kind == IrParameterKind.ExtensionReceiver }
         val valueParameters = fn.parameters.filter { it.kind == IrParameterKind.Regular }
+        val allParams: List<IrValueParameter> = buildList {
+            addAll(contextParams)
+            extensionParam?.let { add(it) }
+            addAll(valueParameters)
+        }
 
         val ownerFqName = builder.irString(fn.parentClassOrNull?.fqNameWhenAvailable?.asString() ?: "${file.packageFqName.asString()}.${fn.name.asString()}")
         val simpleName = builder.irString(fn.name.asString())
-        val paramTypesArray = builder.buildParamTypesArray(arrayOf, valueParameters)
-        val argsArray = builder.buildArgsArray(arrayOf, valueParameters)
+        val paramTypesArray = builder.buildParamTypesArray(arrayOf, allParams)
+        val argsArray = builder.buildArgsArray(arrayOf, allParams)
 
         val call = builder.irCall(hookFnOwner.symbol).apply {
             // This goes into arguments[0]
