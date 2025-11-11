@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.33
+- Fix regression with parameterised tests that contained nested sentences.
+
 ### v0.5.32
 - Improvements to how the Kotlin compiler plugin handles extension functions and context parameters in nested sentences.
 
