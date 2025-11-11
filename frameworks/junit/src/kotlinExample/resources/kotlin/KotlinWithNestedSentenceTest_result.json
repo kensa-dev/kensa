@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "2 Ms",
+      "elapsedTime": "1 Ms",
       "testMethod": "simpleNested",
       "displayName": "Simple Nested",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "2 Ms",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -1045,7 +1045,7 @@
       ]
     },
     {
-      "elapsedTime": "28 Ms",
+      "elapsedTime": "26 Ms",
       "testMethod": "nestedWithNestedExpression",
       "displayName": "Nested With Nested Expression",
       "notes": null,
@@ -1054,7 +1054,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "28 Ms",
+          "elapsedTime": "26 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -1178,7 +1178,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "nestedWithNestedExpressionInInterface",
       "displayName": "Nested With Nested Expression In Interface",
       "notes": null,
@@ -1187,7 +1187,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             [
@@ -1343,6 +1343,105 @@
           "state": "Passed",
           "executionException": {},
           "displayName": "nestedWithNestedExpressionInInterface()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "parameterisedWithNestedSentence",
+      "displayName": "Parameterised With Nested Sentence",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "given Some Prerequisites",
+                "parameterTokens": [],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-kw"
+                      ],
+                      "value": "Given"
+                    },
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some prerequisites"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "value": "one"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] one"
+        },
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-ex"
+                ],
+                "value": "given Some Prerequisites",
+                "parameterTokens": [],
+                "tokens": [
+                  [
+                    {
+                      "types": [
+                        "tk-kw"
+                      ],
+                      "value": "Given"
+                    },
+                    {
+                      "types": [
+                        "tk-wd"
+                      ],
+                      "value": "some prerequisites"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ],
+          "parameters": [
+            {
+              "value": "two"
+            }
+          ],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[2] two"
         }
       ]
     }

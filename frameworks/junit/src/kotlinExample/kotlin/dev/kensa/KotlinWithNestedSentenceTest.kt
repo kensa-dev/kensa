@@ -9,6 +9,8 @@ import dev.kensa.fixture.MyScenario
 import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest, InterfaceWithNestedSentence {
 
@@ -98,6 +100,12 @@ class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest, InterfaceWithNeste
         whenever { someActionWith4(parameter1 = myScenario.stringValue, parameter2 = "aParameter", parameter3 = "anotherParameter") }
 
         then(theExtractedValue(), equalTo(aValue))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["one", "two"])
+    fun parameterisedWithNestedSentence(value: String) {
+        givenSomePrerequisites()
     }
 
     @NestedSentence

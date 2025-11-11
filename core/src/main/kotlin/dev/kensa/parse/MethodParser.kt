@@ -66,6 +66,8 @@ interface MethodParser : ParserCache, ParserDelegate {
                 properties,
                 methods
             )
+        }.also {
+            NestedInvocationContextHolder.nestedSentenceInvocationContext().update(it.nestedMethods)
         }
 
     private fun Class<*>.findSourcesMethodDeclarations(): MethodDeclarations =
@@ -97,7 +99,6 @@ interface MethodParser : ParserCache, ParserDelegate {
             }
             .associateBy({ it.name }, { it })
 
-        NestedInvocationContextHolder.nestedSentenceInvocationContext().update(nestedMethods)
         nestedMethodCache[testClass] = nestedMethods
 
         return nestedMethods
