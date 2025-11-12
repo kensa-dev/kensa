@@ -3,7 +3,11 @@ package dev.kensa.parse.kotlin
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.KotlinLexer.*
 import dev.kensa.parse.KotlinParser
+import dev.kensa.parse.KotlinParser.Inside_LineComment
+import dev.kensa.parse.KotlinParser.LineComment
 import dev.kensa.parse.KotlinParserBaseListener
+import dev.kensa.parse.LocatedEvent.Comment
+import dev.kensa.parse.Location
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
@@ -15,21 +19,30 @@ import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
 import dev.kensa.parse.ParseContext.Companion.asOperator
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
+import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
+import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class KotlinFunctionBodyParser(
+    val tokenStream: CommonTokenStream,
     private val stateMachine: ParserStateMachine,
     private val parseContext: ParseContext
 ) : KotlinParserBaseListener() {
+    private var lastCommentTokenIndex = -1
 
-    //  For Debugging:
     override fun enterEveryRule(ctx: ParserRuleContext) {
-//        println(">Entering: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
+        // For Debugging:
+        // println(">Entering: [${ctx.start.tokenIndex}] ${ctx::class.simpleName} :: ${ctx.text.onOneLine()} :: ${stateMachine.stateMachine.state}")
+
+        processAdjacentHiddenTokens(commentTokensToLeftOf(ctx.start.tokenIndex))
     }
 
     override fun exitEveryRule(ctx: ParserRuleContext) {
-//        println(">Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
+        // For Debugging:
+        // println(">Exiting:  [${ctx.start.tokenIndex}>${ctx.stop.tokenIndex}] ${ctx::class.simpleName} :: ${ctx.text.onOneLine()} :: ${stateMachine.stateMachine.state}")
+
+        processAdjacentHiddenTokens(commentTokensToRightOf(ctx.stop.tokenIndex))
     }
 
     override fun enterLambdaLiteral(ctx: KotlinParser.LambdaLiteralContext) {
@@ -179,7 +192,32 @@ class KotlinFunctionBodyParser(
                 }
             }
         }
+
+        processAdjacentHiddenTokens(commentTokensToRightOf(node.symbol.tokenIndex))
     }
+
+    private fun processAdjacentHiddenTokens(hiddenTokens: List<Token>) {
+        hiddenTokens
+            .filter { it.tokenIndex > lastCommentTokenIndex && it.isKensaComment }
+            .map { hiddenToken ->
+                lastCommentTokenIndex = hiddenToken.tokenIndex
+
+                when (hiddenToken.type) {
+                    DelimitedComment, Inside_DelimitedComment -> hiddenToken.asDelimitedComment()
+                    LineComment, Inside_LineComment -> hiddenToken.asLineComment()
+                    else -> error("Unexpected token type '${hiddenToken.type}' at index ${hiddenToken.tokenIndex} in comment stream")
+                }
+            }
+            .forEach { event ->
+                stateMachine.addComment(event)
+            }
+    }
+
+    private fun commentTokensToLeftOf(tokenIndex: Int) =
+        tokenStream.getHiddenTokensToLeft(tokenIndex, COMMENTS_CHANNEL) ?: emptyList()
+
+    private fun commentTokensToRightOf(tokenIndex: Int) =
+        tokenStream.getHiddenTokensToRight(tokenIndex, COMMENTS_CHANNEL) ?: emptyList()
 
     private fun ParserRuleContext.hasArguments(): Boolean {
         fun ParserRuleContext.findValueArguments(): Boolean {
@@ -193,5 +231,32 @@ class KotlinFunctionBodyParser(
         }
 
         return (parent?.parent as? ParserRuleContext)?.findValueArguments() ?: false
+    }
+
+    companion object {
+        const val KENSA_DELIMITED_COMMENT_START = "/**"
+        const val KENSA_LINE_COMMENT_START = "///"
+
+        /**
+         * Used to strip away any of:
+         *      - "/**" at the start of the string
+         *      - Newline (not consumed), followed by " * " (with optional spaces)
+         *      - "*/" at the end of the string
+         */
+        private val delimitedCommentCleaningRegex = Regex("(^/\\*\\*|(?<=[\r\n])\\s*\\*(?!/)\\s*|\\*/$)")
+        private val lineCommentCleaningRegex = Regex("^///")
+
+        private val Token.location: Location
+            get() = Location(this.line, this.charPositionInLine)
+
+        private val Token.isKensaComment: Boolean
+            get() = text.startsWith(KENSA_DELIMITED_COMMENT_START) || text.startsWith(KENSA_LINE_COMMENT_START)
+
+        private fun Token.asDelimitedComment() = this.asComment(delimitedCommentCleaningRegex)
+
+        private fun Token.asLineComment() = this.asComment(lineCommentCleaningRegex)
+
+        private fun Token.asComment(cleaningRegex: Regex) =
+                Comment(location, text.trim().replace(cleaningRegex, "").trim())
     }
 }

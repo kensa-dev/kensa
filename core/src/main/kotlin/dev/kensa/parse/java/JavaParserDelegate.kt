@@ -22,8 +22,10 @@ class JavaParserDelegate(
         val nestedMethods = mutableListOf<MethodDeclarationContext>()
         val emphasisedMethods = mutableListOf<MethodDeclarationContext>()
 
+        val tokens = tokenStreamFor(target)
+
         // TODO : Need to test with nested classes as this probably won't work...
-        compilationUnitFor(target).ordinaryCompilationUnit().topLevelClassOrInterfaceDeclaration()
+        compilationUnitFor(tokens).ordinaryCompilationUnit().topLevelClassOrInterfaceDeclaration()
             .firstNotNullOfOrNull {
                 it.classDeclaration() ?: it.interfaceDeclaration()
             }?.apply {
@@ -31,18 +33,18 @@ class JavaParserDelegate(
                     is ClassDeclarationContext ->
                         normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
                             cbd.classMemberDeclaration()?.methodDeclaration()?.let { md ->
-                                testMethods.takeIf { isClassTest(md) }?.add(JavaMethodDeclarationContext(md))
-                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaMethodDeclarationContext(md))
-                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md))
+                                testMethods.takeIf { isClassTest(md) }?.add(JavaMethodDeclarationContext(md, tokens))
+                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaMethodDeclarationContext(md, tokens))
+                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md, tokens))
                             }
                         }
 
                     is InterfaceDeclarationContext ->
                         normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
                             imd.interfaceMethodDeclaration()?.let { md ->
-                                testMethods.takeIf { isInterfaceTest(md) }?.add(JavaInterfaceDeclarationContext(md))
-                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaInterfaceDeclarationContext(md))
-                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaInterfaceDeclarationContext(md))
+                                testMethods.takeIf { isInterfaceTest(md) }?.add(JavaInterfaceDeclarationContext(md, tokens))
+                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaInterfaceDeclarationContext(md, tokens))
+                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaInterfaceDeclarationContext(md, tokens))
                             }
                         }
 
@@ -60,12 +62,14 @@ class JavaParserDelegate(
             }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
         )
 
-    private fun compilationUnitFor(target: Class<out Any>): Java20Parser.CompilationUnitContext =
-        Java20Parser(
-            CommonTokenStream(
-                Java20Lexer(SourceCode.sourceStreamFor(target))
-            )
-        ).apply {
+    private fun tokenStreamFor(target: Class<out Any>): CommonTokenStream =
+        SourceCode
+            .sourceStreamFor(target)
+            .let { Java20Lexer(it) }
+            .let { CommonTokenStream(it) }
+
+    private fun compilationUnitFor(tokens: CommonTokenStream): Java20Parser.CompilationUnitContext =
+        Java20Parser(tokens).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.compilationUnit()

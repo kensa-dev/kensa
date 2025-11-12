@@ -20,3 +20,6 @@ fun String.unCamel() =
 fun String.unCamelToSeparated(separator: String = "-") =
     if (this.isBlank()) this
     else UPPER_CASE_LETTER_REGEX.split(trim()).filterNot { it.isBlank() }.joinToString(separator).lowercase(Locale.getDefault())
+
+private fun String?.onOneLine() =
+    this?.replace("\r", "\\r")?.replace("\n", "\\n")
