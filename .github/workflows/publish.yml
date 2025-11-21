@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !endsWith(github.ref_name, '-SNAPSHOT') }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Set up JDK
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ endsWith(github.ref_name, '-SNAPSHOT') }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Set up JDK
@@ -53,7 +53,7 @@ jobs:
     needs: [PublishToStaging, PublishToSnapshot]
     if: ${{ always() && (needs.PublishToStaging.result == 'success' || needs.PublishToSnapshot.result == 'success') }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Dispatch Release Event
