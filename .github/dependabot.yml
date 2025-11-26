@@ -15,8 +15,8 @@ updates:
     open-pull-requests-limit: 10
 
   # Keep npm dependencies up to date in each frontend package
-  - package-ecosystem: npm
-    directory: "/ui"
-    schedule:
-      interval: daily
-    open-pull-requests-limit: 10
+  #- package-ecosystem: npm
+  #  directory: "/ui"
+  #  schedule:
+  #    interval: daily
+  #  open-pull-requests-limit: 10
