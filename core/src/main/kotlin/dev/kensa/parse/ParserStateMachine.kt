@@ -23,16 +23,30 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
     val sentences: List<TemplateSentence>
         get() = _sentences
 
-    private lateinit var sentenceBuilder: SentenceBuilder
+    private var _sentenceBuilder: SentenceBuilder? = null
     private var lastSentenceEndLocation: Location? = null
 
+    private val sentenceBuilder
+        get() = _sentenceBuilder!!
+
     private fun beginSentence(location: Location) {
-        sentenceBuilder = createSentenceBuilder(location, lastSentenceEndLocation ?: location)
+        _sentenceBuilder = createSentenceBuilder(location, lastSentenceEndLocation ?: location)
     }
 
     private fun finishSentence() {
-        _sentences += sentenceBuilder.build()
-        lastSentenceEndLocation = sentenceBuilder.lastLocation
+        _sentences += _sentenceBuilder!!.build()
+        lastSentenceEndLocation = _sentenceBuilder!!.lastLocation
+        _sentenceBuilder = null
+    }
+
+    private fun withNewSentenceIfNecessary(location: Location, block: () -> Unit) {
+        if (_sentenceBuilder == null) {
+            beginSentence(location)
+            block.invoke()
+            finishSentence()
+        } else {
+            block.invoke()
+        }
     }
 
     internal val stateMachine: StateMachine<State, Event> = aStateMachine {
@@ -454,5 +468,11 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
 
     fun apply(event: Event) {
         stateMachine.apply(event)
+    }
+
+    fun addComment(event: Comment) {
+        withNewSentenceIfNecessary(event.location) {
+            sentenceBuilder.append(event)
+        }
     }
 }

@@ -6,6 +6,10 @@ lexer grammar KotlinLexer;
 
 import UnicodeClasses;
 
+channels {
+    COMMENTS_CHANNEL
+}
+
 // SECTION: lexicalGeneral
 
 ShebangLine
@@ -14,12 +18,12 @@ ShebangLine
 
 DelimitedComment
     : '/*' ( DelimitedComment | . )*? '*/'
-      -> channel(HIDDEN)
+      -> channel(COMMENTS_CHANNEL)
     ;
 
 LineComment
     : '//' ~[\r\n]*
-      -> channel(HIDDEN)
+      -> channel(COMMENTS_CHANNEL)
     ;
 
 WS
@@ -521,7 +525,8 @@ Inside_LongLiteral: LongLiteral -> type(LongLiteral);
 Inside_UnsignedLiteral: UnsignedLiteral -> type(UnsignedLiteral);
 
 Inside_Identifier: Identifier -> type(Identifier);
-Inside_Comment: (LineComment | DelimitedComment) -> channel(HIDDEN);
+Inside_DelimitedComment: DelimitedComment -> channel(COMMENTS_CHANNEL);
+Inside_LineComment: LineComment -> channel(COMMENTS_CHANNEL);
 Inside_WS: WS -> channel(HIDDEN);
 Inside_NL: NL -> channel(HIDDEN);
 
