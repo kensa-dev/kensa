@@ -9,6 +9,7 @@ plugins {
 node {
     version = libs.versions.node.get()
     download = true
+    npmInstallCommand = "ci"
 }
 
 tasks {
