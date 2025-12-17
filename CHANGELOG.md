@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.35
+- Updates for compatibility with Kotlin 2.3.0
+
 ### v0.5.34
 - Kotest version bump for compatibility
 
