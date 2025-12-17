@@ -82,6 +82,7 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
                 is NumberLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(NumberLiteral))
                 is CharacterLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(CharacterLiteral))
                 is BooleanLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(BooleanLiteral))
+                is Comment -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Comment))
 
                 else -> null
             }
@@ -110,6 +111,11 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
 
     fun append(event: MultilineString) {
         tokens.append(event.value, TextBlock)
+    }
+
+    fun append(event: Comment) {
+        lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
+        tokens.add(SimpleTemplateToken(event.text, types = setOf(Comment)))
     }
 
     fun append(event: Operator) = appendLiteral(event, event.text, Operator)

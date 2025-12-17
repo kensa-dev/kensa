@@ -19,14 +19,16 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
         val nestedFunctions = mutableListOf<MethodDeclarationContext>()
         val emphasisedFunctions = mutableListOf<MethodDeclarationContext>()
 
+        val tokens = tokenStreamFor(target)
+
         // TODO : Need to test with nested classes as this probably won't work...
         ArrayList<KotlinParser.FunctionDeclarationContext>().apply {
-            compilationUnitFor(target).topLevelObject().forEach {
+            compilationUnitFor(tokens).topLevelObject().forEach {
                 findFunctionDeclarations(it, this)
             }
 
             forEach {
-                assignDeclarations(testFunctions, nestedFunctions, emphasisedFunctions)(it)
+                assignDeclarations(tokens, testFunctions, nestedFunctions, emphasisedFunctions)(it)
             }
         }
 
@@ -68,21 +70,24 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
     }
 
     private fun assignDeclarations(
+        tokens: CommonTokenStream,
         testFunctions: MutableList<MethodDeclarationContext>,
         nestedFunctions: MutableList<MethodDeclarationContext>,
         emphasisedFunctions: MutableList<MethodDeclarationContext>
     ): (KotlinParser.FunctionDeclarationContext) -> Unit = { fd ->
-        testFunctions.takeIf { isTest(fd) }?.add(KotlinMethodDeclarationContext(fd))
-        nestedFunctions.takeIf { fd.isAnnotatedAsNested() }?.add(KotlinMethodDeclarationContext(fd))
-        emphasisedFunctions.takeIf { fd.isAnnotatedAsEmphasised() }?.add(KotlinMethodDeclarationContext(fd))
+        testFunctions.takeIf { isTest(fd) }?.add(KotlinMethodDeclarationContext(fd, tokens))
+        nestedFunctions.takeIf { fd.isAnnotatedAsNested() }?.add(KotlinMethodDeclarationContext(fd, tokens))
+        emphasisedFunctions.takeIf { fd.isAnnotatedAsEmphasised() }?.add(KotlinMethodDeclarationContext(fd, tokens))
     }
 
-    private fun compilationUnitFor(testClass: Class<out Any>): KotlinParser.KotlinFileContext =
-        KotlinParser(
-            CommonTokenStream(
-                KotlinLexer(SourceCode.sourceStreamFor(testClass))
-            )
-        ).apply {
+    private fun tokenStreamFor(testClass: Class<out Any>) =
+        SourceCode
+            .sourceStreamFor(testClass)
+            .let { KotlinLexer(it) }
+            .let { CommonTokenStream(it) }
+
+    private fun compilationUnitFor(tokenStream: CommonTokenStream): KotlinParser.KotlinFileContext =
+        KotlinParser(tokenStream).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.kotlinFile()
@@ -92,7 +97,7 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean = findAnnotationNames().any { name -> ParserDelegate.emphasisedMethodAnnotationNames.contains(name) }
 
     override fun parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
-        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext), dc.body)
+        ParseTreeWalker().walk(KotlinFunctionBodyParser(dc.tokenStream, stateMachine, parseContext), dc.body)
     }
 
     companion object {
