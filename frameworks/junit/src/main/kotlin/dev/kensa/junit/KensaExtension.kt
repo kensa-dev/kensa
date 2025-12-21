@@ -40,7 +40,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
 
     override fun beforeEach(context: ExtensionContext) {
         with(context) {
-            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy).also { it ->
+            TestContext(requiredTestClass, requiredTestMethod, context.kensaConfiguration.setupStrategy).also {
                 TestContextHolder.bindToCurrentThread(it)
                 kensaStore.put(TEST_CONTEXT_KEY, it)
             }
@@ -111,7 +111,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
             configurationProviderClassName?.let { loadConfigurationProvider(it) } ?: StaticKensaConfigurationProvider
 
         @Suppress("UNCHECKED_CAST")
-        private fun loadConfigurationProvider(className: String): KensaConfigurationProvider? = className.let {
+        private fun loadConfigurationProvider(className: String): KensaConfigurationProvider = className.let {
             val klass = Class.forName(className).kotlin
 
             if (!klass.isSubclassOf(KensaConfigurationProvider::class)) {
@@ -161,7 +161,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                     TestContainerFactory(
                         initialStateFor = { md -> if (md.hasAnnotation<Disabled>()) Disabled else NotExecuted },
                         displayNameFor = { md -> md.findAnnotation<DisplayName>()?.value },
-                        findTestMethods = { cs -> cs.findTestMethods { it -> it.hasAnnotation<Test>() || it.hasAnnotation<ParameterizedTest>() } },
+                        findTestMethods = { cs -> cs.findTestMethods { it.hasAnnotation<Test>() || it.hasAnnotation<ParameterizedTest>() } },
                         testInvocationFactory(configuration),
                         configuration
                     )
