@@ -1,14 +1,13 @@
 package dev.kensa.parse.java
 
 import dev.kensa.Configuration
-import dev.kensa.parse.ElementDescriptor
-import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.context.NestedInvocationContext
+import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.example.JavaWithInterface
 import dev.kensa.example.JavaWithParameters
 import dev.kensa.example.JavaWithScenario
 import dev.kensa.example.JavaWithVariousFields
-import dev.kensa.parse.Java20Parser
+import dev.kensa.parse.*
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
@@ -27,18 +26,14 @@ import org.junit.jupiter.api.Test
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-internal class JavaMethodParserTest {
+internal class MethodParserTest {
 
     private val configuration = Configuration()
 
     @Test
     internal fun `parses a class method using a scenario`() {
         val methodName = "usingAScenario"
-        val parser = JavaMethodParser(
-            isClassTest = classMethodNamed(methodName),
-            { false },
-            configuration
-        )
+        val parser = createParserFor(classMethodNamed(methodName))
 
         val expectedSentence = TemplateSentence(
             listOf(
@@ -70,11 +65,7 @@ internal class JavaMethodParserTest {
     @Test
     internal fun `parses an interface method`() {
         val methodName = "methodOnInterface"
-        val parser = JavaMethodParser(
-            isClassTest = { false },
-            isInterfaceTest = interfaceMethodNamed(methodName),
-            configuration
-        )
+        val parser = createParserFor({ false }, interfaceMethodNamed(methodName))
 
         val expectedSentence = TemplateSentence(
             listOf(
@@ -113,11 +104,7 @@ internal class JavaMethodParserTest {
     @Test
     internal fun `parses method on class that implements interface`() {
         val methodName = "classTestMethod"
-        val parser = JavaMethodParser(
-            isClassTest = classMethodNamed(methodName),
-            isInterfaceTest = { false },
-            configuration
-        )
+        val parser = createParserFor(classMethodNamed(methodName))
 
         val expectedSentence = TemplateSentence(
             listOf(
@@ -159,11 +146,7 @@ internal class JavaMethodParserTest {
     @Test
     internal fun `parses test method`() {
         val methodName = "simpleTest"
-        val parser = JavaMethodParser(
-            isClassTest = classMethodNamed(methodName),
-            isInterfaceTest = { false },
-            configuration
-        )
+        val parser = createParserFor(classMethodNamed(methodName))
 
         val expectedSentence = TemplateSentence(
             listOf(
@@ -227,11 +210,7 @@ internal class JavaMethodParserTest {
     @Test
     internal fun `parses method with parameters`() {
         val methodName = "methodWithParameters"
-        val parser = JavaMethodParser(
-            isClassTest = classMethodNamed(methodName),
-            isInterfaceTest = { false },
-            configuration
-        )
+        val parser = createParserFor(classMethodNamed(methodName))
 
         val expectedSentences = listOf(
             TemplateSentence(
@@ -281,6 +260,22 @@ internal class JavaMethodParserTest {
     private fun KClass<*>.propertyNamed(name: String): KProperty<*> = allProperties.find { it.name == name } ?: throw IllegalArgumentException("Property $name not found in class ${this.qualifiedName}")
     private fun classMethodNamed(name: String): (Java20Parser.MethodDeclarationContext) -> Boolean = { it.methodHeader()?.methodDeclarator()?.identifier()?.text == name }
     private fun interfaceMethodNamed(name: String): (Java20Parser.InterfaceMethodDeclarationContext) -> Boolean = { it.methodHeader()?.methodDeclarator()?.identifier()?.text == name }
+
+    private fun createParserFor(isClassTest: (Java20Parser.MethodDeclarationContext) -> Boolean, isInterfaceTest: (Java20Parser.InterfaceMethodDeclarationContext) -> Boolean = { false }): MethodParser =
+        MethodParser(
+            ParserCache(),
+            configuration,
+            CompositeParserDelegate(
+                listOf(
+                    JavaParserDelegate(
+                        isClassTest = isClassTest,
+                        isInterfaceTest = isInterfaceTest,
+                        configuration.antlrErrorListenerDisabled,
+                        configuration.antlrPredicationMode,
+                    )
+                )
+            )
+        )
 
     companion object {
         @BeforeAll

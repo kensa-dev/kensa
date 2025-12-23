@@ -165,11 +165,12 @@ internal inline fun <reified T : Annotation> KProperty<*>.hasKotlinOrJavaAnnotat
 /**
  * Returns all instances of a repeatable annotation across all property-related elements.
  */
-internal inline fun <reified T : Annotation> KProperty<*>.findAllKotlinOrJavaAnnotations(): List<T> =
-    (findAnnotations<T>() +
-            (javaField?.findAllAnnotations<T>() ?: emptyList()) +
-            (javaGetter?.findAllAnnotations<T>() ?: emptyList())
-            ).distinct()
+internal inline fun <reified T : Annotation> KProperty<*>.findAllKotlinOrJavaAnnotations(): Set<T> =
+    buildSet {
+        addAll(findAnnotations<T>())
+        javaField?.also { addAll(it.findAllAnnotations<T>()) }
+        javaGetter?.also { addAll(it.findAllAnnotations<T>()) }
+    }
 
 inline fun <reified T : Annotation> AnnotatedElement.hasAnnotation() = findAnnotation<T>() != null
 inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? =
@@ -179,11 +180,11 @@ inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? =
         annotations.filterIsInstance<T>().firstOrNull() ?: getAnnotation(T::class.java)
     }
 
-inline fun <reified T : Annotation> AnnotatedElement.findAllAnnotations(): List<T> =
+inline fun <reified T : Annotation> AnnotatedElement.findAllAnnotations(): Set<T> =
     if (this is Class<*>) {
         findAllAnnotationsInHierarchy<T>()
     } else {
-        getAnnotationsByType(T::class.java).toList()
+        getAnnotationsByType(T::class.java).toSet()
     }
 
 inline fun <reified T : Annotation> Class<*>.findAnnotationInHierarchy(): T? =
@@ -192,7 +193,7 @@ inline fun <reified T : Annotation> Class<*>.findAnnotationInHierarchy(): T? =
 /**
  * Returns all annotations of a specific type in the hierarchy (useful for @Repeatable).
  */
-inline fun <reified T : Annotation> Class<*>.findAllAnnotationsInHierarchy(): List<T> =
+inline fun <reified T : Annotation> Class<*>.findAllAnnotationsInHierarchy(): Set<T> =
     findAllAnnotationsInHierarchy(T::class.java)
 
 /**
@@ -208,9 +209,8 @@ fun <T : Annotation> Class<*>.findAnnotationInHierarchy(annotationClass: Class<T
     return superclass?.findAnnotationInHierarchy(annotationClass)
 }
 
-
-fun <T : Annotation> Class<*>.findAllAnnotationsInHierarchy(annotationClass: Class<T>): List<T> =
-    mutableListOf<T>().apply {
+fun <T : Annotation> Class<*>.findAllAnnotationsInHierarchy(annotationClass: Class<T>): Set<T> =
+    buildSet {
         addAll(getAnnotationsByType(annotationClass))
 
         for (i in interfaces) {
@@ -220,8 +220,6 @@ fun <T : Annotation> Class<*>.findAllAnnotationsInHierarchy(annotationClass: Cla
         superclass?.let {
             addAll(it.findAllAnnotationsInHierarchy(annotationClass))
         }
-
-        distinct()
     }
 
 private fun shouldStop(): (Class<*>) -> Boolean = { it == Any::class.java }

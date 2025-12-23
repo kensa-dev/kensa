@@ -5,26 +5,33 @@ import dev.kensa.sentence.TemplateSentence
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
-interface ParserCache {
-    val parsedMethodCache: ConcurrentHashMap<Method, ParsedMethod>
-    val declarationCache: MutableMap<Class<*>, MethodDeclarations>
-    val propertyCache: MutableMap<Class<*>, Map<String, ElementDescriptor>>
-    val parameterCache: MutableMap<Method, MethodParameters>
-    val testMethodSentenceCache: MutableMap<Method, List<TemplateSentence>>
-    val nestedMethodCache: MutableMap<Class<*>, Map<String, ParsedNestedMethod>>
-    val renderedValueMethodCache: MutableMap<Class<*>, Map<String, RenderedValueMethod>>
-    val emphasisedMethodCache: MutableMap<Class<*>, Map<String, EmphasisDescriptor>>
-    val methodCache: MutableMap<Class<*>, Map<String, MethodElementDescriptor>>
-}
+class ParserCache {
+    private val parsedMethods = ConcurrentHashMap<Method, ParsedMethod>()
+    private val methodDeclarations = ConcurrentHashMap<Class<*>, MethodDeclarations>()
+    private val properties = ConcurrentHashMap<Class<*>, Map<String, ElementDescriptor>>()
+    private val parameters = ConcurrentHashMap<Method, MethodParameters>()
+    private val nestedMethods = ConcurrentHashMap<Class<*>, Map<String, ParsedNestedMethod>>()
+    private val emphasisedMethods = ConcurrentHashMap<Class<*>, Map<String, EmphasisDescriptor>>()
+    private val methods = ConcurrentHashMap<Class<*>, Map<String, MethodElementDescriptor>>()
 
-class RealParserCache : ParserCache {
-    override val parsedMethodCache: ConcurrentHashMap<Method, ParsedMethod> = ConcurrentHashMap()
-    override val declarationCache: MutableMap<Class<*>, MethodDeclarations> = HashMap()
-    override val propertyCache: MutableMap<Class<*>, Map<String, ElementDescriptor>> = HashMap()
-    override val parameterCache: MutableMap<Method, MethodParameters> = HashMap()
-    override val testMethodSentenceCache: MutableMap<Method, List<TemplateSentence>> = HashMap()
-    override val nestedMethodCache: MutableMap<Class<*>, Map<String, ParsedNestedMethod>> = HashMap()
-    override val renderedValueMethodCache: MutableMap<Class<*>, Map<String, RenderedValueMethod>> = HashMap()
-    override val emphasisedMethodCache: MutableMap<Class<*>, Map<String, EmphasisDescriptor>> = HashMap()
-    override val methodCache: MutableMap<Class<*>, Map<String, MethodElementDescriptor>> = HashMap()
+    fun getOrPutParsedMethod(method: Method, provider: () -> ParsedMethod): ParsedMethod =
+        parsedMethods.computeIfAbsent(method) { provider() }
+
+    fun getOrPutMethodDeclarations(clazz: Class<*>, provider: () -> MethodDeclarations): MethodDeclarations =
+        methodDeclarations.computeIfAbsent(clazz) { provider() }
+
+    fun getOrPutProperties(clazz: Class<*>, provider: () -> Map<String, ElementDescriptor>): Map<String, ElementDescriptor> =
+        properties.computeIfAbsent(clazz) { provider() }
+
+    fun getOrPutParameters(method: Method, provider: () -> MethodParameters): MethodParameters =
+        parameters.computeIfAbsent(method) { provider() }
+
+    fun getOrPutNestedMethods(clazz: Class<*>, provider: () -> Map<String, ParsedNestedMethod>): Map<String, ParsedNestedMethod> =
+        nestedMethods.computeIfAbsent(clazz) { provider() }
+
+    fun getOrPutEmphasisedMethods(clazz: Class<*>, provider: () -> Map<String, EmphasisDescriptor>): Map<String, EmphasisDescriptor> =
+        emphasisedMethods.computeIfAbsent(clazz) { provider() }
+
+    fun getOrPutMethods(clazz: Class<*>, provider: () -> Map<String, MethodElementDescriptor>): Map<String, MethodElementDescriptor> =
+        methods.computeIfAbsent(clazz) { provider() }
 }

@@ -47,10 +47,10 @@ interface KensaTest : WithFixturesAndOutputs {
     fun `when`(action: Action<ActionContext>) = whenever(action)
     fun whenever(action: Action<ActionContext>) = testContext().whenever(action)
 
-    @Deprecated("use when(Action) instead", ReplaceWith("when(action)"), WARNING)
+    @Deprecated("use when(Action) instead", ReplaceWith("whenever(action)"), WARNING)
     fun `when`(action: ActionUnderTest) = whenever(action)
 
-    @Deprecated("use when(Action) instead", ReplaceWith("when(action)"), WARNING)
+    @Deprecated("use when(Action) instead", ReplaceWith("whenever(action)"), WARNING)
     fun whenever(action: ActionUnderTest) {
         testContext().whenever(action)
     }

@@ -5,9 +5,12 @@ import dev.kensa.KensaConfigurationProvider
 import dev.kensa.StaticKensaConfigurationProvider
 import dev.kensa.context.*
 import dev.kensa.output.ResultWriter
+import dev.kensa.parse.CompositeParserDelegate
+import dev.kensa.parse.MethodParser
+import dev.kensa.parse.ParserCache
 import dev.kensa.parse.TestInvocationParser
-import dev.kensa.parse.java.JavaMethodParser
-import dev.kensa.parse.kotlin.KotlinFunctionParser
+import dev.kensa.parse.java.JavaParserDelegate
+import dev.kensa.parse.kotlin.KotlinParserDelegate
 import dev.kensa.render.diagram.SequenceDiagramFactory
 import dev.kensa.state.TestInvocationFactory
 import dev.kensa.state.TestState.Disabled
@@ -127,7 +130,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
         private val ExtensionContext.kensaContext
             get() = root.kensaStore.getOrComputeIfAbsent(
                 KENSA_CONTEXT_KEY,
-                kensaContextFactory(kensaResultWriter, kensaConfiguration),
+                kensaContextFactory(kensaResultWriter, kensaConfiguration, ParserCache()),
                 CloseableKensaContext::class.java
             ).context
 
@@ -147,14 +150,22 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                 ResultWriter::class.java
             )
 
-        private fun testInvocationFactory(configuration: Configuration) = TestInvocationFactory(
+        private fun testInvocationFactory(configuration: Configuration, parserCache: ParserCache) = TestInvocationFactory(
             TestInvocationParser(configuration),
-            JavaMethodParser(isJavaClassTest, isJavaInterfaceTest, configuration),
-            KotlinFunctionParser(isKotlinTest, configuration, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode),
+            MethodParser(
+                parserCache,
+                configuration,
+                CompositeParserDelegate(
+                    listOf(
+                        JavaParserDelegate(isJavaClassTest, isJavaInterfaceTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode),
+                        KotlinParserDelegate(isKotlinTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode),
+                    )
+                )
+            ),
             SequenceDiagramFactory(configuration.umlDirectives)
         )
 
-        private fun kensaContextFactory(resultWriter: ResultWriter, configuration: Configuration) = { _: String ->
+        private fun kensaContextFactory(resultWriter: ResultWriter, configuration: Configuration, parserCache: ParserCache) = { _: String ->
             CloseableKensaContext(
                 resultWriter,
                 KensaContext(
@@ -162,7 +173,7 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                         initialStateFor = { md -> if (md.hasAnnotation<Disabled>()) Disabled else NotExecuted },
                         displayNameFor = { md -> md.findAnnotation<DisplayName>()?.value },
                         findTestMethods = { cs -> cs.findTestMethods { it.hasAnnotation<Test>() || it.hasAnnotation<ParameterizedTest>() } },
-                        testInvocationFactory(configuration),
+                        testInvocationFactory(configuration, parserCache),
                         configuration
                     )
                 )

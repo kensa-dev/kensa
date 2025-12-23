@@ -4,9 +4,8 @@ import dev.kensa.Configuration
 import dev.kensa.context.NestedInvocationContext
 import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.example.*
+import dev.kensa.parse.*
 import dev.kensa.parse.ElementDescriptor.*
-import dev.kensa.parse.KotlinParser
-import dev.kensa.parse.ParsedNestedMethod
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.TemplateToken.Type.*
@@ -48,12 +47,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `recognises various protected phrases`() {
             val functionName = "protectedPhrasesTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val method = KotlinWithProtectedPhrases::class.java.findMethod(functionName)
             val parsedMethod = parser.parse(method)
@@ -97,12 +91,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `recognises various literals`() {
             val functionName = "literalTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val method = KotlinWithVariousLiterals::class.java.findMethod(functionName)
             val parsedMethod = parser.parse(method)
@@ -151,12 +140,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces scenario value in sentence when using scenario with infix function`() {
             val functionName = "testWithInfixScenario"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithScenario::class.java
             val method = javaClass.findMethod(functionName)
@@ -184,12 +168,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces scenario value in sentence when using scenario field`() {
             val functionName = "testWithScenarioField"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithScenario::class.java
             val method = javaClass.findMethod(functionName)
@@ -211,12 +190,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces scenario value in sentence when using scenario function`() {
             val functionName = "testWithScenarioFunction"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithScenario::class.java
             val method = javaClass.findMethod(functionName)
@@ -238,12 +212,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces scenario value in sentence when using scenario holder`() {
             val functionName = "testWithScenarioHolder"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithScenario::class.java
             val method = javaClass.findMethod(functionName)
@@ -269,12 +238,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces fixture value in sentence when using fixtures inside lambda function`() {
             val functionName = "testWithFixturesInLambda"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithFixtures::class.java
             val method = javaClass.findMethod(functionName)
@@ -305,12 +269,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces fixture value in sentence when using fixtures with infix function`() {
             val functionName = "testWithInfixFixtures"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithFixtures::class.java
             val method = javaClass.findMethod(functionName)
@@ -338,12 +297,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces scenario value in sentence when using fixture`() {
             val functionName = "testWithFixtures"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithFixtures::class.java
             val method = javaClass.findMethod(functionName)
@@ -365,12 +319,7 @@ internal class KotlinFunctionParserTest {
         @Test
         fun `replaces scenario value in sentence when using chained fixture`() {
             val functionName = "testWithChainedFixture"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithFixtures::class.java
             val method = javaClass.findMethod(functionName)
@@ -401,12 +350,7 @@ internal class KotlinFunctionParserTest {
         @Test
         internal fun `replaces 'whenever' with 'when' keyword`() {
             val functionName = "simpleTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithWhenever::class.java
             val method = javaClass.findMethod("simpleTest")
@@ -434,12 +378,7 @@ internal class KotlinFunctionParserTest {
         @Test
         internal fun `recognises SentenceValue and Highlight on various Kotlin properties and functions`() {
             val functionName = "simpleTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val javaClass = KotlinWithAnnotations::class.java
             val method = javaClass.findMethod(functionName)
@@ -536,12 +475,7 @@ internal class KotlinFunctionParserTest {
         @Test
         internal fun `parses expression function`() {
             val functionName = "simpleTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val expectedSentence = TemplateSentence(
                 listOf(
@@ -575,12 +509,7 @@ internal class KotlinFunctionParserTest {
         @Test
         internal fun `parses interface function`() {
             val functionName = "interfaceTestMethod"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val expectedSentence = TemplateSentence(
                 listOf(
@@ -610,12 +539,7 @@ internal class KotlinFunctionParserTest {
         @Test
         internal fun `parses function on class that has test interface`() {
             val functionName = "simpleTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val expectedSentence = TemplateSentence(
                 listOf(
@@ -661,12 +585,7 @@ internal class KotlinFunctionParserTest {
         @Test
         internal fun `parses internal function`() {
             val functionName = "simpleTest\$core_example"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val expectedSentence = TemplateSentence(
                 listOf(
@@ -696,12 +615,7 @@ internal class KotlinFunctionParserTest {
         @Test
         internal fun parsesFunctionWithParameters() {
             val functionName = "parameterizedTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val expectedSentence = TemplateSentence(
                 listOf(
@@ -737,12 +651,7 @@ internal class KotlinFunctionParserTest {
         internal fun parsesVariousNestedSentenceStyles() {
             // Need to hook into the parser via a standard test function...
             val functionName = "parameterizedTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+            val parser = createParserFor(aFunctionNamed(functionName))
 
             val testMethod = KotlinWithParameters::class.java.findMethod(functionName)
             val parsedTestMethod = parser.parse(testMethod)
@@ -815,6 +724,17 @@ internal class KotlinFunctionParserTest {
     }
 
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }
+
+    private fun createParserFor(isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean): MethodParser =
+        MethodParser(
+            ParserCache(),
+            configuration,
+            CompositeParserDelegate(
+                listOf(
+                    KotlinParserDelegate(isTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode)
+                )
+            )
+        )
 
     companion object {
         @BeforeAll

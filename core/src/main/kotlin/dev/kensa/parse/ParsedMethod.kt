@@ -17,5 +17,3 @@ data class ParsedNestedMethod(
     val parameters: MethodParameters,
     val sentences: List<TemplateSentence>
 )
-
-data class RenderedValueMethod(val name: String, val parameters: MethodParameters)

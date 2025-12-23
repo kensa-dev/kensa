@@ -5,6 +5,8 @@ import dev.kensa.parse.*
 import dev.kensa.parse.Java20Parser.ClassDeclarationContext
 import dev.kensa.parse.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.util.SourceCode
+import dev.kensa.util.isKotlinClass
+import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
@@ -17,55 +19,65 @@ class JavaParserDelegate(
     private val antlrPredicationMode: PredictionMode
 ) : ParserDelegate {
 
-    override fun findMethodDeclarationsIn(target: Class<out Any>): MethodDeclarations {
+    override fun Class<*>.isParsable(): Boolean = !isKotlinClass
+
+    override fun Class<*>.toSimpleName(): (Class<*>) -> String = Class<*>::getSimpleName
+
+    override fun Class<*>.findMethodDeclarations(): MethodDeclarations {
         val testMethods = mutableListOf<MethodDeclarationContext>()
         val nestedMethods = mutableListOf<MethodDeclarationContext>()
         val emphasisedMethods = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
-        compilationUnitFor(target).ordinaryCompilationUnit().topLevelClassOrInterfaceDeclaration()
-            .firstNotNullOfOrNull {
-                it.classDeclaration() ?: it.interfaceDeclaration()
-            }?.apply {
-                when (this) {
-                    is ClassDeclarationContext ->
-                        normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
-                            cbd.classMemberDeclaration()?.methodDeclaration()?.let { md ->
-                                testMethods.takeIf { isClassTest(md) }?.add(JavaMethodDeclarationContext(md))
-                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaMethodDeclarationContext(md))
-                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md))
-                            }
-                        }
-
-                    is InterfaceDeclarationContext ->
-                        normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
-                            imd.interfaceMethodDeclaration()?.let { md ->
-                                testMethods.takeIf { isInterfaceTest(md) }?.add(JavaInterfaceDeclarationContext(md))
-                                nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaInterfaceDeclarationContext(md))
-                                emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaInterfaceDeclarationContext(md))
-                            }
-                        }
-
-                    else -> throw KensaException("Cannot handle Parser Rule Contexts of type [${this::class.java}]")
+        val sourceStream = SourceCode.sourceStreamFor(this)
+        val declaration = sourceStream.compilationUnit().ordinaryCompilationUnit()
+            .topLevelClassOrInterfaceDeclaration()
+            .mapNotNull { it.classDeclaration() ?: it.interfaceDeclaration() }
+            .firstOrNull { decl ->
+                when (decl) {
+                    is ClassDeclarationContext -> decl.normalClassDeclaration()?.typeIdentifier()?.text == simpleName
+                    is InterfaceDeclarationContext -> decl.normalInterfaceDeclaration()?.typeIdentifier()?.text == simpleName
+                    else -> false
                 }
-            } ?: throw KensaException("Unable to find class declaration in source code")
+            } ?: throw KensaException("Unable to find declaration for [$simpleName] in source file [${sourceStream.sourceName}]")
+
+        declaration.apply {
+            when (this) {
+                is ClassDeclarationContext ->
+                    normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
+                        cbd.classMemberDeclaration()?.methodDeclaration()?.let { md ->
+                            testMethods.takeIf { isClassTest(md) }?.add(JavaMethodDeclarationContext(md))
+                            nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaMethodDeclarationContext(md))
+                            emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md))
+                        }
+                    }
+
+                is InterfaceDeclarationContext ->
+                    normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
+                        imd.interfaceMethodDeclaration()?.let { md ->
+                            testMethods.takeIf { isInterfaceTest(md) }?.add(JavaInterfaceDeclarationContext(md))
+                            nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaInterfaceDeclarationContext(md))
+                            emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaInterfaceDeclarationContext(md))
+                        }
+                    }
+
+                else -> throw KensaException("Cannot handle Parser Rule Contexts of type [${this::class.java}]")
+            }
+        }
 
         return MethodDeclarations(testMethods, nestedMethods, emphasisedMethods)
     }
 
-    override fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
+    override fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
         MethodParameters(
-            method.parameters.mapIndexed { index, parameter ->
+            parameters.mapIndexed { index, parameter ->
                 ElementDescriptor.forParameter(parameter, parameterNamesAndTypes[index].first, index)
             }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
         )
 
-    private fun compilationUnitFor(target: Class<out Any>): Java20Parser.CompilationUnitContext =
-        Java20Parser(
-            CommonTokenStream(
-                Java20Lexer(SourceCode.sourceStreamFor(target))
-            )
-        ).apply {
+    private fun CharStream.compilationUnit(): Java20Parser.CompilationUnitContext =
+        // Reset the CharStream to the beginning
+        Java20Parser(CommonTokenStream(Java20Lexer(apply { seek(0) }))).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.compilationUnit()
@@ -98,7 +110,7 @@ class JavaParserDelegate(
             } ?: false
         }
 
-    override fun parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
+    override fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
         ParseTreeWalker().walk(JavaMethodBodyParser(stateMachine, parseContext), dc.body)
     }
 }
