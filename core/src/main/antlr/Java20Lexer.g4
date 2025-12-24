@@ -939,6 +939,10 @@ fragment IdentifierPart:
 
 WS: [ \t\r\n\u000C]+ -> skip;
 
+KENSA_HINT: '/**' .*? '*/' -> channel(HIDDEN);
+
+KENSA_NOTE: '///' ~[\r\n]* -> channel(HIDDEN);
+
 COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
 
 LINE_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN);

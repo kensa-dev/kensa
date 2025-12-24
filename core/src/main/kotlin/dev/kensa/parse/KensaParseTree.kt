@@ -1,6 +1,5 @@
 package dev.kensa.parse
 
-import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
 
 private fun Java20Parser.MethodHeaderContext.parameterNamesAndTypes() =
@@ -15,11 +14,10 @@ private fun Java20Parser.MethodHeaderContext.parameterNamesAndTypes() =
 interface MethodDeclarationContext {
     val name: String
     val body: ParseTree
-    val tokenStream: CommonTokenStream
     val parameterNamesAndTypes: List<Pair<String, String>>
 }
 
-class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDeclarationContext, override val tokenStream: CommonTokenStream) : MethodDeclarationContext {
+class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDeclarationContext) : MethodDeclarationContext {
     override val name: String by lazy {
         delegate.methodHeader().methodDeclarator().identifier().text
     }
@@ -33,7 +31,7 @@ class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDecl
     }
 }
 
-class JavaInterfaceDeclarationContext(private val delegate: Java20Parser.InterfaceMethodDeclarationContext, override val tokenStream: CommonTokenStream) : MethodDeclarationContext {
+class JavaInterfaceDeclarationContext(private val delegate: Java20Parser.InterfaceMethodDeclarationContext) : MethodDeclarationContext {
     override val name: String by lazy {
         delegate.methodHeader().methodDeclarator().identifier().text
     }
@@ -45,7 +43,7 @@ class JavaInterfaceDeclarationContext(private val delegate: Java20Parser.Interfa
     }
 }
 
-class KotlinMethodDeclarationContext(private val delegate: KotlinParser.FunctionDeclarationContext, override val tokenStream: CommonTokenStream) : MethodDeclarationContext {
+class KotlinMethodDeclarationContext(private val delegate: KotlinParser.FunctionDeclarationContext) : MethodDeclarationContext {
     override val name: String by lazy {
         delegate.simpleIdentifier().text.replace("`", "")
     }

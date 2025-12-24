@@ -79,7 +79,7 @@ interface MethodParser : ParserCache, ParserDelegate {
 
     private fun Class<*>.findMethodDeclarations(): MethodDeclarations = declarationCache.getOrPut(this) { findMethodDeclarationsIn(this) }
 
-    private fun sentenceBuilder(): (Location, Location) -> SentenceBuilder = { location, previousLocation -> SentenceBuilder(location, previousLocation, configuration.dictionary, configuration.tabSize) }
+    private fun sentenceBuilder(): (Boolean, Location, Location) -> SentenceBuilder = { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, previousLocation, configuration.dictionary, configuration.tabSize) }
 
     private fun prepareNestedMethods(testClass: Class<*>, declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
         val nestedMethods = declarations

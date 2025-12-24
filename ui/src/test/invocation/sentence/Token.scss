@@ -7,39 +7,51 @@
   content: attr(data-tooltip);
   position: absolute;
   bottom: 150%;
-  left: 50%;
-  transform: translateX(-50%);
+  left: -10px;
+  transform: translateY(10px);
 
-  background-color: rgba(74, 74, 74, .9);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 4px;
-  white-space: nowrap;
+  width: max-content;
+  min-width: 120px;
+  max-width: 450px;
 
-  font-size: 12px;
-  line-height: 1.4;
+  white-space: normal;
+  word-break: break-all;
+
+  background-color: #2d3436;
+  color: #dfe6e9;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: left;
+
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
   z-index: 1000;
 }
 
 .tooltip::before {
   content: '';
   position: absolute;
-  bottom: 94%;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 150%;
+  left: 10px;
+  transform: translateY(10px);
 
-  border-width: 5px;
+  margin-bottom: -11px;
+
+  border-width: 6px;
   border-style: solid;
-  border-color: rgba(74, 74, 74, .9) transparent transparent transparent;
+  border-color: #2d3436 transparent transparent transparent;
 
-  z-index: 1000;
+  z-index: 1001;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }
 
 .tooltip:hover::after,
@@ -48,4 +60,84 @@
 .tooltip:focus::before {
   opacity: 1;
   visibility: visible;
+  transform: translateY(0);
+}
+
+.tk-co {
+  position: relative;
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: transparent;
+  $themed-color: hsl(var(--bulma-message-h), var(--bulma-message-s), calc(var(--bulma-message-background-l) - 65%));
+  color: $themed-color;
+
+  border-left: 3px solid hsl(var(--bulma-message-h), var(--bulma-message-s), calc(var(--bulma-message-background-l) - 50%));
+  border-radius: 4px;
+
+  padding: 0 4px 0 6px;
+  margin: 0 4px 1px 4px;
+  font-size: 1em;
+  transition: all 0.2s ease-in-out;
+  white-space: pre-wrap;
+
+  &:hover {
+    background-color: hsla(var(--bulma-message-h), var(--bulma-message-s), 0%, 0.05);
+  }
+
+  &.is-expanded {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0 4px 0 6px;
+    margin-bottom: 1px;
+    font-size: 1em;
+    background-color: hsla(var(--bulma-message-h), var(--bulma-message-s), 0%, 0.03);
+
+    color: $themed-color;
+
+    border-left-width: 5px;
+    border-left-color: hsl(var(--bulma-message-h), var(--bulma-message-s), calc(var(--bulma-message-background-l) - 55%));
+  }
+
+  &.is-collapsed {
+    &::after {
+      content: attr(data-note);
+      position: absolute;
+      bottom: 150%;
+      left: -10px;
+      transform: translateY(10px);
+
+      width: max-content;
+      min-width: 120px;
+      max-width: 450px;
+      white-space: pre-wrap;
+      word-break: break-word;
+
+      background-color: #2d3436;
+      color: #dfe6e9;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      text-align: left;
+      font-weight: normal;
+
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+      z-index: 1000;
+    }
+
+    &:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+  }
 }

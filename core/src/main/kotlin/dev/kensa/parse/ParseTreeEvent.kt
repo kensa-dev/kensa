@@ -53,8 +53,7 @@ sealed class LocatedEvent(val location: Location) : Event() {
     class Nested(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
     class RenderedValue(location: Location, val name: String) : LocatedEvent(location)
     class NestedWithArguments(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
-
-    class Comment(location: Location, val text: String): LocatedEvent(location)
+    class Note(location: Location, val text: String): LocatedEvent(location)
 
     sealed class Literal(location: Location, val value: String) : LocatedEvent(location) {
         class NumberLiteral(location: Location, value: String) : Literal(location, value)

@@ -72,8 +72,8 @@ const NestedSentence = ({value, tokenCls, parameterTokens, tokens, tokenId}) => 
                     {className: "ns-parameters"},
                     parameterTokens.flatMap((token, idx) => (
                         idx === 0
-                            ? [<Token key={`${tokenId}-param-${idx}`} token={token} />]
-                            : ['\u00A0', <Token key={`${tokenId}-param-${idx}`} token={token} />]
+                            ? [<Token key={`${tokenId}-param-${idx}`} token={token}/>]
+                            : ['\u00A0', <Token key={`${tokenId}-param-${idx}`} token={token}/>]
                     ))
                 )
             )}
@@ -106,6 +106,23 @@ const AcronymToken = ({tokenCls, value}) => {
 
 const SimpleToken = ({tokenCls, value}) => <span className={tokenCls}>{value}</span>;
 
+const NoteToken = ({tokenCls, value}) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const toggle = () => setIsExpanded(!isExpanded);
+
+    const cls = `${tokenCls} ${isExpanded ? 'is-expanded' : 'is-collapsed'}`;
+
+    return (
+        <span
+            className={cls}
+            data-note={!isExpanded ? value : undefined}
+            onClick={toggle}
+        >
+            {isExpanded ? value : '...'}
+            </span>
+    );
+};
+
 const TextBlockToken = ({tokenCls, value}) => <div className={tokenCls}>{value}</div>;
 
 export const Token = ({token}) => {
@@ -119,6 +136,8 @@ export const Token = ({token}) => {
         return <AcronymToken tokenCls={tokenCls} value={value}/>;
     } else if (types.includes("tk-tb")) {
         return <TextBlockToken tokenCls={tokenCls} value={value}/>;
+    } else if (types.includes("tk-co")) {
+        return <NoteToken tokenCls={tokenCls} value={value}/>;
     } else {
         return <SimpleToken tokenCls={tokenCls} value={value}/>;
     }

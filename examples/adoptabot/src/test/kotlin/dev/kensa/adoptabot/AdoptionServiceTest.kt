@@ -23,6 +23,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.OK
 import org.http4k.kotest.haveStatus
 import org.junit.jupiter.api.BeforeEach
@@ -64,8 +65,11 @@ class AdoptionServiceTest : KensaTest, WithKotest {
      */
     @Test
     fun canCheckAvailabilityOfRobots() {
-        given(someAvailableRobotsExist())
+        /// You can add notes to your BDD statements like this...
+        /// multiline comments will be shown as a single note in the test output
+        given(someAvailableRobotsExist()) /// You can put notes here too! 😻
 
+        /// Here is another note...
         whenever(aClientRequestsAvailability())
 
         then(

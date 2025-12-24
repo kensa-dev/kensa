@@ -3,10 +3,7 @@ package dev.kensa.parse
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.Literal.*
-import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByKeyExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByNameExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.*
 import dev.kensa.parse.State.*
 import dev.kensa.parse.State.WithAppendable.InNestedWithArguments
 import dev.kensa.parse.State.WithAppendable.InNestedWithArgumentsParameter
@@ -17,35 +14,33 @@ import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
 import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateSentence
 
-class ParserStateMachine(private val createSentenceBuilder: (Location, Location) -> SentenceBuilder) {
+class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, Location) -> SentenceBuilder) {
 
     private val _sentences: MutableList<TemplateSentence> = ArrayList()
     val sentences: List<TemplateSentence>
         get() = _sentences
 
-    private var _sentenceBuilder: SentenceBuilder? = null
+    private lateinit var sentenceBuilder: SentenceBuilder
     private var lastSentenceEndLocation: Location? = null
 
-    private val sentenceBuilder
-        get() = _sentenceBuilder!!
-
-    private fun beginSentence(location: Location) {
-        _sentenceBuilder = createSentenceBuilder(location, lastSentenceEndLocation ?: location)
+    private fun beginSentence(isNoteSentence : Boolean, location: Location) {
+        sentenceBuilder = createSentenceBuilder(isNoteSentence, location, lastSentenceEndLocation ?: location)
     }
 
     private fun finishSentence() {
-        _sentences += _sentenceBuilder!!.build()
-        lastSentenceEndLocation = _sentenceBuilder!!.lastLocation
-        _sentenceBuilder = null
+        _sentences += sentenceBuilder.build()
+        lastSentenceEndLocation = sentenceBuilder.lastLocation
     }
 
-    private fun withNewSentenceIfNecessary(location: Location, block: () -> Unit) {
-        if (_sentenceBuilder == null) {
-            beginSentence(location)
-            block.invoke()
+    private fun beginOrContinueNoteSentence(location: Location) {
+        if (!this::sentenceBuilder.isInitialized || !sentenceBuilder.isNoteBlock) {
+            beginSentence(true, location)
+        }
+    }
+
+    private fun finishNoteSentence() {
+        if (this::sentenceBuilder.isInitialized && sentenceBuilder.isNoteBlock) {
             finishSentence()
-        } else {
-            block.invoke()
         }
     }
 
@@ -79,7 +74,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 currentState.parentState
             }
             on<EnterStatement> { currentState, event ->
-                beginSentence(event.location)
+                beginSentence(false, event.location)
                 InStatement(currentState)
             }
             ignoreAll(
@@ -96,9 +91,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
         }
         state<TestBlock> {
             on<ExitBlock> { currentState, _ -> currentState.parentState }
-
+            on<Note> { currentState, event ->
+                beginOrContinueNoteSentence(event.location)
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<EnterStatement> { currentState, event ->
-                beginSentence(event.location)
+                finishNoteSentence()
+                beginSentence(false, event.location)
                 InStatement(currentState)
             }
 
@@ -108,6 +108,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             on<ExitStatement> { currentState, _ ->
                 if (currentState.didBegin) finishSentence()
                 currentState.parentState
+            }
+            on<Note> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
             }
             on<RenderedValue> { currentState, event ->
                 sentenceBuilder.append(event.location, event)
@@ -205,6 +209,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             )
         }
         state<InLambda> {
+            on<Note> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<ExitLambda> { currentState, _ ->
                 currentState.parentState
             }
@@ -240,6 +248,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             )
         }
         state<InExpression> {
+            on<Note> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<EnterLambda> { currentState, _ ->
                 InLambda(currentState)
             }
@@ -468,11 +480,5 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
 
     fun apply(event: Event) {
         stateMachine.apply(event)
-    }
-
-    fun addComment(event: Comment) {
-        withNewSentenceIfNecessary(event.location) {
-            sentenceBuilder.append(event)
-        }
     }
 }
