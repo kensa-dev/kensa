@@ -1,5 +1,8 @@
 package dev.kensa.util
 
+import dev.kensa.RenderedValueWithHint
+import dev.kensa.RenderingDirective
+import dev.kensa.RenderingDirectives
 import dev.kensa.Sources
 import java.lang.System.err
 import java.lang.reflect.AnnotatedElement
@@ -51,6 +54,27 @@ private fun noParameters(): ReflectPredicate<Method> = { it.parameters.isEmpty()
 private val allTheFields: ReflectPredicate<Field> = { true }
 private fun withFieldName(name: String): ReflectPredicate<Field> = { it.name == name }
 private fun withName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
+
+internal fun Class<*>.findAllRelatedClasses(): Set<Class<*>> =
+    mutableSetOf<Class<*>>().also { classes ->
+
+        fun collect(clazz: Class<*>) {
+            if (clazz in classes) return
+            if (!SourceCode.existsFor(clazz)) return
+
+            classes += clazz
+            clazz.findAnnotation<Sources>()?.value?.forEach { collect(it.java) }
+            clazz.interfaces.forEach { collect(it) }
+            clazz.superclass?.also { collect(it) }
+        }
+
+        collect(this)
+    }
+
+fun Class<*>.findAllRenderingDirectives(): RenderingDirectives =
+    findAllAnnotations<RenderedValueWithHint>().associate {
+        it.type to RenderingDirective(it.valueStrategy, it.valueParam, it.hintStrategy, it.hintParam)
+    }
 
 internal fun Method.actualDeclaringClass(): Class<*> {
 

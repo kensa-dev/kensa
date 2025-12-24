@@ -1,0 +1,58 @@
+{
+  "testClass": "dev.kensa.hints.JavaWithPropertyStrategyTest",
+  "displayName": "Java With Property Strategy Test",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "hints",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-fv",
+                  "tk-hi"
+                ],
+                "value": "Account Balance",
+                "hint": "//div[@id='balance']"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "of"
+              },
+              {
+                "types": [
+                  "tk-sl"
+                ],
+                "value": "£100.00"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}

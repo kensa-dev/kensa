@@ -104,12 +104,16 @@ const AcronymToken = ({tokenCls, value}) => {
     return <span className={"tooltip " + tokenCls} data-tooltip={acronyms[value]}>{value}</span>;
 };
 
+const HintedToken = ({tokenCls, value, hint}) => {
+    return <span className={"tooltip " + tokenCls} data-tooltip={hint}>{value}</span>;
+};
+
 const SimpleToken = ({tokenCls, value}) => <span className={tokenCls}>{value}</span>;
 
 const TextBlockToken = ({tokenCls, value}) => <div className={tokenCls}>{value}</div>;
 
 export const Token = ({token}) => {
-    const {types, value, parameterTokens, tokens} = token;
+    const {types, value, hint, parameterTokens, tokens} = token;
     const tokenCls = types ? types.join(" ") : '';
     const tokenId = token.id || value; // Use token.id if available, else value
 
@@ -119,6 +123,8 @@ export const Token = ({token}) => {
         return <AcronymToken tokenCls={tokenCls} value={value}/>;
     } else if (types.includes("tk-tb")) {
         return <TextBlockToken tokenCls={tokenCls} value={value}/>;
+    } else if (types.includes("tk-hi")) {
+        return <HintedToken tokenCls={tokenCls} value={value} hint={hint}/>;
     } else {
         return <SimpleToken tokenCls={tokenCls} value={value}/>;
     }

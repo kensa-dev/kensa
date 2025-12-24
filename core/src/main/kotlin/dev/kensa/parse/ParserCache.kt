@@ -1,7 +1,7 @@
 package dev.kensa.parse
 
+import dev.kensa.RenderingDirectives
 import dev.kensa.parse.ElementDescriptor.MethodElementDescriptor
-import dev.kensa.sentence.TemplateSentence
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
@@ -13,6 +13,7 @@ class ParserCache {
     private val nestedMethods = ConcurrentHashMap<Class<*>, Map<String, ParsedNestedMethod>>()
     private val emphasisedMethods = ConcurrentHashMap<Class<*>, Map<String, EmphasisDescriptor>>()
     private val methods = ConcurrentHashMap<Class<*>, Map<String, MethodElementDescriptor>>()
+    private val renderingDirectives = ConcurrentHashMap<Class<*>, RenderingDirectives>()
 
     fun getOrPutParsedMethod(method: Method, provider: () -> ParsedMethod): ParsedMethod =
         parsedMethods.computeIfAbsent(method) { provider() }
@@ -34,4 +35,7 @@ class ParserCache {
 
     fun getOrPutMethods(clazz: Class<*>, provider: () -> Map<String, MethodElementDescriptor>): Map<String, MethodElementDescriptor> =
         methods.computeIfAbsent(clazz) { provider() }
+
+    fun getOrPutRenderingDirectives(clazz: Class<*>, provider: () -> RenderingDirectives): RenderingDirectives =
+        renderingDirectives.computeIfAbsent(clazz) { provider() }
 }

@@ -40,7 +40,7 @@ object SourceCode {
             result
         }
 
-        (path?.let { CharStreams.fromPath(it) } ?: NullCharStream).also { println("${clazz.simpleName} - ${it.sourceName}") }
+        (path?.let { CharStreams.fromPath(it) } ?: NullCharStream)
     }
 }
 
@@ -52,7 +52,7 @@ private class Walker(name: String, sourceExtension: String) : FileVisitor<Path?>
 
     override fun visitFile(file: Path?, attrs: BasicFileAttributes) = CONTINUE.apply { if (pathMatcher.matches(file)) result = file }
 
-    override fun visitFileFailed(file: Path?, exc: IOException?) = CONTINUE
+    override fun visitFileFailed(file: Path?, exc: IOException) = CONTINUE
 
     override fun postVisitDirectory(dir: Path?, exc: IOException?) = CONTINUE
 }

@@ -3,10 +3,7 @@ package dev.kensa.parse
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.Literal.*
-import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByKeyExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByNameExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.*
 import dev.kensa.parse.State.*
 import dev.kensa.parse.State.WithAppendable.InNestedWithArguments
 import dev.kensa.parse.State.WithAppendable.InNestedWithArgumentsParameter
@@ -110,6 +107,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 currentState
             }
             on<Identifier> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
+            on<Field> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
+            on<Parameter> { currentState, event ->
                 sentenceBuilder.append(event)
                 currentState
             }
@@ -395,6 +400,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
                 sentenceBuilder.append(event)
                 currentState
             }
+            on<Field> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
+            on<Parameter> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<Method> { currentState, event ->
                 sentenceBuilder.append(event)
                 currentState
@@ -441,6 +454,15 @@ class ParserStateMachine(private val createSentenceBuilder: (Location, Location)
             currentState.apply { append(event) }
         }
         on<Identifier> { currentState, event ->
+            currentState.apply { append(event) }
+        }
+        on<Method> { currentState, event ->
+            currentState.apply { append(event) }
+        }
+        on<Field> { currentState, event ->
+            currentState.apply { append(event) }
+        }
+        on<Parameter> { currentState, event ->
             currentState.apply { append(event) }
         }
         on<Operator> { currentState, event ->

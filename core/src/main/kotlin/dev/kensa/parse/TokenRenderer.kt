@@ -5,6 +5,7 @@ import dev.kensa.context.NestedInvocationContextHolder.nestedSentenceInvocationC
 import dev.kensa.context.RealNestedInvocation
 import dev.kensa.context.RealRenderedValueInvocation
 import dev.kensa.context.RenderedValueInvocationContextHolder.renderedValueInvocationContext
+import dev.kensa.parse.ElementDescriptor.HintedPropertyElementDescriptor
 import dev.kensa.parse.ElementDescriptor.ResolveHolderElementDescriptor
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedToken
@@ -30,7 +31,7 @@ class TokenRenderer(
     fun render(tokens: List<TemplateToken>): List<RenderedToken> =
         tokens.squash().map { token ->
             when {
-                token is TemplateToken.RenderedValueToken1 -> token.asSpecialRenderedValueToken()
+                token is TemplateToken.RenderedValueToken -> token.asSpecialRenderedValueToken()
                 token.hasType(FieldValue) -> token.asFieldValue()
                 token.hasType(MethodValue) -> token.asMethodValue()
                 token.hasType(ParameterValue) -> token.asParameterValue()
@@ -124,37 +125,43 @@ class TokenRenderer(
     private fun TemplateToken.asFieldValue(): RenderedToken =
         template.split(":").let { (name, path) ->
             properties[name]?.let { pd ->
-                if (pd is ResolveHolderElementDescriptor) {
-                    renderers.renderValue(pd.resolveValue(testInstance, "$name.$path"))
-                } else {
-                    renderers.renderValue(pd.resolveValue(testInstance, path))
-                }.asToken(FieldValue, pd.isHighlight)
+                if (pd is HintedPropertyElementDescriptor) {
+                    pd.resolveValue(testInstance, path)?.let { v ->
+                        asToken(renderers.renderValue(v.value), FieldValue, pd.isHighlight, v.hint)
+                    }
+                } else asToken(
+                    if (pd is ResolveHolderElementDescriptor) {
+                        renderers.renderValue(pd.resolveValue(testInstance, "$name.$path"))
+                    } else {
+                        renderers.renderValue(pd.resolveValue(testInstance, path))
+                    }, FieldValue, pd.isHighlight
+                )
             }
         } ?: throw KensaException("Token [${template}] with type FieldValue did not refer to an actual field")
 
     private fun TemplateToken.asMethodValue(): RenderedToken =
         template.split(":").let { (name, path) ->
             methods[name]?.let { md ->
-                renderers.renderValue(md.resolveValue(testInstance, path))
-                    .asToken(MethodValue, md.isHighlight)
+                asToken(renderers.renderValue(md.resolveValue(testInstance, path)), MethodValue, md.isHighlight)
             }
         } ?: throw KensaException("Token [${template}] with type MethodValue did not refer to an actual method")
 
     private fun TemplateToken.asParameterValue(): RenderedToken =
         template.split(":").let { (name, path) ->
             parameters[name]?.let { pd ->
-                renderers.renderValue(pd.resolveValue(arguments, path))
-                    .asToken(ParameterValue, pd.isHighlight)
+                asToken(renderers.renderValue(pd.resolveValue(arguments, path)), ParameterValue, pd.isHighlight)
             }
-        } ?: template.asToken(ParameterValue, false) // Test suite has not been executed with the kensa-agent
+        } ?: asToken(template, ParameterValue, false) // Test suite has not been executed with the kensa-agent
 
-    private fun String.asToken(type: Type, shouldHighlight: Boolean) =
+    private fun asToken(value: String, type: Type, shouldHighlight: Boolean, hint: String? = null) =
         RenderedValueToken(
-            this,
+            value,
             buildSet {
                 add(type.asCss())
-                if (shouldHighlight || isHighlighted()) add(Highlighted.asCss())
-            }
+                if (shouldHighlight || value.isHighlighted()) add(Highlighted.asCss())
+                if (hint != null) add(Hinted.asCss())
+            },
+            hint
         )
 
     private fun RealNestedInvocation.rebuildRenderer() =

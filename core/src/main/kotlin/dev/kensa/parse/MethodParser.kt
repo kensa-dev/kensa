@@ -7,6 +7,7 @@ import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.util.*
 import java.lang.reflect.Method
+import kotlin.collections.buildList
 import kotlin.reflect.KClass
 
 
@@ -44,11 +45,21 @@ class MethodParser(
         cache.getOrPutParsedMethod(method) {
             with(parserDelegate) {
                 val testClass = method.declaringClass
+                val relatedClasses = testClass.findAllRelatedClasses()
 
-                val methodDeclarations = testClass.findAllMethodDeclarations()
+                val methodDeclarations = relatedClasses.fold(MethodDeclarations()) { acc, clazz ->
+                    acc + cache.getOrPutMethodDeclarations(clazz) {
+                        with(parserDelegate) { clazz.findMethodDeclarations() }
+                    }
+                }
                 val (indexInSource, testMethodDeclaration) = methodDeclarations.findTestMethodDeclaration(method, testClass.toSimpleName())
 
-                val properties = cache.getOrPutProperties(testClass) { testClass.prepareProperties() }
+                val directives = cache.getOrPutRenderingDirectives(testClass) { testClass.findAllRenderingDirectives() }
+                val properties = cache.getOrPutProperties(testClass) {
+                    relatedClasses.fold(mutableMapOf()) { acc, clazz ->
+                        acc.apply { putAll(clazz.prepareProperties(directives)) }
+                    }
+                }
                 val testMethodParameters = cache.getOrPutParameters(method) {
                     method.prepareParameters(testMethodDeclaration.parameterNamesAndTypes)
                 }
@@ -72,29 +83,6 @@ class MethodParser(
             }
         }.also {
             NestedInvocationContextHolder.nestedSentenceInvocationContext().update(it.nestedMethods)
-        }
-
-    private fun Class<*>.findAllMethodDeclarations(): MethodDeclarations =
-        findAllRelatedClasses().fold(MethodDeclarations()) { acc, clazz ->
-            acc + cache.getOrPutMethodDeclarations(clazz) {
-                with(parserDelegate) { findMethodDeclarations() }
-            }
-        }
-
-    private fun Class<*>.findAllRelatedClasses(): Set<Class<*>> =
-        mutableSetOf<Class<*>>().also { classes ->
-
-            fun collect(clazz: Class<*>) {
-                if (clazz in classes) return
-                if (!SourceCode.existsFor(clazz)) return
-
-                classes += clazz
-                clazz.findAnnotation<Sources>()?.value?.forEach { collect(it.java) }
-                clazz.interfaces.forEach { collect(it) }
-                clazz.superclass?.also { collect(it) }
-            }
-
-            collect(this)
         }
 
     private fun sentenceBuilder(): (Location, Location) -> SentenceBuilder = { location, previousLocation -> SentenceBuilder(location, previousLocation, configuration.dictionary, configuration.tabSize) }
@@ -142,21 +130,25 @@ class MethodParser(
             .map { ElementDescriptor.forMethod(it) }
             .associateBy(ElementDescriptor::name)
 
-    private fun Class<*>.prepareProperties() =
+    private fun Class<*>.prepareProperties(directives: RenderingDirectives) =
         allProperties
             .flatMap { property ->
                 buildList {
-                    val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
+                    val propertyClass = property.returnType.classifier as? KClass<*>
 
-                    // Lift the properties of any ResolverHolders
-                    if (descriptor.isRenderedValueContainer) {
-                        val classifier = property.returnType.classifier
-                        if (classifier is KClass<*>) {
-                            addAll(
-                                classifier.allProperties
-                                    .filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }
-                                    .map { ElementDescriptor.forResolveHolder(descriptor, it) }
-                            )
+                    directives[propertyClass]?.let { directive ->
+                        add(ElementDescriptor.forHintedProperty(property, directive))
+                    } ?: run {
+                        val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
+
+                        if (descriptor.isRenderedValueContainer) {
+                            (property.returnType.classifier as? KClass<*>)?.let { classifier ->
+                                addAll(
+                                    classifier.allProperties
+                                        .filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }
+                                        .map { ElementDescriptor.forResolveHolder(descriptor, it) }
+                                )
+                            }
                         }
                     }
                 }

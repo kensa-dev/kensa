@@ -376,6 +376,62 @@ internal class KotlinFunctionParserTest {
     inner class Annotations {
 
         @Test
+        fun `recognises RenderedValueWithHint for fields on test class`() {
+            val functionName = "simpleTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val javaClass = KotlinWithHintedFields::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            with(parsedMethod) {
+                with(properties) {
+                    size shouldBe 2
+
+                    assertSoftly(get("aStringField")) {
+                        shouldBeInstanceOf<HintedPropertyElementDescriptor>()
+                        asClue {
+                            it.name shouldBe "aStringField"
+                            it.isHighlight.shouldBeFalse()
+                            it.isRenderedValue.shouldBeTrue()
+                            it.isParameterizedTestDescription.shouldBeFalse()
+                        }
+                    }
+                    assertSoftly(get("anIntegerField")) {
+                        shouldBeInstanceOf<HintedPropertyElementDescriptor>()
+                        asClue {
+                            it.name shouldBe "anIntegerField"
+                            it.isHighlight.shouldBeFalse()
+                            it.isRenderedValue.shouldBeTrue()
+                            it.isParameterizedTestDescription.shouldBeFalse()
+                        }
+                    }
+                }
+            }
+
+            val expectedSentences = listOf(
+                TemplateSentence(
+                    listOf(
+                        FieldValue.asTemplateToken("aStringField:"),
+                        Word.asTemplateToken("of"),
+                        StringLiteral.asTemplateToken("expected"),
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        FieldValue.asTemplateToken("anIntegerField:"),
+                        Word.asTemplateToken("of"),
+                        NumberLiteral.asTemplateToken("10"),
+                    )
+                )
+            )
+
+            parsedMethod.sentences.forEachIndexed { index, sentence ->
+                sentence.tokens shouldBe expectedSentences[index].tokens
+            }
+        }
+
+        @Test
         internal fun `recognises SentenceValue and Highlight on various Kotlin properties and functions`() {
             val functionName = "simpleTest"
             val parser = createParserFor(aFunctionNamed(functionName))

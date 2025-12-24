@@ -1,0 +1,80 @@
+{
+  "testClass": "dev.kensa.hints.KotlinWithHintedFieldsInsideTest",
+  "displayName": "Kotlin With Hinted Fields Inside Test",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "hints",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "14 Ms",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "14 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-fv",
+                  "tk-hi"
+                ],
+                "value": "aString",
+                "hint": "/path/To/String/Field"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "of"
+              },
+              {
+                "types": [
+                  "tk-sl"
+                ],
+                "value": "expected"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-fv",
+                  "tk-hi"
+                ],
+                "value": "anInteger",
+                "hint": "/path/To/Integer/Field"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "of"
+              },
+              {
+                "types": [
+                  "tk-num"
+                ],
+                "value": "10"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}
