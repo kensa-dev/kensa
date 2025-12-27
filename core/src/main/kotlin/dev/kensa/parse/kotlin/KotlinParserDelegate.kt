@@ -2,7 +2,10 @@ package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.*
 import dev.kensa.util.SourceCode
-import org.antlr.v4.runtime.*
+import dev.kensa.util.isKotlinClass
+import org.antlr.v4.runtime.CharStream
+import org.antlr.v4.runtime.CommonTokenStream
+import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import java.lang.reflect.Method
@@ -11,16 +14,25 @@ import kotlin.reflect.full.contextParameters
 import kotlin.reflect.full.extensionReceiverParameter
 import kotlin.reflect.jvm.kotlinFunction
 
-class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean, private val antlrErrorListenerDisabled: Boolean, private val antlrPredicationMode: PredictionMode) : ParserDelegate {
+class KotlinParserDelegate(
+    private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean,
+    private val antlrErrorListenerDisabled: Boolean,
+    private val antlrPredicationMode: PredictionMode
+) : ParserDelegate {
 
-    override fun findMethodDeclarationsIn(target: Class<out Any>): MethodDeclarations {
+    fun Class<*>.isParsable(): Boolean = isKotlinClass
+
+    fun Class<*>.toSimpleName(): (Class<*>) -> String = { it.kotlin.simpleName ?: throw IllegalArgumentException("Types must have names") }
+
+    fun Class<out Any>.findMethodDeclarations(): MethodDeclarations {
         val testFunctions = mutableListOf<MethodDeclarationContext>()
         val nestedFunctions = mutableListOf<MethodDeclarationContext>()
         val emphasisedFunctions = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
+        val sourceStream = SourceCode.sourceStreamFor(this)
         ArrayList<KotlinParser.FunctionDeclarationContext>().apply {
-            compilationUnitFor(target).topLevelObject().forEach {
+            sourceStream.compilationUnit().topLevelObject().forEach {
                 findFunctionDeclarations(it, this)
             }
 
@@ -32,11 +44,11 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
         return MethodDeclarations(testFunctions, nestedFunctions, emphasisedFunctions)
     }
 
-    override fun prepareParametersFor(method: Method, parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
-        val combined = method.syntheticKotlinReceivers() + parameterNamesAndTypes
+    fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
+        val combined = syntheticKotlinReceivers() + parameterNamesAndTypes
 
         return MethodParameters(
-            method.parameters.mapIndexed { index, parameter ->
+            parameters.mapIndexed { index, parameter ->
                 ElementDescriptor.forParameter(parameter, combined[index].first, index)
             }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
         )
@@ -44,13 +56,13 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
 
     @OptIn(ExperimentalContextParameters::class)
     fun Method.syntheticKotlinReceivers(): List<Pair<String, String>> =
-        kotlinFunction?.let { kfun ->
+        kotlinFunction?.let { fn ->
             buildList {
-                kfun.contextParameters.forEachIndexed { idx, p ->
+                fn.contextParameters.forEachIndexed { idx, p ->
                     val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
                     add("context$${idx + 1}" to t)
                 }
-                kfun.extensionReceiverParameter?.let { p ->
+                fn.extensionReceiverParameter?.let { p ->
                     val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
                     add("receiver" to t)
                 }
@@ -76,12 +88,9 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
         emphasisedFunctions.takeIf { fd.isAnnotatedAsEmphasised() }?.add(KotlinMethodDeclarationContext(fd))
     }
 
-    private fun compilationUnitFor(testClass: Class<out Any>): KotlinParser.KotlinFileContext =
-        KotlinParser(
-            CommonTokenStream(
-                KensaKotlinLexer(SourceCode.sourceStreamFor(testClass))
-            )
-        ).apply {
+    private fun CharStream.compilationUnit(): KotlinParser.KotlinFileContext =
+        // Reset the CharStream to the beginning
+        KotlinParser(CommonTokenStream(KensaKotlinLexer(apply { seek(0) }))).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.kotlinFile()
@@ -90,7 +99,7 @@ class KotlinParserDelegate(private val isTest: (KotlinParser.FunctionDeclaration
 
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean = findAnnotationNames().any { name -> ParserDelegate.emphasisedMethodAnnotationNames.contains(name) }
 
-    override fun parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
+    fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
         ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext), dc.body)
     }
 

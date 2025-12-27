@@ -2,6 +2,9 @@ package dev.kensa.parse
 
 import dev.kensa.FixturesAndOutputs
 import dev.kensa.Highlight
+import dev.kensa.RenderedHintStrategy.HintFromProperty
+import dev.kensa.RenderedValueStrategy.UseIdentifierName
+import dev.kensa.RenderingDirective
 import dev.kensa.TextStyle.Italic
 import dev.kensa.fixture.FixtureContainer
 import dev.kensa.fixture.FixtureRegistry
@@ -23,6 +26,13 @@ import org.mockito.kotlin.mock
 import java.lang.reflect.Parameter
 
 class TokenRendererTest {
+
+    class Field(val path: String)
+
+    @Suppress("unused")
+    object HintedFields {
+        val aStringField = Field("path/to/string")
+    }
 
     @Suppress("unused")
     class Wrapper(val value: String) {
@@ -47,12 +57,8 @@ class TokenRendererTest {
     }
 
     private val renderers = Renderers().apply {
-        addValueRenderer(String::class, object : ValueRenderer<String> {
-            override fun render(value: String): String = "***$value***"
-        })
-        addValueRenderer(Number::class, object : ValueRenderer<Number> {
-            override fun render(value: Number): String = "***$value***"
-        })
+        addValueRenderer(String::class, ValueRenderer { value -> "***$value***" })
+        addValueRenderer(Number::class, ValueRenderer { value -> "***$value***" })
     }
     private val arguments = arrayOf("arg1", null, 20, true, Wrapper("MyString"))
     private val parameters = mapOf(
@@ -74,7 +80,8 @@ class TokenRendererTest {
         "prop2" to ElementDescriptor.forProperty(TheTestClass::prop2),
         "prop3" to ElementDescriptor.forProperty(TheTestClass::prop3),
         "prop4" to ElementDescriptor.forProperty(TheTestClass::prop4),
-        "prop5" to ElementDescriptor.forProperty(TheTestClass::prop5)
+        "prop5" to ElementDescriptor.forProperty(TheTestClass::prop5),
+        "aStringField" to ElementDescriptor.forHintedProperty(HintedFields::aStringField, RenderingDirective(UseIdentifierName, "", HintFromProperty, "path"))
     )
 
     object TestFixtures : FixtureContainer {
@@ -263,6 +270,25 @@ class TokenRendererTest {
             )
 
             val renderedTokens = renderer.render(templates)
+
+            renderedTokens shouldContainExactly expected
+        }
+    }
+
+    @Nested
+    inner class Hinted {
+
+        @Test
+        fun `renders hinted properties and honours renderers`() {
+            val templates = listOf(
+                FieldValue.asTemplateToken("aStringField:")
+            )
+
+            val renderedTokens = renderer.render(templates)
+
+            val expected = listOf(
+                aRenderedValueOf("***aStringField***", setOf("tk-fv", "tk-hi"), "path/to/string")
+            )
 
             renderedTokens shouldContainExactly expected
         }

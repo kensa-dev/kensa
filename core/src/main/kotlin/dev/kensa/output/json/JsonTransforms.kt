@@ -99,18 +99,23 @@ object JsonTransforms {
             jsonObject().apply {
                 add("types", asJsonArray(token.cssClasses))
                 add("value", token.value)
+                token.hint?.let { add("hint", it) }
 
                 if (token is RenderedToken.RenderedNestedToken) {
                     add("parameterTokens", asJsonArray(token.parameterTokens) { token ->
-                        jsonObject()
-                            .add("types", asJsonArray(token.cssClasses))
-                            .add("value", token.value)
+                        jsonObject().apply {
+                            add("types", asJsonArray(token.cssClasses))
+                            add("value", token.value)
+                            token.hint?.let { add("hint", it) }
+                        }
                     })
                     add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<RenderedToken> ->
                         asJsonArray(sentenceTokens) { sentenceToken ->
-                            jsonObject()
-                                .add("types", asJsonArray(sentenceToken.cssClasses))
-                                .add("value", sentenceToken.value)
+                            jsonObject().apply {
+                                add("types", asJsonArray(sentenceToken.cssClasses))
+                                add("value", sentenceToken.value)
+                                sentenceToken.hint?.let { add("hint", it) }
+                            }
                         }
                     })
                 }

@@ -1,19 +1,13 @@
 package dev.kensa.parse
 
-import dev.kensa.Highlight
-import dev.kensa.ParameterizedTestDescription
-import dev.kensa.RenderedValue
-import dev.kensa.RenderedValueContainer
-import dev.kensa.util.findAnnotation
-import dev.kensa.util.findKotlinOrJavaAnnotation
-import dev.kensa.util.hasAnnotation
-import dev.kensa.util.hasKotlinOrJavaAnnotation
-import dev.kensa.util.invokeMethodOrNull
-import dev.kensa.util.resolvePath
-import dev.kensa.util.valueOfKotlinPropertyIn
+import dev.kensa.*
+import dev.kensa.RenderedHintStrategy.*
+import dev.kensa.RenderedValueStrategy.*
+import dev.kensa.util.*
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.javaField
 
 sealed interface ElementDescriptor {
     val name: String
@@ -28,12 +22,31 @@ sealed interface ElementDescriptor {
     companion object {
         fun forProperty(property: KProperty<*>): PropertyElementDescriptor = PropertyElementDescriptor(property)
 
+        fun forHintedProperty(property: KProperty<*>, directive: RenderingDirective): HintedPropertyElementDescriptor = HintedPropertyElementDescriptor(property, directive)
+
         fun forResolveHolder(parentDescriptor: PropertyElementDescriptor, property: KProperty<*>): ResolveHolderElementDescriptor = ResolveHolderElementDescriptor(parentDescriptor, property)
 
         fun forMethod(method: Method): MethodElementDescriptor = MethodElementDescriptor(method)
 
         fun forParameter(parameter: Parameter, name: String, index: Int): ParameterElementDescriptor = ParameterElementDescriptor(name, parameter, index)
 
+        private fun KProperty<*>.resolveFrom(target: Any): Any? {
+            val actualTarget = javaField?.declaringClass?.kotlin?.objectInstance ?: target
+            return try {
+                valueOfKotlinPropertyIn(actualTarget)
+            } catch (e: Exception) {
+                System.err.println("Accessor threw an exception: "); e.printStackTrace(System.err); null
+            }
+        }
+
+        private fun Method.resolveFrom(target: Any): Any? {
+            val actualTarget = declaringClass.kotlin.objectInstance ?: target
+            return try {
+                actualTarget.invokeMethodOrNull(this)
+            } catch (e: Exception) {
+                System.err.println("Method accessor threw an exception: "); e.printStackTrace(System.err); null
+            }
+        }
     }
 
     class ParameterElementDescriptor(override val name: String, private val parameter: Parameter, private val index: Int) : ElementDescriptor {
@@ -57,15 +70,8 @@ sealed interface ElementDescriptor {
 
         val hasParameters: Boolean = method.parameters.isNotEmpty()
 
-        override fun resolveValue(target: Any, path: String?): Any? {
-            val initialValue: Any = try {
-                target.invokeMethodOrNull(method)
-            } catch (e: Exception) {
-                System.err.println("Accessor threw an exception: "); e.printStackTrace(System.err); null
-            } ?: return null
-
-            return resolvePath(initialValue, path)
-        }
+        override fun resolveValue(target: Any, path: String?): Any? =
+            method.resolveFrom(target)?.let { resolvePath(it, path) }
     }
 
     class PropertyElementDescriptor(private val property: KProperty<*>) : ElementDescriptor {
@@ -75,16 +81,42 @@ sealed interface ElementDescriptor {
         override val isHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
 
-        override fun resolveValue(target: Any, path: String?): Any? {
-            val initialValue = try {
-                property.valueOfKotlinPropertyIn(target)
-            } catch (e: Exception) {
-                System.err.println("Accessor threw an exception: "); e.printStackTrace(System.err); null
-            } ?: return null
+        override fun resolveValue(target: Any, path: String?): Any? =
+            property.resolveFrom(target)?.let { resolvePath(it, path) }
+    }
 
-            return resolvePath(initialValue, path)
+    class HintedPropertyElementDescriptor(
+        private val property: KProperty<*>,
+        private val directive: RenderingDirective
+    ) : ElementDescriptor {
+        override val name: String = property.name
+        override val isRenderedValue: Boolean = true
+        override val isHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
+        override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
+
+        override fun resolveValue(target: Any, path: String?): HintedValue? =
+            property.resolveFrom(target)?.let { instance ->
+                HintedValue(
+                    value = computeValue(instance),
+                    hint = computeHint(instance)
+                )
+            }
+
+        private fun computeValue(instance: Any): Any? = when (directive.valueStrategy) {
+            UseIdentifierName -> name
+            UseToString -> instance.toString()
+            UseMethod -> resolvePath(instance, "${directive.valueParam}()")
+            UseProperty -> resolvePath(instance, directive.valueParam)
+        }
+
+        private fun computeHint(instance: Any): String? = when (directive.hintStrategy) {
+            HintFromProperty -> resolvePath(instance, directive.hintParam)?.toString()
+            HintFromMethod -> resolvePath(instance, "${directive.hintParam}()")?.toString()
+            NoHint -> null
         }
     }
+
+    class HintedValue(val value: Any?, val hint: String?)
 
     class ResolveHolderElementDescriptor(private val parentDescriptor: PropertyElementDescriptor, property: KProperty<*>) : ElementDescriptor {
         override val name: String = property.name

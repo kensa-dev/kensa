@@ -6,6 +6,7 @@ import com.eclipsesource.json.JsonValue
 import dev.kensa.KensaTestExecutor.executeAllTestsIn
 import dev.kensa.KensaTestExecutor.executeTests
 import dev.kensa.extension.TestParameterResolver.MyArgument
+import dev.kensa.hints.*
 import dev.kensa.junit.KensaTest
 import dev.kensa.sentence.Acronym
 import io.kotest.assertions.json.shouldEqualJson
@@ -112,6 +113,11 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 KotlinWithSetupStepsTest::class,
                 KotlinWithVariousNamingTest::class,
                 KotlinWithJavaRecordTest::class,
+                KotlinWithHintedFieldsInsideTest::class,
+                KotlinWithHintedFieldsInsideObjectTest::class,
+                KotlinWithMethodHintStrategyTest::class,
+                KotlinWithMixedStrategyTest::class,
+                KotlinWithPropertyStrategyTest::class
             ]
         )
         fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {
@@ -152,7 +158,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
 
             val expectedConfigJson = testClass.json("config")
             val expectedResultJson = testClass.json("result").cleanseForComparison("elapsedTime")
-            val path = kensaOutputDir.resolve(Path("dev/kensa/" + testClass.simpleName + ".html"))
+            val path = kensaOutputDir.resolve("${testClass.name.replace('.', '/')}.html")
             val configJson = path.extractJsonFromHtml("config")
             val resultJson = path.extractJsonFromHtml("test-result-1").cleanseForComparison("elapsedTime")
 

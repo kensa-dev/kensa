@@ -2,10 +2,6 @@ package dev.kensa.sentence
 
 import dev.kensa.parse.EmphasisDescriptor
 
-sealed interface Token {
-
-}
-
 sealed interface TemplateToken {
 
     enum class Type(val code: String, val isWhitespace: Boolean = false) {
@@ -17,6 +13,7 @@ sealed interface TemplateToken {
         Expandable("ex", true),
         FieldValue("fv"),
         Highlighted("hl"),
+        Hinted("hi"),
         ProtectedPhrase("pph"),
         Identifier("id"),
         Indent("in", true),
@@ -47,7 +44,7 @@ sealed interface TemplateToken {
         override val types: Set<Type>,
     ) : TemplateToken
 
-    data class RenderedValueToken1(
+    data class RenderedValueToken(
         override val template: String,
         override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
     ) : TemplateToken {
@@ -69,15 +66,18 @@ sealed interface RenderedToken {
 
     val value: String
     val cssClasses: Set<String>
+    val hint: String?
 
     data class RenderedValueToken(
         override val value: String,
-        override val cssClasses: Set<String>
+        override val cssClasses: Set<String>,
+        override val hint: String? = null
     ) : RenderedToken
 
     data class RenderedNestedToken(
         override val value: String,
         override val cssClasses: Set<String>,
+        override val hint: String? = null,
         val name: String,
         val parameterTokens: List<RenderedToken>,
         val nestedTokens: List<List<RenderedToken>>

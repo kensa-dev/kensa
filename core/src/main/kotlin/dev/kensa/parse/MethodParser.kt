@@ -7,11 +7,12 @@ import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.util.*
 import java.lang.reflect.Method
+import kotlin.collections.buildList
 import kotlin.reflect.KClass
 
-val greedyGenericPattern = "<.*>".toRegex()
 
 class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = emptyList(), val nestedMethods: List<MethodDeclarationContext> = emptyList(), val emphasisedMethods: List<MethodDeclarationContext> = emptyList()) {
+
     operator fun plus(other: MethodDeclarations) = MethodDeclarations(testMethods + other.testMethods, nestedMethods + other.nestedMethods, emphasisedMethods + other.emphasisedMethods)
 
     fun findTestMethodDeclaration(method: Method, toSimpleTypeName: (Class<*>) -> String): Pair<Int, MethodDeclarationContext> {
@@ -28,85 +29,90 @@ class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = empty
                     it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
                 } == method.parameterTypes.map(toSimpleTypeName)
     }
+
+    companion object {
+        private val greedyGenericPattern = "<.*>".toRegex()
+    }
 }
 
-interface MethodParser : ParserCache, ParserDelegate {
-
-    val configuration: Configuration
-    val toSimpleTypeName: (Class<*>) -> String
+class MethodParser(
+    private val cache: ParserCache,
+    private val configuration: Configuration,
+    private val parserDelegate: CompositeParserDelegate,
+) {
 
     fun parse(method: Method): ParsedMethod =
-        parsedMethodCache.computeIfAbsent(method) {
-            val testClass = method.declaringClass
-            val actualDeclaringClass = method.actualDeclaringClass()
-            val classToParse = testClass.takeIf { it == actualDeclaringClass } ?: actualDeclaringClass
+        cache.getOrPutParsedMethod(method) {
+            with(parserDelegate) {
+                val testClass = method.declaringClass
+                val relatedClasses = testClass.findAllRelatedClasses()
 
-            val methodDeclarations = testClass.findSourcesMethodDeclarations() + classToParse.findMethodDeclarations()
-            val (indexInSource, testMethodDeclaration) = methodDeclarations.findTestMethodDeclaration(method, toSimpleTypeName)
+                val methodDeclarations = relatedClasses.fold(MethodDeclarations()) { acc, clazz ->
+                    acc + cache.getOrPutMethodDeclarations(clazz) {
+                        with(parserDelegate) { clazz.findMethodDeclarations() }
+                    }
+                }
+                val (indexInSource, testMethodDeclaration) = methodDeclarations.findTestMethodDeclaration(method, testClass.toSimpleName())
 
-            val properties = propertyCache.getOrPut(testClass) { preparePropertiesFor(testClass) }
+                val directives = cache.getOrPutRenderingDirectives(testClass) { testClass.findAllRenderingDirectives() }
+                val properties = cache.getOrPutProperties(testClass) {
+                    relatedClasses.fold(mutableMapOf()) { acc, clazz ->
+                        acc.apply { putAll(clazz.prepareProperties(directives)) }
+                    }
+                }
+                val testMethodParameters = cache.getOrPutParameters(method) {
+                    method.prepareParameters(testMethodDeclaration.parameterNamesAndTypes)
+                }
 
-            val testMethodParameters = parameterCache.getOrPut(method) {
-                prepareParametersFor(method, testMethodDeclaration.parameterNamesAndTypes)
+                val emphasisedMethods = cache.getOrPutEmphasisedMethods(testClass) {
+                    prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
+                }
+                val methods = cache.getOrPutMethods(testClass) { testClass.prepareMethodsFor() }
+                val nestedMethods = testClass.prepareNestedMethods(methodDeclarations.nestedMethods, ParseContext(properties, methods))
+                val testMethodSentences = testClass.prepareTestMethods(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
+
+                ParsedMethod(
+                    indexInSource,
+                    method.normalisedPlatformName,
+                    testMethodParameters,
+                    testMethodSentences,
+                    nestedMethods,
+                    properties,
+                    methods
+                )
             }
-
-            val emphasisedMethods = emphasisedMethodCache.getOrPut(testClass) {
-                prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
-            }
-            val methods = methodCache.getOrPut(testClass) { prepareMethodsFor(testClass) }
-            val nestedMethods = prepareNestedMethods(testClass, methodDeclarations.nestedMethods, ParseContext(properties, methods))
-            val testMethodSentences = testMethodDeclaration.prepareTestMethodSentences(ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
-
-            ParsedMethod(
-                indexInSource,
-                method.normalisedPlatformName,
-                testMethodParameters,
-                testMethodSentences,
-                nestedMethods,
-                properties,
-                methods
-            )
         }.also {
             NestedInvocationContextHolder.nestedSentenceInvocationContext().update(it.nestedMethods)
         }
 
-    private fun Class<*>.findSourcesMethodDeclarations(): MethodDeclarations =
-        MethodDeclarations().let { declarations ->
-            findAnnotation<Sources>()?.value?.map { it.java }?.fold(declarations) { acc, sourceClass ->
-                acc + declarationCache.getOrPut(sourceClass) { findMethodDeclarationsIn(sourceClass) }
-            } ?: declarations
-        }
-
-    private fun Class<*>.findMethodDeclarations(): MethodDeclarations = declarationCache.getOrPut(this) { findMethodDeclarationsIn(this) }
-
     private fun sentenceBuilder(): (Boolean, Location, Location) -> SentenceBuilder = { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, previousLocation, configuration.dictionary, configuration.tabSize) }
 
-    private fun prepareNestedMethods(testClass: Class<*>, declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> {
-        val nestedMethods = declarations
-            .map {
-                val parameters = prepareParametersFor(
-                    testClass.findLocalOrSourcesMethod(it.name),
-                    it.parameterNamesAndTypes
-                )
-                ParsedNestedMethod(
-                    it.name,
-                    parameters,
-                    ParserStateMachine(sentenceBuilder()).run {
-                        parse(this, parseContext.copy(parameters.descriptors), it)
-                        sentences
+    private fun Class<*>.prepareNestedMethods(declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> =
+        cache.getOrPutNestedMethods(this) {
+            declarations
+                .map {
+                    val parameters = with(parserDelegate) {
+                        findLocalOrSourcesMethod(it.name).prepareParameters(it.parameterNamesAndTypes)
                     }
-                )
-            }
-            .associateBy({ it.name }, { it })
+                    ParsedNestedMethod(
+                        it.name,
+                        parameters,
+                        ParserStateMachine(sentenceBuilder()).run {
+                            with(parserDelegate) {
+                                parse(this@run, parseContext.copy(parameters.descriptors), it)
+                            }
+                            sentences
+                        }
+                    )
+                }
+                .associateBy({ it.name }, { it })
+        }
 
-        nestedMethodCache[testClass] = nestedMethods
-
-        return nestedMethods
-    }
-
-    private fun MethodDeclarationContext.prepareTestMethodSentences(parseContext: ParseContext): List<TemplateSentence> =
+    private fun Class<*>.prepareTestMethods(methodDeclarationContext: MethodDeclarationContext, parseContext: ParseContext): List<TemplateSentence> =
         ParserStateMachine(sentenceBuilder()).run {
-            parse(this, parseContext, this@prepareTestMethodSentences)
+            with(parserDelegate) {
+                parse(this@run, parseContext, methodDeclarationContext)
+            }
             sentences
         }
 
@@ -119,26 +125,30 @@ interface MethodParser : ParserCache, ParserDelegate {
             }
             .associateBy({ it.first }, { it.second })
 
-    private fun prepareMethodsFor(clazz: Class<*>): Map<String, MethodElementDescriptor> =
-        clazz.allMethods
+    private fun Class<*>.prepareMethodsFor(): Map<String, MethodElementDescriptor> =
+        allMethods
             .map { ElementDescriptor.forMethod(it) }
             .associateBy(ElementDescriptor::name)
 
-    private fun preparePropertiesFor(clazz: Class<*>) =
-        clazz.allProperties
+    private fun Class<*>.prepareProperties(directives: RenderingDirectives) =
+        allProperties
             .flatMap { property ->
                 buildList {
-                    val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
+                    val propertyClass = property.returnType.classifier as? KClass<*>
 
-                    // Lift the properties of any ResolverHolders
-                    if (descriptor.isRenderedValueContainer) {
-                        val classifier = property.returnType.classifier
-                        if (classifier is KClass<*>) {
-                            addAll(
-                                classifier.allProperties
-                                    .filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }
-                                    .map { ElementDescriptor.forResolveHolder(descriptor, it) }
-                            )
+                    directives[propertyClass]?.let { directive ->
+                        add(ElementDescriptor.forHintedProperty(property, directive))
+                    } ?: run {
+                        val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
+
+                        if (descriptor.isRenderedValueContainer) {
+                            (property.returnType.classifier as? KClass<*>)?.let { classifier ->
+                                addAll(
+                                    classifier.allProperties
+                                        .filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }
+                                        .map { ElementDescriptor.forResolveHolder(descriptor, it) }
+                                )
+                            }
                         }
                     }
                 }

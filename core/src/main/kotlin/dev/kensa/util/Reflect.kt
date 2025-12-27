@@ -1,5 +1,8 @@
 package dev.kensa.util
 
+import dev.kensa.RenderedValueWithHint
+import dev.kensa.RenderingDirective
+import dev.kensa.RenderingDirectives
 import dev.kensa.Sources
 import java.lang.System.err
 import java.lang.reflect.AnnotatedElement
@@ -51,6 +54,27 @@ private fun noParameters(): ReflectPredicate<Method> = { it.parameters.isEmpty()
 private val allTheFields: ReflectPredicate<Field> = { true }
 private fun withFieldName(name: String): ReflectPredicate<Field> = { it.name == name }
 private fun withName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
+
+internal fun Class<*>.findAllRelatedClasses(): Set<Class<*>> =
+    mutableSetOf<Class<*>>().also { classes ->
+
+        fun collect(clazz: Class<*>) {
+            if (clazz in classes) return
+            if (!SourceCode.existsFor(clazz)) return
+
+            classes += clazz
+            clazz.findAnnotation<Sources>()?.value?.forEach { collect(it.java) }
+            clazz.interfaces.forEach { collect(it) }
+            clazz.superclass?.also { collect(it) }
+        }
+
+        collect(this)
+    }
+
+fun Class<*>.findAllRenderingDirectives(): RenderingDirectives =
+    findAllAnnotations<RenderedValueWithHint>().associate {
+        it.type to RenderingDirective(it.valueStrategy, it.valueParam, it.hintStrategy, it.hintParam)
+    }
 
 internal fun Method.actualDeclaringClass(): Class<*> {
 
@@ -150,11 +174,77 @@ private fun Any.realValue() =
 
 fun Class<*>.findTestMethods(predicate: ReflectPredicate<Method>) = findMethodsInHierarchy(predicate)
 
-internal inline fun <reified T : Annotation> KProperty<*>.findKotlinOrJavaAnnotation() = findAnnotation() ?: javaField?.findAnnotation() ?: javaGetter?.findAnnotation<T>()
-internal inline fun <reified T : Annotation> KProperty<*>.hasKotlinOrJavaAnnotation() = hasAnnotation<T>() || javaElementHasAnnotation<T>()
-internal inline fun <reified T : Annotation> KProperty<*>.javaElementHasAnnotation() = javaField?.findAnnotation<T>() != null || javaGetter?.findAnnotation<T>() != null
+/**
+ * Searches for an annotation across the Kotlin property, its backing field, and its getter.
+ * Because of our updated AnnotatedElement.findAnnotation(), this is now hierarchy-aware
+ * if the property is actually a Class reference.
+ */
+internal inline fun <reified T : Annotation> KProperty<*>.findKotlinOrJavaAnnotation(): T? = findAllKotlinOrJavaAnnotations<T>().firstOrNull()
+
+/**
+ * Checks if the annotation exists in any of the property's related elements.
+ */
+internal inline fun <reified T : Annotation> KProperty<*>.hasKotlinOrJavaAnnotation(): Boolean = findAllKotlinOrJavaAnnotations<T>().isNotEmpty()
+
+/**
+ * Returns all instances of a repeatable annotation across all property-related elements.
+ */
+internal inline fun <reified T : Annotation> KProperty<*>.findAllKotlinOrJavaAnnotations(): Set<T> =
+    buildSet {
+        addAll(findAnnotations<T>())
+        javaField?.also { addAll(it.findAllAnnotations<T>()) }
+        javaGetter?.also { addAll(it.findAllAnnotations<T>()) }
+    }
+
 inline fun <reified T : Annotation> AnnotatedElement.hasAnnotation() = findAnnotation<T>() != null
-inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? = annotations.firstOrNull { it is T } as T?
+inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? =
+    if (this is Class<*>) {
+        findAnnotationInHierarchy(T::class.java)
+    } else {
+        annotations.filterIsInstance<T>().firstOrNull() ?: getAnnotation(T::class.java)
+    }
+
+inline fun <reified T : Annotation> AnnotatedElement.findAllAnnotations(): Set<T> =
+    if (this is Class<*>) {
+        findAllAnnotationsInHierarchy<T>()
+    } else {
+        getAnnotationsByType(T::class.java).toSet()
+    }
+
+inline fun <reified T : Annotation> Class<*>.findAnnotationInHierarchy(): T? =
+    findAnnotationInHierarchy(T::class.java)
+
+/**
+ * Returns all annotations of a specific type in the hierarchy (useful for @Repeatable).
+ */
+inline fun <reified T : Annotation> Class<*>.findAllAnnotationsInHierarchy(): Set<T> =
+    findAllAnnotationsInHierarchy(T::class.java)
+
+/**
+ * Searches for an annotation on this class, its superclasses, and its interfaces.
+ */
+fun <T : Annotation> Class<*>.findAnnotationInHierarchy(annotationClass: Class<T>): T? {
+    getAnnotation(annotationClass)?.let { return it }
+
+    for (i in interfaces) {
+        i.findAnnotationInHierarchy(annotationClass)?.let { return it }
+    }
+
+    return superclass?.findAnnotationInHierarchy(annotationClass)
+}
+
+fun <T : Annotation> Class<*>.findAllAnnotationsInHierarchy(annotationClass: Class<T>): Set<T> =
+    buildSet {
+        addAll(getAnnotationsByType(annotationClass))
+
+        for (i in interfaces) {
+            addAll(i.findAllAnnotationsInHierarchy(annotationClass))
+        }
+
+        superclass?.let {
+            addAll(it.findAllAnnotationsInHierarchy(annotationClass))
+        }
+    }
 
 private fun shouldStop(): (Class<*>) -> Boolean = { it == Any::class.java }
 

@@ -1,11 +1,6 @@
 package dev.kensa.util
 
-import dev.kensa.example.SomeJavaInterface
-import dev.kensa.example.SomeJavaSubClass
-import dev.kensa.example.SomeJavaSuperClass
-import dev.kensa.example.SomeKotlinInterface
-import dev.kensa.example.SomeKotlinSubClass
-import dev.kensa.example.SomeKotlinSuperClass
+import dev.kensa.example.*
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -13,8 +8,64 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.lang.reflect.AnnotatedElement
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.memberProperties
 
 internal class ReflectTest {
+
+    @Nested
+    inner class AnnotationExtensions {
+
+        @Test
+        internal fun `findAnnotationInHierarchy finds annotation on class itself`() {
+            AnnotatedSuper::class.java.findAnnotationInHierarchy<TestAnnotation>()?.value shouldBe "on-super"
+        }
+
+        @Test
+        internal fun `findAnnotationInHierarchy finds annotation on super class`() {
+            AnnotatedSub::class.java.findAnnotationInHierarchy<TestAnnotation>()?.value shouldBe "on-sub"
+        }
+
+        @Test
+        internal fun `findAllAnnotationsInHierarchy collects from everywhere`() {
+            val annotations = AnnotatedSub::class.java.findAllAnnotationsInHierarchy<TestAnnotation>()
+
+            annotations.map { it.value }.shouldContainExactlyInAnyOrder("on-sub", "on-super")
+        }
+
+        @Test
+        internal fun `AnnotatedElement findAnnotation is hierarchy aware for classes`() {
+            val element: AnnotatedElement = AnnotatedSub::class.java
+            element.findAnnotation<TestAnnotation>()?.value shouldBe "on-sub"
+        }
+
+        @Test
+        internal fun `AnnotatedElement findAnnotation is standard for non-class elements`() {
+            val method = AnnotatedSuper::class.java.getDeclaredMethod("getProperty")
+            // Methods don't inherit annotations from overridden methods automatically in standard Java reflection
+            method.findAnnotation<TestAnnotation>() shouldBe null
+        }
+
+        @Test
+        internal fun `KProperty extensions find annotations across Kotlin and Java elements`() {
+            val prop = AnnotatedInterface::class.memberProperties.first { it.name == "property" }
+
+            prop.hasKotlinOrJavaAnnotation<TestAnnotation>().shouldBeTrue()
+            prop.findKotlinOrJavaAnnotation<TestAnnotation>()?.value shouldBe "from-interface"
+        }
+
+        @Test
+        internal fun `findAllKotlinOrJavaAnnotations collects repeatable annotations on properties`() {
+            // Dummy for repeatable property test
+            class RepeatableProp(@field:TestAnnotation("one") @get:TestAnnotation("two") val p: String)
+
+            val prop = RepeatableProp::class.declaredMemberProperties.first()
+            val values = prop.findAllKotlinOrJavaAnnotations<TestAnnotation>().map { it.value }
+
+            values.shouldContainExactlyInAnyOrder("one", "two")
+        }
+    }
 
     @Nested
     inner class ActualDeclaringClass {

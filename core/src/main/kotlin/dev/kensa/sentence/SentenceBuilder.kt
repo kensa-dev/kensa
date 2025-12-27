@@ -5,10 +5,8 @@ import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent
 import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.Literal.*
-import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
+import dev.kensa.parse.LocatedEvent.PathExpression.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
-import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
-import dev.kensa.parse.LocatedEvent.PathExpression.OutputsByNameExpression
 import dev.kensa.parse.Location
 import dev.kensa.sentence.TemplateToken.*
 import dev.kensa.sentence.TemplateToken.Type.*
@@ -152,7 +150,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
     fun append(location: Location, event: RenderedValue) {
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        tokens.add(RenderedValueToken1(event.name, EmphasisDescriptor.Default))
+        tokens.add(RenderedValueToken(event.name, EmphasisDescriptor.Default))
     }
 
     fun append(event: ChainedCallExpression) {

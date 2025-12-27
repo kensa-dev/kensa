@@ -1,5 +1,7 @@
 package dev.kensa
 
+import dev.kensa.RenderedHintStrategy.NoHint
+import dev.kensa.RenderedValueStrategy.UseIdentifierName
 import dev.kensa.state.SetupStrategy
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.*
@@ -71,6 +73,76 @@ annotation class RenderedValueContainer
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER, FUNCTION, PROPERTY_GETTER)
 annotation class RenderedValue
+
+/**
+ * Strategies for resolving the primary display text of a rendered token.
+ */
+enum class RenderedValueStrategy {
+    /** Uses the identifier name from the source code (e.g., the variable name). */
+    UseIdentifierName, 
+    
+    /** Uses the result of the object's [Any.toString] method. */
+    UseToString, 
+    
+    /** Resolves the value by reading a specific property path on the object. */
+    UseProperty, 
+    
+    /** Resolves the value by invoking a specific method on the object. */
+    UseMethod
+}
+
+/**
+ * Strategies for resolving the technical hint (metadata) displayed in a popup on the report.
+ */
+enum class RenderedHintStrategy {
+    /** Extracts the hint by reading a specific property path on the object. */
+    HintFromProperty, 
+    
+    /** Extracts the hint by invoking a specific method on the object. */
+    HintFromMethod, 
+    
+    /** Disables the hint for this directive. */
+    NoHint
+}
+
+/**
+ * Annotation used to enrich rendered values with additional technical metadata (hints).
+ * 
+ * When Kensa encounters a field or property of the specified [type], it will use the 
+ * provided strategies to determine both the display text and the technical hint 
+ * (e.g., a JSON path or XPath) for the generated report.
+ *
+ * @property type The class type this directive applies to.
+ * @property valueStrategy The strategy used to resolve the display text.
+ * @property valueParam The property name or method name used if the strategy requires one.
+ * @property hintStrategy The strategy used to resolve the technical hint popup content.
+ * @property hintParam The property name or method name used to extract the hint.
+ */
+@Repeatable
+@Target(CLASS, PROPERTY, FUNCTION)
+@Retention(RUNTIME)
+annotation class RenderedValueWithHint(
+    val type: KClass<*>,
+    val valueStrategy: RenderedValueStrategy = UseIdentifierName,
+    val valueParam: String = "",
+    val hintStrategy: RenderedHintStrategy = NoHint,
+    val hintParam: String = ""
+)
+
+/**
+ * Internal representation of a [RenderedValueWithHint] directive used by the parsing engine.
+ */
+data class RenderingDirective(
+    val valueStrategy: RenderedValueStrategy,
+    val valueParam: String,
+    val hintStrategy: RenderedHintStrategy,
+    val hintParam: String
+)
+
+/**
+ * A lookup map associating a target class with its specific rendering instructions.
+ */
+typealias RenderingDirectives = Map<KClass<*>, RenderingDirective>
 
 /**
  * Annotation used to specify other source files to parse.  Useful to point to shared nested sentences.
