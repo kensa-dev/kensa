@@ -221,9 +221,8 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 sentenceBuilder.append(event)
                 currentState
             }
-            on<ExitLambda> { currentState, _ ->
-                currentState.parentState
-            }
+            on<ExitBlock> { currentState, _ -> currentState.parentState }
+            on<ExitLambda> { currentState, _ -> currentState.parentState }
             on<EnterStatement> { currentState, _ ->
                 InStatement(currentState, didBegin = false)
             }
@@ -259,6 +258,9 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             on<Note> { currentState, event ->
                 sentenceBuilder.append(event)
                 currentState
+            }
+            on<EnterBlock> { currentState, _ ->
+                InLambda(currentState)
             }
             on<EnterLambda> { currentState, _ ->
                 InLambda(currentState)
