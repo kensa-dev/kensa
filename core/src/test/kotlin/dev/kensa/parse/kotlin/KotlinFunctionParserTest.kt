@@ -139,99 +139,53 @@ internal class KotlinFunctionParserTest {
     inner class Notes {
 
         @Test
-        fun `recognises kensa notes various locations`() {
-            val functionName = "kensaNotesTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+        fun `recognises valid notes`() {
+            val functionName = "notesTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
 
-            val method = KotlinWithComments::class.java.findMethod(functionName)
+            val method = KotlinWithNotes::class.java.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
             val expectedSentences = listOf(
                 TemplateSentence(
                     listOf(
-                        Comment.asTemplateToken("Kensa note at start of block")
+                        Note.asTemplateToken("Note before Given")
                     )
                 ),
                 TemplateSentence(
                     listOf(
-                        Word.asTemplateToken("assert"),
-                        Word.asTemplateToken("that"),
-                        BooleanLiteral.asTemplateToken("true"),
-                        Word.asTemplateToken("is"),
-                        Word.asTemplateToken("equal"),
-                        Word.asTemplateToken("to"),
-                        BooleanLiteral.asTemplateToken("true"),
+                        Keyword.asTemplateToken("Given"),
+                        Note.asTemplateToken("Note after closing brace")
                     )
                 ),
-                TemplateSentence(listOf(
-                    BlankLine.asTemplateToken(),
-                    Comment.asTemplateToken("Kensa note between statements"),
-                )),
-                TemplateSentence(listOf(
-                    Word.asTemplateToken("assert"),
-                    Word.asTemplateToken("that"),
-                    NewLine.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    BooleanLiteral.asTemplateToken("false"),
-                    NewLine.asTemplateToken(),
-                    Comment.asTemplateToken("Kensa note after method call"),
-                    NewLine.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Word.asTemplateToken("is"),
-                    Word.asTemplateToken("equal"),
-                    Word.asTemplateToken("to"),
-                    BooleanLiteral.asTemplateToken("false"),
-                    Comment.asTemplateToken("Kensa note at end of statement line"),
-                )),
-                TemplateSentence(listOf(
-                    BlankLine.asTemplateToken(),
-                    Word.asTemplateToken("list"),
-                    Word.asTemplateToken("of"),
-                    NumberLiteral.asTemplateToken("1"),
-                    NumberLiteral.asTemplateToken("2"),
-                    Word.asTemplateToken("for"),
-                    Word.asTemplateToken("each"),
-                    NewLine.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Comment.asTemplateToken("Kensa note at start of for loop"),
-                    Word.asTemplateToken("assert"),
-                    Word.asTemplateToken("that"),
-                    Word.asTemplateToken("it"),
-                    Word.asTemplateToken("is"),
-                    Word.asTemplateToken("equal"),
-                    Word.asTemplateToken("to"),
-                    NewLine.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Word.asTemplateToken("expected"),
-                    NewLine.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Operator.asTemplateToken("="),
-                    NewLine.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Word.asTemplateToken("it"),
-                    NewLine.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    Indent.asTemplateToken(),
-                    NumberLiteral.asTemplateToken("0"),
-                )),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before Then")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("Then"),
+                        NewLine.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Word.asTemplateToken("thing"),
+                        Note.asTemplateToken("Note after closing bracket")
+                    )
+                )
+
             )
 
             parsedMethod.sentences should {
@@ -241,262 +195,38 @@ internal class KotlinFunctionParserTest {
                 }
             }
         }
-
         @Test
-        fun `ignores standard line comments in various locations`() {
-            val functionName = "ignoredStandardLineCommentsTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
+        fun `ignores invalid notes`() {
+            val functionName = "ignoredNotesTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
 
-            val method = KotlinWithComments::class.java.findMethod(functionName)
+            val method = KotlinWithNotes::class.java.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
             val expectedSentences = listOf(
                 TemplateSentence(
                     listOf(
-                        Word.asTemplateToken("assert"),
-                        Word.asTemplateToken("that"),
-                        BooleanLiteral.asTemplateToken("true"),
-                        Word.asTemplateToken("is"),
-                        Word.asTemplateToken("equal"),
-                        Word.asTemplateToken("to"),
-                        BooleanLiteral.asTemplateToken("true"),
+                        Keyword.asTemplateToken("Given")
                     )
                 ),
                 TemplateSentence(
                     listOf(
                         BlankLine.asTemplateToken(),
-                        Word.asTemplateToken("assert"),
-                        Word.asTemplateToken("that"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        BooleanLiteral.asTemplateToken("false"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Word.asTemplateToken("is"),
-                        Word.asTemplateToken("equal"),
-                        Word.asTemplateToken("to"),
-                        BooleanLiteral.asTemplateToken("false"),
+                        Note.asTemplateToken("Note before When")
                     )
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
-                        Word.asTemplateToken("list"),
-                        Word.asTemplateToken("of"),
-                        NumberLiteral.asTemplateToken("1"),
-                        NumberLiteral.asTemplateToken("2"),
-                        Word.asTemplateToken("for"),
-                        Word.asTemplateToken("each"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Word.asTemplateToken("assert"),
-                        Word.asTemplateToken("that"),
-                        Word.asTemplateToken("it"),
-                        Word.asTemplateToken("is"),
-                        Word.asTemplateToken("equal"),
-                        Word.asTemplateToken("to"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Word.asTemplateToken("expected"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Operator.asTemplateToken("="),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Word.asTemplateToken("it"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        NumberLiteral.asTemplateToken("0"),
+                        Keyword.asTemplateToken("When")
                     )
-                ),
+                )
             )
 
-            parsedMethod.sentences.forEachIndexed { index, sentence ->
-                sentence.tokens shouldBe expectedSentences[index].tokens
-            }
-        }
-
-        @Test
-        fun `recognises kensa-style delimited comments in various locations`() {
-            val functionName = "kensaStyleDelimitedCommentsTest"
-            val parser = KotlinFunctionParser(
-                isTest = aFunctionNamed(functionName),
-                configuration,
-                configuration.antlrErrorListenerDisabled,
-                configuration.antlrPredicationMode,
-            )
-
-            val method = KotlinWithComments::class.java.findMethod(functionName)
-            val parsedMethod = parser.parse(method)
-
-            val expectedSentences = listOf(
-                TemplateSentence(
-                    listOf(
-                        Comment.asTemplateToken("Delimited comment at start of block")
-                    )
-                ),
-                TemplateSentence(
-                    listOf(
-                        Word.asTemplateToken("assert"),
-                        Word.asTemplateToken("that"),
-                        BooleanLiteral.asTemplateToken("true"),
-                        Word.asTemplateToken("is"),
-                        Word.asTemplateToken("equal"),
-                        Word.asTemplateToken("to"),
-                        BooleanLiteral.asTemplateToken("true"),
-                    )
-                ),
-                TemplateSentence(
-                    listOf(
-                        BlankLine.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment between statements"),
-                    )
-                ),
-                TemplateSentence(
-                    listOf(
-                        BlankLine.asTemplateToken(),
-                        Word.asTemplateToken("assert"),
-                        Word.asTemplateToken("that"),
-                        Comment.asTemplateToken("Delimited comment before method call param"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        BooleanLiteral.asTemplateToken("false"),
-                        Comment.asTemplateToken("Delimited comment after method call param"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment after method call"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment after dereference operator"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Word.asTemplateToken("is"),
-                        Word.asTemplateToken("equal"),
-                        Word.asTemplateToken("to"),
-                        BooleanLiteral.asTemplateToken("false"),
-                        Comment.asTemplateToken("Delimited comment at end of statement line"),
-                    )
-                ),
-                TemplateSentence(
-                    listOf(
-                        BlankLine.asTemplateToken(),
-                        Comment.asTemplateToken("Multi-line\ncomment"),
-                    )
-                ),
-                TemplateSentence(
-                    listOf(
-                        BlankLine.asTemplateToken(),
-                        Word.asTemplateToken("list"),
-                        Word.asTemplateToken("of"),
-                        NumberLiteral.asTemplateToken("1"),
-                        NumberLiteral.asTemplateToken("2"),
-                        Word.asTemplateToken("for"),
-                        Word.asTemplateToken("each"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(), Comment.asTemplateToken("Delimited comment at start of for loop"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment at start of line"),
-                        Word.asTemplateToken("assert"),
-                        Word.asTemplateToken("that"),
-                        Comment.asTemplateToken("Delimited comment mid-line"),
-                        Word.asTemplateToken("it"),
-                        Word.asTemplateToken("is"),
-                        Word.asTemplateToken("equal"),
-                        Word.asTemplateToken("to"),
-                        Comment.asTemplateToken("Delimited comment before arg name"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Word.asTemplateToken("expected"),
-                        Comment.asTemplateToken("Delimited comment after arg name"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Operator.asTemplateToken("="),
-                        Comment.asTemplateToken("Delimited comment at start of arg value expression"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Word.asTemplateToken("it"),
-                        Comment.asTemplateToken("Delimited comment after first operand"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment after operator"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        NumberLiteral.asTemplateToken("0"),
-                        Comment.asTemplateToken("Delimited comment after second operand"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment on own line after final method call param"),
-                        NewLine.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Indent.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment at end of for loop"),
-                    )
-                ),
-                TemplateSentence(
-                    listOf(
-                        BlankLine.asTemplateToken(),
-                        Comment.asTemplateToken("Delimited comment after final statement"),
-                    )
-                ),
-            )
-
-            parsedMethod.sentences.forEachIndexed { index, sentence ->
-                sentence.tokens shouldBe expectedSentences[index].tokens
+            parsedMethod.sentences should {
+                it.shouldHaveSize(expectedSentences.size)
+                it.forEachIndexed { index, sentence ->
+                    sentence.tokens shouldBe expectedSentences[index].tokens
+                }
             }
         }
     }
@@ -1066,9 +796,7 @@ internal class KotlinFunctionParserTest {
                     shouldNotBeNull()
                     shouldBeInstanceOf<ParameterElementDescriptor>()
                 }
-
-                println(sentences.first().tokens)
-                sentences.last().tokens.shouldBe(expectedSentence.tokens)
+                sentences.first().tokens.shouldBe(expectedSentence.tokens)
             }
         }
 

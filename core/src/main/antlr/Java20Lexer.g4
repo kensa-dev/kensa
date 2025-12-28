@@ -937,7 +937,12 @@ fragment IdentifierPart:
 // Whitespace and comments
 //
 
-WS: [ \t\r\n\u000C]+ -> skip;
+WS
+    : [\u0020\u0009\u000C]
+      -> channel(HIDDEN)
+    ;
+
+NL: ('\n' | '\r' '\n')? -> channel(HIDDEN);
 
 KENSA_HINT: '/**' .*? '*/' -> channel(HIDDEN);
 

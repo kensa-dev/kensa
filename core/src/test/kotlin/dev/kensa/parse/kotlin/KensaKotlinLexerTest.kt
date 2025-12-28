@@ -175,7 +175,7 @@ class KensaKotlinLexerTest {
             tokenList[6].type shouldBe RPAREN
             tokenList[7].type shouldBe RPAREN
             tokenList[8].type shouldBe NL
-            tokenList[9].text shouldBe "when"
+            tokenList[9].text shouldBe "whenever"
             tokenList[10].type shouldBe LPAREN
             tokenList[11].type shouldBe RPAREN
         }
@@ -201,7 +201,7 @@ class KensaKotlinLexerTest {
             tokenList[6].type shouldBe RPAREN
             tokenList[7].type shouldBe RPAREN
             tokenList[8].type shouldBe NL
-            tokenList[9].text shouldBe "when"
+            tokenList[9].text shouldBe "whenever"
             tokenList[10].type shouldBe LPAREN
             tokenList[11].type shouldBe RPAREN
         }
@@ -231,7 +231,7 @@ class KensaKotlinLexerTest {
             tokenList[8].type shouldBe RPAREN
             tokenList[9].type shouldBe RPAREN
             tokenList[10].type shouldBe NL
-            tokenList[11].text shouldBe "when"
+            tokenList[11].text shouldBe "whenever"
             tokenList[12].type shouldBe LPAREN
             tokenList[13].type shouldBe RPAREN
         }

@@ -142,7 +142,7 @@ export const Token = ({token}) => {
         return <TextBlockToken tokenCls={tokenCls} value={value}/>;
     } else if (types.includes("tk-hi")) {
         return <HintedToken tokenCls={tokenCls} value={value} hint={hint}/>;
-    } else if (types.includes("tk-co")) {
+    } else if (types.includes("tk-nt")) {
         return <NoteToken tokenCls={tokenCls} value={value}/>;
     } else {
         return <SimpleToken tokenCls={tokenCls} value={value}/>;

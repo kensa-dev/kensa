@@ -16,6 +16,7 @@ import io.kotest.matchers.equality.FieldsEqualityCheckConfig
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -165,6 +166,106 @@ internal class JavaMethodParserTest {
                 }
 
                 sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
+    }
+
+    @Nested
+    inner class Notes {
+
+        @Test
+        fun `recognises valid notes`() {
+            val functionName = "notesTest"
+            val parser = createParserFor(classMethodNamed(functionName))
+
+            val method = JavaWithNotes::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentences = listOf(
+                TemplateSentence(
+                    listOf(
+                        Note.asTemplateToken("Note before Given")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("Given"),
+                        NewLine.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Note.asTemplateToken("Note after closing brace")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before Then")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("Then"),
+                        NewLine.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Word.asTemplateToken("thing"),
+                        Note.asTemplateToken("Note after closing bracket")
+                    )
+                )
+
+            )
+
+            parsedMethod.sentences should {
+                it.shouldHaveSize(expectedSentences.size)
+                it.forEachIndexed { index, sentence ->
+                    sentence.tokens shouldBe expectedSentences[index].tokens
+                }
+            }
+        }
+        @Test
+        fun `ignores invalid notes`() {
+            val functionName = "ignoredNotesTest"
+            val parser = createParserFor(classMethodNamed(functionName))
+
+            val method = JavaWithNotes::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentences = listOf(
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("Given")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("When")
+                    )
+                )
+            )
+
+            parsedMethod.sentences should {
+                it.shouldHaveSize(expectedSentences.size)
+                it.forEachIndexed { index, sentence ->
+                    sentence.tokens shouldBe expectedSentences[index].tokens
+                }
             }
         }
     }

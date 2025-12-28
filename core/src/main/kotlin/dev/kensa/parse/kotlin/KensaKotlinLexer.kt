@@ -1,6 +1,7 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.KensaToken
+import dev.kensa.parse.KensaToken.Companion.withNote
 import dev.kensa.parse.KotlinLexer
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.Token
@@ -9,7 +10,8 @@ import kotlin.contracts.contract
 import kotlin.text.substringAfter
 
 class KensaKotlinLexer(input: CharStream) : KotlinLexer(input) {
-    private val bddPrefixes = setOf("given", "when", "whenever", "then", "thenEventually", "and", "andEventually")
+
+    private val bddPrefixes = setOf("given", "when", "whenever", "then", "thenEventually", "thenContinually", "and", "andEventually", "andContinually")
 
     private var tokenBuffer = ArrayDeque<Token>()
     private val pendingNote: StringBuilder = StringBuilder()
@@ -42,7 +44,7 @@ class KensaKotlinLexer(input: CharStream) : KotlinLexer(input) {
         var wasInterestingLine = false
 
         for (index in indices) {
-            previousToken = previousNonWhitespaceToken(index, previousToken)
+            previousToken = previousInterestingToken(index, previousToken)
 
             with(this[index]) {
                 if (isWhitespaceToken()) continue
@@ -114,11 +116,11 @@ class KensaKotlinLexer(input: CharStream) : KotlinLexer(input) {
 
     private fun ArrayDeque<Token>.replaceWithKensaNoteToken(index: Int) {
         val original = this[index]
-        this[index] = KensaToken.withNote(original, pendingNote.toString())
+        this[index] = withNote(original, pendingNote.toString())
         pendingNote.clear()
     }
 
-    private fun ArrayDeque<Token>.previousNonWhitespaceToken(index: Int, original: PreviousToken?): PreviousToken? {
+    private fun ArrayDeque<Token>.previousInterestingToken(index: Int, original: PreviousToken?): PreviousToken? {
         if (index == 0) return null
 
         val previous = this[index - 1]

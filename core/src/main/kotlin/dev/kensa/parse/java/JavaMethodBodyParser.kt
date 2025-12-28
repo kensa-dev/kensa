@@ -12,8 +12,10 @@ import dev.kensa.parse.ParseContext.Companion.asEnterExpression
 import dev.kensa.parse.ParseContext.Companion.asEnterStatement
 import dev.kensa.parse.ParseContext.Companion.asMethodInvocation
 import dev.kensa.parse.ParseContext.Companion.asMultilineString
+import dev.kensa.parse.ParseContext.Companion.asNote
 import dev.kensa.parse.ParseContext.Companion.asNullLiteral
 import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
+import dev.kensa.parse.ParseContext.Companion.asStartNote
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
 import org.antlr.v4.runtime.ParserRuleContext
@@ -51,6 +53,10 @@ class JavaMethodBodyParser(
     }
 
     override fun enterStatement(ctx: Java20Parser.StatementContext) {
+        ctx.asStartNote()?.also {
+            stateMachine.apply(it)
+        }
+
         stateMachine.apply(ctx.asEnterStatement())
     }
 
@@ -114,6 +120,7 @@ class JavaMethodBodyParser(
         with(parseContext) {
             with(node) {
                 when (symbol.type) {
+                    RPAREN, RBRACE -> node.asNote()?.also { stateMachine.apply(it) }
                     BooleanLiteral -> stateMachine.apply(asBooleanLiteral())
                     IntegerLiteral, FloatingPointLiteral -> stateMachine.apply(asNumberLiteral())
                     CharacterLiteral -> stateMachine.apply(asCharacterLiteral())
@@ -127,7 +134,7 @@ class JavaMethodBodyParser(
         }
     }
 
-    // Looks for appropriate sibling
+    // Looks for the appropriate sibling
     private fun ParserRuleContext.hasArguments(): Boolean = (parent as ParserRuleContext).hasChildOfType<Java20Parser.ArgumentListContext>()
     private inline fun <reified T : ParseTree> ParserRuleContext.hasChildOfType(): Boolean = children.any { it is T }
 

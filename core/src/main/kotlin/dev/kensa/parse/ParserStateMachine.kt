@@ -23,7 +23,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
     private lateinit var sentenceBuilder: SentenceBuilder
     private var lastSentenceEndLocation: Location? = null
 
-    private fun beginSentence(isNoteSentence : Boolean, location: Location) {
+    private fun beginSentence(isNoteSentence: Boolean, location: Location) {
         sentenceBuilder = createSentenceBuilder(isNoteSentence, location, lastSentenceEndLocation ?: location)
     }
 
@@ -168,7 +168,8 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             on<EnterExpression> { currentState, _ ->
                 InFixturesExpression(currentState)
             }
-            ignoreAll(any<EnterValueArguments>(),
+            ignoreAll(
+                any<EnterValueArguments>(),
                 any<ExitValueArguments>(),
                 any<EnterValueArgument>(),
                 any<ExitValueArgument>(),
@@ -189,7 +190,8 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             on<EnterExpression> { currentState, _ ->
                 InOutputsExpression(currentState)
             }
-            ignoreAll(any<EnterValueArguments>(),
+            ignoreAll(
+                any<EnterValueArguments>(),
                 any<ExitValueArguments>(),
                 any<EnterValueArgument>(),
                 any<ExitValueArgument>(),
@@ -205,7 +207,8 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             on<ChainedCallExpression> { currentState, _ ->
                 InChainedCallExpression(currentState)
             }
-            ignoreAll(any<Method>(),
+            ignoreAll(
+                any<Method>(),
                 any<Terminal>(),
                 any<Identifier>(),
                 any<Parameter>(),
@@ -405,6 +408,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 currentState.parentState.also {
                     if (it is InMethodInvocation && it.didBegin) finishSentence()
                 }
+            }
+            on<Note> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
             }
             on<RenderedValue> { currentState, event ->
                 sentenceBuilder.append(event.location, event)

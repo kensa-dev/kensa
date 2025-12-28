@@ -3,6 +3,7 @@ package dev.kensa.parse.kotlin
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.KotlinLexer.*
 import dev.kensa.parse.KotlinParser
+import dev.kensa.parse.KotlinParser.ValueArgumentContext
 import dev.kensa.parse.KotlinParserBaseListener
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
@@ -110,7 +111,8 @@ class KotlinFunctionBodyParser(
 
     override fun enterStatement(ctx: KotlinParser.StatementContext) {
         ctx.asStartNote()?.also {
-            stateMachine.apply(it) }
+            stateMachine.apply(it)
+        }
 
         stateMachine.apply(ctx.asEnterStatement())
     }
@@ -146,11 +148,11 @@ class KotlinFunctionBodyParser(
         }
     }
 
-    override fun enterValueArgument(ctx: KotlinParser.ValueArgumentContext) {
+    override fun enterValueArgument(ctx: ValueArgumentContext) {
         stateMachine.apply(EnterValueArgument)
     }
 
-    override fun exitValueArgument(ctx: KotlinParser.ValueArgumentContext) {
+    override fun exitValueArgument(ctx: ValueArgumentContext) {
         stateMachine.apply(ExitValueArgument)
     }
 
@@ -193,7 +195,7 @@ class KotlinFunctionBodyParser(
         fun ParserRuleContext.findValueArguments(): Boolean {
             return children?.any { child ->
                 when (child) {
-                    is KotlinParser.ValueArgumentContext -> true
+                    is ValueArgumentContext -> true
                     is ParserRuleContext -> child.findValueArguments()
                     else -> false
                 }

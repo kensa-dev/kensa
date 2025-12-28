@@ -80,7 +80,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
                 is NumberLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(NumberLiteral))
                 is CharacterLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(CharacterLiteral))
                 is BooleanLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(BooleanLiteral))
-                is Note -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Comment))
+                is Note -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Note))
 
                 else -> null
             }
@@ -113,9 +113,9 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
     fun append(event: Note) {
         if (isNoteBlock) {
-            val lastIndex = tokens.indexOfLast { it.types.contains(Comment) }
+            val lastIndex = tokens.indexOfLast { it.types.contains(Note) }
             if (lastIndex < 0) {
-                tokens.append(event.text, Comment)
+                tokens.append(event.text, Note)
             } else {
                 val last = tokens[lastIndex]
                 val merged = SimpleTemplateToken(
@@ -127,7 +127,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
             }
         } else {
             lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
-            tokens.append(event.text, Comment)
+            tokens.append(event.text, Note)
         }
     }
 

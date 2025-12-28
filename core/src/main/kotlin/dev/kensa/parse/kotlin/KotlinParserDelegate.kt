@@ -20,11 +20,15 @@ class KotlinParserDelegate(
     private val antlrPredicationMode: PredictionMode
 ) : ParserDelegate {
 
-    fun Class<*>.isParsable(): Boolean = isKotlinClass
+    override fun Class<*>.isParsable(): Boolean = isKotlinClass
 
-    fun Class<*>.toSimpleName(): (Class<*>) -> String = { it.kotlin.simpleName ?: throw IllegalArgumentException("Types must have names") }
+    override fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
+        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext), dc.body)
+    }
 
-    fun Class<out Any>.findMethodDeclarations(): MethodDeclarations {
+    override fun Class<*>.toSimpleName(): (Class<*>) -> String = { it.kotlin.simpleName ?: throw IllegalArgumentException("Types must have names") }
+
+    override fun Class<out Any>.findMethodDeclarations(): MethodDeclarations {
         val testFunctions = mutableListOf<MethodDeclarationContext>()
         val nestedFunctions = mutableListOf<MethodDeclarationContext>()
         val emphasisedFunctions = mutableListOf<MethodDeclarationContext>()
@@ -44,7 +48,7 @@ class KotlinParserDelegate(
         return MethodDeclarations(testFunctions, nestedFunctions, emphasisedFunctions)
     }
 
-    fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
+    override fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
         val combined = syntheticKotlinReceivers() + parameterNamesAndTypes
 
         return MethodParameters(
@@ -98,10 +102,6 @@ class KotlinParserDelegate(
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsNested(): Boolean = findAnnotationNames().any { name -> ParserDelegate.nestedSentenceAnnotationNames.contains(name) }
 
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean = findAnnotationNames().any { name -> ParserDelegate.emphasisedMethodAnnotationNames.contains(name) }
-
-    fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
-        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext), dc.body)
-    }
 
     companion object {
         fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> {

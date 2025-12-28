@@ -9,7 +9,7 @@ sealed interface TemplateToken {
         BlankLine("bl", true),
         BooleanLiteral("bo"),
         CharacterLiteral("cl"),
-        Comment("co"),
+        Note("nt"),
         Expandable("ex", true),
         FieldValue("fv"),
         Highlighted("hl"),
