@@ -16,7 +16,7 @@ import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-class SentenceBuilder(private val startingLocation: Location, previousLocation: Location, private val dictionary: Dictionary, private val tabSize: Int) {
+class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Location, previousLocation: Location, private val dictionary: Dictionary, private val tabSize: Int) {
     var lastLocation = startingLocation
 
     private val tokens: MutableList<TemplateToken> = ArrayList()
@@ -80,6 +80,7 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
                 is NumberLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(NumberLiteral))
                 is CharacterLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(CharacterLiteral))
                 is BooleanLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(BooleanLiteral))
+                is Note -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Note))
 
                 else -> null
             }
@@ -108,6 +109,26 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
 
     fun append(event: MultilineString) {
         tokens.append(event.value, TextBlock)
+    }
+
+    fun append(event: Note) {
+        if (isNoteBlock) {
+            val lastIndex = tokens.indexOfLast { it.types.contains(Note) }
+            if (lastIndex < 0) {
+                tokens.append(event.text, Note)
+            } else {
+                val last = tokens[lastIndex]
+                val merged = SimpleTemplateToken(
+                    template = last.template + "\n" + event.text,
+                    emphasis = last.emphasis,
+                    types = last.types
+                )
+                tokens[lastIndex] = merged
+            }
+        } else {
+            lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
+            tokens.append(event.text, Note)
+        }
     }
 
     fun append(event: Operator) = appendLiteral(event, event.text, Operator)
@@ -158,7 +179,7 @@ class SentenceBuilder(private val startingLocation: Location, previousLocation: 
     fun build(): TemplateSentence = TemplateSentence(tokens)
 
     @OptIn(ExperimentalContracts::class)
-    private  fun <T : Any> requireForNestedSentence(value: T?): T {
+    private fun <T : Any> requireForNestedSentence(value: T?): T {
         contract {
             returns() implies (value != null)
         }

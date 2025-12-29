@@ -1,0 +1,174 @@
+{
+  "testClass": "dev.kensa.KotlinWithNotesTest",
+  "displayName": "Kotlin With Notes Test",
+  "state": "Passed",
+  "notes": null,
+  "minimumUniquePackageName": "",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "16 Ms",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "16 Ms",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-nt"
+                ],
+                "value": "These are notes"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "something"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-nt"
+                ],
+                "value": "These are also notes\non two lines"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "When"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "something happens"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-bl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-nt"
+                ],
+                "value": "Notes on then"
+              }
+            ],
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Then"
+              },
+              {
+                "types": [
+                  "tk-nl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "things"
+              },
+              {
+                "types": [
+                  "tk-nt"
+                ],
+                "value": "End of line notes"
+              },
+              {
+                "types": [
+                  "tk-nl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "equal to"
+              },
+              {
+                "types": [
+                  "tk-bo"
+                ],
+                "value": "true"
+              },
+              {
+                "types": [
+                  "tk-nt"
+                ],
+                "value": "More end of line notes"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}

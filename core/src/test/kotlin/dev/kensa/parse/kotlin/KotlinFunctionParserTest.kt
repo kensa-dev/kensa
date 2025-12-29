@@ -15,6 +15,7 @@ import io.kotest.assertions.asClue
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -132,6 +133,102 @@ internal class KotlinFunctionParserTest {
             }
         }
 
+    }
+
+    @Nested
+    inner class Notes {
+
+        @Test
+        fun `recognises valid notes`() {
+            val functionName = "notesTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithNotes::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentences = listOf(
+                TemplateSentence(
+                    listOf(
+                        Note.asTemplateToken("Note before Given")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("Given"),
+                        Note.asTemplateToken("Note after closing brace")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before Then")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("Then"),
+                        NewLine.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
+                        Word.asTemplateToken("thing"),
+                        Note.asTemplateToken("Note after closing bracket")
+                    )
+                )
+
+            )
+
+            parsedMethod.sentences should {
+                it.shouldHaveSize(expectedSentences.size)
+                it.forEachIndexed { index, sentence ->
+                    sentence.tokens shouldBe expectedSentences[index].tokens
+                }
+            }
+        }
+        @Test
+        fun `ignores invalid notes`() {
+            val functionName = "ignoredNotesTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithNotes::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentences = listOf(
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("Given")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        BlankLine.asTemplateToken(),
+                        Note.asTemplateToken("Note before When")
+                    )
+                ),
+                TemplateSentence(
+                    listOf(
+                        Keyword.asTemplateToken("When")
+                    )
+                )
+            )
+
+            parsedMethod.sentences should {
+                it.shouldHaveSize(expectedSentences.size)
+                it.forEachIndexed { index, sentence ->
+                    sentence.tokens shouldBe expectedSentences[index].tokens
+                }
+            }
+        }
     }
 
     @Nested

@@ -85,6 +85,9 @@ class ParseContext(
 
     companion object {
 
+        internal fun ParserRuleContext.asStartNote() = (start as? KensaToken)?.asNote()
+        internal fun ParserRuleContext.asEndNote() = (stop as? KensaToken)?.asNote()
+        internal fun TerminalNode.asNote() = (this.symbol as? KensaToken)?.asNote()
         internal fun ParseTree.asOperator() = Operator(location, text)
         internal fun ParseTree.asBooleanLiteral() = BooleanLiteral(location, text)
         internal fun ParseTree.asCharacterLiteral() = CharacterLiteral(location, text)
@@ -97,6 +100,7 @@ class ParseContext(
         internal fun ParseTree.asEnterExpression() = EnterExpression(location)
         internal fun ParseTree.asMethodInvocation() = EnterMethodInvocation(location)
 
+        private fun KensaToken.asNote() = Note(Location(line, charPositionInLine), note)
         private fun String.removeQuotes(): String = removeSurrounding("\"")
 
         private fun ParseTree.asTextBlock(): String {

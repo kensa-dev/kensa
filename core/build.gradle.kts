@@ -2,10 +2,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 description = "A BDD testing framework for Kotlin & Java"
 
-plugins {
-    antlr
-}
-
 sourceSets {
     create("hooks", Action {
         java.srcDir("src/hooks/java")
@@ -49,8 +45,7 @@ extensions.getByType(JavaPluginExtension::class.java).registerFeature("testSuppo
 }
 
 dependencies {
-    antlr(libs.antlr)
-
+    implementation(project(":antlr"))
     implementation(libs.kotlinReflect)
     implementation(libs.minimalJson)
     implementation(libs.plantuml)
@@ -91,15 +86,6 @@ tasks {
         }
     }
 
-    withType<AntlrTask> {
-        outputDirectory = file("$outputDirectory/dev/kensa/parse")
-        arguments = arguments + listOf("-listener", "-no-visitor", "-package", "dev.kensa.parse")
-    }
-
-    withType<KotlinCompile> {
-        dependsOn("generateGrammarSource")
-    }
-
     named<KotlinCompile>("compileExampleKotlin") {
         compilerOptions {
             freeCompilerArgs.addAll("-Xcontext-parameters")
@@ -108,7 +94,7 @@ tasks {
 
     named<Jar>("jar") {
         dependsOn(":ui:viteBuild")
-
+        from(project(":antlr").sourceSets["main"].output)
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
             into("/")
         }

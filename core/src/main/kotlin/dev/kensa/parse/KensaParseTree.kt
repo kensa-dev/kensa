@@ -1,5 +1,7 @@
 package dev.kensa.parse
 
+import dev.kensa.parse.java.Java20Parser
+import dev.kensa.parse.kotlin.KotlinParser
 import org.antlr.v4.runtime.tree.ParseTree
 
 private fun Java20Parser.MethodHeaderContext.parameterNamesAndTypes() =
@@ -55,7 +57,7 @@ class KotlinMethodDeclarationContext(private val delegate: KotlinParser.Function
     override val parameterNamesAndTypes: List<Pair<String, String>> by lazy {
         delegate.functionValueParameters().functionValueParameter()
             .map { it.parameter() }
-            .map { it.simpleIdentifier().text to it.type().text.trimEnd('\n').trimEnd('?') }
+            .map { it.simpleIdentifier().text to it.type().text.trim().trimEnd('?') }
             .toList()
     }
 }

@@ -1,12 +1,13 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.Event.*
-import dev.kensa.parse.KotlinLexer.*
-import dev.kensa.parse.KotlinParser
-import dev.kensa.parse.KotlinParserBaseListener
+import dev.kensa.parse.kotlin.KotlinLexer.*
+import dev.kensa.parse.kotlin.KotlinParser.ValueArgumentContext
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
+import dev.kensa.parse.ParseContext.Companion.asNote
+import dev.kensa.parse.ParseContext.Companion.asStartNote
 import dev.kensa.parse.ParseContext.Companion.asEnterExpression
 import dev.kensa.parse.ParseContext.Companion.asEnterStatement
 import dev.kensa.parse.ParseContext.Companion.asMultilineString
@@ -28,9 +29,11 @@ class KotlinFunctionBodyParser(
 //        println(">Entering: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
     }
 
+    // For Debugging:
     override fun exitEveryRule(ctx: ParserRuleContext) {
 //        println(">Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
     }
+
 
     override fun enterLambdaLiteral(ctx: KotlinParser.LambdaLiteralContext) {
         stateMachine.apply(EnterLambda)
@@ -105,6 +108,10 @@ class KotlinFunctionBodyParser(
     }
 
     override fun enterStatement(ctx: KotlinParser.StatementContext) {
+        ctx.asStartNote()?.also {
+            stateMachine.apply(it)
+        }
+
         stateMachine.apply(ctx.asEnterStatement())
     }
 
@@ -139,11 +146,11 @@ class KotlinFunctionBodyParser(
         }
     }
 
-    override fun enterValueArgument(ctx: KotlinParser.ValueArgumentContext) {
+    override fun enterValueArgument(ctx: ValueArgumentContext) {
         stateMachine.apply(EnterValueArgument)
     }
 
-    override fun exitValueArgument(ctx: KotlinParser.ValueArgumentContext) {
+    override fun exitValueArgument(ctx: ValueArgumentContext) {
         stateMachine.apply(ExitValueArgument)
     }
 
@@ -167,6 +174,7 @@ class KotlinFunctionBodyParser(
         with(parseContext) {
             with(node) {
                 when (symbol.type) {
+                    RPAREN, RCURL -> node.asNote()?.also { stateMachine.apply(it) }
                     ASSIGNMENT, ARROW -> stateMachine.apply(asOperator())
                     BooleanLiteral -> stateMachine.apply(asBooleanLiteral())
                     CharacterLiteral -> stateMachine.apply(asCharacterLiteral())
@@ -185,7 +193,7 @@ class KotlinFunctionBodyParser(
         fun ParserRuleContext.findValueArguments(): Boolean {
             return children?.any { child ->
                 when (child) {
-                    is KotlinParser.ValueArgumentContext -> true
+                    is ValueArgumentContext -> true
                     is ParserRuleContext -> child.findValueArguments()
                     else -> false
                 }

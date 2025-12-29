@@ -1,7 +1,7 @@
 package dev.kensa.junit
 
-import dev.kensa.parse.Java20Parser
-import dev.kensa.parse.KotlinParser
+import dev.kensa.parse.java.Java20Parser
+import dev.kensa.parse.kotlin.KotlinParser
 import dev.kensa.parse.kotlin.KotlinParserDelegate.Companion.findAnnotationNames
 
 private val testAnnotationNames = listOf("Test", "org.junit.jupiter.api.Test", "ParameterizedTest", "org.junit.jupiter.params.ParameterizedTest")

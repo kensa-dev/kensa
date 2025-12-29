@@ -2,8 +2,8 @@ package dev.kensa.parse.java
 
 import dev.kensa.KensaException
 import dev.kensa.parse.*
-import dev.kensa.parse.Java20Parser.ClassDeclarationContext
-import dev.kensa.parse.Java20Parser.InterfaceDeclarationContext
+import dev.kensa.parse.java.Java20Parser.ClassDeclarationContext
+import dev.kensa.parse.java.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.util.SourceCode
 import dev.kensa.util.isKotlinClass
 import org.antlr.v4.runtime.CharStream
@@ -77,7 +77,7 @@ class JavaParserDelegate(
 
     private fun CharStream.compilationUnit(): Java20Parser.CompilationUnitContext =
         // Reset the CharStream to the beginning
-        Java20Parser(CommonTokenStream(Java20Lexer(apply { seek(0) }))).apply {
+        Java20Parser(CommonTokenStream(KensaJavaLexer(apply { seek(0) }))).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.compilationUnit()

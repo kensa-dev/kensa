@@ -22,6 +22,10 @@ class KotlinParserDelegate(
 
     override fun Class<*>.isParsable(): Boolean = isKotlinClass
 
+    override fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
+        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext), dc.body)
+    }
+
     override fun Class<*>.toSimpleName(): (Class<*>) -> String = { it.kotlin.simpleName ?: throw IllegalArgumentException("Types must have names") }
 
     override fun Class<out Any>.findMethodDeclarations(): MethodDeclarations {
@@ -90,7 +94,7 @@ class KotlinParserDelegate(
 
     private fun CharStream.compilationUnit(): KotlinParser.KotlinFileContext =
         // Reset the CharStream to the beginning
-        KotlinParser(CommonTokenStream(KotlinLexer(apply { seek(0) }))).apply {
+        KotlinParser(CommonTokenStream(KensaKotlinLexer(apply { seek(0) }))).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.kotlinFile()
@@ -98,10 +102,6 @@ class KotlinParserDelegate(
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsNested(): Boolean = findAnnotationNames().any { name -> ParserDelegate.nestedSentenceAnnotationNames.contains(name) }
 
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean = findAnnotationNames().any { name -> ParserDelegate.emphasisedMethodAnnotationNames.contains(name) }
-
-    override fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
-        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext), dc.body)
-    }
 
     companion object {
         fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> {
