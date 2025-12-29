@@ -1,5 +1,7 @@
 rootProject.name = "kensa"
 
+include("antlr")
+
 include("core")
 
 include("ui")

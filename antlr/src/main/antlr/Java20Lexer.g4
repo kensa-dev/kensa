@@ -4,6 +4,10 @@
 
 lexer grammar Java20Lexer;
 
+@header {
+    package dev.kensa.parse.java;
+}
+
 // LEXER
 
 EXPORTS    : 'exports';
@@ -942,7 +946,7 @@ WS
       -> channel(HIDDEN)
     ;
 
-NL: ('\n' | '\r' '\n')? -> channel(HIDDEN);
+NL: ('\n' | '\r' '\n') -> channel(HIDDEN);
 
 KENSA_HINT: '/**' .*? '*/' -> channel(HIDDEN);
 

@@ -54,6 +54,7 @@ class FixtureRegistryTest {
         }
     }
 
+    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     @Test
     fun `should lookup fixture keys from Java classes`() {
         FixtureRegistry.register(JavaFixtureClass::class.java)

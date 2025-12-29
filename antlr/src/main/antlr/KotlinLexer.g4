@@ -4,6 +4,10 @@
 
 lexer grammar KotlinLexer;
 
+@header {
+    package dev.kensa.parse.kotlin;
+}
+
 import UnicodeClasses;
 
 // SECTION: lexicalGeneral

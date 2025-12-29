@@ -1,10 +1,6 @@
 package dev.kensa.parse.java
 
 import dev.kensa.parse.Event.*
-import dev.kensa.parse.Java20Lexer.*
-import dev.kensa.parse.Java20Parser
-import dev.kensa.parse.Java20Parser.TextBlock
-import dev.kensa.parse.Java20ParserBaseListener
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
@@ -18,6 +14,8 @@ import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
 import dev.kensa.parse.ParseContext.Companion.asStartNote
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
+import dev.kensa.parse.java.Java20Lexer.*
+import dev.kensa.parse.java.Java20Parser.TextBlock
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode

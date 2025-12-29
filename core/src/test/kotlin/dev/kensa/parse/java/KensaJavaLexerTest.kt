@@ -1,6 +1,6 @@
 package dev.kensa.parse.java
 
-import dev.kensa.parse.Java20Lexer.*
+import dev.kensa.parse.java.Java20Lexer.*
 import dev.kensa.parse.KensaToken
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe

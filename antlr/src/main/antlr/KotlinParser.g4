@@ -6,6 +6,10 @@ parser grammar KotlinParser;
 
 options { tokenVocab = KotlinLexer; }
 
+@header {
+    package dev.kensa.parse.kotlin;
+}
+
 // SECTION: general
 
 kotlinFile

@@ -7,6 +7,10 @@ options {
     tokenVocab = Java20Lexer;
 }
 
+@header {
+    package dev.kensa.parse.java;
+}
+
 //=============
 
 start_

@@ -1,7 +1,7 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.KensaToken
-import dev.kensa.parse.KotlinLexer.*
+import dev.kensa.parse.kotlin.KotlinLexer.*
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf

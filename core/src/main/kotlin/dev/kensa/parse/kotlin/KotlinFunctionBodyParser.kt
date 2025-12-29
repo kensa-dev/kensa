@@ -1,10 +1,8 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.Event.*
-import dev.kensa.parse.KotlinLexer.*
-import dev.kensa.parse.KotlinParser
-import dev.kensa.parse.KotlinParser.ValueArgumentContext
-import dev.kensa.parse.KotlinParserBaseListener
+import dev.kensa.parse.kotlin.KotlinLexer.*
+import dev.kensa.parse.kotlin.KotlinParser.ValueArgumentContext
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral

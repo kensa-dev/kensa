@@ -2,8 +2,8 @@ package dev.kensa.parse.java
 
 import dev.kensa.KensaException
 import dev.kensa.parse.*
-import dev.kensa.parse.Java20Parser.ClassDeclarationContext
-import dev.kensa.parse.Java20Parser.InterfaceDeclarationContext
+import dev.kensa.parse.java.Java20Parser.ClassDeclarationContext
+import dev.kensa.parse.java.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.util.SourceCode
 import dev.kensa.util.isKotlinClass
 import org.antlr.v4.runtime.CharStream
