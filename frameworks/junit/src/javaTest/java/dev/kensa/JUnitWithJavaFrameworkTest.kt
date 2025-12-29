@@ -111,7 +111,8 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
                 JavaWithHintedFieldsInsideTest::class,
                 JavaWithMethodHintStrategyTest::class,
                 JavaWithMixedStrategyTest::class,
-                JavaWithPropertyStrategyTest::class
+                JavaWithPropertyStrategyTest::class,
+                JavaWithNotesTest::class
             ]
         )
         fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {

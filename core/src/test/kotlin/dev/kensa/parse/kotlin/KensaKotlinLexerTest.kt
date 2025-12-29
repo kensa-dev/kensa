@@ -130,7 +130,10 @@ class KensaKotlinLexerTest {
             val input = """
             given() /// 😜
             whenever()
-            
+            then(
+                things(), /// End of line note after comma
+                equalTo(true) /// More end of line notes
+            )
         """.trimIndent()
 
             val tokenList = tokenListFor(input)
@@ -147,8 +150,40 @@ class KensaKotlinLexerTest {
             tokenList[6].text shouldBe "whenever"
             tokenList[7].type shouldBe LPAREN
             tokenList[8].type shouldBe RPAREN
+            tokenList[9].type shouldBe NL
+            tokenList[10].text shouldBe "then"
+            tokenList[11].type shouldBe LPAREN
+            tokenList[12].type shouldBe Inside_NL
+            tokenList[13].type shouldBe Inside_WS
+            tokenList[14].type shouldBe Inside_WS
+            tokenList[15].type shouldBe Inside_WS
+            tokenList[16].type shouldBe Inside_WS
+            tokenList[17].text shouldBe "things"
+            tokenList[18].type shouldBe LPAREN
+            tokenList[19].shouldBeInstanceOf<KensaToken> {
+                it.type shouldBe RPAREN
+                it.note shouldBe "End of line note after comma"
+            }
+            tokenList[20].type shouldBe COMMA
+            tokenList[21].type shouldBe Inside_WS
+            tokenList[22].type shouldBe Inside_KensaNote
+            tokenList[23].type shouldBe Inside_NL
+            tokenList[24].type shouldBe Inside_WS
+            tokenList[25].type shouldBe Inside_WS
+            tokenList[26].type shouldBe Inside_WS
+            tokenList[27].type shouldBe Inside_WS
+            tokenList[28].text shouldBe "equalTo"
+            tokenList[29].type shouldBe LPAREN
+            tokenList[30].text shouldBe "true"
+            tokenList[31].shouldBeInstanceOf<KensaToken> {
+                it.type shouldBe RPAREN
+                it.note shouldBe "More end of line notes"
+            }
+            tokenList[32].type shouldBe Inside_WS
+            tokenList[33].type shouldBe Inside_KensaNote
+            tokenList[34].type shouldBe Inside_NL
+            tokenList[35].type shouldBe RPAREN
         }
-
     }
 
     @Nested

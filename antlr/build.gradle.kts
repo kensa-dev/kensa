@@ -25,7 +25,7 @@ tasks {
         )
     }
 
-    withType<KotlinCompile> {
+    withType<JavaCompile> {
         dependsOn("generateGrammarSource")
     }
 }

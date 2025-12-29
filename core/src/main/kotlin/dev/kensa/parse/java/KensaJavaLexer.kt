@@ -6,13 +6,15 @@ import org.antlr.v4.runtime.Token
 
 class KensaJavaLexer(input: CharStream) : Java20Lexer(input) {
 
+    private val ignoredTokens = setOf(WS, SEMI, COMMA)
+
     private val kensaLexer = KensaLexer(
         newlineToken = NL,
-        kensaNoteToken = KENSA_NOTE,
+        kensaNoteTokens = setOf(KENSA_NOTE),
         kensaHintTokens = setOf(KENSA_HINT),
         endOfLineTokens = setOf(RPAREN, RBRACE, SEMI),
         identifierToken = Identifier,
-        shouldIgnore = { type == WS || type == SEMI }
+        shouldIgnore = { type in ignoredTokens }
     )
 
     override fun nextToken(): Token? = kensaLexer.nextToken { super.nextToken() }

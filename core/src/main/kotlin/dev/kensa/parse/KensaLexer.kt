@@ -7,7 +7,7 @@ import kotlin.contracts.contract
 
 class KensaLexer(
     private val newlineToken: Int,
-    private val kensaNoteToken: Int,
+    private val kensaNoteTokens: Set<Int>,
     private val kensaHintTokens: Set<Int>,
     private val endOfLineTokens: Set<Int>,
     private val identifierToken: Int,
@@ -68,7 +68,6 @@ class KensaLexer(
 
                 if (isKensaNote() && previousToken.canHaveEndOfLineKensaNote()) {
                     replaceWithKensaNoteToken(previousToken.index)
-                    break
                 }
             }
         }
@@ -81,7 +80,7 @@ class KensaLexer(
 
     private fun Token.isNotable() = type == identifierToken && isBddKeyword()
     private fun Token.isHintable() = type == identifierToken
-    private fun Token.isKensaNote() = type == kensaNoteToken
+    private fun Token.isKensaNote() = type in kensaNoteTokens
     private fun Token.isBddKeyword(): Boolean {
         if (type != identifierToken) return false
         val lowercaseText = text.lowercase()
@@ -101,7 +100,7 @@ class KensaLexer(
 
     private fun Token.tryAppendHintOrNote(): Boolean =
         when (type) {
-            kensaNoteToken -> {
+            in kensaNoteTokens -> {
                 pendingNote.append(this) { asNote() }; true
             }
 

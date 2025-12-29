@@ -536,6 +536,7 @@ Inside_UnsignedLiteral: UnsignedLiteral -> type(UnsignedLiteral);
 
 Inside_Identifier: Identifier -> type(Identifier);
 Inside_KensaHint: KensaHint -> channel(HIDDEN);
+Inside_KensaNote: KensaNote -> channel(HIDDEN);
 Inside_Comment: (LineComment | DelimitedComment) -> channel(HIDDEN);
 Inside_WS: WS -> channel(HIDDEN);
 Inside_NL: NL -> channel(HIDDEN);
