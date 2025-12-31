@@ -34,7 +34,7 @@
     "vite": "^6.3.5",
     "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-svgr": "^4.3.0",
-    "webpack-bundle-analyzer": "^4.5.0",
+    "webpack-bundle-analyzer": "^4.10.2",
     "webpack-visualizer-plugin": "^0.1.11"
   },
   "dependencies": {
