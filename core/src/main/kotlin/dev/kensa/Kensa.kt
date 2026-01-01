@@ -24,7 +24,7 @@ private const val KENSA_DISABLE_OUTPUT = "kensa.disable.output"
 private const val KENSA_OUTPUT_DIR = "kensa-output"
 
 fun interface KensaConfigurationProvider {
-    operator fun invoke() : Configuration
+    operator fun invoke(): Configuration
 }
 
 object StaticKensaConfigurationProvider : KensaConfigurationProvider {
@@ -43,6 +43,8 @@ object Kensa {
 
 class KensaConfigurator(private val configuration: Configuration) {
 
+    fun withUiMode(mode: UiMode) = apply { configuration.uiMode = mode }
+
     fun withIssueTrackerUrl(url: URL): KensaConfigurator = apply { configuration.issueTrackerUrl = url }
 
     fun withOutputDir(dir: String): KensaConfigurator = withOutputDir(Paths.get(dir))
@@ -50,6 +52,7 @@ class KensaConfigurator(private val configuration: Configuration) {
         require(dir.isAbsolute) { "OutputDir must be absolute." }
         configuration.outputDir = if (dir.endsWith(KENSA_OUTPUT_DIR)) dir else dir.resolve(KENSA_OUTPUT_DIR)
     }
+
     fun withOutputDisabled(): KensaConfigurator = apply { configuration.isOutputEnabled = false }
 
     fun withListRendererFormat(format: ListRendererFormat): KensaConfigurator = apply { configuration.renderers.setListRendererFormat(format) }
@@ -73,6 +76,11 @@ class KensaConfigurator(private val configuration: Configuration) {
 
     fun withFlattenOutputPackages(value: Boolean): KensaConfigurator = apply { configuration.flattenOutputPackages = value }
     fun withPackageDisplayMode(packageDisplay: PackageDisplay): KensaConfigurator = apply { configuration.packageDisplay = packageDisplay }
+}
+
+enum class UiMode {
+    Legacy,
+    Modern
 }
 
 enum class PackageDisplay {
@@ -99,6 +107,7 @@ enum class Tab {
 class Configuration {
 
     internal val dictionary: Dictionary = Dictionary()
+    var uiMode: UiMode = UiMode.Modern
     val renderers: Renderers = Renderers()
     var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR)
     var flattenOutputPackages: Boolean = false
@@ -135,9 +144,10 @@ class RendererConfiguration(@PublishedApi internal val renderers: Renderers) {
     inline fun <reified T : Any> valueRenderer(renderer: ValueRenderer<T>) {
         renderers.addValueRenderer(T::class, renderer)
     }
+
     inline fun <reified T : Any> interactionRenderer(renderer: InteractionRenderer<T>) {
         renderers.addInteractionRenderer(T::class, renderer)
     }
 }
 
-fun Configuration.withRenderers(block: RendererConfiguration.() -> Unit) =  RendererConfiguration(this.renderers).block()
+fun Configuration.withRenderers(block: RendererConfiguration.() -> Unit) = RendererConfiguration(this.renderers).block()

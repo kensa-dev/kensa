@@ -1,0 +1,600 @@
+{
+  "indices": [
+    {
+      "id": "sonique.groot.feasibility.FeasibilityCheckHappyPathTest",
+      "displayName": "Feasibility Check Happy Path Test",
+      "testClass": "sonique.groot.feasibility.FeasibilityCheckHappyPathTest",
+      "state": "Passed",
+      "tests": [
+        {
+          "displayName": "Returns Feasibility Result For Address Ready For Service With Internal Connection",
+          "testMethod": "returnsFeasibilityResultForAddressReadyForServiceWithInternalConnection",
+          "state": "Passed"
+        },
+        {
+          "displayName": "Returns Feasibility Result For Address Ready For Service With Internal Connection For Standard And Higher Speed",
+          "testMethod": "returnsFeasibilityResultForAddressReadyForServiceWithInternalConnectionForStandardAndHigherSpeed",
+          "state": "Passed"
+        },
+        {
+          "displayName": "Uses First Rfs Status When Multiple Geographic Addresses Returned",
+          "testMethod": "usesFirstRfsStatusWhenMultipleGeographicAddressesReturned",
+          "state": "Passed"
+        },
+        {
+          "displayName": "Returns Feasibility Result For Address Ready For Service Without Internal Connection",
+          "testMethod": "returnsFeasibilityResultForAddressReadyForServiceWithoutInternalConnection",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.adoptabot.AdoptionServiceTest",
+      "displayName": "Adoption Service Test",
+      "testClass": "dev.kensa.adoptabot.AdoptionServiceTest",
+      "state": "Passed",
+      "tests": [
+        {
+          "displayName": "should allow adopting a bot",
+          "testMethod": "shouldAllowAdoptingABot",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.adoptabot.InventoryServiceTest",
+      "displayName": "Inventory Service Test",
+      "testClass": "dev.kensa.adoptabot.InventoryServiceTest",
+      "state": "Failed",
+      "tests": [
+        {
+          "displayName": "should decrement stock after adoption",
+          "testMethod": "shouldDecrementStock",
+          "state": "Passed"
+        },
+        {
+          "displayName": "should fail when stock is empty",
+          "testMethod": "shouldFailWhenEmpty",
+          "state": "Failed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithAcronymsTest",
+      "testClass": "dev.kensa.KotlinWithAcronymsTest",
+      "issues": [],
+      "displayName": "Kotlin With Acronyms Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithAnnotationFeatureTest",
+      "testClass": "dev.kensa.KotlinWithAnnotationFeatureTest",
+      "issues": [],
+      "displayName": "Kotlin With Annotation Feature Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "testWithScenarioHolder",
+          "issues": [],
+          "displayName": "Test With Scenario Holder",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithEmphasis",
+          "issues": [],
+          "displayName": "Test With Emphasis",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithRenderedValueFunctionWithParameters",
+          "issues": [],
+          "displayName": "Test With Rendered Value Function With Parameters",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithHighlight",
+          "issues": [],
+          "displayName": "Test With Highlight",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithInfixStyleRenderedValueFunctionWithParameters",
+          "issues": [],
+          "displayName": "Test With Infix Style Rendered Value Function With Parameters",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithChainedFunctionSentenceValue",
+          "issues": [],
+          "displayName": "Test With Chained Function Sentence Value",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithChainedFunctionSentenceValueParameter",
+          "issues": [],
+          "displayName": "Test With Chained Function Sentence Value Parameter",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithChainedFieldSentenceValue",
+          "issues": [],
+          "displayName": "Test With Chained Field Sentence Value",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "parameterisedTestWithRenderedValueFunctionWithParameters",
+          "issues": [],
+          "displayName": "Parameterised Test With Rendered Value Function With Parameters",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithSimpleFunctionSentenceValue",
+          "issues": [],
+          "displayName": "Test With Simple Function Sentence Value",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "testWithScenario",
+          "issues": [],
+          "displayName": "Test With Scenario",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithCapturedOutputsTest",
+      "testClass": "dev.kensa.KotlinWithCapturedOutputsTest",
+      "issues": [],
+      "displayName": "Kotlin With Captured Outputs Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "test2",
+          "issues": [],
+          "displayName": "Test 2",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test3",
+          "issues": [],
+          "displayName": "Test 3",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test1",
+          "issues": [],
+          "displayName": "Test 1",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithFixturesTest",
+      "testClass": "dev.kensa.KotlinWithFixturesTest",
+      "issues": [],
+      "displayName": "Kotlin With Fixtures Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "test2",
+          "issues": [],
+          "displayName": "Test 2",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test3",
+          "issues": [],
+          "displayName": "Test 3",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test4",
+          "issues": [],
+          "displayName": "Test 4",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test5",
+          "issues": [],
+          "displayName": "Test 5",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test1",
+          "issues": [],
+          "displayName": "Test 1",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithGenericParameterizedTest",
+      "testClass": "dev.kensa.KotlinWithGenericParameterizedTest",
+      "issues": [],
+      "displayName": "Kotlin With Generic Parameterized Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnDifferentLineAsParameter",
+          "issues": [],
+          "displayName": "The Test With Optional Parameter And Closing Function Brace On Different Line As Parameter",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnSameLineAsParameter",
+          "issues": [],
+          "displayName": "The Test With Optional Parameter And Closing Function Brace On Same Line As Parameter",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "theTest",
+          "issues": [],
+          "displayName": "The Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithJavaRecordTest",
+      "testClass": "dev.kensa.KotlinWithJavaRecordTest",
+      "issues": [],
+      "displayName": "Kotlin With Java Record Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithLiteralsTest",
+      "testClass": "dev.kensa.KotlinWithLiteralsTest",
+      "issues": [],
+      "displayName": "Kotlin With Literals Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithMultiplePassingTests",
+      "testClass": "dev.kensa.KotlinWithMultiplePassingTests",
+      "issues": [],
+      "displayName": "Kotlin With Multiple Passing Tests",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest3",
+          "issues": [],
+          "displayName": "Passing Test 3",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "passingTest2",
+          "issues": [],
+          "displayName": "Passing Test 2",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "passingTest1",
+          "issues": [],
+          "displayName": "Passing Test 1",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithNestedSentenceTest",
+      "testClass": "dev.kensa.KotlinWithNestedSentenceTest",
+      "issues": [],
+      "displayName": "Kotlin With Nested Sentence Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "nestedWithFixtureAndScenarioParameters",
+          "issues": [],
+          "displayName": "Nested With Fixture And Scenario Parameters",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "nestedWithScenarioParameters",
+          "issues": [],
+          "displayName": "Nested With Scenario Parameters",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "simpleNested",
+          "issues": [],
+          "displayName": "Simple Nested",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "parameterisedWithNestedSentence",
+          "issues": [],
+          "displayName": "Parameterised With Nested Sentence",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "nestedWithNestedExpressionInInterface",
+          "issues": [],
+          "displayName": "Nested With Nested Expression In Interface",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "nestedWithMultiLineParameters",
+          "issues": [],
+          "displayName": "Nested With Multi Line Parameters",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "nestedWithNestedExpression",
+          "issues": [],
+          "displayName": "Nested With Nested Expression",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithOutputDisabledTest",
+      "testClass": "dev.kensa.KotlinWithOutputDisabledTest",
+      "issues": [],
+      "displayName": "Kotlin With Output Disabled Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithParameterResolverExtensionAndParameterizedTest",
+      "testClass": "dev.kensa.KotlinWithParameterResolverExtensionAndParameterizedTest",
+      "issues": [],
+      "displayName": "Kotlin With Parameter Resolver Extension And Parameterized Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "theTest",
+          "issues": [],
+          "displayName": "The Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithParameterResolverExtensionTest",
+      "testClass": "dev.kensa.KotlinWithParameterResolverExtensionTest",
+      "issues": [],
+      "displayName": "Kotlin With Parameter Resolver Extension Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "theTest",
+          "issues": [],
+          "displayName": "The Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithProtectedPhrasesTest",
+      "testClass": "dev.kensa.KotlinWithProtectedPhrasesTest",
+      "issues": [],
+      "displayName": "Kotlin With Protected Phrases Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithSetupStepsTest",
+      "testClass": "dev.kensa.KotlinWithSetupStepsTest",
+      "issues": [],
+      "displayName": "Kotlin With Setup Steps Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "singleSetupStep",
+          "issues": [],
+          "displayName": "Single Setup Step",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "chainedSetupStep",
+          "issues": [],
+          "displayName": "Chained Setup Step",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithSingleFailingInvocationOfParameterizedTest",
+      "testClass": "dev.kensa.KotlinWithSingleFailingInvocationOfParameterizedTest",
+      "issues": [],
+      "displayName": "Kotlin With Single Failing Invocation Of Parameterized Test",
+      "state": "Failed",
+      "tests": [
+        {
+          "testMethod": "theTest",
+          "issues": [],
+          "displayName": "The Test",
+          "state": "Failed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithSinglePassingTest",
+      "testClass": "dev.kensa.KotlinWithSinglePassingTest",
+      "issues": [],
+      "displayName": "Kotlin With Single Passing Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithTypeArgumentsTest",
+      "testClass": "dev.kensa.KotlinWithTypeArgumentsTest",
+      "issues": [],
+      "displayName": "Kotlin With Type Arguments Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.KotlinWithVariousNamingTest",
+      "testClass": "dev.kensa.KotlinWithVariousNamingTest",
+      "issues": [],
+      "displayName": "Kotlin With Various Naming Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "myTest1",
+          "issues": [],
+          "displayName": "My Named Test 1",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "Test 1 🤡😱",
+          "issues": [],
+          "displayName": "Test 1 🤡😱",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test 1",
+          "issues": [],
+          "displayName": "test 1",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "Test 1 🤡",
+          "issues": [],
+          "displayName": "Test 1 🤡",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "Test 1",
+          "issues": [],
+          "displayName": "Test 1",
+          "state": "Passed"
+        },
+        {
+          "testMethod": "test1",
+          "issues": [],
+          "displayName": "Test 1",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.hints.KotlinWithHintedFieldsInsideObjectTest",
+      "testClass": "dev.kensa.hints.KotlinWithHintedFieldsInsideObjectTest",
+      "issues": [],
+      "displayName": "Kotlin With Hinted Fields Inside Object Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.hints.KotlinWithHintedFieldsInsideTest",
+      "testClass": "dev.kensa.hints.KotlinWithHintedFieldsInsideTest",
+      "issues": [],
+      "displayName": "Kotlin With Hinted Fields Inside Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.hints.KotlinWithMethodHintStrategyTest",
+      "testClass": "dev.kensa.hints.KotlinWithMethodHintStrategyTest",
+      "issues": [],
+      "displayName": "Kotlin With Method Hint Strategy Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.hints.KotlinWithMixedStrategyTest",
+      "testClass": "dev.kensa.hints.KotlinWithMixedStrategyTest",
+      "issues": [],
+      "displayName": "Kotlin With Mixed Strategy Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    },
+    {
+      "id": "dev.kensa.hints.KotlinWithPropertyStrategyTest",
+      "testClass": "dev.kensa.hints.KotlinWithPropertyStrategyTest",
+      "issues": [],
+      "displayName": "Kotlin With Property Strategy Test",
+      "state": "Passed",
+      "tests": [
+        {
+          "testMethod": "passingTest",
+          "issues": [],
+          "displayName": "Passing Test",
+          "state": "Passed"
+        }
+      ]
+    }
+  ]
+}

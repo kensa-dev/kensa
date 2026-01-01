@@ -1,0 +1,16 @@
+{
+  "titleText": "Groot Acceptance Tests",
+  "issueTrackerUrl": "https://devex-issuehub.at.sky/browse/",
+  "acronyms": {
+    "FTTP": "Fibre To The Premises",
+    "UPRN": "Unique Property Reference Number"
+  },
+  "flattenPackages": false,
+  "packageDisplayMode": "ShowFullPackage",
+  "sectionOrder": [
+    "Tabs",
+    "Sentences",
+    "Exception"
+  ],
+  "alwaysExpandNotes": true
+}

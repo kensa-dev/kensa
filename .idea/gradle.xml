@@ -21,6 +21,7 @@
             <option value="$PROJECT_DIR$/frameworks/kotest" />
             <option value="$PROJECT_DIR$/frameworks/testng" />
             <option value="$PROJECT_DIR$/ui" />
+            <option value="$PROJECT_DIR$/ui2" />
           </set>
         </option>
       </GradleProjectSettings>
