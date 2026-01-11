@@ -1,13 +1,12 @@
 package dev.kensa;
 
 import dev.kensa.hamcrest.WithHamcrest;
-import dev.kensa.junit.KensaTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 
-public class JavaWithSinglePassingTest implements KensaTest, WithHamcrest {
+public class JavaWithSinglePassingTest extends JavaExampleTest implements WithHamcrest {
 
     @RenderedValue
     private final String aValue = "aStringValue";

@@ -1,13 +1,13 @@
 package dev.kensa.hints
 
+import dev.kensa.KotlinExampleTest
 import dev.kensa.RenderedHintStrategy.HintFromMethod
 import dev.kensa.RenderedValueStrategy.UseToString
 import dev.kensa.RenderedValueWithHint
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
 @RenderedValueWithHint(type = ToStringField::class, valueStrategy = UseToString, hintStrategy = HintFromMethod, hintParam = "getMetadata")
-class KotlinWithMixedStrategyTest : KensaTest {
+class KotlinWithMixedStrategyTest : KotlinExampleTest() {
 
     @Test
     fun passingTest() {

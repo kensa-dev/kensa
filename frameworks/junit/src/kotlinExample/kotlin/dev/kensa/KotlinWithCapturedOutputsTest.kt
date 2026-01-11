@@ -4,13 +4,12 @@ import com.natpryce.hamkrest.equalTo
 import dev.kensa.KotlinCapturedOutputs.StringOutput
 import dev.kensa.MoreKotlinCapturedOutputs.BooleanOutput
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import dev.kensa.outputs.CapturedOutputContainer
 import dev.kensa.outputs.CapturedOutputsRegistry.registerCapturedOutputs
 import dev.kensa.outputs.capturedOutput
 import org.junit.jupiter.api.Test
 
-class KotlinWithCapturedOutputsTest : KensaTest, WithHamkrest {
+class KotlinWithCapturedOutputsTest : KotlinExampleTest(), WithHamkrest {
 
     init {
         registerCapturedOutputs(KotlinCapturedOutputs, MoreKotlinCapturedOutputs)

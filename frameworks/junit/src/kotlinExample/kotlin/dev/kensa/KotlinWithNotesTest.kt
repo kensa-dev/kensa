@@ -2,10 +2,9 @@ package dev.kensa
 
 import com.natpryce.hamkrest.equalTo
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
-class KotlinWithNotesTest : KensaTest, WithHamkrest {
+class KotlinWithNotesTest : KotlinExampleTest(), WithHamkrest {
 
     @Test
     fun passingTest() {

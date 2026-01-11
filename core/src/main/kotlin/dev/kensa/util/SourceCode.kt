@@ -4,15 +4,18 @@ import dev.kensa.KensaException
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.misc.Interval
-import java.io.IOException
-import java.nio.file.*
-import java.nio.file.FileVisitResult.CONTINUE
-import java.nio.file.attribute.BasicFileAttributes
+import java.net.URI
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.io.path.Path
+import kotlin.io.path.exists
+import kotlin.io.path.toPath
 
-object SourceCode {
+class SourceCode(private val sourceLocations: List<Path> = emptyList()) {
     private val workingDirectory = Path.of(System.getProperty("user.dir"))
-
     private val Class<*>.sourceExtension get() = if (isKotlinClass) "kt" else "java"
 
     private object NullCharStream : CharStream {
@@ -28,6 +31,16 @@ object SourceCode {
     }
 
     private val cache = ConcurrentHashMap<Class<*>, CharStream>()
+    private val fsCache = ConcurrentHashMap<URI, FileSystem>()
+    private val defaultSourceLocations: List<Path> =
+        listOf(
+            workingDirectory.resolve("src/main/java"),
+            workingDirectory.resolve("src/main/kotlin"),
+            workingDirectory.resolve("src/test/java"),
+            workingDirectory.resolve("src/test/kotlin")
+        )
+
+    private val discoveredLocations = ConcurrentHashMap.newKeySet<Path>()
 
     fun existsFor(clazz: Class<*>): Boolean = loadCharStream(clazz) !== NullCharStream
 
@@ -35,24 +48,59 @@ object SourceCode {
 
     private fun loadCharStream(clazz: Class<*>): CharStream = cache.getOrPut(clazz) {
         val name = clazz.name.substringBefore("$")
-        val path = Walker(name, clazz.sourceExtension).run {
-            Files.walkFileTree(workingDirectory, this)
-            result
-        }
+        val internalPath = "${name.replace(".", "/")}.${clazz.sourceExtension}"
 
-        (path?.let { CharStreams.fromPath(it) } ?: NullCharStream)
+        internalPath.findInSourceLocations()
+            ?: internalPath.findInDiscoveredSources(clazz)
+            ?: NullCharStream
     }
-}
 
-private class Walker(name: String, sourceExtension: String) : FileVisitor<Path?> {
-    private val pathMatcher: PathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/${name.replace("\\.".toRegex(), "/")}.$sourceExtension")
-    var result: Path? = null
+    private fun String.findInSourceLocations(): CharStream? =
+        allLocations()
+            .map { it.toAbsolutePath().toUri().asRootPath().resolve(this) }
+            .find { it.exists() }
+            ?.let { CharStreams.fromPath(it) }
 
-    override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes) = CONTINUE
+    private fun allLocations() = sequenceOf(
+        defaultSourceLocations.asSequence(),
+        sourceLocations.asSequence(),
+        discoveredLocations.asSequence()
+    ).flatten()
 
-    override fun visitFile(file: Path?, attrs: BasicFileAttributes) = CONTINUE.apply { if (pathMatcher.matches(file)) result = file }
+    private fun String.findInDiscoveredSources(clazz: Class<*>): CharStream? =
+        if (clazz.tryRegisterSourcesJar()) findInSourceLocations() else null
 
-    override fun visitFileFailed(file: Path?, exc: IOException) = CONTINUE
+    private fun Class<*>.tryRegisterSourcesJar(): Boolean {
+        try {
+            val location = protectionDomain?.codeSource?.location?.toURI() ?: return false
+            val path = Paths.get(location)
 
-    override fun postVisitDirectory(dir: Path?, exc: IOException?) = CONTINUE
+            if (path.endsWith(".jar")) {
+                val sourceJarPaths = listOf(
+                    path.toString().replace(".jar", "-sources.jar"),
+                    path.toString().replace(".jar", "-src.jar")
+                ).map { Path(it) }
+
+                sourceJarPaths.find { it.exists() }?.let {
+                    discoveredLocations.add(it)
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            System.err.println("Failed to find source jar for [${this.name}]")
+            e.printStackTrace(System.err)
+        }
+        return false
+    }
+
+    private fun URI.asRootPath(): Path =
+        if (path?.endsWith(".jar") == true) {
+            val jarUri = URI.create("jar:${this}")
+            val fs = fsCache.getOrPut(jarUri) {
+                FileSystems.newFileSystem(jarUri, emptyMap<String, Any>())
+            }
+            fs.getPath("/")
+        } else {
+            toPath()
+        }
 }

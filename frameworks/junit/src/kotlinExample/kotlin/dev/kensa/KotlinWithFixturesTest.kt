@@ -11,12 +11,11 @@ import dev.kensa.fixture.KotlinTestFixtures.PublicFixture
 import dev.kensa.fixture.KotlinTestFixtures.StringFixture
 import dev.kensa.fixture.fixture
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 
-class KotlinWithFixturesTest : KensaTest, WithHamkrest {
+class KotlinWithFixturesTest : KotlinExampleTest(), WithHamkrest {
 
     init {
         registerFixtures(KotlinTestFixtures, MoreKotlinTestFixtures, Companion)

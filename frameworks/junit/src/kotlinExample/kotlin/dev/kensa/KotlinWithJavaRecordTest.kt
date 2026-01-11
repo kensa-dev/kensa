@@ -1,10 +1,9 @@
 package dev.kensa
 
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
-class KotlinWithJavaRecordTest : KensaTest, WithHamkrest {
+class KotlinWithJavaRecordTest : KotlinExampleTest(), WithHamkrest {
     @RenderedValue
     private val myJavaRecord = MyJavaRecord("MyRecordValue")
 

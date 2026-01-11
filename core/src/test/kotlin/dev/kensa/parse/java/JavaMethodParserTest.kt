@@ -8,6 +8,7 @@ import dev.kensa.parse.*
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
+import dev.kensa.util.SourceCode
 import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
 import io.kotest.assertions.assertSoftly
@@ -20,14 +21,23 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import kotlin.io.path.Path
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 internal class JavaMethodParserTest {
 
     private val configuration = Configuration()
+
+    @BeforeEach
+    internal fun setUp() {
+        configuration.apply {
+            sourceLocations = listOf(Path("src/example/java"))
+        }
+    }
 
     @Nested
     inner class Parsing {
@@ -234,6 +244,7 @@ internal class JavaMethodParserTest {
                 }
             }
         }
+
         @Test
         fun `ignores invalid notes`() {
             val functionName = "ignoredNotesTest"
@@ -418,12 +429,14 @@ internal class JavaMethodParserTest {
             ParserCache(),
             configuration,
             CompositeParserDelegate(
+                configuration.sourceCode,
                 listOf(
                     JavaParserDelegate(
                         isClassTest = isClassTest,
                         isInterfaceTest = isInterfaceTest,
                         configuration.antlrErrorListenerDisabled,
                         configuration.antlrPredicationMode,
+                        configuration.sourceCode
                     )
                 )
             )

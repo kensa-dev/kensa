@@ -2,7 +2,6 @@ package dev.kensa;
 
 import dev.kensa.extension.TestParameterResolver;
 import dev.kensa.hamcrest.WithHamcrest;
-import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,7 +15,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(TestParameterResolver.class)
-public class JavaWithParameterResolverExtensionAndParameterizedTest implements KensaTest, WithHamcrest {
+public class JavaWithParameterResolverExtensionAndParameterizedTest extends JavaExampleTest implements WithHamcrest {
 
     @RenderedValue
     private final String aValue = "aStringValue";

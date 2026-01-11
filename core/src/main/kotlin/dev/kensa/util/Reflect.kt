@@ -55,12 +55,12 @@ private val allTheFields: ReflectPredicate<Field> = { true }
 private fun withFieldName(name: String): ReflectPredicate<Field> = { it.name == name }
 private fun withName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
 
-internal fun Class<*>.findAllRelatedClasses(): Set<Class<*>> =
+internal fun Class<*>.findAllRelatedClasses(sourceCode: SourceCode): Set<Class<*>> =
     mutableSetOf<Class<*>>().also { classes ->
 
         fun collect(clazz: Class<*>) {
             if (clazz in classes) return
-            if (!SourceCode.existsFor(clazz)) return
+            if (!sourceCode.existsFor(clazz)) return
 
             classes += clazz
             clazz.findAnnotation<Sources>()?.value?.forEach { collect(it.java) }

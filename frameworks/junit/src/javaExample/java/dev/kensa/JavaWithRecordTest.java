@@ -1,9 +1,8 @@
 package dev.kensa;
 
-import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.Test;
 
-public class JavaWithRecordTest implements KensaTest {
+public class JavaWithRecordTest extends JavaExampleTest {
 
     @RenderedValue
     private final MyJavaRecord myJavaRecord = new MyJavaRecord("MyRecordValue");

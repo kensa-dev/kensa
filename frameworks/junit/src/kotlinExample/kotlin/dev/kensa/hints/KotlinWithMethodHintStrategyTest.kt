@@ -1,13 +1,13 @@
 package dev.kensa.hints
 
+import dev.kensa.KotlinExampleTest
 import dev.kensa.RenderedHintStrategy
 import dev.kensa.RenderedValueStrategy.UseMethod
 import dev.kensa.RenderedValueWithHint
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
 @RenderedValueWithHint(type = MethodField::class, valueStrategy = UseMethod, valueParam = "displayName", hintStrategy = RenderedHintStrategy.HintFromMethod, hintParam = "technicalPath")
-class KotlinWithMethodHintStrategyTest : KensaTest {
+class KotlinWithMethodHintStrategyTest : KotlinExampleTest() {
 
     @Test
     fun passingTest() {

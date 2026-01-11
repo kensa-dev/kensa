@@ -2,12 +2,12 @@ package dev.kensa
 
 import dev.kensa.Kensa.konfigure
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import dev.kensa.sentence.Acronym.Companion.of
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class KotlinWithAcronymsTest : KensaTest, WithHamkrest {
+class KotlinWithAcronymsTest : KotlinExampleTest(), WithHamkrest {
+
     @BeforeEach
     fun setUp() {
         konfigure {

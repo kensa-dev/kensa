@@ -31,10 +31,11 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
         @Test
         fun createsOutputFilesCorrectlyWhenPackagesNotFlattened() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/javaExample/java"))
                 flattenOutputPackages = false
             }
 
-            val testClasses = arrayOf(
+            val testClasses: Array<Class<out KensaTest>> = arrayOf(
                 JavaWithSinglePassingTest::class.java,
                 JavaWithMultiplePassingTests::class.java
             )
@@ -49,10 +50,11 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
         @Test
         fun createsOutputFilesCorrectlyWhenPackagesAreFlattened() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/javaExample/java"))
                 flattenOutputPackages = true
             }
 
-            val testClasses = arrayOf(
+            val testClasses: Array<Class<out KensaTest>> = arrayOf(
                 JavaWithSinglePassingTest::class.java,
                 JavaWithMultiplePassingTests::class.java
             )
@@ -66,6 +68,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
         @Test
         fun doesNotCreateOutputFilesWhenOutputIsDisabled() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/javaExample/java"))
                 isOutputEnabled = false
             }
 
@@ -116,12 +119,16 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
             ]
         )
         fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {
+            testConfiguration {
+                sourceLocations = listOf(Path("src/javaExample/java"))
+            }
             executeTestAndVerifyJson(theTestClass)
         }
 
         @Test
         fun embeddedJsonIsCorrectForTestWithExtensionParameter() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/javaExample/java"))
                 renderers.addValueRenderer(MyArgument::class.java, MyArgumentRenderer)
             }
             executeTestAndVerifyJson(JavaWithParameterResolverExtensionTest::class.java)
@@ -130,6 +137,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
         @Test
         fun embeddedJsonIsCorrectForTestWithAcronyms() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/javaExample/java"))
                 acronyms(Acronym.of("FTTP", "Fibre To The Premises"))
                 acronyms(Acronym.of("FUBAR", "F***** up beyond all recognition"))
             }

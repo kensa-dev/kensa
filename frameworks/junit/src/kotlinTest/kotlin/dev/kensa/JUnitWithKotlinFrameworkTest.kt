@@ -37,10 +37,11 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         @Test
         fun createsOutputFilesCorrectlyWhenPackagesNotFlattened() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
                 flattenOutputPackages = false
             }
 
-            val testClasses = arrayOf(
+            val testClasses: Array<Class<out KensaTest>> = arrayOf(
                 KotlinWithSinglePassingTest::class.java,
                 KotlinWithMultiplePassingTests::class.java
             )
@@ -55,10 +56,11 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         @Test
         fun createsOutputFilesCorrectlyWhenPackagesAreFlattened() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
                 flattenOutputPackages = true
             }
 
-            val testClasses = arrayOf(
+            val testClasses: Array<Class<out KensaTest>> = arrayOf(
                 KotlinWithSinglePassingTest::class.java,
                 KotlinWithMultiplePassingTests::class.java
             )
@@ -72,6 +74,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         @Test
         fun doesNotCreateOutputFilesWhenOutputIsDisabled() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
                 isOutputEnabled = false
             }
 
@@ -122,12 +125,16 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
             ]
         )
         fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {
+            testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
+            }
             executeTestAndVerifyJson(theTestClass)
         }
 
         @Test
         fun embeddedJsonIsCorrectForTestWithExtensionParameter() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
                 renderers.addValueRenderer(MyArgument::class.java, MyArgumentRenderer)
             }
             executeTestAndVerifyJson(KotlinWithParameterResolverExtensionTest::class.java)
@@ -136,6 +143,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         @Test
         fun embeddedJsonIsCorrectForTestWithVariousAnnotationsParameter() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
                 renderers.addValueRenderer(MyArgument::class.java, MyArgumentRenderer)
                 renderers.addValueRenderer(MyThing::class.java) {
                     """MyThing"""
@@ -147,6 +155,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         @Test
         fun embeddedJsonIsCorrectForTestWithAcronyms() {
             testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
                 acronyms(Acronym.of("FTTP", "Fibre To The Premises"))
                 acronyms(Acronym.of("FUBAR", "F***** up beyond all recognition"))
             }

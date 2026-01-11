@@ -1,9 +1,8 @@
 package dev.kensa;
 
-import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.Test;
 
-public class JavaWithMultiplePassingTests implements KensaTest {
+public class JavaWithMultiplePassingTests extends JavaExampleTest {
     @Test
     void passingTest1() {
     }

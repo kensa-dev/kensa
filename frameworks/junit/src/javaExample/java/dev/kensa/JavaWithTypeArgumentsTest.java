@@ -1,9 +1,8 @@
 package dev.kensa;
 
-import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.Test;
 
-public class JavaWithTypeArgumentsTest implements KensaTest {
+public class JavaWithTypeArgumentsTest extends JavaExampleTest {
 
     @Test
     void passingTest() {
@@ -11,6 +10,7 @@ public class JavaWithTypeArgumentsTest implements KensaTest {
     }
 
     private <T> GivensBuilder aLiteralOf(T aValue) {
-        return (givens) -> {};
+        return (givens) -> {
+        };
     }
 }

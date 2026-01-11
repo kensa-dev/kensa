@@ -16,7 +16,8 @@ class JavaParserDelegate(
     private val isClassTest: (Java20Parser.MethodDeclarationContext) -> Boolean,
     private val isInterfaceTest: (Java20Parser.InterfaceMethodDeclarationContext) -> Boolean,
     private val antlrErrorListenerDisabled: Boolean,
-    private val antlrPredicationMode: PredictionMode
+    private val antlrPredicationMode: PredictionMode,
+    private val sourceCode: SourceCode
 ) : ParserDelegate {
 
     override fun Class<*>.isParsable(): Boolean = !isKotlinClass
@@ -29,7 +30,7 @@ class JavaParserDelegate(
         val emphasisedMethods = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
-        val sourceStream = SourceCode.sourceStreamFor(this)
+        val sourceStream = sourceCode.sourceStreamFor(this)
         val declaration = sourceStream.compilationUnit().ordinaryCompilationUnit()
             .topLevelClassOrInterfaceDeclaration()
             .mapNotNull { it.classDeclaration() ?: it.interfaceDeclaration() }

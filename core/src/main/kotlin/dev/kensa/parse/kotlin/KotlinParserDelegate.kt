@@ -17,7 +17,8 @@ import kotlin.reflect.jvm.kotlinFunction
 class KotlinParserDelegate(
     private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean,
     private val antlrErrorListenerDisabled: Boolean,
-    private val antlrPredicationMode: PredictionMode
+    private val antlrPredicationMode: PredictionMode,
+    private val sourceCode: SourceCode
 ) : ParserDelegate {
 
     override fun Class<*>.isParsable(): Boolean = isKotlinClass
@@ -34,7 +35,7 @@ class KotlinParserDelegate(
         val emphasisedFunctions = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
-        val sourceStream = SourceCode.sourceStreamFor(this)
+        val sourceStream = sourceCode.sourceStreamFor(this)
         ArrayList<KotlinParser.FunctionDeclarationContext>().apply {
             sourceStream.compilationUnit().topLevelObject().forEach {
                 findFunctionDeclarations(it, this)

@@ -7,12 +7,11 @@ import dev.kensa.fixture.KotlinTestFixtures.ChildStringFixture
 import dev.kensa.fixture.KotlinTestFixtures.StringFixture
 import dev.kensa.fixture.MyScenario
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-class KotlinWithNestedSentenceTest : KensaTest, WithHamkrest, InterfaceWithNestedSentence {
+class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, InterfaceWithNestedSentence {
 
     init {
         registerFixtures(KotlinTestFixtures)

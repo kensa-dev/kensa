@@ -45,7 +45,7 @@ class MethodParser(
         cache.getOrPutParsedMethod(method) {
             with(parserDelegate) {
                 val testClass = method.declaringClass
-                val relatedClasses = testClass.findAllRelatedClasses()
+                val relatedClasses = testClass.findAllRelatedClasses(parserDelegate.sourceCode)
 
                 val methodDeclarations = relatedClasses.fold(MethodDeclarations()) { acc, clazz ->
                     acc + cache.getOrPutMethodDeclarations(clazz) {

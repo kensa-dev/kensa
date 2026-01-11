@@ -2,11 +2,10 @@ package dev.kensa
 
 import com.natpryce.hamkrest.equalTo
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 
-class KotlinWithOutputDisabledTest : KensaTest, WithHamkrest {
+class KotlinWithOutputDisabledTest : KotlinExampleTest(), WithHamkrest {
     @RenderedValue
     private val aValue = "aStringValue"
 

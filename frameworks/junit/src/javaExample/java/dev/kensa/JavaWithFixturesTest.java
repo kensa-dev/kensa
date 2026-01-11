@@ -5,7 +5,6 @@ import dev.kensa.fixture.FixtureRegistry;
 import dev.kensa.fixture.PrimaryFixture;
 import dev.kensa.fixture.SecondaryFixture;
 import dev.kensa.hamcrest.WithHamcrest;
-import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import static dev.kensa.fixture.FixtureKt.createFixture;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 
-public class JavaWithFixturesTest implements KensaTest, WithHamcrest {
+public class JavaWithFixturesTest extends JavaExampleTest implements WithHamcrest {
 
     static {
         FixtureRegistry.registerFixtures(JavaTestFixtures.class, MoreJavaTestFixtures.class);

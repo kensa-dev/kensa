@@ -2,7 +2,6 @@ package dev.kensa;
 
 import dev.kensa.fixture.MyScenario;
 import dev.kensa.hamcrest.WithHamcrest;
-import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.Test;
 
 import static dev.kensa.Colour.BackgroundDanger;
@@ -10,7 +9,7 @@ import static dev.kensa.Colour.TextLight;
 import static dev.kensa.TextStyle.*;
 import static org.hamcrest.CoreMatchers.is;
 
-class JavaWithAnnotationFeatureTest implements KensaTest, WithHamcrest {
+class JavaWithAnnotationFeatureTest extends JavaExampleTest implements WithHamcrest {
 
     @Highlight
     private String highlightMe = "givensViaHighlight";

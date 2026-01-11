@@ -1,11 +1,10 @@
 package dev.kensa;
 
-import dev.kensa.junit.KensaTest;
 import dev.kensa.sentence.Acronym;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class JavaWithAcronymsTest implements KensaTest {
+public class JavaWithAcronymsTest extends JavaExampleTest {
 
     @BeforeEach
     void setUp() {

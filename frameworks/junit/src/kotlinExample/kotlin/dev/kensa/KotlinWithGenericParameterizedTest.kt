@@ -4,7 +4,6 @@ import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -12,7 +11,7 @@ import org.junit.jupiter.params.provider.NullSource
 import java.util.List
 import java.util.Map
 
-class KotlinWithGenericParameterizedTest : KensaTest, WithHamkrest {
+class KotlinWithGenericParameterizedTest : KotlinExampleTest(), WithHamkrest {
     @RenderedValue
     private val aValue = "aStringValue"
 

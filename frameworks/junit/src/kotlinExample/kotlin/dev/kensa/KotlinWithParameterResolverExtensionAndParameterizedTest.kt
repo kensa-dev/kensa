@@ -8,14 +8,13 @@ import dev.kensa.extension.TestParameterResolver
 import dev.kensa.extension.TestParameterResolver.Companion.MY_PARAMETER_VALUE
 import dev.kensa.extension.TestParameterResolver.MyArgument
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 @ExtendWith(TestParameterResolver::class)
-class KotlinWithParameterResolverExtensionAndParameterizedTest : KensaTest, WithHamkrest {
+class KotlinWithParameterResolverExtensionAndParameterizedTest : KotlinExampleTest(), WithHamkrest {
     @RenderedValue
     private val aValue = "aStringValue"
 

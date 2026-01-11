@@ -1,7 +1,6 @@
 package dev.kensa;
 
 import dev.kensa.hamcrest.WithHamcrest;
-import dev.kensa.junit.KensaTest;
 import dev.kensa.outputs.CapturedOutput;
 import dev.kensa.outputs.CapturedOutputContainer;
 import dev.kensa.outputs.CapturedOutputsRegistry;
@@ -12,7 +11,7 @@ import static dev.kensa.MoreJavaCapturedOutputs.BOOLEAN_OUTPUT;
 import static dev.kensa.outputs.CapturedOutputsKt.createCapturedOutput;
 import static org.hamcrest.CoreMatchers.is;
 
-public class JavaWithCapturedOutputsTest implements KensaTest, WithHamcrest {
+public class JavaWithCapturedOutputsTest extends JavaExampleTest implements WithHamcrest {
 
     static {
         CapturedOutputsRegistry.registerCapturedOutputs(JavaCapturedOutputs.class, MoreJavaCapturedOutputs.class);

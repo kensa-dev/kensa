@@ -1,9 +1,8 @@
 package dev.kensa
 
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
-class KotlinWithMultiplePassingTests : KensaTest {
+class KotlinWithMultiplePassingTests : KotlinExampleTest() {
     @Test
     fun passingTest1() {
     }

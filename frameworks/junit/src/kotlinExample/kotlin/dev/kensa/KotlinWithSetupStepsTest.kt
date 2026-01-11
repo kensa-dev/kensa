@@ -7,10 +7,9 @@ import dev.kensa.GivensBlockBuilder.Companion.buildGivens
 import dev.kensa.VerificationBlockBuilder.Companion.verify
 import dev.kensa.hamkrest.HamkrestSetupStep
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
-class KotlinWithSetupStepsTest : KensaTest, WithHamkrest {
+class KotlinWithSetupStepsTest : KotlinExampleTest(), WithHamkrest {
 
     private lateinit var aValue: String
     private lateinit var aValue2: String

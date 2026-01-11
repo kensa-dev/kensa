@@ -150,20 +150,23 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
                 ResultWriter::class.java
             )
 
-        private fun testInvocationFactory(configuration: Configuration, parserCache: ParserCache) = TestInvocationFactory(
-            TestInvocationParser(configuration),
-            MethodParser(
-                parserCache,
-                configuration,
-                CompositeParserDelegate(
-                    listOf(
-                        JavaParserDelegate(isJavaClassTest, isJavaInterfaceTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode),
-                        KotlinParserDelegate(isKotlinTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode),
+        private fun testInvocationFactory(configuration: Configuration, parserCache: ParserCache): TestInvocationFactory {
+            return TestInvocationFactory(
+                TestInvocationParser(configuration),
+                MethodParser(
+                    parserCache,
+                    configuration,
+                    CompositeParserDelegate(
+                        configuration.sourceCode,
+                        listOf(
+                            JavaParserDelegate(isJavaClassTest, isJavaInterfaceTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode, configuration.sourceCode),
+                            KotlinParserDelegate(isKotlinTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode, configuration.sourceCode),
+                        )
                     )
-                )
-            ),
-            SequenceDiagramFactory(configuration.umlDirectives)
-        )
+                ),
+                SequenceDiagramFactory(configuration.umlDirectives)
+            )
+        }
 
         private fun kensaContextFactory(resultWriter: ResultWriter, configuration: Configuration, parserCache: ParserCache) = { _: String ->
             CloseableKensaContext(

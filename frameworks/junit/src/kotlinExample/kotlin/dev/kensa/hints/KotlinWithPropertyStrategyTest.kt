@@ -1,13 +1,13 @@
 package dev.kensa.hints
 
+import dev.kensa.KotlinExampleTest
 import dev.kensa.RenderedHintStrategy.HintFromProperty
 import dev.kensa.RenderedValueStrategy.UseProperty
 import dev.kensa.RenderedValueWithHint
-import dev.kensa.junit.KensaTest
 import org.junit.jupiter.api.Test
 
 @RenderedValueWithHint(type = DataField::class, valueStrategy = UseProperty, valueParam = "label", hintStrategy = HintFromProperty, hintParam = "xpath")
-class KotlinWithPropertyStrategyTest : KensaTest {
+class KotlinWithPropertyStrategyTest : KotlinExampleTest() {
 
     @Test
     fun passingTest() {

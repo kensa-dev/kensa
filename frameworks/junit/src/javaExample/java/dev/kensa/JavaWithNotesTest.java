@@ -1,12 +1,11 @@
 package dev.kensa;
 
 import dev.kensa.hamcrest.WithHamcrest;
-import dev.kensa.junit.KensaTest;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 
-public class JavaWithNotesTest implements KensaTest, WithHamcrest {
+public class JavaWithNotesTest extends JavaExampleTest implements WithHamcrest {
 
     @Test
     public void passingTest() {

@@ -11,6 +11,7 @@ import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.Keyword
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.state.SetupStrategy
+import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.atn.PredictionMode
 import java.net.URI
 import java.net.URL
@@ -76,6 +77,8 @@ class KensaConfigurator(private val configuration: Configuration) {
 
     fun withFlattenOutputPackages(value: Boolean): KensaConfigurator = apply { configuration.flattenOutputPackages = value }
     fun withPackageDisplayMode(packageDisplay: PackageDisplay): KensaConfigurator = apply { configuration.packageDisplay = packageDisplay }
+
+    fun withSourceLocations(vararg locations: Path): KensaConfigurator = apply { configuration.sourceLocations = locations.toList() }
 }
 
 enum class UiMode {
@@ -107,7 +110,9 @@ enum class Tab {
 class Configuration {
 
     internal val dictionary: Dictionary = Dictionary()
-    var uiMode: UiMode = UiMode.Modern
+    var sourceLocations: List<Path> = emptyList()
+    val sourceCode: SourceCode by lazy { SourceCode(sourceLocations) }
+    var uiMode: UiMode = UiMode.Legacy
     val renderers: Renderers = Renderers()
     var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR)
     var flattenOutputPackages: Boolean = false

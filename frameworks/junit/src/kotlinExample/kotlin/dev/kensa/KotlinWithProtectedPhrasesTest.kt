@@ -5,13 +5,12 @@ import com.natpryce.hamkrest.Matcher
 import dev.kensa.Colour.TextDanger
 import dev.kensa.Kensa.konfigure
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.junit.KensaTest
 import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.ProtectedPhrase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class KotlinWithProtectedPhrasesTest : KensaTest, WithHamkrest {
+class KotlinWithProtectedPhrasesTest : KotlinExampleTest(), WithHamkrest {
     @BeforeEach
     fun setUp() {
         konfigure {

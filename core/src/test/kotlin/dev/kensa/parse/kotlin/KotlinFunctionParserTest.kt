@@ -23,6 +23,7 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.*
+import kotlin.io.path.Path
 
 internal class KotlinFunctionParserTest {
 
@@ -31,6 +32,7 @@ internal class KotlinFunctionParserTest {
     @BeforeEach
     internal fun setUp() {
         configuration.apply {
+            sourceLocations = listOf(Path("src/example/kotlin"))
             protectedPhrases(
                 ProtectedPhrase("House"),
                 ProtectedPhrase("City"),
@@ -883,8 +885,9 @@ internal class KotlinFunctionParserTest {
             ParserCache(),
             configuration,
             CompositeParserDelegate(
+                configuration.sourceCode,
                 listOf(
-                    KotlinParserDelegate(isTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode)
+                    KotlinParserDelegate(isTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode, configuration.sourceCode)
                 )
             )
         )
