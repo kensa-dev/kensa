@@ -25,7 +25,7 @@ class ParseContext(
     private val parameterNames = parameters.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val nestedMethodNames = nestedMethods.keys
 
-    private val singleCallWithArgumentsPattern = """^(\w+)\(.+\)$""".toRegex()
+    private val singleCallWithArgumentsPattern = """^(?:(?<receiver>\w+)\.)?(?<function>\w+)\(.*\)$""".toRegex()
     private val fixturesPattern = """^fixtures[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
     private val outputsByNamePattern = """^outputs[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
     private val outputsByKeyPattern = """^outputs\("([a-zA-Z0-9_]+)"\)(\.(.+))?$""".toRegex()
@@ -57,7 +57,7 @@ class ParseContext(
 
     internal fun ParseTree.asRenderedValueMethodExpression(): RenderedValue? =
         singleCallWithArgumentsPattern.matchEntire(text)?.let { matchResult ->
-            RenderedValue(location, matchResult.groupValues[1])
+            RenderedValue(location, matchResult.groups["function"]!!.value)
         }
 
     private fun ParseContext.callTypeFor(key: String): ChainedCallExpression.Type? =
@@ -68,7 +68,7 @@ class ParseContext(
             else -> null
         }
 
-    internal fun ParseTree?.matchesRenderedValueMethodExpression() = this?.text?.let { singleCallWithArgumentsPattern.matchEntire(it)?.let { result -> result.groupValues[1] in renderedValueMethodNames } } ?: false
+    internal fun ParseTree?.matchesRenderedValueMethodExpression() = this?.text?.let { singleCallWithArgumentsPattern.matchEntire(it)?.let { result -> result.groups["function"]?.value in renderedValueMethodNames } } ?: false
     internal fun ParseTree?.matchesFixturesExpression() = this?.text?.matches(fixturesPattern) ?: false
     internal fun ParseTree?.matchesOutputsExpression() = this?.matchesOutputsByNameExpression() ?: false || this?.matchesOutputsByKeyExpression() ?: false
     private fun ParseTree.matchesOutputsByNameExpression() = text?.matches(outputsByNamePattern) ?: false
@@ -85,8 +85,7 @@ class ParseContext(
 
     companion object {
 
-        internal fun ParserRuleContext.asStartNote() = (start as? KensaToken)?.asNote()
-        internal fun ParserRuleContext.asEndNote() = (stop as? KensaToken)?.asNote()
+        internal fun ParserRuleContext.asNote() = (start as? KensaToken)?.asNote()
         internal fun TerminalNode.asNote() = (this.symbol as? KensaToken)?.asNote()
         internal fun ParseTree.asOperator() = Operator(location, text)
         internal fun ParseTree.asBooleanLiteral() = BooleanLiteral(location, text)

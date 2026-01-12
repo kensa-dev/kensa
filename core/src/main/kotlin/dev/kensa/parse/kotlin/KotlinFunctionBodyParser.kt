@@ -7,7 +7,6 @@ import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
 import dev.kensa.parse.ParseContext.Companion.asNote
-import dev.kensa.parse.ParseContext.Companion.asStartNote
 import dev.kensa.parse.ParseContext.Companion.asEnterExpression
 import dev.kensa.parse.ParseContext.Companion.asEnterStatement
 import dev.kensa.parse.ParseContext.Companion.asMultilineString
@@ -108,7 +107,7 @@ class KotlinFunctionBodyParser(
     }
 
     override fun enterStatement(ctx: KotlinParser.StatementContext) {
-        ctx.asStartNote()?.also {
+        ctx.asNote()?.also {
             stateMachine.apply(it)
         }
 

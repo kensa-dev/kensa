@@ -11,7 +11,6 @@ import dev.kensa.parse.ParseContext.Companion.asMultilineString
 import dev.kensa.parse.ParseContext.Companion.asNote
 import dev.kensa.parse.ParseContext.Companion.asNullLiteral
 import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
-import dev.kensa.parse.ParseContext.Companion.asStartNote
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
 import dev.kensa.parse.java.Java20Lexer.*
@@ -51,7 +50,7 @@ class JavaMethodBodyParser(
     }
 
     override fun enterStatement(ctx: Java20Parser.StatementContext) {
-        ctx.asStartNote()?.also {
+        ctx.asNote()?.also {
             stateMachine.apply(it)
         }
 

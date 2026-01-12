@@ -4,10 +4,14 @@ import dev.kensa.Configuration
 import dev.kensa.context.NestedInvocationContext
 import dev.kensa.context.NestedInvocationContextHolder
 import dev.kensa.example.*
-import dev.kensa.parse.*
+import dev.kensa.parse.CompositeParserDelegate
 import dev.kensa.parse.ElementDescriptor.*
+import dev.kensa.parse.MethodParser
+import dev.kensa.parse.ParsedNestedMethod
+import dev.kensa.parse.ParserCache
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.TemplateSentence
+import dev.kensa.sentence.TemplateToken.RenderedValueToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
 import dev.kensa.util.findMethod
@@ -677,6 +681,38 @@ internal class KotlinFunctionParserTest {
             )
 
             val method = KotlinWithInterface::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            with(parsedMethod) {
+                name.shouldBe(functionName)
+                parameters.descriptors.shouldBeEmpty()
+
+                assertSoftly(methods[functionName]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<MethodElementDescriptor>()
+                }
+                sentences.first().tokens.shouldBe(expectedSentence.tokens)
+            }
+        }
+
+        @Test
+        internal fun `parses extension function`() {
+            val functionName = "simpleTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val expectedSentence = TemplateSentence(
+                listOf(
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    RenderedValueToken("extensionFunction"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("equal"),
+                    Word.asTemplateToken("to"),
+                    StringLiteral.asTemplateToken("true")
+                )
+            )
+
+            val method = KotlinWithExtensionFunction::class.java.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
             with(parsedMethod) {

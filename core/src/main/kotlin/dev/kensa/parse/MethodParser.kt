@@ -67,9 +67,9 @@ class MethodParser(
                 val emphasisedMethods = cache.getOrPutEmphasisedMethods(testClass) {
                     prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
                 }
-                val methods = cache.getOrPutMethods(testClass) { testClass.prepareMethodsFor() }
+                val methods = cache.getOrPutMethods(testClass) { testClass.prepareMethods() }
                 val nestedMethods = testClass.prepareNestedMethods(methodDeclarations.nestedMethods, ParseContext(properties, methods))
-                val testMethodSentences = testClass.prepareTestMethods(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
+                val testMethodSentences = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
 
                 ParsedMethod(
                     indexInSource,
@@ -108,7 +108,7 @@ class MethodParser(
                 .associateBy({ it.name }, { it })
         }
 
-    private fun Class<*>.prepareTestMethods(methodDeclarationContext: MethodDeclarationContext, parseContext: ParseContext): List<TemplateSentence> =
+    private fun Class<*>.prepareTestMethodSentences(methodDeclarationContext: MethodDeclarationContext, parseContext: ParseContext): List<TemplateSentence> =
         ParserStateMachine(sentenceBuilder()).run {
             with(parserDelegate) {
                 parse(this@run, parseContext, methodDeclarationContext)
@@ -125,7 +125,7 @@ class MethodParser(
             }
             .associateBy({ it.first }, { it.second })
 
-    private fun Class<*>.prepareMethodsFor(): Map<String, MethodElementDescriptor> =
+    private fun Class<*>.prepareMethods(): Map<String, MethodElementDescriptor> =
         allMethods
             .map { ElementDescriptor.forMethod(it) }
             .associateBy(ElementDescriptor::name)

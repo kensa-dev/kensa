@@ -111,7 +111,7 @@ class Configuration {
 
     internal val dictionary: Dictionary = Dictionary()
     var sourceLocations: List<Path> = emptyList()
-    val sourceCode: SourceCode by lazy { SourceCode(sourceLocations) }
+    val sourceCode: SourceCode by lazy { SourceCode({ sourceLocations }) }
     var uiMode: UiMode = UiMode.Legacy
     val renderers: Renderers = Renderers()
     var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR)

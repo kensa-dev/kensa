@@ -32,7 +32,7 @@ internal class SourceCodeTest {
         val siblingRoot = Path("src/example/kotlin")
         val sourceFile = siblingRoot.resolve("dev/kensa/example/KotlinInterface.kt")
 
-        val stream = SourceCode(listOf(siblingRoot)).sourceStreamFor(KotlinInterface::class.java)
+        val stream = SourceCode { listOf(siblingRoot) }.sourceStreamFor(KotlinInterface::class.java)
 
         stream.sourceName shouldBe sourceFile.toAbsolutePath().toString()
         stream.getText(Interval.of(78, 102)) shouldBe "interface KotlinInterface"
@@ -44,7 +44,7 @@ internal class SourceCodeTest {
         val jarPath = tempDir.resolve("external-sources.jar")
         createJarWithSource(jarPath, "dev/kensa/example/KotlinInterface.kt", sourceLocation.readText())
 
-        val stream = SourceCode(listOf(jarPath)).sourceStreamFor(KotlinInterface::class.java)
+        val stream = SourceCode({ listOf(jarPath) }).sourceStreamFor(KotlinInterface::class.java)
 
         stream.sourceName shouldBe "/dev/kensa/example/KotlinInterface.kt"
         stream.getText(Interval.of(78, 102)) shouldBe "interface KotlinInterface"
