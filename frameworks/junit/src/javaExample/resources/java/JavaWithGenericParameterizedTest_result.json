@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithGenericParameterizedTest",
+  "testClass": "dev.kensa.example.JavaWithGenericParameterizedTest",
   "displayName": "Java With Generic Parameterized Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

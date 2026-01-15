@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithCapturedOutputsTest",
+  "testClass": "dev.kensa.example.JavaWithCapturedOutputsTest",
   "displayName": "Java With Captured Outputs Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

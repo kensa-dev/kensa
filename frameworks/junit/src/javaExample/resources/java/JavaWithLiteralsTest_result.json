@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithLiteralsTest",
+  "testClass": "dev.kensa.example.JavaWithLiteralsTest",
   "displayName": "Java With Literals Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

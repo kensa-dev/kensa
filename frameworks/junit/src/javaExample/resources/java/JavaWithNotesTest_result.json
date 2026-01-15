@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithNotesTest",
+  "testClass": "dev.kensa.example.JavaWithNotesTest",
   "displayName": "Java With Notes Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

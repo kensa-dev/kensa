@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithSinglePassingTest",
+  "testClass": "dev.kensa.example.JavaWithSinglePassingTest",
   "displayName": "Java With Single Passing Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

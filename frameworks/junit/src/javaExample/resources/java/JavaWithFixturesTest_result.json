@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithFixturesTest",
+  "testClass": "dev.kensa.example.JavaWithFixturesTest",
   "displayName": "Java With Fixtures Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

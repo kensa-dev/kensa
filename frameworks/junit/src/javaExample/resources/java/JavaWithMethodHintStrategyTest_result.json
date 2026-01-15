@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.hints.JavaWithMethodHintStrategyTest",
+  "testClass": "dev.kensa.example.hints.JavaWithMethodHintStrategyTest",
   "displayName": "Java With Method Hint Strategy Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "hints",
+  "minimumUniquePackageName": "example.hints",
   "issues": [],
   "tests": [
     {

@@ -1,0 +1,38 @@
+package dev.kensa.example;
+
+import dev.kensa.Kensa;
+import dev.kensa.MyArgumentRenderer;
+import dev.kensa.RenderedValue;
+import dev.kensa.extension.TestParameterResolver;
+import dev.kensa.hamcrest.WithHamcrest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Set;
+
+import static dev.kensa.extension.TestParameterResolver.MY_PARAMETER_VALUE;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+@ExtendWith(TestParameterResolver.class)
+public class JavaWithParameterResolverExtensionAndParameterizedTest extends JavaExampleTest implements WithHamcrest {
+
+    @RenderedValue
+    private final String aValue = "aStringValue";
+
+    @BeforeEach
+    void setUp() {
+        Kensa.configure()
+                .withValueRenderer(TestParameterResolver.MyArgument.class, MyArgumentRenderer.INSTANCE);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"arg1", "arg2"})
+    void theTest(@RenderedValue String parameter1, TestParameterResolver.MyArgument parameter2) {
+        assertThat(parameter2.getValue(), is(MY_PARAMETER_VALUE));
+        assertThat(Set.of("arg1", "arg2"), hasItem(parameter1));
+    }
+}

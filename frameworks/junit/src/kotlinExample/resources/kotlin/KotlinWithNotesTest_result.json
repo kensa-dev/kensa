@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.KotlinWithNotesTest",
+  "testClass": "dev.kensa.example.KotlinWithNotesTest",
   "displayName": "Kotlin With Notes Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

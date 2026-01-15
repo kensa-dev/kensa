@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithTypeArgumentsTest",
+  "testClass": "dev.kensa.example.JavaWithTypeArgumentsTest",
   "displayName": "Java With Type Arguments Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.hints.KotlinWithPropertyStrategyTest",
+  "testClass": "dev.kensa.example.hints.KotlinWithPropertyStrategyTest",
   "displayName": "Kotlin With Property Strategy Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "hints",
+  "minimumUniquePackageName": "example.hints",
   "issues": [],
   "tests": [
     {

@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.hints.JavaWithMixedStrategyTest",
+  "testClass": "dev.kensa.example.hints.JavaWithMixedStrategyTest",
   "displayName": "Java With Mixed Strategy Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "hints",
+  "minimumUniquePackageName": "example.hints",
   "issues": [],
   "tests": [
     {

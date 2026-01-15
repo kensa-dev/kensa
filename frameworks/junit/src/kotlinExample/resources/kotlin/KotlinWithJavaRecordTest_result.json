@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.KotlinWithJavaRecordTest",
+  "testClass": "dev.kensa.example.KotlinWithJavaRecordTest",
   "displayName": "Kotlin With Java Record Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

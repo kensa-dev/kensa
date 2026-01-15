@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.JavaWithAnnotationFeatureTest",
+  "testClass": "dev.kensa.example.JavaWithAnnotationFeatureTest",
   "displayName": "Java With Annotation Feature Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.hints.JavaWithHintedFieldsInsideObjectTest",
+  "testClass": "dev.kensa.example.hints.JavaWithHintedFieldsInsideObjectTest",
   "displayName": "Java With Hinted Fields Inside Object Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "hints",
+  "minimumUniquePackageName": "example.hints",
   "issues": [],
   "tests": [
     {

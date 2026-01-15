@@ -1,0 +1,23 @@
+package dev.kensa.example;
+
+import dev.kensa.RenderedValue;
+import dev.kensa.extension.TestParameterResolver;
+import dev.kensa.hamcrest.WithHamcrest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import static dev.kensa.extension.TestParameterResolver.MY_PARAMETER_VALUE;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+@ExtendWith(TestParameterResolver.class)
+public class JavaWithParameterResolverExtensionTest extends JavaExampleTest implements WithHamcrest {
+
+    @RenderedValue
+    private final String aValue = "aStringValue";
+
+    @Test
+    void theTest(TestParameterResolver.MyArgument parameter) {
+        assertThat(parameter.getValue(), is(MY_PARAMETER_VALUE));
+    }
+}

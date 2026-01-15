@@ -5,8 +5,22 @@ import com.eclipsesource.json.JsonObject
 import com.eclipsesource.json.JsonValue
 import dev.kensa.KensaTestExecutor.executeAllTestsIn
 import dev.kensa.KensaTestExecutor.executeTests
+import dev.kensa.example.JavaWithAcronymsTest
+import dev.kensa.example.JavaWithCapturedOutputsTest
+import dev.kensa.example.JavaWithFixturesTest
+import dev.kensa.example.JavaWithGenericParameterizedTest
+import dev.kensa.example.JavaWithLiteralsTest
+import dev.kensa.example.JavaWithMultiplePassingTests
+import dev.kensa.example.JavaWithNestedSentenceTest
+import dev.kensa.example.JavaWithNotesTest
+import dev.kensa.example.JavaWithOutputDisabledTest
+import dev.kensa.example.JavaWithParameterResolverExtensionTest
+import dev.kensa.example.JavaWithAnnotationFeatureTest
+import dev.kensa.example.JavaWithRecordTest
+import dev.kensa.example.JavaWithSinglePassingTest
+import dev.kensa.example.JavaWithTypeArgumentsTest
 import dev.kensa.extension.TestParameterResolver.MyArgument
-import dev.kensa.hints.*
+import dev.kensa.example.hints.*
 import dev.kensa.junit.KensaTest
 import dev.kensa.sentence.Acronym
 import io.kotest.assertions.json.shouldEqualJson
@@ -21,6 +35,7 @@ import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.testkit.engine.EngineExecutionResults
 import java.nio.file.Path
 import kotlin.io.path.Path
+import kotlin.jvm.java
 import kotlin.jvm.optionals.getOrNull
 
 internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
@@ -44,7 +59,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
 
             result.verifyZeroFailures()
 
-            verifyFilesExist(testClasses, "dev/kensa/")
+            verifyFilesExist(testClasses, "dev/kensa/example/")
         }
 
         @Test
@@ -62,7 +77,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
             val result = executeTests(*testClasses)
             result.verifyZeroFailures()
 
-            verifyFilesExist(testClasses, "dev.kensa.")
+            verifyFilesExist(testClasses, "dev.kensa.example.")
         }
 
         @Test

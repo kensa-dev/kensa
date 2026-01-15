@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.hints.JavaWithPropertyStrategyTest",
+  "testClass": "dev.kensa.example.hints.JavaWithPropertyStrategyTest",
   "displayName": "Java With Property Strategy Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "hints",
+  "minimumUniquePackageName": "example.hints",
   "issues": [],
   "tests": [
     {

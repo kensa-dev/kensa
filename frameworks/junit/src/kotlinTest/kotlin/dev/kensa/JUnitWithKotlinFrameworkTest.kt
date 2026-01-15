@@ -5,8 +5,9 @@ import com.eclipsesource.json.JsonObject
 import com.eclipsesource.json.JsonValue
 import dev.kensa.KensaTestExecutor.executeAllTestsIn
 import dev.kensa.KensaTestExecutor.executeTests
+import dev.kensa.example.*
+import dev.kensa.example.hints.*
 import dev.kensa.extension.TestParameterResolver.MyArgument
-import dev.kensa.hints.*
 import dev.kensa.junit.KensaTest
 import dev.kensa.sentence.Acronym
 import io.kotest.assertions.json.shouldEqualJson
@@ -50,7 +51,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
 
             result.verifyZeroFailures()
 
-            verifyFilesExist(testClasses, "dev/kensa/")
+            verifyFilesExist(testClasses, "dev/kensa/example/")
         }
 
         @Test
@@ -68,7 +69,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
             val result = executeTests(*testClasses)
             result.verifyZeroFailures()
 
-            verifyFilesExist(testClasses, "dev.kensa.")
+            verifyFilesExist(testClasses, "dev.kensa.example.")
         }
 
         @Test

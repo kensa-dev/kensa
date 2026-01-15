@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.KotlinWithFixturesTest",
+  "testClass": "dev.kensa.example.KotlinWithFixturesTest",
   "displayName": "Kotlin With Fixtures Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "",
+  "minimumUniquePackageName": "example",
   "issues": [],
   "tests": [
     {

@@ -1,9 +1,9 @@
 {
-  "testClass": "dev.kensa.hints.KotlinWithHintedFieldsInsideTest",
+  "testClass": "dev.kensa.example.hints.KotlinWithHintedFieldsInsideTest",
   "displayName": "Kotlin With Hinted Fields Inside Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "hints",
+  "minimumUniquePackageName": "example.hints",
   "issues": [],
   "tests": [
     {
