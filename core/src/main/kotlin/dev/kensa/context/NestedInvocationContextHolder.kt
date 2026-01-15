@@ -7,7 +7,7 @@ object NestedInvocationContextHolder {
         holder.set(testContext)
     }
 
-    fun nestedSentenceInvocationContext(): NestedInvocationContext = holder.get()
+    fun expandableSentenceInvocationContext(): NestedInvocationContext = holder.get()
 
     fun clearFromThread() {
         holder.remove()

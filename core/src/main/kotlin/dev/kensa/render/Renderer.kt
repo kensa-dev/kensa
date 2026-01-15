@@ -14,6 +14,10 @@ fun interface ValueRenderer<T> {
     fun render(value: T): String
 }
 
+interface TableRenderer<in T> {
+    fun render(value: T): List<List<Any?>>
+}
+
 interface InteractionRenderer<T> {
     fun render(value: T, attributes: Attributes): List<RenderedInteraction>
     fun renderAttributes(value: T): List<RenderedAttributes>

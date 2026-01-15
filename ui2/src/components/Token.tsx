@@ -4,8 +4,9 @@ import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/ho
 import {useConfig} from '@/contexts/ConfigContext';
 import Sentence from "@/components/Sentence.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 
-const NestedSentence = ({token}: any) => {
+const Expandable = ({token}: any) => {
     const {value, parameterTokens, tokens} = token;
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [leftOffset, setLeftOffset] = React.useState(0);
@@ -51,11 +52,16 @@ const NestedSentence = ({token}: any) => {
                 <HoverCardContent
                     side="top"
                     align="start"
-                    className="w-[450px] p-4 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1"
+                    className={cn(
+                        "p-4 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1",
+                        "w-[450px]"
+                    )}
                 >
                     <div className="space-y-1">
-                        {tokens.map((s: any[], idx: number) => (
-                            <Sentence key={idx} sentence={s} isNested={true}/>
+                        {tokens?.map((t: any, idx: number) => (
+                            t.type === 'table'
+                                ? <TokenTable key={idx} headers={t.headers} rows={t.rows}/>
+                                : <Sentence key={idx} sentence={t} isNested={true}/>
                         ))}
                     </div>
                 </HoverCardContent>
@@ -63,16 +69,48 @@ const NestedSentence = ({token}: any) => {
 
             {isExpanded && (
                 <div
-                    className="w-full mt-2 mb-2 pl-4 border-l-2 border-primary/20 bg-primary/[0.01] py-2 rounded-r-lg"
-                    style={{marginLeft: `${leftOffset}px`}} // The V1 alignment magic
+                    className="w-full mt-2 mb-2 pl-4 border-l-2 border-primary/20 bg-primary/[0.01] py-2 rounded-r-lg overflow-x-auto"
+                    style={{marginLeft: `${leftOffset}px`}}
                 >
-                    {tokens.map((s: any[], idx: number) => (
-                        <Sentence key={idx} sentence={s} isNested={true}/>
+                    {tokens?.map((t: any, idx: number) => (
+                        t.type === 'table'
+                            ? <TokenTable key={idx} headers={t.headers} rows={t.rows}/>
+                            : <Sentence key={idx} sentence={t} isNested={true}/>
                     ))}
                 </div>
             )}
         </HoverCard>
     );
+};
+
+const TokenTable = ({headers, rows}: { headers?: string[], rows: any[][] }) => {
+    if (!rows) return null;
+    return (<div className="my-3 rounded-md border border-border/50 bg-background/50 overflow-hidden shadow-sm">
+        <Table>
+            {headers && headers.length > 0 && (
+                <TableHeader className="bg-muted/30">
+                    <TableRow className="hover:bg-transparent">
+                        {headers.map((header, i) => (
+                            <TableHead key={i} className="h-8 text-[11px] font-bold uppercase tracking-wider text-muted-foreground py-2 px-4">
+                                {header}
+                            </TableHead>
+                        ))}
+                    </TableRow>
+                </TableHeader>
+            )}
+            <TableBody>
+                {rows.map((row, rowIdx) => (
+                    <TableRow key={rowIdx} className="hover:bg-muted/20 transition-colors border-border/40">
+                        {row.map((cell, cellIdx) => (
+                            <TableCell key={cellIdx} className="py-2 px-4 text-xs font-medium">
+                                <Token token={cell}/>
+                            </TableCell>
+                        ))}
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    </div>)
 };
 
 const InfoToken = ({value, hint, acronymKey, tokenCls}: any) => {
@@ -169,7 +207,7 @@ export const Token = ({token}: { token: any }) => {
     const {types = [], value, hint} = token;
     const tokenCls = types.join(" ");
 
-    if (types.includes("tk-ex")) return <NestedSentence token={token}/>;
+    if (types.includes("tk-ex") || types.includes("tk-tab")) return <Expandable token={token}/>;
     if (types.includes("tk-ac")) return <InfoToken value={value} acronymKey={value} tokenCls={tokenCls}/>;
     if (types.includes("tk-hi")) return <InfoToken value={value} hint={hint} tokenCls={tokenCls}/>;
     if (types.includes("tk-nt")) return <NoteToken value={value}/>;

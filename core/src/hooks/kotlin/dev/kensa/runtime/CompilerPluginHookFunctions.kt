@@ -8,10 +8,10 @@ import kotlin.reflect.KClass
 
 object CompilerPluginHookFunctions {
 
-    fun onEnterNestedSentence(owner: Any?, fqName: String, simpleName: String, paramTypes: Array<KClass<*>>, args: Array<Any?>) {
+    fun onEnterExpandableSentence(owner: Any?, fqName: String, simpleName: String, paramTypes: Array<KClass<*>>, args: Array<Any?>) {
         val method: Method = deriveMethod(owner, fqName, simpleName, paramTypes)
 
-        NestedInvocationContextHolder.nestedSentenceInvocationContext().recordInvocation(method, args)
+        NestedInvocationContextHolder.expandableSentenceInvocationContext().recordInvocation(method, args)
     }
 
     fun onExitRenderedValue(owner: Any?, fqName: String, simpleName: String, paramTypes: Array<KClass<*>>, returnValue: Any?) {

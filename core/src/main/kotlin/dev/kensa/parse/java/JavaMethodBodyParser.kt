@@ -71,9 +71,9 @@ class JavaMethodBodyParser(
 
     override fun enterMethodName(ctx: Java20Parser.MethodNameContext) {
         with(parseContext) {
-            stateMachine.apply(ctx.asMethod() ?: ctx.asNested()?.let { nested ->
+            stateMachine.apply(ctx.asMethod() ?: ctx.asExpandableSentence()?.let { nested ->
                 if (ctx.hasArguments())
-                    nested.asNestedWithArguments()
+                    nested.asExpandableSentenceWithArguments()
                 else nested
             } ?: ctx.asIdentifier())
         }

@@ -19,11 +19,12 @@ class ParseContext(
     private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()
 ) {
 
-    private val renderedValueMethodNames = methods.filterValues { it.isRenderedValue && it.hasParameters }.keys
+    private val expandableRenderedValueMethodNames = methods.filterValues { it.isExpandableRenderedValue }.keys
+    private val renderedValueMethodNames = methods.filterValues { it.isRenderedValue }.keys
     private val methodNames = methods.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val fieldNames = properties.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val parameterNames = parameters.filterValues { it.isRenderedValue || it.isHighlight }.keys
-    private val nestedMethodNames = nestedMethods.keys
+    private val expandableMethodNames = nestedMethods.keys
 
     private val singleCallWithArgumentsPattern = """^(?:(?<receiver>\w+)\.)?(?<function>\w+)\(.*\)$""".toRegex()
     private val fixturesPattern = """^fixtures[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
@@ -35,7 +36,11 @@ class ParseContext(
     private fun nestedSentences(name: String) = nestedMethods[name]?.sentences ?: error("No nested method found with name [$name]")
 
     internal fun ParseTree.asIdentifier() = Identifier(location, text, emphasis(text))
-    internal fun ParseTree.asNested() = takeIf { nestedMethodNames.contains(text) }?.let { Nested(location, text, nestedSentences(text)) }
+    internal fun ParseTree.asExpandableSentence() = takeIf { expandableMethodNames.contains(text) }?.let { ExpandableSentence(location, text, nestedSentences(text)) }
+    internal fun ParseTree.asExpandableValue() = takeIf { expandableRenderedValueMethodNames.contains(text) }?.let {
+        val md = methods[text]!!
+        ExpandableValue(location, text, md.renderedValueStyle, md.renderedValueHeaders)
+    }
     internal fun ParseTree.asParameter() = takeIf { parameterNames.contains(text) }?.let { Parameter(location, text) }
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
@@ -46,7 +51,8 @@ class ParseContext(
 
     fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, nestedMethods, emphasisedMethods)
 
-    internal fun Nested.asNestedWithArguments() = NestedWithArguments(location, name, sentences)
+    internal fun ExpandableSentence.asExpandableSentenceWithArguments() = ExpandableSentenceWithArguments(location, name, sentences)
+    internal fun ExpandableValue.asExpandableValueWithArguments() = ExpandableValueWithArguments(location, name, style, headers)
 
     internal fun ParseTree.asChainedCall(): ChainedCallExpression? =
         chainedCallPattern.matchEntire(text)?.let { matchResult ->
@@ -54,6 +60,7 @@ class ParseContext(
                 ChainedCallExpression(location, type, matchResult.groupValues[1], matchResult.groupValues[4])
             }
         }
+
 
     internal fun ParseTree.asRenderedValueMethodExpression(): RenderedValue? =
         singleCallWithArgumentsPattern.matchEntire(text)?.let { matchResult ->

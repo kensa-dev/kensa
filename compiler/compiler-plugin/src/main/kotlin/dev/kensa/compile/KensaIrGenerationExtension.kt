@@ -8,11 +8,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.IrBlockBody
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
-import org.jetbrains.kotlin.ir.expressions.IrReturn
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
@@ -33,18 +29,21 @@ import org.jetbrains.kotlin.name.Name
 class KensaIrGenerationExtension(private val messageCollector: MessageCollector, private val debugEnabled: Boolean) : IrGenerationExtension {
 
     private val nestedSentenceFqName = FqName("dev.kensa.NestedSentence")
+    private val expandableSentenceFqName = FqName("dev.kensa.ExpandableSentence")
     private val renderedValueFqName = FqName("dev.kensa.RenderedValue")
+    private val expandableRenderedValueFqName = FqName("dev.kensa.ExpandableRenderedValue")
+
 
     private val hooksClassId = ClassId.topLevel(FqName("dev.kensa.runtime.CompilerPluginHookFunctions"))
 
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val hookClass = pluginContext.referenceClass(hooksClassId) ?: return
-        val nestedSentenceHookFn = hookClass.functions.firstOrNull { it.owner.name.asString() == "onEnterNestedSentence" } ?: return
+        val expandableSentenceHookFn = hookClass.functions.firstOrNull { it.owner.name.asString() == "onEnterExpandableSentence" } ?: return
         val renderedValueHookFn = hookClass.functions.firstOrNull { it.owner.name.asString() == "onExitRenderedValue" } ?: return
 
         // Get the symbol for kotlin.arrayOf() so we can build the parameter types and argument values arrays
         val arrayOf = pluginContext.arrayOf()
-        var nestedSentenceCount = 0
+        var expandableSentenceCount = 0
         var renderedValueCount = 0
 
         moduleFragment.files.forEach { file ->
@@ -53,8 +52,8 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
                 when (decl) {
                     is IrClass -> decl.declarations.filterIsInstance<IrSimpleFunction>().forEach { fn ->
                         logDebug("Processing class: ${decl.name}")
-                        if (injectForNestedSentenceIfAnnotated(fn, file, hookClass.owner, nestedSentenceHookFn.owner, pluginContext, arrayOf)) {
-                            nestedSentenceCount++
+                        if (injectForExpandableSentenceIfAnnotated(fn, file, hookClass.owner, expandableSentenceHookFn.owner, pluginContext, arrayOf)) {
+                            expandableSentenceCount++
                         }
                         if (injectForRenderedValueIfAnnotated(fn, file, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
                             renderedValueCount++
@@ -63,8 +62,8 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
 
                     is IrSimpleFunction -> {
                         logDebug("Processing top-level function: ${decl.name}")
-                        if (injectForNestedSentenceIfAnnotated(decl, file, hookClass.owner, nestedSentenceHookFn.owner, pluginContext, arrayOf)) {
-                            nestedSentenceCount++
+                        if (injectForExpandableSentenceIfAnnotated(decl, file, hookClass.owner, expandableSentenceHookFn.owner, pluginContext, arrayOf)) {
+                            expandableSentenceCount++
                         }
                         if (injectForRenderedValueIfAnnotated(decl, file, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
                             renderedValueCount++
@@ -75,8 +74,8 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         }
 
         logInfo("Kensa IR generation completed.")
-        logInfo(" - Processed $nestedSentenceCount functions with @NestedSentence annotation")
-        logInfo(" - Processed $renderedValueCount functions with @RenderedValue annotation")
+        logInfo(" - Processed $expandableSentenceCount functions with @ExpandableSentence/@NestedSentence annotation")
+        logInfo(" - Processed $renderedValueCount functions with @RenderedValue/@ExpandableRenderedValue annotation")
     }
 
     private fun injectForRenderedValueIfAnnotated(
@@ -87,7 +86,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         pluginContext: IrPluginContext,
         arrayOf: IrSimpleFunctionSymbol
     ): Boolean {
-        val hasAnnotation = fn.annotations.hasAnnotation(renderedValueFqName)
+        val hasAnnotation = fn.annotations.hasAnnotation(renderedValueFqName) || fn.annotations.hasAnnotation(expandableRenderedValueFqName)
         if (!hasAnnotation) return false
         val body = fn.body ?: return false
 
@@ -161,7 +160,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         return true
     }
 
-    private fun injectForNestedSentenceIfAnnotated(
+    private fun injectForExpandableSentenceIfAnnotated(
         fn: IrSimpleFunction,
         file: IrFile,
         hookClassOwner: IrClass,
@@ -169,7 +168,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         pluginContext: IrPluginContext,
         arrayOf: IrSimpleFunctionSymbol
     ): Boolean {
-        val hasAnnotation = fn.annotations.hasAnnotation(nestedSentenceFqName)
+        val hasAnnotation = fn.annotations.hasAnnotation(nestedSentenceFqName) || fn.annotations.hasAnnotation(expandableSentenceFqName)
         if (!hasAnnotation) return false
         val body = fn.body ?: return false
 

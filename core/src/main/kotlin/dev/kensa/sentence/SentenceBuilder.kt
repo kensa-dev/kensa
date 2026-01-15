@@ -1,5 +1,7 @@
 package dev.kensa.sentence
 
+import dev.kensa.RenderedValueStyle
+import dev.kensa.RenderedValueStyle.Tabular
 import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent
@@ -21,8 +23,8 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
     private val tokens: MutableList<TemplateToken> = ArrayList()
     private val scanner: TokenScanner = TokenScanner(dictionary)
-    private var currentNestedTemplateToken: NestedTemplateToken? = null
-    private var currentNestedLocation: Location? = null
+    private var currentExpandableTemplateToken: TemplateToken? = null
+    private var currentExpandableLocation: Location? = null
 
     init {
         if (startingLocation.lineNumber - previousLocation.lineNumber > 1) {
@@ -30,28 +32,58 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         }
     }
 
-    fun beginNested(location: Location, placeholder: String, sentences: List<TemplateSentence>) {
-        currentNestedLocation = location
+    fun beginExpandableSentence(location: Location, placeholder: String, sentences: List<TemplateSentence>) {
+        currentExpandableLocation = location
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        val (scanned, indices) = scanner.scan(placeholder, false)
-        val scannedPlaceholder = indices.joinToString(separator = " ") { index -> scanned.substring(index.start, index.end) }
 
-        val nestedTemplateToken = NestedTemplateToken(
-            scannedPlaceholder,
+        val templateToken = ExpandableTemplateToken(
+            scannedPlaceholder(placeholder),
             EmphasisDescriptor.Default,
             setOf(Expandable),
             name = placeholder,
-            nestedTokens = sentences.map { it.tokens }
+            expandableTokens = sentences.map { it.tokens }
         )
 
-        currentNestedTemplateToken = nestedTemplateToken
+        currentExpandableTemplateToken = templateToken
 
-        tokens.add(nestedTemplateToken)
+        tokens.add(templateToken)
     }
 
-    fun finishNested(parameterEvents: List<LocatedEvent> = emptyList()) {
-        var lastLocation = requireForNestedSentence(currentNestedLocation)
-        val currentNestedTemplate = requireForNestedSentence(currentNestedTemplateToken)
+    fun beginExpandableValue(location: Location, name: String, style: RenderedValueStyle, headers: List<String>) {
+        val token = if (style == Tabular) {
+            TabularTemplateToken(
+                template = name,
+                types = setOf(Expandable, Table),
+                name = name,
+                rows = emptyList(),
+                headers = headers
+            )
+        } else {
+            ExpandableTemplateToken(
+                template = name,
+                types = setOf(Expandable, MethodValue),
+                name = name,
+                expandableTokens = emptyList()
+            )
+        }
+        pushExpandable(location, token)
+    }
+
+    private fun scannedPlaceholder(placeholder: String): String {
+        val (scanned, indices) = scanner.scan(placeholder, false)
+        return indices.joinToString(separator = " ") { index -> scanned.substring(index.start, index.end) }
+    }
+
+    private fun pushExpandable(location: Location, token: TemplateToken) {
+        currentExpandableLocation = location
+        lastLocation = tokens.checkLineAndIndent(location, lastLocation)
+        currentExpandableTemplateToken = token
+        tokens.add(token)
+    }
+
+    fun finishExpandable(parameterEvents: List<LocatedEvent> = emptyList()) {
+        var lastLocation = requireForExpandable(currentExpandableLocation)
+        val currentTemplate = requireForExpandable(currentExpandableTemplateToken)
 
         val parameterTokens = mutableListOf<TemplateToken>()
 
@@ -86,8 +118,12 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
             }
         }
 
-        currentNestedTemplate.parameterTokens = parameterTokens
-        currentNestedTemplateToken = null
+        when (currentTemplate) {
+            is ExpandableTemplateToken -> currentTemplate.parameterTokens = parameterTokens
+            is TabularTemplateToken -> currentTemplate.parameterTokens = parameterTokens
+            else -> {}
+        }
+        currentExpandableTemplateToken = null
     }
 
     fun append(event: NumberLiteral) = appendLiteral(event, event.value, NumberLiteral)
@@ -179,12 +215,12 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     fun build(): TemplateSentence = TemplateSentence(tokens)
 
     @OptIn(ExperimentalContracts::class)
-    private fun <T : Any> requireForNestedSentence(value: T?): T {
+    private fun <T : Any> requireForExpandable(value: T?): T {
         contract {
             returns() implies (value != null)
         }
         return requireNotNull(value) {
-            "Attempted to finish a nested sentence but no location was available"
+            "Attempted to finish an expandable but no location was available"
         }
     }
 

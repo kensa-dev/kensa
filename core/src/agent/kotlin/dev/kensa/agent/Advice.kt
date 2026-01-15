@@ -1,7 +1,8 @@
 package dev.kensa.agent
 
-import dev.kensa.context.NestedInvocationContextHolder.nestedSentenceInvocationContext
+import dev.kensa.context.NestedInvocationContextHolder.expandableSentenceInvocationContext
 import dev.kensa.context.RenderedValueInvocationContextHolder
+import dev.kensa.context.RenderedValueInvocationContextHolder.renderedValueInvocationContext
 import net.bytebuddy.implementation.bind.annotation.AllArguments
 import net.bytebuddy.implementation.bind.annotation.Origin
 import net.bytebuddy.implementation.bind.annotation.RuntimeType
@@ -32,12 +33,12 @@ import java.util.concurrent.Callable
 //    }
 //}
 
-object NestedSentenceInterceptor {
+object ExpandableSentenceInterceptor {
     @JvmStatic
     @RuntimeType
     fun intercept(@Origin method: Method, @AllArguments args: Array<Any?>, @SuperCall superCall: Callable<Any?>): Any? =
         superCall.call().also {
-            nestedSentenceInvocationContext().recordInvocation(method, args)
+            expandableSentenceInvocationContext().recordInvocation(method, args)
         }
 }
 
@@ -46,6 +47,6 @@ object RenderedValueInterceptor {
     @RuntimeType
     fun intercept(@Origin method: Method, @SuperCall superCall: Callable<Any?>): Any? =
         superCall.call().also { returnValue ->
-            RenderedValueInvocationContextHolder.renderedValueInvocationContext().recordInvocation(method, returnValue)
+            renderedValueInvocationContext().recordInvocation(method, returnValue)
         }
 }

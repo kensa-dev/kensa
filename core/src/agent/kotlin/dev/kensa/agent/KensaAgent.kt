@@ -1,5 +1,7 @@
 package dev.kensa.agent
 
+import dev.kensa.ExpandableRenderedValue
+import dev.kensa.ExpandableSentence
 import dev.kensa.NestedSentence
 import dev.kensa.RenderedValue
 import net.bytebuddy.ByteBuddy
@@ -24,7 +26,7 @@ object KensaAgent {
             builder.type(
                 declaresMethod(
                     isAnnotatedWith(
-                        anyOf(NestedSentence::class.java, RenderedValue::class.java)
+                        anyOf(ExpandableSentence::class.java, NestedSentence::class.java, RenderedValue::class.java, ExpandableRenderedValue::class.java)
                     )
                 ),
                 `is`(classLoader)
@@ -37,9 +39,9 @@ object KensaAgent {
         return typeNarrower.apply(agentBuilder)
             .transform { builder, _, _, _, _ ->
                 builder
-                    .method(not(takesNoArguments()).and(isAnnotatedWith(NestedSentence::class.java)))
-                    .intercept(MethodDelegation.to(NestedSentenceInterceptor::class.java))
-                    .method(not(takesNoArguments()).and(isAnnotatedWith(RenderedValue::class.java)))
+                    .method(isAnnotatedWith(anyOf(NestedSentence::class.java, ExpandableSentence::class.java)))
+                    .intercept(MethodDelegation.to(ExpandableSentenceInterceptor::class.java))
+                    .method(isAnnotatedWith(anyOf(RenderedValue::class.java, ExpandableRenderedValue::class.java)))
                     .intercept(MethodDelegation.to(RenderedValueInterceptor::class.java))
 
                 // TODO: would prefer to use Advice - but this causes problems (NoSuchMethodError) with the latest Kotlin compiled code

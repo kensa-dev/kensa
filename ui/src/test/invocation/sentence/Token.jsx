@@ -3,7 +3,7 @@ import Sentence from "./Sentence";
 import {ConfigContext} from "@/Util";
 import './Token.scss';
 
-const NestedSentence = ({value, tokenCls, parameterTokens, tokens, tokenId}) => {
+const Expandable = ({value, tokenCls, parameterTokens, tokens, tokenId}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFloated, setIsFloated] = useState(false);
     const tkExRef = useRef(null);
@@ -80,7 +80,9 @@ const NestedSentence = ({value, tokenCls, parameterTokens, tokens, tokenId}) => 
             {isExpanded && (
                 <div className="ns" style={inlineStyle}>
                     {tokens.map((token, idx) => (
-                        <Sentence key={`${tokenId}-nested-${idx}`} isNested={true} sentence={token}/>
+                        token.type === 'table'
+                            ? <TokenTable key={`${tokenId}-table-${idx}`} headers={token.headers} rows={token.rows}/>
+                            : <Sentence key={`${tokenId}-nested-${idx}`} isNested={true} sentence={token}/>
                     ))}
                 </div>
             )}
@@ -91,13 +93,38 @@ const NestedSentence = ({value, tokenCls, parameterTokens, tokens, tokenId}) => 
                     onMouseLeave={handleMouseLeave}
                 >
                     {tokens.map((token, idx) => (
-                        <Sentence key={`${tokenId}-floating-${idx}`} isNested={true} sentence={token}/>
+                        token.type === 'table'
+                            ? <TokenTable key={`${tokenId}-floating-table-${idx}`} headers={token.headers} rows={token.rows}/>
+                            : <Sentence key={`${tokenId}-floating-${idx}`} isNested={true} sentence={token}/>
                     ))}
                 </div>
             )}
     </span>
     );
 };
+
+const TokenTable = ({headers, rows}) => (
+    <table className="tk-table">
+        {headers && (
+            <thead>
+            <tr>
+                {headers.map((header, idx) => <th key={`head-${idx}`}>{header}</th>)}
+            </tr>
+            </thead>
+        )}
+        <tbody>
+        {rows.map((row, rowIdx) => (
+            <tr key={`row-${rowIdx}`}>
+                {row.map((cell, cellIdx) => (
+                    <td key={`cell-${rowIdx}-${cellIdx}`}>
+                        <Token token={cell}/>
+                    </td>
+                ))}
+            </tr>
+        ))}
+        </tbody>
+    </table>
+);
 
 const AcronymToken = ({tokenCls, value}) => {
     const {acronyms} = useContext(ConfigContext);
@@ -132,10 +159,10 @@ const TextBlockToken = ({tokenCls, value}) => <div className={tokenCls}>{value}<
 export const Token = ({token}) => {
     const {types, value, hint, parameterTokens, tokens} = token;
     const tokenCls = types ? types.join(" ") : '';
-    const tokenId = token.id || value; // Use token.id if available, else value
+    const tokenId = token.id || value;
 
     if (types.includes("tk-ex")) {
-        return <NestedSentence tokenCls={tokenCls} value={value} parameterTokens={parameterTokens} tokens={tokens} tokenId={tokenId}/>;
+        return <Expandable tokenCls={tokenCls} value={value} parameterTokens={parameterTokens} tokens={tokens} tokenId={tokenId}/>;
     } else if (types.includes("tk-ac")) {
         return <AcronymToken tokenCls={tokenCls} value={value}/>;
     } else if (types.includes("tk-tb")) {

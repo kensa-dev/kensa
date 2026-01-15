@@ -5,8 +5,8 @@ import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.Literal.*
 import dev.kensa.parse.LocatedEvent.PathExpression.*
 import dev.kensa.parse.State.*
-import dev.kensa.parse.State.WithAppendable.InNestedWithArguments
-import dev.kensa.parse.State.WithAppendable.InNestedWithArgumentsParameter
+import dev.kensa.parse.State.WithAppendable.InExpandableWithArguments
+import dev.kensa.parse.State.WithAppendable.InExpandableWithArgumentsParameter
 import dev.kensa.parse.state.Matcher.Companion.any
 import dev.kensa.parse.state.StateMachine
 import dev.kensa.parse.state.StateMachineBuilder
@@ -116,6 +116,15 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             on<RenderedValue> { currentState, event ->
                 sentenceBuilder.append(event.location, event)
                 InRenderedValueExpression(currentState)
+            }
+            on<ExpandableValue> { currentState, event ->
+                sentenceBuilder.beginExpandableValue(event.location, event.name, event.style, event.headers)
+                sentenceBuilder.finishExpandable()
+                currentState
+            }
+            on<ExpandableValueWithArguments> { currentState, event ->
+                sentenceBuilder.beginExpandableValue(event.location, event.name, event.style, event.headers)
+                InExpandableWithArguments(currentState, event.location, event.name, emptyList())
             }
             on<EnterExpression> { currentState, _ ->
                 InExpression(currentState)
@@ -245,6 +254,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             ) { currentState, _ -> InRenderedValueExpression(currentState) }
             ignoreAll(
                 any<Method>(),
+                any<Operator>(),
                 any<Terminal>(),
                 any<Literal>(),
                 any<EnterValueArguments>(),
@@ -281,6 +291,15 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 sentenceBuilder.append(event.location, event)
                 InRenderedValueExpression(currentState)
             }
+            on<ExpandableValue> { currentState, event ->
+                sentenceBuilder.beginExpandableValue(event.location, event.name, event.style, event.headers)
+                sentenceBuilder.finishExpandable()
+                currentState
+            }
+            on<ExpandableValueWithArguments> { currentState, event ->
+                sentenceBuilder.beginExpandableValue(event.location, event.name, event.style, event.headers)
+                InExpandableWithArguments(currentState, event.location, event.name, emptyList())
+            }
             on<ChainedCallExpression> { currentState, event ->
                 sentenceBuilder.append(event)
                 InChainedCallExpression(currentState)
@@ -316,14 +335,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 sentenceBuilder.append(event)
                 currentState
             }
-            on<Nested> { currentState, event ->
-                sentenceBuilder.beginNested(event.location, event.name, event.sentences)
-                sentenceBuilder.finishNested()
+            on<ExpandableSentence> { currentState, event ->
+                sentenceBuilder.beginExpandableSentence(event.location, event.name, event.sentences)
+                sentenceBuilder.finishExpandable()
                 currentState
             }
-            on<NestedWithArguments> { currentState, event ->
-                sentenceBuilder.beginNested(event.location, event.name, event.sentences)
-                InNestedWithArguments(currentState, event.location, event.name, event.sentences)
+            on<ExpandableSentenceWithArguments> { currentState, event ->
+                sentenceBuilder.beginExpandableSentence(event.location, event.name, event.sentences)
+                InExpandableWithArguments(currentState, event.location, event.name, event.sentences)
             }
             on<CharacterLiteral> { currentState, event ->
                 sentenceBuilder.append(event)
@@ -361,12 +380,12 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 any<ExitValueArguments>()
             )
         }
-        state<InNestedWithArgumentsParameter> {
+        state<InExpandableWithArgumentsParameter> {
             on<ExitValueArgument> { currentState, _ ->
                 currentState.parentState
             }
             on<EnterValueArguments> { currentState, _ ->
-                InNestedWithArgumentsParameter(currentState)
+                InExpandableWithArgumentsParameter(currentState)
             }
             on<ExitValueArguments> { currentState, _ ->
                 currentState.parentState
@@ -381,15 +400,15 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 any<EnterValueArgument>(),
             )
         }
-        state<InNestedWithArguments> {
+        state<InExpandableWithArguments> {
             on<EnterValueArguments> { currentState, _ ->
-                InNestedWithArgumentsParameter(currentState)
+                InExpandableWithArgumentsParameter(currentState)
             }
             on<EnterValueArgument> { currentState, _ ->
-                InNestedWithArgumentsParameter(currentState)
+                InExpandableWithArgumentsParameter(currentState)
             }
             on<ExitValueArguments> { currentState, _ ->
-                sentenceBuilder.finishNested(currentState.parameterEvents)
+                sentenceBuilder.finishExpandable(currentState.parameterEvents)
                 currentState.parentState
             }
 
@@ -416,6 +435,15 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             on<RenderedValue> { currentState, event ->
                 sentenceBuilder.append(event.location, event)
                 InRenderedValueExpression(currentState)
+            }
+            on<ExpandableValue> { currentState, event ->
+                sentenceBuilder.beginExpandableValue(event.location, event.name, event.style, event.headers)
+                sentenceBuilder.finishExpandable()
+                currentState
+            }
+            on<ExpandableValueWithArguments> { currentState, event ->
+                sentenceBuilder.beginExpandableValue(event.location, event.name, event.style, event.headers)
+                InExpandableWithArguments(currentState, event.location, event.name, emptyList())
             }
             on<ChainedCallExpression> { currentState, event ->
                 sentenceBuilder.append(event)
@@ -450,14 +478,14 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 sentenceBuilder.append(event)
                 currentState
             }
-            on<Nested> { currentState, event ->
-                sentenceBuilder.beginNested(event.location, event.name, event.sentences)
-                sentenceBuilder.finishNested()
+            on<ExpandableSentence> { currentState, event ->
+                sentenceBuilder.beginExpandableSentence(event.location, event.name, event.sentences)
+                sentenceBuilder.finishExpandable()
                 currentState
             }
-            on<NestedWithArguments> { currentState, event ->
-                sentenceBuilder.beginNested(event.location, event.name, event.sentences)
-                InNestedWithArguments(currentState, event.location, event.name, event.sentences)
+            on<ExpandableSentenceWithArguments> { currentState, event ->
+                sentenceBuilder.beginExpandableSentence(event.location, event.name, event.sentences)
+                InExpandableWithArguments(currentState, event.location, event.name, event.sentences)
             }
             on<EnterExpression> { currentState, _ ->
                 InExpression(currentState)

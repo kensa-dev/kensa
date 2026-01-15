@@ -6,6 +6,8 @@ import dev.kensa.RenderedHintStrategy.HintFromProperty
 import dev.kensa.RenderedValueStrategy.UseIdentifierName
 import dev.kensa.RenderingDirective
 import dev.kensa.TextStyle.Italic
+import dev.kensa.example.TheTestClass
+import dev.kensa.example.Wrapper
 import dev.kensa.fixture.FixtureContainer
 import dev.kensa.fixture.FixtureRegistry
 import dev.kensa.fixture.Fixtures
@@ -32,28 +34,6 @@ class TokenRendererTest {
     @Suppress("unused")
     object HintedFields {
         val aStringField = Field("path/to/string")
-    }
-
-    @Suppress("unused")
-    class Wrapper(val value: String) {
-        val firstCharacter = value.first()
-    }
-
-    @Suppress("unused")
-    class TheTestClass {
-        @field:Highlight
-        val prop1 = "prop1"
-        val prop2 = null
-        val prop3 = 20
-        val prop4 = true
-        val prop5 = Wrapper("MyString")
-
-        @Highlight
-        fun method1() = "method1"
-        fun method2() = null
-        fun method3() = 20
-        fun method4() = true
-        fun method5() = Wrapper("MyString")
     }
 
     private val renderers = Renderers().apply {

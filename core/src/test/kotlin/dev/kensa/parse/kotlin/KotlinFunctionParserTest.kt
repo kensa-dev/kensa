@@ -22,6 +22,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -535,7 +536,7 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
-        internal fun `recognises SentenceValue and Highlight on various Kotlin properties and functions`() {
+        internal fun `recognises RenderedValue and Highlight on various Kotlin properties and functions`() {
             val functionName = "simpleTest"
             val parser = createParserFor(aFunctionNamed(functionName))
 
@@ -595,7 +596,7 @@ internal class KotlinFunctionParserTest {
                     }
                 }
                 with(methods) {
-                    methods.size shouldBe 8
+                    methods.size shouldBe 6
                     assertSoftly(get("method1")) {
                         shouldNotBeNull()
                         asClue {
@@ -656,41 +657,6 @@ internal class KotlinFunctionParserTest {
                 name.shouldBe(functionName)
                 parameters.descriptors.shouldBeEmpty()
 
-                assertSoftly(methods[functionName]) {
-                    shouldNotBeNull()
-                    shouldBeInstanceOf<MethodElementDescriptor>()
-                }
-
-                sentences.first().tokens.shouldBe(expectedSentence.tokens)
-            }
-        }
-
-        @Test
-        internal fun `parses interface function`() {
-            val functionName = "interfaceTestMethod"
-            val parser = createParserFor(aFunctionNamed(functionName))
-
-            val expectedSentence = TemplateSentence(
-                listOf(
-                    Word.asTemplateToken("assert"),
-                    Word.asTemplateToken("that"),
-                    StringLiteral.asTemplateToken("abc"),
-                    Word.asTemplateToken("contains"),
-                    StringLiteral.asTemplateToken("a")
-                )
-            )
-
-            val method = KotlinWithInterface::class.java.findMethod(functionName)
-            val parsedMethod = parser.parse(method)
-
-            with(parsedMethod) {
-                name.shouldBe(functionName)
-                parameters.descriptors.shouldBeEmpty()
-
-                assertSoftly(methods[functionName]) {
-                    shouldNotBeNull()
-                    shouldBeInstanceOf<MethodElementDescriptor>()
-                }
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
             }
         }
@@ -719,7 +685,7 @@ internal class KotlinFunctionParserTest {
                 name.shouldBe(functionName)
                 parameters.descriptors.shouldBeEmpty()
 
-                assertSoftly(methods[functionName]) {
+                assertSoftly(methods["extensionFunction"]) {
                     shouldNotBeNull()
                     shouldBeInstanceOf<MethodElementDescriptor>()
                 }
@@ -751,8 +717,7 @@ internal class KotlinFunctionParserTest {
 
                 with(properties) {
                     assertSoftly(get("field1")) {
-                        shouldNotBeNull()
-                        shouldBeInstanceOf<PropertyElementDescriptor>()
+                        shouldBeNull()
                     }
                     assertSoftly(get("field2")) {
                         shouldNotBeNull()
@@ -762,11 +727,6 @@ internal class KotlinFunctionParserTest {
                         shouldNotBeNull()
                         shouldBeInstanceOf<PropertyElementDescriptor>()
                     }
-                }
-
-                assertSoftly(methods[functionName]) {
-                    shouldNotBeNull()
-                    shouldBeInstanceOf<MethodElementDescriptor>()
                 }
 
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)

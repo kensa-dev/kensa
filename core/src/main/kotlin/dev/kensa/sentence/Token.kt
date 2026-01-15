@@ -29,7 +29,8 @@ sealed interface TemplateToken {
         OutputsValueByKey("ov"),
         StringLiteral("sl"),
         TextBlock("tb"),
-        Word("wd");
+        Word("wd"),
+        Table("tab");
     }
 
     val template: String
@@ -51,12 +52,23 @@ sealed interface TemplateToken {
         override val types: Set<Type> = setOf(Type.MethodValue)
     }
 
-    data class NestedTemplateToken(
+    data class ExpandableTemplateToken(
         override val template: String,
         override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
         override val types: Set<Type>,
         val name: String,
-        val nestedTokens: List<List<TemplateToken>>
+        val expandableTokens: List<List<TemplateToken>>
+    ) : TemplateToken {
+        var parameterTokens: List<TemplateToken> = emptyList()
+    }
+
+    data class TabularTemplateToken(
+        override val template: String,
+        override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
+        override val types: Set<Type>,
+        val name: String,
+        val rows: List<List<TemplateToken>>,
+        val headers: List<String> = emptyList()
     ) : TemplateToken {
         var parameterTokens: List<TemplateToken> = emptyList()
     }
@@ -74,13 +86,23 @@ sealed interface RenderedToken {
         override val hint: String? = null
     ) : RenderedToken
 
-    data class RenderedNestedToken(
+    data class RenderedExpandableToken(
         override val value: String,
         override val cssClasses: Set<String>,
         override val hint: String? = null,
         val name: String,
         val parameterTokens: List<RenderedToken>,
-        val nestedTokens: List<List<RenderedToken>>
+        val expandableTokens: List<List<RenderedToken>>,
+    ) : RenderedToken
+
+    data class RenderedExpandableTabularToken(
+        override val value: String,
+        override val cssClasses: Set<String>,
+        override val hint: String? = null,
+        val name: String,
+        val parameterTokens: List<RenderedToken>,
+        val rows: List<List<RenderedToken>>,
+        val headers: List<String> = emptyList()
     ) : RenderedToken
 }
 

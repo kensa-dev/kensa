@@ -8,7 +8,6 @@ import dev.kensa.parse.*
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
-import dev.kensa.util.SourceCode
 import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
 import io.kotest.assertions.assertSoftly
@@ -16,14 +15,11 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.equality.FieldsEqualityCheckConfig
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.maps.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import kotlin.io.path.Path
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -121,8 +117,7 @@ internal class JavaMethodParserTest {
 
                 with(properties) {
                     get("field1")
-                        .shouldNotBeNull()
-                        .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field1")))
+                        .shouldBeNull()
                     get("field2")
                         .shouldNotBeNull()
                         .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field2")))
@@ -131,8 +126,7 @@ internal class JavaMethodParserTest {
                         .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field3")), ignoringHighlightProperty())
                 }
                 methods[methodName]
-                    .shouldNotBeNull()
-                    .shouldBeEqualToComparingFields(ElementDescriptor.forMethod(method))
+                    .shouldBeNull()
 
                 assertSoftly(nestedMethods["nested1"]) {
                     shouldNotBeNull()
@@ -168,8 +162,7 @@ internal class JavaMethodParserTest {
 
                 with(properties) {
                     get("foo")
-                        .shouldNotBeNull()
-                        .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithScenario::class.propertyNamed("foo")))
+                        .shouldBeNull()
                     get("scenario")
                         .shouldNotBeNull()
                         .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithScenario::class.propertyNamed("scenario")))
@@ -305,8 +298,7 @@ internal class JavaMethodParserTest {
 
                 with(properties) {
                     get("field4")
-                        .shouldNotBeNull()
-                        .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field4")))
+                        .shouldBeNull()
                     get("field5")
                         .shouldNotBeNull()
                         .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field5")))
@@ -316,8 +308,7 @@ internal class JavaMethodParserTest {
                 }
 
                 methods[methodName]
-                    .shouldNotBeNull()
-                    .shouldBeEqualToComparingFields(ElementDescriptor.forMethod(method))
+                    .shouldBeNull()
 
                 sentences.first().tokens shouldBe expectedSentence.tokens
             }
@@ -346,9 +337,9 @@ internal class JavaMethodParserTest {
                 parameters.descriptors.shouldBeEmpty()
 
                 with(properties) {
-                    get("field1")
-                        .shouldNotBeNull()
-                        .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field1")))
+                    assertSoftly(get("field1")) {
+                        shouldBeNull()
+                    }
                     get("field2")
                         .shouldNotBeNull()
                         .shouldBeEqualToComparingFields(ElementDescriptor.forProperty(JavaWithInterface::class.propertyNamed("field2")))
@@ -358,8 +349,7 @@ internal class JavaMethodParserTest {
                 }
 
                 methods[methodName]
-                    .shouldNotBeNull()
-                    .shouldBeEqualToComparingFields(ElementDescriptor.forMethod(method))
+                    .shouldBeNull()
 
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
             }

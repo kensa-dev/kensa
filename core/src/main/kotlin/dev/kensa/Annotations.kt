@@ -2,6 +2,7 @@ package dev.kensa
 
 import dev.kensa.RenderedHintStrategy.NoHint
 import dev.kensa.RenderedValueStrategy.UseIdentifierName
+import dev.kensa.RenderedValueStyle.Default
 import dev.kensa.state.SetupStrategy
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.*
@@ -45,8 +46,16 @@ annotation class Highlight(val value: String = "")
 @Target(ANNOTATION_CLASS, CLASS, FUNCTION)
 annotation class Issue(vararg val value: String)
 
+@Target(FUNCTION)
+@Retention(RUNTIME)
+@Deprecated(
+    message = "Use ExpandableSentence instead",
+    replaceWith = ReplaceWith("ExpandableSentence", "dev.kensa.ExpandableSentence")
+)
+annotation class NestedSentence
+
 /**
- * Annotation for marking methods or functions as nested.
+ * Annotation for marking methods or functions as expandable.
  * These methods can be called from within the main test methods/functions
  * and are usually used to provide further, more detailed assertions that
  * are not required to be displayed all the time in the test output.
@@ -54,7 +63,8 @@ annotation class Issue(vararg val value: String)
  */
 @Retention(RUNTIME)
 @Target(FUNCTION)
-annotation class NestedSentence
+annotation class ExpandableSentence
+
 
 /**
  * Annotation that specifies a container for rendered values.
@@ -73,6 +83,15 @@ annotation class RenderedValueContainer
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER, FUNCTION, PROPERTY_GETTER)
 annotation class RenderedValue
+
+@Retention(RUNTIME)
+@Target(FIELD, VALUE_PARAMETER, FUNCTION, PROPERTY_GETTER)
+annotation class ExpandableRenderedValue(val renderAs: RenderedValueStyle = Default, val headers: Array<String> = [])
+
+enum class RenderedValueStyle {
+    Default,
+    Tabular
+}
 
 /**
  * Strategies for resolving the primary display text of a rendered token.

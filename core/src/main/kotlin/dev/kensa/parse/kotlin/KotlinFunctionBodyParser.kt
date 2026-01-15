@@ -136,12 +136,14 @@ class KotlinFunctionBodyParser(
 
     override fun enterSimpleIdentifier(ctx: KotlinParser.SimpleIdentifierContext) {
         with(parseContext) {
-            stateMachine.apply(ctx.asParameter() ?: ctx.asField() ?: ctx.asMethod() ?: ctx.asNested()?.let { nested ->
-                if (ctx.hasArguments())
-                    nested.asNestedWithArguments()
-                else
-                    nested
-            } ?: ctx.asIdentifier())
+            stateMachine.apply(
+                ctx.asParameter()
+                    ?: ctx.asField()
+                    ?: ctx.asMethod()
+                    ?: ctx.asExpandableSentence()?.let { expandable -> if (ctx.hasArguments()) expandable.asExpandableSentenceWithArguments() else expandable }
+                    ?: ctx.asExpandableValue()?.let { expandable -> if (ctx.hasArguments()) expandable.asExpandableValueWithArguments() else expandable }
+                    ?: ctx.asIdentifier()
+            )
         }
     }
 

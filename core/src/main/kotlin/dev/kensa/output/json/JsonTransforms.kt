@@ -5,6 +5,8 @@ import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonValue
 import com.eclipsesource.json.WriterConfig.MINIMAL
 import dev.kensa.KensaException
+import dev.kensa.RenderedValueStyle
+import dev.kensa.RenderedValueStyle.Tabular
 import dev.kensa.context.TestContainer
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedSentence
@@ -101,26 +103,37 @@ object JsonTransforms {
                 add("value", token.value)
                 token.hint?.let { add("hint", it) }
 
-                if (token is RenderedToken.RenderedNestedToken) {
-                    add("parameterTokens", asJsonArray(token.parameterTokens) { token ->
-                        jsonObject().apply {
-                            add("types", asJsonArray(token.cssClasses))
-                            add("value", token.value)
-                            token.hint?.let { add("hint", it) }
-                        }
-                    })
-                    add("tokens", asJsonArray(token.nestedTokens) { sentenceTokens: List<RenderedToken> ->
-                        asJsonArray(sentenceTokens) { sentenceToken ->
+                when (token) {
+                    is RenderedToken.RenderedExpandableTabularToken -> {
+                        add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
+                        add("tokens", Json.array().add(
                             jsonObject().apply {
-                                add("types", asJsonArray(sentenceToken.cssClasses))
-                                add("value", sentenceToken.value)
-                                sentenceToken.hint?.let { add("hint", it) }
+                                add("type", "table")
+                                if (token.headers.isNotEmpty()) {
+                                    add("headers", asJsonArray(token.headers))
+                                }
+                                add("rows", asJsonArray(token.rows) { row ->
+                                    asJsonArray(row) { cell -> baseTokenJson(cell) }
+                                })
                             }
-                        }
-                    })
+                        ))
+                    }
+                    is RenderedToken.RenderedExpandableToken -> {
+                        add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
+                        add("tokens", asJsonArray(token.expandableTokens) { tokens ->
+                            asJsonArray(tokens) { t -> baseTokenJson(t) }
+                        })
+                    }
+                    else -> {}
                 }
             }
         }
+    }
+
+    private fun baseTokenJson(token: RenderedToken) = jsonObject().apply {
+        add("types", asJsonArray(token.cssClasses))
+        add("value", token.value)
+        token.hint?.let { add("hint", it) }
     }
 
     private fun asJsonArray(collection: Collection<String>) = asJsonArray(collection) { string: String -> Json.value(string) }

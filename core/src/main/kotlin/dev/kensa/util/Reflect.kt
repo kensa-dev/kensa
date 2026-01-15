@@ -55,12 +55,20 @@ private val allTheFields: ReflectPredicate<Field> = { true }
 private fun withFieldName(name: String): ReflectPredicate<Field> = { it.name == name }
 private fun withName(name: String): (KProperty1<out Any?, Any?>) -> Boolean = { it.name == name }
 
+private fun shouldStop(): (Class<*>) -> Boolean = { clazz ->
+    clazz == Any::class.java ||
+        clazz.name.startsWith("java.") ||
+        clazz.name.startsWith("javax.") ||
+        clazz.name.startsWith("kotlin.") ||
+        clazz.name.startsWith("dev.kensa.") && !clazz.name.startsWith("dev.kensa.example.")
+}
+
 internal fun Class<*>.findAllRelatedClasses(sourceCode: SourceCode): Set<Class<*>> =
     mutableSetOf<Class<*>>().also { classes ->
 
         fun collect(clazz: Class<*>) {
             if (clazz in classes) return
-            if (!sourceCode.existsFor(clazz)) return
+            if (shouldStop()(clazz) || !sourceCode.existsFor(clazz)) return
 
             classes += clazz
             clazz.findAnnotation<Sources>()?.value?.forEach { collect(it.java) }
@@ -198,10 +206,22 @@ internal inline fun <reified T : Annotation> KProperty<*>.findAllKotlinOrJavaAnn
 
 inline fun <reified T : Annotation> AnnotatedElement.hasAnnotation() = findAnnotation<T>() != null
 inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? =
-    if (this is Class<*>) {
-        findAnnotationInHierarchy(T::class.java)
-    } else {
-        annotations.filterIsInstance<T>().firstOrNull() ?: getAnnotation(T::class.java)
+    when (this) {
+        is Class<*> -> findAnnotationInHierarchy(T::class.java)
+        is Method -> {
+            annotations.filterIsInstance<T>().firstOrNull()
+                ?: getAnnotation(T::class.java)
+                ?: kotlinFunction?.annotations?.filterIsInstance<T>()?.firstOrNull()
+                ?: declaringClass.kotlin.memberProperties
+                    .find { it.javaGetter == this }
+                    ?.annotations?.filterIsInstance<T>()?.firstOrNull()
+        }
+        is Field -> {
+            annotations.filterIsInstance<T>().firstOrNull()
+                ?: getAnnotation(T::class.java)
+                ?: kotlinProperty?.annotations?.filterIsInstance<T>()?.firstOrNull()
+        }
+        else -> annotations.filterIsInstance<T>().firstOrNull() ?: getAnnotation(T::class.java)
     }
 
 inline fun <reified T : Annotation> AnnotatedElement.findAllAnnotations(): Set<T> =
@@ -246,8 +266,6 @@ fun <T : Annotation> Class<*>.findAllAnnotationsInHierarchy(annotationClass: Cla
         }
     }
 
-private fun shouldStop(): (Class<*>) -> Boolean = { it == Any::class.java }
-
 private fun Class<*>?.findField(predicate: ReflectPredicate<Field>): Field? =
     this?.takeUnless(shouldStop())?.run {
         declaredFields.singleOrNull { predicate.invoke(it) }
@@ -259,7 +277,7 @@ private fun Class<*>.findKotlinPropertiesInHierarchy(predicate: (KProperty1<out 
 
     fun Class<*>.traverseClassHierarchy() {
         takeUnless(shouldStop())?.apply {
-            if (isKotlinClass) kotlin.declaredMemberProperties.filterTo(results, predicate)
+            if (isKotlinClass) kotlin.declaredMemberProperties.filter { it.javaField?.isSynthetic != true }.filterTo(results, predicate)
             superclass.findKotlinPropertiesInHierarchy(predicate)
         }
     }
@@ -289,7 +307,7 @@ private fun Class<*>.findMethodsInHierarchy(predicate: ReflectPredicate<Method>)
 
     fun Class<*>.traverseClassHierarchy() {
         takeUnless(shouldStop())?.apply {
-            declaredMethods.filterTo(results, predicate)
+            declaredMethods.filter { !it.isSynthetic && !it.isBridge }.filterTo(results, predicate)
             superclass?.traverseClassHierarchy()
             interfaces.forEach { it.traverseClassHierarchy() }
         }

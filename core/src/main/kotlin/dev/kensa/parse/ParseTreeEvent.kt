@@ -1,5 +1,6 @@
 package dev.kensa.parse
 
+import dev.kensa.RenderedValueStyle
 import dev.kensa.sentence.TemplateSentence
 
 data class Location(val lineNumber: Int, val linePosition: Int)
@@ -50,9 +51,11 @@ sealed class LocatedEvent(val location: Location) : Event() {
     class Parameter(location: Location, val name: String) : LocatedEvent(location)
     class Method(location: Location, val name: String) : LocatedEvent(location)
     class Field(location: Location, val name: String) : LocatedEvent(location)
-    class Nested(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
     class RenderedValue(location: Location, val name: String) : LocatedEvent(location)
-    class NestedWithArguments(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
+    class ExpandableSentence(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
+    class ExpandableSentenceWithArguments(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
+    class ExpandableValue(location: Location, val name: String, val style: RenderedValueStyle, val headers: List<String>) : LocatedEvent(location)
+    class ExpandableValueWithArguments(location: Location, val name: String, val style: RenderedValueStyle, val headers: List<String>) : LocatedEvent(location)
     class Note(location: Location, val text: String): LocatedEvent(location)
 
     sealed class Literal(location: Location, val value: String) : LocatedEvent(location) {

@@ -9,7 +9,9 @@ data class ListRendererFormat(val separator: String = ", ", val prefix: String =
 
 class Renderers {
     private val defaultListRenderer = HeterogeneousListRenderer()
+    private val defaultTableRenderer = DefaultTableRenderer()
     private val valueRenderers: SortedMap<KClass<*>, ValueRenderer<Any>> = TreeMap(SubclassFirstComparator())
+    private val tableRenderers: SortedMap<KClass<*>, TableRenderer<Any>> = TreeMap(SubclassFirstComparator())
     private val interactionRenderers: SortedMap<KClass<*>, InteractionRenderer<Any>> = TreeMap(SubclassFirstComparator())
     private var listRenderer: ValueRenderer<List<*>> = defaultListRenderer
     private var listRendererFormat = ListRendererFormat()
@@ -54,6 +56,15 @@ class Renderers {
             .map { entry -> entry.value }
             .firstOrNull()
 
+    fun renderTable(value: Any): List<List<Any?>> =
+        tableRendererFor(value::class)?.render(value) ?: defaultTableRenderer.render(value)
+
+    private fun tableRendererFor(kClass: KClass<*>): TableRenderer<Any>? =
+        tableRenderers.entries
+            .filter { entry -> entry.key.isSuperclassOf(kClass) }
+            .map { entry -> entry.value }
+            .firstOrNull()
+
     fun renderInteraction(value: Any, attributes: Attributes): List<RenderedInteraction> = interactionRendererFor(value::class)?.render(value, attributes) ?: listOf(RenderedInteraction("Undefined Value", value.toString()))
 
     fun renderInteractionAttributes(value: Any): List<RenderedAttributes> = interactionRendererFor(value::class)?.renderAttributes(value) ?: emptyList()
@@ -87,5 +98,29 @@ class Renderers {
 
     private inner class HeterogeneousListRenderer : ValueRenderer<List<*>> {
         override fun render(value: List<*>): String = value.joinToString(separator = listRendererFormat.separator, prefix = listRendererFormat.prefix, postfix = listRendererFormat.postfix) { renderValue(it) }
+    }
+
+    private class DefaultTableRenderer : TableRenderer<Any> {
+        override fun render(value: Any): List<List<Any?>> =
+            when (value) {
+                is Iterable<*> -> value.map { item ->
+                    when (item) {
+                        is Pair<*, *> -> listOf(item.first, item.second)
+                        is Triple<*, *, *> -> listOf(item.first, item.second, item.third)
+                        is Iterable<*> -> item.toList()
+                        is Array<*> -> item.toList()
+                        else -> listOf(item)
+                    }
+                }
+                is Array<*> -> value.map { item ->
+                    when (item) {
+                        is Pair<*, *> -> listOf(item.first, item.second)
+                        is Triple<*, *, *> -> listOf(item.first, item.second, item.third)
+                        is Array<*> -> item.toList()
+                        else -> listOf(item)
+                    }
+                }
+                else -> listOf(listOf(value))
+            }
     }
 }

@@ -1,18 +1,18 @@
 package dev.kensa.parse
 
 import dev.kensa.KensaException
-import dev.kensa.context.NestedInvocationContextHolder.nestedSentenceInvocationContext
+import dev.kensa.context.NestedInvocationContextHolder.expandableSentenceInvocationContext
 import dev.kensa.context.RealNestedInvocation
 import dev.kensa.context.RealRenderedValueInvocation
 import dev.kensa.context.RenderedValueInvocationContextHolder.renderedValueInvocationContext
-import dev.kensa.parse.ElementDescriptor.HintedPropertyElementDescriptor
-import dev.kensa.parse.ElementDescriptor.ResolveHolderElementDescriptor
+import dev.kensa.parse.ElementDescriptor.*
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedToken
-import dev.kensa.sentence.RenderedToken.RenderedNestedToken
+import dev.kensa.sentence.RenderedToken.RenderedExpandableToken
 import dev.kensa.sentence.RenderedToken.RenderedValueToken
 import dev.kensa.sentence.TemplateToken
-import dev.kensa.sentence.TemplateToken.NestedTemplateToken
+import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
+import dev.kensa.sentence.TemplateToken.TabularTemplateToken
 import dev.kensa.sentence.TemplateToken.Type
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.util.NamedValue
@@ -31,14 +31,15 @@ class TokenRenderer(
     fun render(tokens: List<TemplateToken>): List<RenderedToken> =
         tokens.squash().map { token ->
             when {
-                token is TemplateToken.RenderedValueToken -> token.asSpecialRenderedValueToken()
+                token is TemplateToken.RenderedValueToken -> token.asRenderedValueToken()
                 token.hasType(FieldValue) -> token.asFieldValue()
                 token.hasType(MethodValue) -> token.asMethodValue()
                 token.hasType(ParameterValue) -> token.asParameterValue()
                 token.hasType(FixturesValue) -> token.asFixtureValue()
                 token.hasType(OutputsValueByName) -> token.asOutputValueByName()
                 token.hasType(OutputsValueByKey) -> token.asOutputValueByKey()
-                token is NestedTemplateToken -> token.asNested()
+                token is ExpandableTemplateToken -> token.asExpandable()
+                token is TabularTemplateToken -> token.asTabular()
 
                 else -> token.asRenderedValue()
             }
@@ -79,13 +80,13 @@ class TokenRenderer(
         finishCurrentWord()
     }
 
-    private fun TemplateToken.asSpecialRenderedValueToken(): RenderedValueToken {
+    private fun TemplateToken.asRenderedValueToken(): RenderedValueToken {
         val returnValue = when (val invocation = renderedValueInvocationContext().nextInvocationFor(template)) {
             is RealRenderedValueInvocation -> invocation.returnValue
             else -> template
         }
         return RenderedValueToken(
-            returnValue.toString(),
+            renderers.renderValue(returnValue),
             (types.map { it.asCss() } + emphasis.asCss()).toSortedSet()
         )
     }
@@ -96,17 +97,46 @@ class TokenRenderer(
             (types.map { it.asCss() } + emphasis.asCss()).toSortedSet()
         )
 
-    private fun NestedTemplateToken.asNested() =
-        RenderedNestedToken(
+    private fun ExpandableTemplateToken.asExpandable() =
+        RenderedExpandableToken(
             template,
             (types.map { it.asCss() } + emphasis.asCss()).toSortedSet(),
             name = name,
             parameterTokens = render(parameterTokens),
-            nestedTokens = when (val invocation = nestedSentenceInvocationContext().nextInvocationFor(name)) {
-                is RealNestedInvocation -> nestedTokens.map { tokens -> invocation.rebuildRenderer().render(tokens) }
-                else -> nestedTokens.map { tokens -> render(tokens) }
+            expandableTokens = when (val invocation = expandableSentenceInvocationContext().nextInvocationFor(name)) {
+                is RealNestedInvocation -> expandableTokens.map { tokens -> invocation.rebuildRenderer().render(tokens) }
+                else -> expandableTokens.map { tokens -> render(tokens) }
             }
         )
+
+    private fun TabularTemplateToken.asTabular(): RenderedToken {
+        val returnValue = when (val invocation = renderedValueInvocationContext().nextInvocationFor(name)) {
+            is RealRenderedValueInvocation -> invocation.returnValue
+            else -> null
+        }
+
+        val renderedRows = if (returnValue != null) {
+            renderers.renderTable(returnValue).map { row ->
+                row.map { cellValue ->
+                    RenderedValueToken(
+                        renderers.renderValue(cellValue),
+                        setOf(Word.asCss())
+                    )
+                }
+            }
+        } else {
+            rows.map { render(it) }
+        }
+
+        return RenderedToken.RenderedExpandableTabularToken(
+            template,
+            (types.map { it.asCss() } + emphasis.asCss()).toSortedSet(),
+            name = name,
+            parameterTokens = render(parameterTokens),
+            rows = renderedRows,
+            headers = headers
+        )
+    }
 
     private fun TemplateToken.asFixtureValue() =
         asRenderedValueToken { name, path -> fixtureAndOutputAccessor.fixtureValue(name, path) }
@@ -125,17 +155,27 @@ class TokenRenderer(
     private fun TemplateToken.asFieldValue(): RenderedToken =
         template.split(":").let { (name, path) ->
             properties[name]?.let { pd ->
-                if (pd is HintedPropertyElementDescriptor) {
-                    pd.resolveValue(testInstance, path)?.let { v ->
-                        asToken(renderers.renderValue(v.value), FieldValue, pd.isHighlight, v.hint)
+                when (pd) {
+                    is HintedPropertyElementDescriptor -> {
+                        pd.resolveValue(testInstance, path)?.let { v ->
+                            asToken(renderers.renderValue(v.value), FieldValue, pd.isHighlight, v.hint)
+                        }
                     }
-                } else asToken(
-                    if (pd is ResolveHolderElementDescriptor) {
-                        renderers.renderValue(pd.resolveValue(testInstance, "$name.$path"))
-                    } else {
-                        renderers.renderValue(pd.resolveValue(testInstance, path))
-                    }, FieldValue, pd.isHighlight
-                )
+
+                    is HintedEnumConstantElementDescriptor -> {
+                        pd.resolveValue(testInstance, path).let { v ->
+                            asToken(renderers.renderValue(v.value), FieldValue, pd.isHighlight, v.hint)
+                        }
+                    }
+
+                    else -> asToken(
+                        if (pd is ResolveHolderElementDescriptor) {
+                            renderers.renderValue(pd.resolveValue(testInstance, "$name.$path"))
+                        } else {
+                            renderers.renderValue(pd.resolveValue(testInstance, path))
+                        }, FieldValue, pd.isHighlight
+                    )
+                }
             }
         } ?: throw KensaException("Token [${template}] with type FieldValue did not refer to an actual field")
 

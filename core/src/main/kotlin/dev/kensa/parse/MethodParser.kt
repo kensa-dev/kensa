@@ -7,7 +7,6 @@ import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.util.*
 import java.lang.reflect.Method
-import kotlin.collections.buildList
 import kotlin.reflect.KClass
 
 
@@ -24,10 +23,10 @@ class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = empty
 
     private fun matchingDeclarationFor(method: Method, toSimpleTypeName: (Class<*>) -> String) = { dc: MethodDeclarationContext ->
         method.normalisedPlatformName == dc.name &&
-                // Only match on parameter simple type name - saves having to go looking in the imports
-                dc.parameterNamesAndTypes.map {
-                    it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
-                } == method.parameterTypes.map(toSimpleTypeName)
+            // Only match on parameter simple type name - saves having to go looking in the imports
+            dc.parameterNamesAndTypes.map {
+                it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
+            } == method.parameterTypes.map(toSimpleTypeName)
     }
 
     companion object {
@@ -67,7 +66,11 @@ class MethodParser(
                 val emphasisedMethods = cache.getOrPutEmphasisedMethods(testClass) {
                     prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
                 }
-                val methods = cache.getOrPutMethods(testClass) { testClass.prepareMethods() }
+                val methods = cache.getOrPutMethods(testClass) {
+                    relatedClasses.fold(mutableMapOf()) { acc, clazz ->
+                        acc.apply { putAll(clazz.prepareMethods()) }
+                    }
+                }
                 val nestedMethods = testClass.prepareNestedMethods(methodDeclarations.nestedMethods, ParseContext(properties, methods))
                 val testMethodSentences = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
 
@@ -82,10 +85,11 @@ class MethodParser(
                 )
             }
         }.also {
-            NestedInvocationContextHolder.nestedSentenceInvocationContext().update(it.nestedMethods)
+            NestedInvocationContextHolder.expandableSentenceInvocationContext().update(it.nestedMethods)
         }
 
-    private fun sentenceBuilder(): (Boolean, Location, Location) -> SentenceBuilder = { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, previousLocation, configuration.dictionary, configuration.tabSize) }
+    private fun sentenceBuilder(): (Boolean, Location, Location) -> SentenceBuilder =
+        { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, previousLocation, configuration.dictionary, configuration.tabSize) }
 
     private fun Class<*>.prepareNestedMethods(declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> =
         cache.getOrPutNestedMethods(this) {
@@ -127,30 +131,57 @@ class MethodParser(
 
     private fun Class<*>.prepareMethods(): Map<String, MethodElementDescriptor> =
         allMethods
+            .filter {
+                it.hasAnnotation<RenderedValue>() ||
+                    it.hasAnnotation<RenderedValue>() ||
+                    it.hasAnnotation<ExpandableRenderedValue>() ||
+                    it.hasAnnotation<ExpandableSentence>() ||
+                    it.hasAnnotation<NestedSentence>() ||
+                    it.hasAnnotation<Emphasise>() ||
+                    it.hasAnnotation<Highlight>()
+            }
             .map { ElementDescriptor.forMethod(it) }
             .associateBy(ElementDescriptor::name)
 
-    private fun Class<*>.prepareProperties(directives: RenderingDirectives) =
-        allProperties
-            .flatMap { property ->
+    private fun Class<*>.prepareProperties(directives: RenderingDirectives): Map<String, ElementDescriptor> =
+        if (this.isEnum) {
+            val enumClass = this as Class<Enum<*>>
+            enumClass.enumConstants.flatMap<Enum<*>, ElementDescriptor> { it: Enum<*> ->
                 buildList {
-                    val propertyClass = property.returnType.classifier as? KClass<*>
-
-                    directives[propertyClass]?.let { directive ->
-                        add(ElementDescriptor.forHintedProperty(property, directive))
-                    } ?: run {
-                        val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
-
-                        if (descriptor.isRenderedValueContainer) {
-                            (property.returnType.classifier as? KClass<*>)?.let { classifier ->
-                                addAll(
-                                    classifier.allProperties
-                                        .filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }
-                                        .map { ElementDescriptor.forResolveHolder(descriptor, it) }
-                                )
-                            }
-                        }
+                    directives[enumClass.kotlin]?.let { directive ->
+                        add(ElementDescriptor.forHintedEnumConstant(it, directive))
                     }
                 }
             }.associateBy(ElementDescriptor::name)
+        } else {
+            allProperties
+                .filter {
+                    val propertyClass = it.returnType.classifier as? KClass<*>
+                    it.hasKotlinOrJavaAnnotation<RenderedValue>() ||
+                        it.hasKotlinOrJavaAnnotation<RenderedValueContainer>() ||
+                        it.hasKotlinOrJavaAnnotation<Highlight>()||
+                        directives.containsKey(propertyClass)
+                }
+                .flatMap { property ->
+                    buildList {
+                        val propertyClass = property.returnType.classifier as? KClass<*>
+
+                        directives[propertyClass]?.let { directive ->
+                            add(ElementDescriptor.forHintedProperty(property, directive))
+                        } ?: run {
+                            val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
+
+                            if (descriptor.isRenderedValueContainer) {
+                                (property.returnType.classifier as? KClass<*>)?.let { classifier ->
+                                    addAll(
+                                        classifier.allProperties
+                                            .filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }
+                                            .map { ElementDescriptor.forResolveHolder(descriptor, it) }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }.associateBy(ElementDescriptor::name)
+        }
 }

@@ -22,13 +22,13 @@ sealed interface State {
     sealed interface WithAppendable : State {
         fun append(event: LocatedEvent)
 
-        data class InNestedWithArgumentsParameter(val parentState: WithAppendable) : WithAppendable {
+        data class InExpandableWithArgumentsParameter(val parentState: WithAppendable) : WithAppendable {
             override fun append(event: LocatedEvent) {
                 parentState.append(event)
             }
         }
 
-        data class InNestedWithArguments(val parentState: State, val location: Location, val name: String, val sentences: List<TemplateSentence>, val _parameterEvents: MutableList<LocatedEvent> = mutableListOf()) : WithAppendable {
+        data class InExpandableWithArguments(val parentState: State, val location: Location, val name: String, val sentences: List<TemplateSentence>, val _parameterEvents: MutableList<LocatedEvent> = mutableListOf()) : WithAppendable {
             val parameterEvents = _parameterEvents
             override fun append(event: LocatedEvent) {
                 _parameterEvents.add(event)

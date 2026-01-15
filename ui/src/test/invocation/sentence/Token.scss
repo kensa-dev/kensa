@@ -146,3 +146,31 @@
   border-bottom: 1px dotted #b2bec3;
   text-decoration: none;
 }
+
+.tk-table {
+  margin: 8px 0;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+
+  th {
+    background: rgba(0, 0, 0, 0.1);
+    text-align: left;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 0.9em;
+    border-bottom: 2px solid #ddd;
+  }
+
+  td {
+    padding: 4px 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}

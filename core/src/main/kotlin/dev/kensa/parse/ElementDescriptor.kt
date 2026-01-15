@@ -12,10 +12,13 @@ import kotlin.reflect.jvm.javaField
 sealed interface ElementDescriptor {
     val name: String
     val isRenderedValue: Boolean
+    val isExpandableRenderedValue: Boolean get() = false
     val isRenderedValueContainer: Boolean get() = false
     val isHighlight: Boolean
     val isParameterizedTestDescription: Boolean get() = false
     val highlight: Highlight?
+    val renderedValueStyle: RenderedValueStyle get() = RenderedValueStyle.Default
+    val renderedValueHeaders: List<String> get() = emptyList()
 
     fun resolveValue(target: Any, path: String? = null): Any?
 
@@ -23,6 +26,8 @@ sealed interface ElementDescriptor {
         fun forProperty(property: KProperty<*>): PropertyElementDescriptor = PropertyElementDescriptor(property)
 
         fun forHintedProperty(property: KProperty<*>, directive: RenderingDirective): HintedPropertyElementDescriptor = HintedPropertyElementDescriptor(property, directive)
+
+        fun forHintedEnumConstant(enum: Enum<*>, directive: RenderingDirective): HintedEnumConstantElementDescriptor = HintedEnumConstantElementDescriptor(enum, directive)
 
         fun forResolveHolder(parentDescriptor: PropertyElementDescriptor, property: KProperty<*>): ResolveHolderElementDescriptor = ResolveHolderElementDescriptor(parentDescriptor, property)
 
@@ -51,9 +56,12 @@ sealed interface ElementDescriptor {
 
     class ParameterElementDescriptor(override val name: String, private val parameter: Parameter, private val index: Int) : ElementDescriptor {
         override val isRenderedValue: Boolean = parameter.hasAnnotation<RenderedValue>()
+        override val isExpandableRenderedValue: Boolean = parameter.hasAnnotation<ExpandableRenderedValue>()
         override val isHighlight: Boolean = parameter.hasAnnotation<Highlight>()
         override val highlight: Highlight? = parameter.findAnnotation<Highlight>()
         override val isParameterizedTestDescription: Boolean by lazy { parameter.hasAnnotation<ParameterizedTestDescription>() }
+        override val renderedValueStyle: RenderedValueStyle = parameter.findAnnotation<ExpandableRenderedValue>()?.renderAs ?: RenderedValueStyle.Default
+        override val renderedValueHeaders: List<String> = parameter.findAnnotation<ExpandableRenderedValue>()?.headers?.toList() ?: emptyList()
 
         override fun resolveValue(target: Any, path: String?): Any? {
             val initialValue = (target as Array<*>)[index] ?: return null
@@ -65,8 +73,11 @@ sealed interface ElementDescriptor {
     class MethodElementDescriptor(private val method: Method) : ElementDescriptor {
         override val name: String = method.name
         override val isRenderedValue: Boolean = method.hasAnnotation<RenderedValue>()
+        override val isExpandableRenderedValue: Boolean = method.hasAnnotation<ExpandableRenderedValue>()
         override val isHighlight: Boolean = method.hasAnnotation<Highlight>()
         override val highlight: Highlight? = method.findAnnotation<Highlight>()
+        override val renderedValueStyle: RenderedValueStyle = method.findAnnotation<ExpandableRenderedValue>()?.renderAs ?: RenderedValueStyle.Default
+        override val renderedValueHeaders: List<String> = method.findAnnotation<ExpandableRenderedValue>()?.headers?.toList() ?: emptyList()
 
         val hasParameters: Boolean = method.parameters.isNotEmpty()
 
@@ -80,6 +91,8 @@ sealed interface ElementDescriptor {
         override val isRenderedValueContainer: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValueContainer>()
         override val isHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
+        override val renderedValueStyle: RenderedValueStyle = property.findKotlinOrJavaAnnotation<ExpandableRenderedValue>()?.renderAs ?: RenderedValueStyle.Default
+        override val renderedValueHeaders: List<String> = property.findKotlinOrJavaAnnotation<ExpandableRenderedValue>()?.headers?.toList() ?: emptyList()
 
         override fun resolveValue(target: Any, path: String?): Any? =
             property.resolveFrom(target)?.let { resolvePath(it, path) }
@@ -101,6 +114,35 @@ sealed interface ElementDescriptor {
                     hint = computeHint(instance)
                 )
             }
+
+        private fun computeValue(instance: Any): Any? = when (directive.valueStrategy) {
+            UseIdentifierName -> name
+            UseToString -> instance.toString()
+            UseMethod -> resolvePath(instance, "${directive.valueParam}()")
+            UseProperty -> resolvePath(instance, directive.valueParam)
+        }
+
+        private fun computeHint(instance: Any): String? = when (directive.hintStrategy) {
+            HintFromProperty -> resolvePath(instance, directive.hintParam)?.toString()
+            HintFromMethod -> resolvePath(instance, "${directive.hintParam}()")?.toString()
+            NoHint -> null
+        }
+    }
+
+    class HintedEnumConstantElementDescriptor(
+        private val enum: Enum<*>,
+        private val directive: RenderingDirective
+    ) : ElementDescriptor {
+        override val name: String = enum.name
+        override val isRenderedValue: Boolean = true
+        override val isHighlight: Boolean = false
+        override val highlight: Highlight? = null
+
+        override fun resolveValue(target: Any, path: String?): HintedValue =
+            HintedValue(
+                value = computeValue(enum),
+                hint = computeHint(enum)
+            )
 
         private fun computeValue(instance: Any): Any? = when (directive.valueStrategy) {
             UseIdentifierName -> name
