@@ -45,7 +45,8 @@ extensions.getByType(JavaPluginExtension::class.java).registerFeature("testSuppo
 }
 
 dependencies {
-    implementation(project(":antlr"))
+    compileOnly(project(":antlr"))
+    implementation(libs.antlr)
     implementation(libs.kotlinReflect)
     implementation(libs.minimalJson)
     implementation(libs.plantuml)
@@ -53,6 +54,7 @@ dependencies {
     "agentImplementation"(libs.byteBuddyCore)
 
     testImplementation(platform(libs.junitBom))
+    testImplementation(project(":antlr"))
     testImplementation(libs.junitPlatformLauncher)
     testImplementation(libs.junitJupiterApi)
     testImplementation(libs.junitJupiterEngine)
