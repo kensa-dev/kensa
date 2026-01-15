@@ -14,7 +14,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.toPath
 
-class SourceCode(private val sourceLocations : () -> List<Path> = { emptyList() }) {
+class SourceCode(private val sourceLocations: () -> List<Path> = { emptyList() }) {
     private val workingDirectory = Path.of(System.getProperty("user.dir"))
     private val Class<*>.sourceExtension get() = if (isKotlinClass) "kt" else "java"
 
@@ -73,12 +73,14 @@ class SourceCode(private val sourceLocations : () -> List<Path> = { emptyList() 
     private fun Class<*>.tryRegisterSourcesJar(): Boolean {
         try {
             val location = protectionDomain?.codeSource?.location?.toURI() ?: return false
-            val path = Paths.get(location)
 
-            if (path.endsWith(".jar")) {
+            if (location.path.endsWith(".jar")) {
+                val path = Paths.get(location)
                 val sourceJarPaths = listOf(
                     path.toString().replace(".jar", "-sources.jar"),
-                    path.toString().replace(".jar", "-src.jar")
+                    path.toString().replace(".jar", "-src.jar"),
+                    // Derive a possible 'fat' jar name without the classifier containing all sources
+                    path.toString().replace(Regex("-[^/-]+-[^/-]+\\.jar$"), "-sources.jar")
                 ).map { Path(it) }
 
                 sourceJarPaths.find { it.exists() }?.let {
