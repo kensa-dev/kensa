@@ -98,10 +98,14 @@ class SourceCode(private val sourceLocations: () -> List<Path> = { emptyList() }
     private fun URI.asRootPath(): Path =
         if (path?.endsWith(".jar") == true) {
             val jarUri = URI.create("jar:${this}")
-            val fs = fsCache.getOrPut(jarUri) {
-                FileSystems.newFileSystem(jarUri, emptyMap<String, Any>())
-            }
-            fs.getPath("/")
+            // Just because Kensa uses a ConcurrentHashMap doesn't mean the JVM doesn't already know about the required FileSystem
+            fsCache.computeIfAbsent(jarUri) { uri ->
+                runCatching { FileSystems.getFileSystem(uri) }
+                    .getOrElse {
+                        runCatching { FileSystems.newFileSystem(jarUri, emptyMap<String, Any>()) }
+                            .getOrElse { FileSystems.getFileSystem(uri) }
+                    }
+            }.getPath("/")
         } else {
             toPath()
         }

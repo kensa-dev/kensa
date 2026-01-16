@@ -267,7 +267,7 @@ class TokenRendererTest {
             val renderedTokens = renderer.render(templates)
 
             val expected = listOf(
-                aRenderedValueOf("***aStringField***", setOf("tk-fv", "tk-hi"), "path/to/string")
+                aRenderedValueOf("***aStringField***", setOf("tk-wd", "tk-hi"), "path/to/string")
             )
 
             renderedTokens shouldContainExactly expected
