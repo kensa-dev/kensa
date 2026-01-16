@@ -84,12 +84,30 @@ annotation class RenderedValueContainer
 @Target(FIELD, VALUE_PARAMETER, FUNCTION, PROPERTY_GETTER)
 annotation class RenderedValue
 
+/**
+ * Annotation for marking fields, parameters, or methods as expandable rendered values.
+ * This is typically used for complex objects or collections that should be displayed
+ * with more detail in the test output, such as in a tabular format.
+ *
+ * @property renderAs The style to use when rendering the expanded value. Defaults to [RenderedValueStyle.Default].
+ * @property headers Optional headers to be used if the [RenderedValueStyle.Tabular] style is selected.
+ */
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER, FUNCTION, PROPERTY_GETTER)
 annotation class ExpandableRenderedValue(val renderAs: RenderedValueStyle = Default, val headers: Array<String> = [])
 
+/**
+ * Defines the available styles for rendering an [ExpandableRenderedValue].
+ */
 enum class RenderedValueStyle {
+    /**
+     * The default rendering style, usually a list or standard object representation.
+     */
     Default,
+
+    /**
+     * Renders the value in a tabular format, using the provided headers.
+     */
     Tabular
 }
 
