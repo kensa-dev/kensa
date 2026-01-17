@@ -1,6 +1,7 @@
-package com.example;
+package dev.kensa.example;
 
 import dev.kensa.*;
+import dev.kensa.example.adoptabot.AdoptabotExtension;
 import dev.kensa.junit.KensaTest;
 import dev.kensa.hamcrest.WithHamcrest;
 import dev.kensa.state.CapturedInteractionBuilder;
@@ -8,10 +9,12 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.CoreMatchers.*;
-import static com.example.UserAuthenticationTest.SessionIdMatcher.startsWith;
+import static dev.kensa.example.UserAuthenticationTest.SessionIdMatcher.startsWith;
 
+@ExtendWith(AdoptabotExtension.class)
 public class UserAuthenticationTest implements KensaTest, WithHamcrest {
 
     private UserService userService;

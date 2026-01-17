@@ -1,6 +1,7 @@
 package dev.kensa.example.adoptabot
 
 import dev.kensa.Kensa.konfigure
+import dev.kensa.UiMode
 import dev.kensa.junit.KensaExtension
 import dev.kensa.withRenderers
 import org.http4k.client.OkHttp
@@ -25,10 +26,11 @@ import kotlin.io.path.Path
  * on which the server is running.
  */
 @ExtendWith(KensaExtension::class)
-class AdoptabotExtension : BeforeAllCallback, AfterAllCallback {
+class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
 
     init {
         konfigure {
+            uiMode = UiMode.Modern
             outputDir = Path("${System.getProperty("user.dir")}/build/kensa-output")
             withRenderers {
                 interactionRenderer(ResponseRenderer)
@@ -40,13 +42,18 @@ class AdoptabotExtension : BeforeAllCallback, AfterAllCallback {
      * Starts the HTTP server before all tests.
      */
     override fun beforeAll(context: ExtensionContext) {
-        server.start()
+        val rootStore = context.root.getStore(ExtensionContext.Namespace.GLOBAL)
+
+        rootStore.getOrComputeIfAbsent("ADOPTABOT_SERVER_HOLDER") {
+            server.start()
+            this
+        }
     }
 
     /**
      * Stops the HTTP server after all tests.
      */
-    override fun afterAll(context: ExtensionContext) {
+    override fun close() {
         server.stop()
     }
 
