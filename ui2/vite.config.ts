@@ -39,7 +39,7 @@ export default defineConfig({
         strictPort: true,
         host: host || false,
         fs: {
-            allow: ['..']
+            allow: ['..', './dev-data']
         },
         hmr: host
             ? {

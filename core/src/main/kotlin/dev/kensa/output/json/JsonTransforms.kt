@@ -5,8 +5,6 @@ import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonValue
 import com.eclipsesource.json.WriterConfig.MINIMAL
 import dev.kensa.KensaException
-import dev.kensa.RenderedValueStyle
-import dev.kensa.RenderedValueStyle.Tabular
 import dev.kensa.context.TestContainer
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedSentence
@@ -85,6 +83,22 @@ object JsonTransforms {
             })
     }
 
+    fun toModernIndexJson(id: String): (TestContainer) -> JsonValue = { container: TestContainer ->
+        jsonObject()
+            .add("id", id)
+            .add("testClass", container.testClass.name)
+            .add("issues", asJsonArray(container.issues))
+            .add("displayName", container.displayName)
+            .add("state", container.state.description)
+            .add("children", asJsonArray(container.methodContainers.values) { invocation: TestMethodContainer ->
+                jsonObject()
+                    .add("id", "$id:${invocation.method.name}")
+                    .add("testMethod", invocation.method.name)
+                    .add("issues", asJsonArray(invocation.issues))
+                    .add("displayName", invocation.displayName)
+                    .add("state", invocation.state.description)
+            })
+    }
     fun toJsonString(): (JsonValue) -> String = { jv: JsonValue ->
         try {
             StringWriter().let {

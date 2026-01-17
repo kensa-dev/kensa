@@ -10,8 +10,10 @@ export interface Index {
     displayName: string;
     testClass: string;
     state: 'Passed' | 'Failed';
-    tests: Test[];
+    type?: 'project' | 'package' | 'test';
     issues?: string[];
+    children?: Index[];
+    testMethod?: string;
 }
 
 export type Indices = Index[]

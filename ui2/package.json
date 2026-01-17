@@ -11,6 +11,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-hover-card": "^1.1.15",
     "@radix-ui/react-select": "2.1.2",

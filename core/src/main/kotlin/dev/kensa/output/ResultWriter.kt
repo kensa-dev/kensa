@@ -4,9 +4,9 @@ import com.eclipsesource.json.Json
 import dev.kensa.Configuration
 import dev.kensa.UiMode
 import dev.kensa.context.TestContainer
-import dev.kensa.output.json.JsonTransforms.toIndexJson
 import dev.kensa.output.json.JsonTransforms.toJsonString
 import dev.kensa.output.json.JsonTransforms.toJsonWith
+import dev.kensa.output.json.JsonTransforms.toModernIndexJson
 import dev.kensa.output.template.FileTemplate.IndexFileTemplate
 import dev.kensa.output.template.FileTemplate.TestFileTemplate
 import dev.kensa.sentence.Acronym
@@ -126,7 +126,7 @@ class ResultWriter(private val configuration: Configuration) {
                 .add(
                     "indices",
                     Json.array().apply {
-                        containers.forEach { add(toIndexJson(it.testClass.name)(it)) }
+                        containers.forEach { add(toModernIndexJson(it.testClass.name)(it)) }
                     }
                 )
             val string = toJsonString()(json)

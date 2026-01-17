@@ -1,7 +1,7 @@
 import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
-import {Search, Package, FileText, Globe} from "lucide-react"
+import {Search, Package, FileText, Globe, ChevronRight} from "lucide-react"
 import {buildTree, TreeNode} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {
@@ -23,6 +23,11 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import {Indices} from "@/types/Index";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 interface AppSidebarProps {
     indices: Indices;
@@ -36,12 +41,17 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative}: AppSidebarProps) {
-    const tree = React.useMemo(() => {
-        const filtered = indices.filter((idx) =>
-            idx.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            idx.testClass.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        return buildTree(filtered);
+    const filteredIndices = React.useMemo(() => {
+        if (!searchQuery) return indices;
+
+        const search = searchQuery.toLowerCase();
+        return indices.map(idx => ({
+            ...idx,
+            children: idx.children?.filter(child =>
+                child.displayName.toLowerCase().includes(search) ||
+                child.testClass.toLowerCase().includes(search)
+            )
+        })).filter(idx => (idx.children?.length ?? 0) > 0 || idx.displayName.toLowerCase().includes(search));
     }, [indices, searchQuery]);
 
     return (
@@ -91,8 +101,8 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                 <SidebarGroup>
                     <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/70">Test Explorer</SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
-                        {tree.map((node) => (
-                            <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId}/>
+                        {filteredIndices.map((node) => (
+                            <RecursiveMenuItem key={node.id} node={node as any} onSelect={onSelect} selectedId={selectedId}/>
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
@@ -101,27 +111,55 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     )
 }
 
-function RecursiveMenuItem({node, onSelect, selectedId}: { node: TreeNode; onSelect: (node: TreeNode) => void; selectedId: string | null }) {
+function RecursiveMenuItem({node, onSelect, selectedId}: { node: any; onSelect: (node: any) => void; selectedId: string | null }) {
     const isSelected = selectedId === node.id;
 
-    if (node.type === 'package') {
+    if (node.type === 'project') {
+        const treeChildren = buildTree(node.children || []);
         return (
-            <SidebarMenuItem>
-                <SidebarMenuButton className="h-8 text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200">
-                    <Package className="h-3.5 w-3.5 opacity-70"/>
-                    <span>{node.name}</span>
-                </SidebarMenuButton>
-                {node.children.length > 0 && (
-                    <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2">
-                        {node.children.map((child) => (
-                            <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
-                        ))}
-                    </SidebarMenuSub>
-                )}
-            </SidebarMenuItem>
+            <Collapsible defaultOpen className="group/collapsible">
+                <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                        <SidebarMenuButton className="h-8 text-[12px] font-bold text-foreground">
+                            <ChevronRight className="h-3 w-3 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 opacity-50" />
+                            <Globe className="h-3.5 w-3.5 text-emerald-500"/>
+                            <span>{node.displayName}</span>
+                        </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2">
+                            {treeChildren.map((child) => (
+                                <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
+                            ))}
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
+                </SidebarMenuItem>
+            </Collapsible>
         );
     }
 
+    if (node.type === 'package') {
+        return (
+            <Collapsible defaultOpen className="group/collapsible">
+                <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                        <SidebarMenuButton className="h-8 text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200">
+                            <ChevronRight className="h-3 w-3 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 opacity-50" />
+                            <Package className="h-3.5 w-3.5 opacity-70"/>
+                            <span>{node.name}</span>
+                        </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2">
+                            {node.children.map((child: any) => (
+                                <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
+                            ))}
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
+                </SidebarMenuItem>
+            </Collapsible>
+        );
+    }
     return (
         <SidebarMenuItem>
             <SidebarMenuButton

@@ -5,7 +5,7 @@
       "displayName": "Feasibility Check Happy Path Test",
       "testClass": "sonique.groot.feasibility.FeasibilityCheckHappyPathTest",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "displayName": "Returns Feasibility Result For Address Ready For Service With Internal Connection",
           "testMethod": "returnsFeasibilityResultForAddressReadyForServiceWithInternalConnection",
@@ -33,7 +33,7 @@
       "displayName": "Adoption Service Test",
       "testClass": "dev.kensa.adoptabot.AdoptionServiceTest",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "displayName": "should allow adopting a bot",
           "testMethod": "shouldAllowAdoptingABot",
@@ -46,7 +46,7 @@
       "displayName": "Inventory Service Test",
       "testClass": "dev.kensa.adoptabot.InventoryServiceTest",
       "state": "Failed",
-      "tests": [
+      "children": [
         {
           "displayName": "should decrement stock after adoption",
           "testMethod": "shouldDecrementStock",
@@ -65,7 +65,7 @@
       "issues": [],
       "displayName": "Kotlin With Acronyms Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -80,7 +80,7 @@
       "issues": [],
       "displayName": "Kotlin With Annotation Feature Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "testWithScenarioHolder",
           "issues": [],
@@ -155,7 +155,7 @@
       "issues": [],
       "displayName": "Kotlin With Captured Outputs Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "test2",
           "issues": [],
@@ -182,7 +182,7 @@
       "issues": [],
       "displayName": "Kotlin With Fixtures Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "test2",
           "issues": [],
@@ -221,7 +221,7 @@
       "issues": [],
       "displayName": "Kotlin With Generic Parameterized Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnDifferentLineAsParameter",
           "issues": [],
@@ -248,7 +248,7 @@
       "issues": [],
       "displayName": "Kotlin With Java Record Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -263,7 +263,7 @@
       "issues": [],
       "displayName": "Kotlin With Literals Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -278,7 +278,7 @@
       "issues": [],
       "displayName": "Kotlin With Multiple Passing Tests",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest3",
           "issues": [],
@@ -305,7 +305,7 @@
       "issues": [],
       "displayName": "Kotlin With Nested Sentence Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "nestedWithFixtureAndScenarioParameters",
           "issues": [],
@@ -356,7 +356,7 @@
       "issues": [],
       "displayName": "Kotlin With Output Disabled Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -371,7 +371,7 @@
       "issues": [],
       "displayName": "Kotlin With Parameter Resolver Extension And Parameterized Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "theTest",
           "issues": [],
@@ -386,7 +386,7 @@
       "issues": [],
       "displayName": "Kotlin With Parameter Resolver Extension Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "theTest",
           "issues": [],
@@ -401,7 +401,7 @@
       "issues": [],
       "displayName": "Kotlin With Protected Phrases Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -416,7 +416,7 @@
       "issues": [],
       "displayName": "Kotlin With Setup Steps Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "singleSetupStep",
           "issues": [],
@@ -437,7 +437,7 @@
       "issues": [],
       "displayName": "Kotlin With Single Failing Invocation Of Parameterized Test",
       "state": "Failed",
-      "tests": [
+      "children": [
         {
           "testMethod": "theTest",
           "issues": [],
@@ -452,7 +452,7 @@
       "issues": [],
       "displayName": "Kotlin With Single Passing Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -467,7 +467,7 @@
       "issues": [],
       "displayName": "Kotlin With Type Arguments Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -482,7 +482,7 @@
       "issues": [],
       "displayName": "Kotlin With Various Naming Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "myTest1",
           "issues": [],
@@ -527,7 +527,7 @@
       "issues": [],
       "displayName": "Kotlin With Hinted Fields Inside Object Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -542,7 +542,7 @@
       "issues": [],
       "displayName": "Kotlin With Hinted Fields Inside Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -557,7 +557,7 @@
       "issues": [],
       "displayName": "Kotlin With Method Hint Strategy Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -572,7 +572,7 @@
       "issues": [],
       "displayName": "Kotlin With Mixed Strategy Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],
@@ -587,7 +587,7 @@
       "issues": [],
       "displayName": "Kotlin With Property Strategy Test",
       "state": "Passed",
-      "tests": [
+      "children": [
         {
           "testMethod": "passingTest",
           "issues": [],

@@ -42,14 +42,15 @@ const App = () => {
         localStorage.setItem('kensa-env', environment);
     }, [environment]);
 
-    const findNodeById = (nodes: Indices, id: string): Index | null => {
-        return nodes.find(node => node.id === id) || null;
-    };
-
     useEffect(() => {
         const match = location.pathname.match(/^\/test\/(.+)$/);
         if (match && indices.length > 0) {
             const id = match[1];
+            if (id === 'root-project') {
+                setSelectedIndex(null);
+                setTestDetail(null);
+                return;
+            }
             const node = findNodeById(indices, id);
             if (node) {
                 setSelectedIndex({
@@ -68,18 +69,48 @@ const App = () => {
     const sidebarRef = useRef<ImperativePanelHandle>(null);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-    useEffect(() => {
-        fetch('./configuration.json')
-            .then(res => res.json())
-            .then(data => setConfig(data))
-            .catch(err => console.error("Config fetch failed, using Section constant defaults", err));
-    }, []);
+    const findNodeById = (nodes: Indices, id: string): Index | null => {
+        for (const node of nodes) {
+            if (node.id === id) return node;
+            if (node.children && node.children.length > 0) {
+                const found = findNodeById(node.children, id);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
 
     useEffect(() => {
-        fetch('./indices.json')
-            .then(res => res.json())
-            .then(data => setIndices(data.indices || []))
-            .catch(err => console.error("Failed to load indices:", err));
+        const loadData = async () => {
+            try {
+                const configRes = await fetch('./configuration.json');
+                if (!configRes.ok) throw new Error(`Config load failed: ${configRes.status}`);
+                const configData = await configRes.json();
+                setConfig(configData);
+
+                const indicesRes = await fetch('./indices.json');
+                if (!indicesRes.ok) throw new Error(`Indices load failed: ${indicesRes.status}`);
+                const indicesData = await indicesRes.json();
+
+                const loadedIndices: Indices = indicesData.indices || [];
+
+                if (loadedIndices.length > 0) {
+                    const rootNode: Index = {
+                        id: 'root-project',
+                        type: 'project',
+                        displayName: configData.titleText || "Kensa Tests",
+                        testClass: '',
+                        state: loadedIndices.some(i => i.state === 'Failed') ? 'Failed' : 'Passed',
+                        children: loadedIndices
+                    };
+                    setIndices([rootNode]);
+                }
+            } catch (err) {
+                console.error("Critical error loading Kensa data:", err);
+            }
+        };
+
+        loadData();
     }, []);
 
     useEffect(() => {
@@ -143,7 +174,9 @@ const App = () => {
                                 environment={environment}
                                 onEnvChange={setEnvironment}
                                 onSelect={(node) => {
-                                    if (node.id.startsWith('pkg:')) return;
+                                    if (node.id.startsWith('pkg:') || node.id === 'root-project') {
+                                        return;
+                                    }
                                     navigate(`/test/${node.id}`);
                                 }}
                                 selectedId={selectedIndex?.id ?? null}
@@ -166,7 +199,7 @@ const App = () => {
                                         >
                                             <PanelLeft size={18} className={cn(isSidebarCollapsed && "opacity-50")}/>
                                         </button>
-                                        <Separator orientation="vertical" className="h-4" />
+                                        <Separator orientation="vertical" className="h-4"/>
 
                                         {selectedIndex && (
                                             <div className="flex flex-col py-1 ml-2">
@@ -180,7 +213,7 @@ const App = () => {
                                                     </h1>
                                                     <div className="flex items-center gap-1">
                                                         {testDetail?.issues?.map((issue: string) => (
-                                                            <IssueBadge key={issue} issue={issue} />
+                                                            <IssueBadge key={issue} issue={issue}/>
                                                         ))}
                                                     </div>
                                                 </div>
