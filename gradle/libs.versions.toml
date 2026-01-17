@@ -15,7 +15,7 @@ awaitility = "4.3.0"
 minimalJson = "0.9.5"
 antlr = "4.13.2"
 nexusPublish = "2.0.0"
-jsoup = "1.21.2"
+jsoup = "1.22.1"
 byteBuddy = "1.17.8"
 
 http4k = "6.23.1.0"
