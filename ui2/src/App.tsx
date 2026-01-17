@@ -1,6 +1,6 @@
-import {useState, useEffect, useRef} from 'react';
-import {Beaker, Package, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
-import {AppSidebar} from './components/app-sidebar';
+import {useState, useEffect, useRef, useMemo} from 'react';
+import {Beaker, Package, Loader2, Moon, Sun, PanelLeft, FileText} from 'lucide-react';
+import {AppSidebar} from './components/AppSidebar.tsx';
 import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {cn} from "@/lib/utils";
@@ -9,10 +9,19 @@ import {TestCard} from './components/TestCard';
 import {IssueBadge} from './components/IssueBadge';
 import {Separator} from "./components/ui/separator"
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
-import {useNavigate, useLocation} from 'react-router-dom';
+import {useNavigate, useLocation, useSearchParams} from 'react-router-dom';
 import {isNative} from '@/lib/utils';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
 import {TestDetail} from "@/types/Test.ts";
+import {
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
+import {Badge} from "@/components/ui/badge.tsx";
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -21,14 +30,25 @@ const App = () => {
     const [indices, setIndices] = useState<Indices>([]);
     const [selectedIndex, setSelectedIndex] = useState<SelectedIndex | null>(null);
     const [testDetail, setTestDetail] = useState<TestDetail | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const searchQuery = searchParams.get("q") || "";
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('theme') === 'dark');
     const [firstFailIndex, setFirstFailIndex] = useState<number>(-1);
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
+    const [open, setOpen] = useState(false);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const onSearchChange = (query: string) => {
+        setSearchParams(prev => {
+            if (query) prev.set("q", query);
+            else prev.delete("q");
+            return prev;
+        }, { replace: true });
+    };
 
     useEffect(() => {
         setIsNativeMode(isNative());
@@ -68,6 +88,37 @@ const App = () => {
 
     const sidebarRef = useRef<ImperativePanelHandle>(null);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const isMod = e.metaKey || e.ctrlKey;
+
+            // Cmd+K: Global Jump
+            if (isMod && e.key === "k") {
+                e.preventDefault();
+                setOpen((prev) => !prev);
+                return;
+            }
+
+            if (isMod && e.key === "f") {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (isSidebarCollapsed) {
+                    sidebarRef.current?.expand();
+                }
+
+                setTimeout(() => {
+                    searchInputRef.current?.focus();
+                    searchInputRef.current?.select();
+                }, 50);
+                return;
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown, true); // Use capture phase (true)
+        return () => window.removeEventListener("keydown", handleKeyDown, true);
+    }, [isSidebarCollapsed]);
 
     const findNodeById = (nodes: Indices, id: string): Index | null => {
         for (const node of nodes) {
@@ -147,9 +198,88 @@ const App = () => {
         }
     };
 
+    const allTests = useMemo(() => {
+        const tests: (Index & {
+            searchString: string,
+            projectName?: string,
+            envName?: string
+        })[] = [];
+
+        const collect = (nodes: Indices, currentProject?: string) => {
+            nodes.forEach(n => {
+                const projectContext = n.type === 'project' ? n.displayName : currentProject;
+
+                if (n.testClass) {
+                    const metadata = [
+                        n.displayName,
+                        n.testClass,
+                        projectContext || ""
+                    ].filter(Boolean).join(' ');
+
+                    tests.push({
+                        ...n,
+                        projectName: projectContext,
+                        envName: environment,
+                        searchString: metadata
+                    });
+                }
+
+                if (n.children) {
+                    collect(n.children, projectContext);
+                }
+            });
+        };
+
+        collect(indices);
+        return tests;
+    }, [indices, environment]);
+
     return (
         <ConfigContext.Provider value={config}>
             <SidebarProvider>
+                <CommandDialog open={open} onOpenChange={setOpen}>
+                    <CommandInput placeholder="Jump to test (search name or project)..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup heading="Tests">
+                            {allTests.map((test) => (
+                                <CommandItem
+                                    key={`${test.projectName}-${test.id}`}
+                                    value={test.searchString}
+                                    onSelect={() => {
+                                        navigate(`/test/${test.id}`);
+                                        setOpen(false);
+                                    }}
+                                    className="flex items-center gap-3 py-3"
+                                >
+                                    <div className={cn(
+                                        "w-1.5 h-1.5 rounded-full shrink-0",
+                                        test.state === 'Failed' ? "bg-destructive" : "bg-emerald-500/50"
+                                    )} />
+
+                                    <div className="flex flex-col flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold text-sm truncate">{test.displayName}</span>
+                                            {test.state === 'Failed' && (
+                                                <Badge variant="outline" className="text-[8px] h-3.5 px-1 border-destructive/30 text-destructive/70 bg-destructive/5 uppercase">
+                                                    Failed
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-[10px] opacity-50 font-mono truncate">
+                                            <span className="text-blue-500 font-bold uppercase">{test.envName}</span>
+                                            <span>/</span>
+                                            <span className="font-bold text-foreground/70">{test.projectName}</span>
+                                            <span>/</span>
+                                            <span>{test.testClass}</span>
+                                        </div>
+                                    </div>
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </CommandDialog>
+
                 <div className="flex h-screen w-full bg-background font-sans overflow-hidden">
                     <ResizablePanelGroup direction="horizontal" className="w-full h-full" autoSaveId="kensa-main-layout">
 
@@ -170,7 +300,7 @@ const App = () => {
                             <AppSidebar
                                 indices={indices}
                                 searchQuery={searchQuery}
-                                onSearchChange={setSearchQuery}
+                                onSearchChange={onSearchChange}
                                 environment={environment}
                                 onEnvChange={setEnvironment}
                                 onSelect={(node) => {
@@ -181,6 +311,7 @@ const App = () => {
                                 }}
                                 selectedId={selectedIndex?.id ?? null}
                                 isNative={isNativeMode}
+                                inputRef={searchInputRef}
                             />
                         </ResizablePanel>
 

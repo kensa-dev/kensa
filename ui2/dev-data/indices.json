@@ -62,7 +62,7 @@
     {
       "id": "dev.kensa.KotlinWithAcronymsTest",
       "testClass": "dev.kensa.KotlinWithAcronymsTest",
-      "issues": [],
+      "issues": ["K-12345"],
       "displayName": "Kotlin With Acronyms Test",
       "state": "Passed",
       "children": [
