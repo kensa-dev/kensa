@@ -95,9 +95,12 @@ tasks {
     }
 
     named<Jar>("jar") {
-        dependsOn(":ui:viteBuild")
+        dependsOn(":ui:viteBuild", ":ui2:viteBuild")
         from(project(":antlr").sourceSets["main"].output)
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
+            into("/")
+        }
+        from(project(":ui2").layout.buildDirectory.dir("js").get()) {
             into("/")
         }
     }

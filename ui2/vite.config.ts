@@ -1,29 +1,46 @@
-import {defineConfig} from 'vite'
+import {defineConfig, Plugin} from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from "vite-plugin-svgr"
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import path from "path"
 
 const host = process.env.TAURI_DEV_HOST;
 
+const devDataPlugin = (): Plugin => ({
+    name: 'serve-dev-data',
+    configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+            if (req.url?.endsWith('.json') || req.url?.includes('/results/')) {
+                req.url = req.url.replace(/^\//, '/dev-data/');
+            }
+            next();
+        });
+    }
+});
+
 export default defineConfig({
     plugins: [
         react(),
-        svgr()
+        svgr(),
+        cssInjectedByJsPlugin(),
+        devDataPlugin(),
     ],
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
         },
     },
-    // prevent vite from obscuring rust errors
+    define: {
+        'process.env': {},
+    },
     clearScreen: false,
     server: {
-        // make sure this port matches the devUrl port in tauri.conf.json file
         port: 5173,
-        // Tauri expects a fixed port, fail if that port is not available
         strictPort: true,
-        // if the host Tauri is expecting is set, use it
         host: host || false,
+        fs: {
+            allow: ['..']
+        },
         hmr: host
             ? {
                 protocol: 'ws',
@@ -33,21 +50,25 @@ export default defineConfig({
             : undefined,
 
         watch: {
-            // tell vite to ignore watching `src-tauri`
             ignored: ['**/src-tauri/**'],
         },
     },
-    // Env variables starting with the item of `envPrefix` will be exposed in tauri's source code through `import.meta.env`.
     envPrefix: ['VITE_', 'TAURI_ENV_*'],
     build: {
-        // Tauri uses Chromium on Windows and WebKit on macOS and Linux
+        outDir: 'build/js',
+        emptyOutDir: true,
+        cssCodeSplit: false,
+        lib: {
+            entry: path.resolve(__dirname, 'src/main.tsx'),
+            name: 'Kensa2',
+            fileName: () => `kensa2.js`,
+            formats: ['iife'],
+        },
         target:
             process.env.TAURI_ENV_PLATFORM == 'windows'
                 ? 'chrome105'
                 : 'safari13',
-        // don't minify for debug builds
         minify: !process.env.TAURI_ENV_DEBUG ? 'esbuild' : false,
-        // produce sourcemaps for debug builds
         sourcemap: !!process.env.TAURI_ENV_DEBUG,
     },
 })

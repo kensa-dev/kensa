@@ -30,6 +30,7 @@ class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
 
     init {
         konfigure {
+            titleText = "Adoptabot Acceptance Tests"
             uiMode = UiMode.Modern
             outputDir = Path("${System.getProperty("user.dir")}/build/kensa-output")
             withRenderers {

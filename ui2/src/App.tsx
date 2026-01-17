@@ -69,14 +69,14 @@ const App = () => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     useEffect(() => {
-        fetch('/configuration.json')
+        fetch('./configuration.json')
             .then(res => res.json())
             .then(data => setConfig(data))
             .catch(err => console.error("Config fetch failed, using Section constant defaults", err));
     }, []);
 
     useEffect(() => {
-        fetch('/indices.json')
+        fetch('./indices.json')
             .then(res => res.json())
             .then(data => setIndices(data.indices || []))
             .catch(err => console.error("Failed to load indices:", err));
@@ -88,7 +88,7 @@ const App = () => {
         setTestDetail(null);
         setFirstFailIndex(-1);
 
-        fetch(`/results/${selectedIndex.id}.json`)
+        fetch(`./results/${selectedIndex.id}.json`)
             .then(res => res.json())
             .then(data => {
                 const failIndex = data.tests.findIndex((t: TestDetail) => t.state === 'Failed');
@@ -156,10 +156,6 @@ const App = () => {
                             !isSidebarCollapsed && "bg-border/50 hover:bg-primary/30 transition-colors w-1"
                         )}/>
 
-                        {/*
-                                FIX: Added 'flex flex-col' here so the SidebarInset
-                                can correctly calculate its child heights.
-                            */}
                         <ResizablePanel defaultSize={80} className="flex flex-col h-full overflow-hidden">
                             <SidebarInset className="flex flex-col h-full overflow-hidden">
                                 <header className="sticky top-0 z-10 flex h-12 shrink-0 items-center justify-between bg-background/80 backdrop-blur px-4 border-b">
@@ -200,10 +196,6 @@ const App = () => {
                                     </button>
                                 </header>
 
-                                {/*
-                                        FIX: Changed main to overflow-y-auto.
-                                        Using native scrolling is more reliable for native apps than ScrollArea.
-                                    */}
                                 <main className="flex-1 overflow-y-auto bg-muted/30">
                                     {selectedIndex ? (
                                         <div className="p-6 lg:p-8">
