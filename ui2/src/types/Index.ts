@@ -1,10 +1,3 @@
-export interface Test {
-    displayName: string;
-    testMethod: string;
-    state: 'Passed' | 'Failed';
-    issues?: string[];
-}
-
 export interface Index {
     id: string;
     displayName: string;
@@ -12,7 +5,7 @@ export interface Index {
     state: 'Passed' | 'Failed';
     type?: 'project' | 'package' | 'test';
     issues?: string[];
-    children?: Index[];
+    children?: Indices;
     testMethod?: string;
 }
 

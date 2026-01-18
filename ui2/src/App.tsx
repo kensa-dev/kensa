@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef, useMemo} from 'react';
-import {Beaker, Package, Loader2, Moon, Sun, PanelLeft, FileText} from 'lucide-react';
+import {Beaker, Package, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar.tsx';
 import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
@@ -37,6 +37,7 @@ const App = () => {
     const [firstFailIndex, setFirstFailIndex] = useState<number>(-1);
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
+    const [commandQuery, setCommandQuery] = useState("");
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     const navigate = useNavigate();
@@ -47,7 +48,7 @@ const App = () => {
             if (query) prev.set("q", query);
             else prev.delete("q");
             return prev;
-        }, { replace: true });
+        }, {replace: true});
     };
 
     useEffect(() => {
@@ -199,63 +200,57 @@ const App = () => {
     };
 
     const allTests = useMemo(() => {
-        const tests: (Index & {
-            searchString: string,
-            projectName?: string,
-            envName?: string
-        })[] = [];
-
+        const tests: (Index & { projectName?: string, envName?: string })[] = [];
         const collect = (nodes: Indices, currentProject?: string) => {
             nodes.forEach(n => {
                 const projectContext = n.type === 'project' ? n.displayName : currentProject;
-
                 if (n.testClass) {
-                    const metadata = [
-                        n.displayName,
-                        n.testClass,
-                        projectContext || ""
-                    ].filter(Boolean).join(' ');
-
-                    tests.push({
-                        ...n,
-                        projectName: projectContext,
-                        envName: environment,
-                        searchString: metadata
-                    });
+                    tests.push({...n, projectName: projectContext, envName: environment});
                 }
-
-                if (n.children) {
-                    collect(n.children, projectContext);
-                }
+                if (n.children) collect(n.children, projectContext);
             });
         };
-
         collect(indices);
         return tests;
     }, [indices, environment]);
+
+    const filteredCommandTests = useMemo(() => {
+        if (!commandQuery) return allTests;
+        const search = commandQuery.toLowerCase();
+        return allTests.filter(test =>
+            test.displayName.toLowerCase().includes(search) ||
+            test.testClass.toLowerCase().includes(search) ||
+            test.projectName?.toLowerCase().includes(search)
+        );
+    }, [allTests, commandQuery]);
 
     return (
         <ConfigContext.Provider value={config}>
             <SidebarProvider>
                 <CommandDialog open={open} onOpenChange={setOpen}>
-                    <CommandInput placeholder="Jump to test (search name or project)..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup heading="Tests">
-                            {allTests.map((test) => (
+                    <CommandInput
+                        placeholder="Jump to test..."
+                        value={commandQuery}
+                        onValueChange={setCommandQuery}
+                    />
+                    <CommandList className="h-[400px] overflow-y-auto">
+                        {filteredCommandTests.length === 0 && <CommandEmpty>No tests found.</CommandEmpty>}
+                        <CommandGroup heading="Test Suites">
+                            {filteredCommandTests.map((test) => (
                                 <CommandItem
                                     key={`${test.projectName}-${test.id}`}
-                                    value={test.searchString}
+                                    value={test.id}
                                     onSelect={() => {
                                         navigate(`/test/${test.id}`);
                                         setOpen(false);
+                                        setCommandQuery("");
                                     }}
                                     className="flex items-center gap-3 py-3"
                                 >
                                     <div className={cn(
                                         "w-1.5 h-1.5 rounded-full shrink-0",
                                         test.state === 'Failed' ? "bg-destructive" : "bg-emerald-500/50"
-                                    )} />
+                                    )}/>
 
                                     <div className="flex flex-col flex-1 min-w-0">
                                         <div className="flex items-center gap-2">

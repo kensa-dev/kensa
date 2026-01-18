@@ -2,7 +2,7 @@ import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
 import {Search, Package, FileText, Globe, ChevronRight, X} from "lucide-react"
-import {buildTree, TreeNode} from "@/utils/treeUtils"
+import {buildTree} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
 import {
@@ -23,7 +23,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import {Indices} from "@/types/Index";
+import {Index, Indices} from "@/types/Index";
 import {
     Collapsible,
     CollapsibleContent,
@@ -33,7 +33,6 @@ import {
     Command,
     CommandEmpty,
     CommandGroup,
-    CommandInput,
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
@@ -47,7 +46,7 @@ interface AppSidebarProps {
     indices: Indices;
     searchQuery: string;
     onSearchChange: (query: string) => void;
-    onSelect: (node: TreeNode) => void;
+    onSelect: (node: Index) => void;
     selectedId: string | null;
     environment: string;
     onEnvChange: (env: string) => void;
@@ -71,7 +70,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
     const allIssues = React.useMemo(() => {
         const issues = new Set<string>();
-        const collect = (nodes: any[]) => {
+        const collect = (nodes: Indices) => {
             nodes.forEach(n => {
                 (n.issues || []).forEach((i: string) => issues.add(i));
                 if (n.children) collect(n.children);
@@ -103,7 +102,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
         setShowPicker(false);
         setPickerType(null);
 
-        setTimeout(() => inputRef.current?.focus(), 0);
+        setTimeout(() => inputRef?.current?.focus(), 0);
     };
 
     const queryMeta = React.useMemo(() => {
@@ -120,7 +119,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     }, [searchQuery]);
 
     const filteredIndices = React.useMemo(() => {
-        const { states, issues } = queryMeta;
+        const {states, issues} = queryMeta;
 
         const activeTyping = inputValue.toLowerCase();
         const typingState = activeTyping.startsWith('state:') ? activeTyping.split(':')[1] : null;
@@ -130,8 +129,8 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
         const requiredStates = typingState ? [...states, typingState] : states;
         const requiredIssues = typingIssue ? [...issues, typingIssue] : issues;
 
-        const filterNode = (node: any): any | null => {
-            const isLeaf = node.testClass && (!node.children || node.children.every((c: any) => c.testMethod));
+        const filterNode = (node: Index): Index | null => {
+            const isLeaf = node.testClass && (!node.children || node.children.every((c: Index) => c.testMethod));
 
             if (isLeaf) {
                 const nodeName = (node.displayName || "").toLowerCase();
@@ -151,19 +150,21 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
             }
 
             if (node.children) {
-                const filteredChildren = node.children
-                    .map((child: any) => filterNode(child))
-                    .filter(Boolean);
+                const filteredChildren: Indices = node.children
+                    .map((child: Index) => filterNode(child))
+                    .filter((child): child is Index => Boolean(child));
 
                 if (filteredChildren.length > 0) {
-                    return { ...node, children: filteredChildren };
+                    return {...node, children: filteredChildren};
                 }
             }
 
             return null;
         };
 
-        return indices.map(idx => filterNode(idx)).filter(Boolean);
+        return indices
+            .map(idx => filterNode(idx))
+            .filter((idx): idx is Index => Boolean(idx));
     }, [indices, queryMeta, inputValue]);
 
     return (
@@ -244,7 +245,6 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                             if (e.key === 'Backspace' && inputValue === '') {
                                                 const parts = searchQuery.trim().split(/\s+/);
                                                 if (parts.length > 0 && parts[0] !== '') {
-                                                    const last = parts.pop();
                                                     onSearchChange(parts.join(' '));
                                                 }
                                             }
@@ -289,7 +289,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                     <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/70">Test Explorer</SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
                         {filteredIndices.map((node) => (
-                            <RecursiveMenuItem key={node.id} node={node as any} onSelect={onSelect} selectedId={selectedId}/>
+                            <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId}/>
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
@@ -298,7 +298,13 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     );
 }
 
-function RecursiveMenuItem({node, onSelect, selectedId}: { node: any; onSelect: (node: any) => void; selectedId: string | null }) {
+interface RecursiveMenuItemProps {
+    node: Index;
+    onSelect: (node: Index) => void;
+    selectedId: string | null;
+}
+
+function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps) {
     const isSelected = selectedId === node.id;
 
     if (node.type === 'project') {
@@ -333,12 +339,12 @@ function RecursiveMenuItem({node, onSelect, selectedId}: { node: any; onSelect: 
                         <SidebarMenuButton className="h-8 text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200">
                             <ChevronRight className="h-3 w-3 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 opacity-50"/>
                             <Package className="h-3.5 w-3.5 opacity-70"/>
-                            <span>{node.name}</span>
+                            <span>{node.displayName}</span>
                         </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                         <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2">
-                            {node.children.map((child: any) => (
+                            {node.children?.map((child) => (
                                 <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
                             ))}
                         </SidebarMenuSub>
@@ -347,6 +353,7 @@ function RecursiveMenuItem({node, onSelect, selectedId}: { node: any; onSelect: 
             </Collapsible>
         );
     }
+
     return (
         <SidebarMenuItem>
             <SidebarMenuButton
@@ -359,7 +366,7 @@ function RecursiveMenuItem({node, onSelect, selectedId}: { node: any; onSelect: 
                 )}
             >
                 <FileText className={cn("h-3.5 w-3.5", node.state === 'Failed' ? "text-destructive" : "opacity-50")}/>
-                <span className="truncate">{node.name}</span>
+                <span className="truncate">{node.displayName}</span>
                 {node.state === 'Failed' && (
                     <div className="ml-auto">
                         <div className="w-1.5 h-1.5 rounded-full bg-destructive shadow-[0_0_8px_rgba(244,63,94,0.4)]"/>

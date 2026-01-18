@@ -1,40 +1,39 @@
-export interface TreeNode {
-    id: string;
-    name: string;
-    type: 'package' | 'class';
-    children: TreeNode[];
-    state: string;
-    fullName: string;
-}
+import {Indices} from "@/types/Index";
 
-export const buildTree = (indices: any[]): TreeNode[] => {
-    const root: TreeNode[] = [];
+export const buildTree = (indices: Indices): Indices => {
+    const root: Indices = [];
 
     indices.forEach((idx) => {
+        // Only build package trees for nodes that have a testClass
+        if (!idx.testClass) return;
+
         const parts = idx.testClass.split('.');
         let currentLevel = root;
 
         parts.forEach((part: string, i: number) => {
             const isLast = i === parts.length - 1;
             const fullName = parts.slice(0, i + 1).join('.');
-            let existing = currentLevel.find((node) => node.name === part);
+
+            let existing = currentLevel.find((node) => node.displayName === part);
 
             if (!existing) {
                 existing = {
-                    id: isLast ? idx.id : `pkg:${fullName}`, // Prefix packages
-                    name: part,
-                    type: isLast ? 'class' : 'package',
+                    id: isLast ? idx.id : `pkg:${fullName}`,
+                    displayName: part,
+                    testClass: isLast ? idx.testClass : fullName,
+                    type: isLast ? 'test' : 'package',
                     children: [],
                     state: idx.state,
-                    fullName: isLast ? idx.testClass : fullName // Ensure this is stored
                 };
                 currentLevel.push(existing);
             }
 
-            // If a child fails, the parent package also shows as failed
-            if (idx.state === 'Failed') existing.state = 'Failed';
+            // Propagate failure state up the tree
+            if (idx.state === 'Failed') {
+                existing.state = 'Failed';
+            }
 
-            currentLevel = existing.children;
+            currentLevel = existing.children!;
         });
     });
 
