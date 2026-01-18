@@ -93,9 +93,11 @@ enum class PackageDisplay {
 }
 
 enum class Section {
+    @Deprecated("Use Tabs instead", replaceWith = ReplaceWith("Section.Tabs"))
     Buttons,
     Exception,
-    Sentences
+    Sentences,
+    Tabs
 }
 
 enum class Tab {

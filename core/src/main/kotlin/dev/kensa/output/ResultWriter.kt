@@ -2,6 +2,8 @@ package dev.kensa.output
 
 import com.eclipsesource.json.Json
 import dev.kensa.Configuration
+import dev.kensa.Section.Buttons
+import dev.kensa.Section.Tabs
 import dev.kensa.UiMode
 import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms.toJsonString
@@ -77,7 +79,9 @@ class ResultWriter(private val configuration: Configuration) {
                 .add("flattenPackages", flattenOutputPackages)
                 .add("packageDisplayMode", packageDisplay.name)
                 .add("sectionOrder", Json.array().apply {
-                    sectionOrder.forEach { add(it.name) }
+                    sectionOrder.forEach {
+                        add((if (it == Buttons) Tabs else it).name)
+                    }
                 })
 
             outputDir.resolve("configuration.json").writeText(json.toString())
