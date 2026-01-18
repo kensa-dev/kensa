@@ -4,9 +4,10 @@ import { FailureMessage } from './FailureMessage';
 import { Section } from '@/constants';
 import {useContext} from "react";
 import {ConfigContext} from "@/contexts/ConfigContext.tsx";
+import {Invocation} from "@/types/Test.ts";
 
 interface SectionRendererProps {
-    invocation: any;
+    invocation: Invocation;
     testState: string;
     autoOpenTab?: string;
 }
@@ -24,7 +25,7 @@ export const SectionRenderer = ({ invocation, testState, autoOpenTab }: SectionR
                     case Section.Sentences:
                         return (
                             <div key={idx} className="space-y-1.5 my-4">
-                                {invocation.sentences.map((line: any[], sIdx: number) => (
+                                {invocation.sentences.map((line, sIdx: number) => (
                                     <Sentence key={sIdx} sentence={line} />
                                 ))}
                             </div>

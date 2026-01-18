@@ -3,18 +3,21 @@ import {TabType} from "@/constants.ts"
 export type NameAndValue = Record<string, string>
 export type NameAndValues = NameAndValue[]
 
+export interface TableData {
+    type: 'table'
+    headers?: string[]
+    rows: Token[][]
+}
+
 export interface Token {
     types: string[]
     value: string
-    hint: string
-    // For nested sentences...
-    parameterTokens: Token[]
-    tokens: Token[]
+    hint?: string
+    parameterTokens?: Token[]
+    tokens?: NestedItem[]
 }
 
-export interface Sentence {
-    tokens: Token[]
-}
+export type NestedItem = Token[] | TableData;
 
 export interface NamedAttributes {
     name: string
@@ -28,7 +31,7 @@ export interface RenderedInteractionValue {
 }
 
 export interface RenderedInteraction {
-    values: RenderedInteractionValue[] // TODO - shouldn't be an array as there can be only one (fix JsonTransforms)
+    values: RenderedInteractionValue[]
     attributes: NamedAttributes[]
 }
 
@@ -44,7 +47,7 @@ export interface Invocation {
     displayName: string
     elapsedTime: string
     highlights: string[]
-    sentences: Sentence[]
+    sentences: Token[][]
     parameters: NameAndValues
     givens: NameAndValues
     capturedInteractions: Interaction[]

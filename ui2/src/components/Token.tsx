@@ -5,8 +5,9 @@ import {useConfig} from '@/contexts/ConfigContext';
 import Sentence from "@/components/Sentence.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {NestedItem, Token as TokenType} from '@/types/Test';
 
-const Expandable = ({token}: any) => {
+const Expandable = ({token}: { token: TokenType }) => {
     const {value, parameterTokens, tokens} = token;
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [leftOffset, setLeftOffset] = React.useState(0);
@@ -30,17 +31,17 @@ const Expandable = ({token}: any) => {
                     <span
                         onClick={() => setIsExpanded(!isExpanded)}
                         className={cn(
-                            "cursor-pointer font-bold transition-colors select-none",
+                            "cursor-pointer font-black transition-all select-none border-b-2",
                             isExpanded
-                                ? "text-primary underline decoration-primary/30"
-                                : "text-blue-600 dark:text-blue-400 hover:underline"
+                                ? "text-primary border-primary/40 bg-primary/5 px-1 rounded-t-sm"
+                                : "text-foreground/80 border-border hover:border-primary/50 hover:text-foreground"
                         )}
                     >
-                        {value}
-                    </span>
-                    {parameterTokens?.length > 0 && (
-                        <span className="ml-1.5 px-1 py-0.5 rounded bg-muted/50 text-[10px] font-mono border border-border/40 text-muted-foreground tracking-tighter">
-                            {parameterTokens.map((t: any, i: number) => (
+                            {value}
+                        </span>
+                    {parameterTokens && parameterTokens?.length > 0 && (
+                        <span className="ml-1.5 px-1.5 py-0.5 rounded bg-muted/50 text-[11px] font-mono border border-border/40 text-muted-foreground tracking-tighter">
+                            {parameterTokens.map((t, i) => (
                                 <Token key={i} token={t}/>
                             ))}
                         </span>
@@ -58,11 +59,13 @@ const Expandable = ({token}: any) => {
                     )}
                 >
                     <div className="space-y-1">
-                        {tokens?.map((t: any, idx: number) => (
-                            t.type === 'table'
-                                ? <TokenTable key={idx} headers={t.headers} rows={t.rows}/>
-                                : <Sentence key={idx} sentence={t} isNested={true}/>
-                        ))}
+                        {tokens?.map((item: NestedItem, idx: number) => {
+                            if (!Array.isArray(item) && item.type === 'table') {
+                                return <TokenTable key={idx} headers={item.headers} rows={item.rows}/>;
+                            }
+
+                            return <Sentence key={idx} sentence={item as TokenType[]} isNested={true}/>;
+                        })}
                     </div>
                 </HoverCardContent>
             )}
@@ -72,18 +75,20 @@ const Expandable = ({token}: any) => {
                     className="w-full mt-2 mb-2 pl-4 border-l-2 border-primary/20 bg-primary/[0.01] py-2 rounded-r-lg overflow-x-auto"
                     style={{marginLeft: `${leftOffset}px`}}
                 >
-                    {tokens?.map((t: any, idx: number) => (
-                        t.type === 'table'
-                            ? <TokenTable key={idx} headers={t.headers} rows={t.rows}/>
-                            : <Sentence key={idx} sentence={t} isNested={true}/>
-                    ))}
+                    {tokens?.map((item: NestedItem, idx: number) => {
+                        if (!Array.isArray(item) && item.type === 'table') {
+                            return <TokenTable key={idx} headers={item.headers} rows={item.rows}/>;
+                        }
+
+                        return <Sentence key={idx} sentence={item as TokenType[]} isNested={true}/>;
+                    })}
                 </div>
             )}
         </HoverCard>
     );
 };
 
-const TokenTable = ({headers, rows}: { headers?: string[], rows: any[][] }) => {
+const TokenTable = ({headers, rows}: { headers?: string[], rows: TokenType[][] }) => {
     if (!rows) return null;
     return (<div className="my-3 rounded-md border border-border/50 bg-background/50 overflow-hidden shadow-sm">
         <Table>
@@ -113,10 +118,8 @@ const TokenTable = ({headers, rows}: { headers?: string[], rows: any[][] }) => {
     </div>)
 };
 
-const InfoToken = ({value, hint, acronymKey, tokenCls}: any) => {
-    const {acronyms} = useConfig();
-    const displayHint = hint || (acronymKey ? acronyms[acronymKey] : null);
-    if (!displayHint) return <span className={tokenCls}>{value}</span>;
+const InfoToken = ({value, tooltipContent, tokenCls}: { value: string, tooltipContent: string | null, tokenCls: string }) => {
+    if (!tooltipContent) return <span className={tokenCls}>{value}</span>;
 
     return (
         <TooltipProvider>
@@ -127,17 +130,17 @@ const InfoToken = ({value, hint, acronymKey, tokenCls}: any) => {
                     </span>
                 </TooltipTrigger>
                 <TooltipContent className="bg-slate-900 text-white border-none shadow-xl text-xs px-3 py-2 max-w-sm">
-                    {displayHint}
+                    {tooltipContent}
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>
     );
 };
+
 const NoteToken = ({value}: { value: string }) => {
     const {alwaysExpandNotes} = useConfig();
     const [isExpanded, setIsExpanded] = React.useState(alwaysExpandNotes);
 
-    // Reset if global config changes
     React.useEffect(() => {
         setIsExpanded(alwaysExpandNotes);
     }, [alwaysExpandNotes]);
@@ -152,14 +155,14 @@ const NoteToken = ({value}: { value: string }) => {
                     }}
                     className={cn(
                         "inline-flex items-baseline transition-all duration-200 ease-out group/note mx-1",
-                        "border-l-[3px] border-amber-500/40 pl-1.5 pr-1 rounded-r-sm",
+                        "border-l-2 border-muted-foreground/30 pl-1.5 pr-1 rounded-r-sm",
                         "leading-none align-baseline",
 
-                        isExpanded ? "cursor-default border-l-[5px] ring-1 ring-amber-500/10" : "cursor-help",
+                        isExpanded ? "cursor-default border-l-4 bg-muted/40" : "cursor-help bg-muted/20 hover:bg-muted/60",
 
                         isExpanded
-                            ? "text-foreground bg-amber-500/[0.08] whitespace-pre-wrap"
-                            : "text-amber-700/70 bg-amber-500/5 hover:bg-amber-500/10"
+                            ? "text-foreground whitespace-pre-wrap"
+                            : "text-muted-foreground/60"
                     )}
                 >
                     {isExpanded ? (
@@ -190,26 +193,27 @@ const NoteToken = ({value}: { value: string }) => {
 };
 
 const styles: Record<string, string> = {
-    'tk-kw': 'text-blue-700 dark:text-blue-400 font-bold capitalize',
-    'tk-wd': 'text-muted-foreground',
-    'tk-id': 'text-foreground font-semibold',
-    'tk-sl': 'text-amber-700 dark:text-amber-400 font-medium italic',
-    'tk-fv': 'text-indigo-600 dark:text-indigo-400 font-mono text-[11px] bg-indigo-500/5 px-1 rounded border border-indigo-500/10',
-    'tk-num': 'text-emerald-600 dark:text-emerald-400 font-mono font-bold',
-    'tk-bo': 'text-orange-600 dark:text-orange-400 font-bold',
-    'tk-null': 'text-rose-500 italic opacity-70',
-    'tk-pph': 'text-foreground font-black italic tracking-tight'
+    'tk-kw': 'text-foreground/90 font-bold tracking-tight opacity-80',
+    'tk-wd': 'text-muted-foreground/70 font-normal',
+    'tk-id': 'text-foreground font-semibold underline decoration-border/40 underline-offset-4',
+    'tk-sl': 'text-foreground/90 font-medium italic',
+    'tk-fv': 'font-mono font-bold text-foreground bg-muted/40 px-1.5 py-0.5 rounded border border-border/10',
+    'tk-pv': 'font-mono font-bold text-foreground bg-muted/40 px-1.5 py-0.5 rounded border border-border/10',
+    'tk-num': 'font-mono font-bold text-foreground/90',
+    'tk-bo': 'font-mono font-semibold text-foreground/60',
+    'tk-null': 'text-muted-foreground/30 italic line-through decoration-muted-foreground/10',
+    'tk-pph': 'text-foreground font-semibold underline decoration-foreground/30 underline-offset-[6px] tracking-tight'
 };
+const getMappedCls = (types: string[]) => types.map((t: string) => styles[t] || '').join(' ');
 
-const getMappedCls = (types: any[]) => types.map((t: string) => styles[t] || '').join(' ');
-
-export const Token = ({token}: { token: any }) => {
+export const Token = ({token}: { token: TokenType }) => {
+    const {acronyms} = useConfig();
     const {types = [], value, hint} = token;
     const tokenCls = types.join(" ");
 
     if (types.includes("tk-ex") || types.includes("tk-tab")) return <Expandable token={token}/>;
-    if (types.includes("tk-ac")) return <InfoToken value={value} acronymKey={value} tokenCls={tokenCls}/>;
-    if (types.includes("tk-hi")) return <InfoToken value={value} hint={hint} tokenCls={tokenCls}/>;
+    if (types.includes("tk-ac")) return <InfoToken value={value} tooltipContent={value ? acronyms[value] : null} tokenCls={tokenCls}/>;
+    if (types.includes("tk-hi")) return <InfoToken value={value} tooltipContent={hint ? hint : null} tokenCls={tokenCls}/>;
     if (types.includes("tk-nt")) return <NoteToken value={value}/>;
     if (types.includes("tk-tb")) return <div className="my-2 p-4 bg-muted/30 rounded-lg font-mono text-[11px] whitespace-pre-wrap leading-relaxed">{value}</div>;
 

@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {cn} from "@/lib/utils";
-import Token from './Token';
+import { Token as TokenType } from '@/types/Test';
+import Token from "@/components/Token.tsx";
 
 interface SentenceProps {
-    sentence: any[];
+    sentence: TokenType[];
     isNested?: boolean;
 }
 
@@ -13,7 +14,8 @@ const Sentence = ({ sentence, isNested = false }: SentenceProps) => {
     return (
         <div className={cn(
             "sentence-container flex flex-wrap items-baseline leading-relaxed text-foreground",
-            isNested ? "text-[12px]" : "text-[13px]"
+            "text-[13px] leading-relaxed",
+            isNested && "ml-1 border-muted pl-3 py-0.5 my-1"
         )}>
             {sentence.map((token, index) => {
                 const types = token.types || [];
