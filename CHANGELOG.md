@@ -1,5 +1,19 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.36
+- Adding support for `Notes` in test output.
+  Kensa will recognise `///` as a note when it is placed before a Given/When/Then keyword. 
+  Notes will also be recognised at the end of a line (immediately following a `}` or `)`)
+  
+  Thanks to Michael Orr.
+- Introduce `ExpandableRenderedValue` to allow function markers to be expanded to show the function return value in a table.
+  This is useful for functions that return collections.
+- Introduce `RenderedValueWithHint` to allow fields to be rendered with a hint tooltip.
+  This can be used to provide additional information about a field, such as a JsonPath or XPath.
+- Deprecate `NestedSentence` in favour of `ExpandableSentence`
+- Introduce early access version of a new UI.
+  Requires use of a web server to view the output. Use IDEA's or TeamCity's built in server, or use Kensa's own CLI to spin up a server.
+
 ### v0.5.35
 - Updates for compatibility with Kotlin 2.3.0
 
