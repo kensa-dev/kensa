@@ -3,11 +3,12 @@ import {InteractionCard} from './InteractionCard';
 import {InteractionDialog} from './InteractionDialog';
 import {cn} from "@/lib/utils";
 import {Tab} from "@/constants.ts";
+import {Interaction, Invocation, NameAndValues} from "@/types/Test.ts";
 
 type TabValue = typeof Tab[keyof typeof Tab];
 
 interface TabProps {
-    invocation: any;
+    invocation: Invocation;
     testState: 'Passed' | 'Failed' | string;
     autoOpenTab?: string;
 }
@@ -16,14 +17,14 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
     const isPassed = testState === 'Passed';
 
     const tabs = [
-        { id: Tab.Givens, label: 'Givens', count: invocation[Tab.Givens]?.length },
-        { id: Tab.CapturedInteractions, label: 'Interactions', count: invocation[Tab.CapturedInteractions]?.length },
-        { id: Tab.CapturedOutputs, label: 'Outputs', count: invocation[Tab.CapturedOutputs]?.length },
-        { id: Tab.Fixtures, label: 'Fixtures', count: invocation[Tab.Fixtures]?.length },
-        { id: Tab.SequenceDiagram, label: 'Sequence Diagram', exists: !!invocation[Tab.SequenceDiagram] },
+        {id: Tab.Givens, label: 'Givens', count: invocation[Tab.Givens]?.length},
+        {id: Tab.CapturedInteractions, label: 'Interactions', count: invocation[Tab.CapturedInteractions]?.length},
+        {id: Tab.CapturedOutputs, label: 'Outputs', count: invocation[Tab.CapturedOutputs]?.length},
+        {id: Tab.Fixtures, label: 'Fixtures', count: invocation[Tab.Fixtures]?.length},
+        {id: Tab.SequenceDiagram, label: 'Sequence Diagram', exists: !!invocation[Tab.SequenceDiagram]},
     ].filter(t => (t.count && t.count > 0) || t.exists);
 
-    const [selectedInteraction, setSelectedInteraction] = useState<any>(null); // For the modal
+    const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
     const svgRef = useRef<HTMLDivElement>(null);
 
     const availableTabIds = tabs.map(t => t.id as TabValue);
@@ -47,7 +48,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                 const target = e.target as SVGElement;
                 const interactionId = target.getAttribute('sequence_diagram_interaction_id');
                 if (interactionId) {
-                    const found = invocation[Tab.CapturedInteractions].find((i: any) => i.id === interactionId);
+                    const found = invocation[Tab.CapturedInteractions].find((i: Interaction) => i.id === interactionId);
                     if (found) setSelectedInteraction(found);
                 }
             };
@@ -92,29 +93,29 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                     "p-4 transition-colors",
                     isPassed ? "bg-emerald-50/20 dark:bg-emerald-950/5" : "bg-rose-50/20 dark:bg-rose-950/5"
                 )}>
-                    {activeTab === Tab.Givens && <DataTable data={invocation[Tab.Givens]} isPassed={isPassed} />}
-                    {activeTab === Tab.CapturedOutputs && <DataTable data={invocation[Tab.CapturedOutputs]} isPassed={isPassed} />}
-                    {activeTab === Tab.Fixtures && <DataTable data={invocation[Tab.Fixtures]} isPassed={isPassed} />}
+                    {activeTab === Tab.Givens && <DataTable data={invocation[Tab.Givens]} isPassed={isPassed}/>}
+                    {activeTab === Tab.CapturedOutputs && <DataTable data={invocation[Tab.CapturedOutputs]} isPassed={isPassed}/>}
+                    {activeTab === Tab.Fixtures && <DataTable data={invocation[Tab.Fixtures]} isPassed={isPassed}/>}
 
                     {activeTab === Tab.CapturedInteractions && (
                         <div className="space-y-1">
-                            {invocation[Tab.CapturedInteractions].map((interaction: any) => (
+                            {invocation[Tab.CapturedInteractions].map((interaction: Interaction) => (
                                 <InteractionCard
                                     key={interaction.id}
                                     interaction={interaction}
                                     isPassed={isPassed}
-                                    onExpand={(i: any) => setSelectedInteraction(i)}
+                                    onExpand={(i: Interaction) => setSelectedInteraction(i)}
                                 />
                             ))}
                         </div>
                     )}
 
-                    {activeTab === Tab.SequenceDiagram && (
+                    {(activeTab === Tab.SequenceDiagram) && (
                         <div className="bg-white p-6 rounded-lg overflow-auto border border-border shadow-inner min-h-[400px] flex items-center justify-center">
                             <div
                                 ref={svgRef}
                                 className="max-w-full cursor-pointer"
-                                dangerouslySetInnerHTML={{ __html: invocation[Tab.SequenceDiagram] }}
+                                dangerouslySetInnerHTML={{__html: invocation[Tab.SequenceDiagram] ?? ''}}
                             />
                         </div>
                     )}
@@ -130,7 +131,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
     );
 };
 
-const DataTable = ({data, isPassed}: { data: any[], isPassed: boolean }) => (
+const DataTable = ({data, isPassed}: { data: NameAndValues, isPassed: boolean }) => (
     <table className="w-full text-left border-collapse">
         <thead>
         <tr className="border-b border-border text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -140,7 +141,7 @@ const DataTable = ({data, isPassed}: { data: any[], isPassed: boolean }) => (
         </thead>
         <tbody className="divide-y divide-border/40">
         {data.map((row, i) => (
-            Object.entries(row).map(([key, val]: [string, any], j) => (
+            Object.entries(row).map(([key, val], j) => (
                 <tr key={`${i}-${j}`} className={cn(
                     "group transition-colors",
                     isPassed ? "hover:bg-emerald-500/5" : "hover:bg-rose-500/5"

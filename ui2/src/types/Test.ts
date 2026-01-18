@@ -53,7 +53,7 @@ export interface Invocation {
     capturedInteractions: Interaction[]
     capturedOutputs: NameAndValues
     fixtures: NameAndValues
-    sequenceDiagram: string
+    sequenceDiagram?: string
     executionException: Record<string, string>
 }
 
