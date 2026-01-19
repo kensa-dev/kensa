@@ -19,7 +19,7 @@ nexusPublish = "2.0.0"
 byteBuddy = "1.17.8"
 
 http4k = "6.23.1.0"
-jackson = "2.20.1"
+jackson = "2.21.0"
 
 [libraries]
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
