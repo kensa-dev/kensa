@@ -389,7 +389,7 @@ internal class JavaMethodParserTest {
                 )
             )
 
-            val method = JavaWithParameters::class.java.findMethod(methodName)
+            val method = JavaWithParameters::class.java.findMethod(methodName, String::class.java, String::class.java)
             val firstParameter = method.parameters.first()
             val secondParameter = method.parameters.last()
 

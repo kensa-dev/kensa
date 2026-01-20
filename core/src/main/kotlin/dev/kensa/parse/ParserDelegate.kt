@@ -38,8 +38,7 @@ class CompositeParserDelegate(val sourceCode: SourceCode, private val delegates:
         with(declaringClass.findDelegate()) { prepareParameters(parameterNamesAndTypes) }
 
     private fun Class<*>.findDelegate(): ParserDelegate =
-        delegates.find { delegate ->
-            with(delegate) { isParsable() }
-        } ?: throw KensaException("No delegate found to parse [${this.name}]")
+        delegates.find { delegate -> with(delegate) { isParsable() } }
+            ?: throw KensaException("No delegate found to parse [${this.name}]")
 
 }

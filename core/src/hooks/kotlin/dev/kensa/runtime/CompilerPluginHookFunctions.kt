@@ -26,6 +26,6 @@ object CompilerPluginHookFunctions {
             else -> owner::class.java
         }
 
-        return clazz.findMethod(simpleName)
+        return clazz.findMethod(simpleName, *paramTypes.map { it.java }.toTypedArray())
     }
 }

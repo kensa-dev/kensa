@@ -17,6 +17,7 @@ interface MethodDeclarationContext {
     val name: String
     val body: ParseTree
     val parameterNamesAndTypes: List<Pair<String, String>>
+    val parameterTypes: List<String> get() = parameterNamesAndTypes.map { it.second }
 }
 
 class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDeclarationContext) : MethodDeclarationContext {

@@ -7,30 +7,59 @@ import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.util.*
 import java.lang.reflect.Method
+import kotlin.collections.emptyList
 import kotlin.reflect.KClass
 
+class ClassDeclarations(
+    val imports: Imports,
+    val testMethods: List<MethodDeclarationContext> = emptyList(),
+    val nestedMethods: List<MethodDeclarationContext> = emptyList(),
+    val emphasisedMethods: List<MethodDeclarationContext> = emptyList()
+) {
+    operator fun plus(other: ClassDeclarations): ClassDeclarations =
+        ClassDeclarations(
+            imports + other.imports,
+            testMethods + other.testMethods,
+            nestedMethods + other.nestedMethods,
+            emphasisedMethods + other.emphasisedMethods
+        )
+}
 
-class MethodDeclarations(val testMethods: List<MethodDeclarationContext> = emptyList(), val nestedMethods: List<MethodDeclarationContext> = emptyList(), val emphasisedMethods: List<MethodDeclarationContext> = emptyList()) {
+class MethodDeclarations(val declarationsByClass: Map<Class<*>, ClassDeclarations> = emptyMap()) {
 
-    operator fun plus(other: MethodDeclarations) = MethodDeclarations(testMethods + other.testMethods, nestedMethods + other.nestedMethods, emphasisedMethods + other.emphasisedMethods)
+    operator fun plus(other: MethodDeclarations): MethodDeclarations {
+        val map = declarationsByClass.toMutableMap()
+        other.declarationsByClass.forEach { (cls, dec) ->
+            val declarations = map[cls]
+            map[cls] = declarations?.plus(dec) ?: dec
+        }
 
-    fun findTestMethodDeclaration(method: Method, toSimpleTypeName: (Class<*>) -> String): Pair<Int, MethodDeclarationContext> {
-        val index = testMethods.indexOfFirst(matchingDeclarationFor(method, toSimpleTypeName))
+        return MethodDeclarations(map)
+    }
+
+    val allTestMethods: List<MethodDeclarationContext>
+        get() = declarationsByClass.values.flatMap { it.testMethods }
+
+    val nestedMethods: List<MethodDeclarationContext>
+        get() = declarationsByClass.values.flatMap { it.nestedMethods }
+
+    val emphasisedMethods: List<MethodDeclarationContext>
+        get() = declarationsByClass.values.flatMap { it.emphasisedMethods }
+
+    fun findTestMethodDeclaration(method: Method): Pair<Int, MethodDeclarationContext> {
+        val declarations = declarationsByClass[method.declaringClass]
+            ?: throw KensaException("Did not find declaration for class [${method.declaringClass.name}]")
+
+        val index = declarations.testMethods.indexOfFirst(method.findMatchingDeclaration())
         if (index < 0) throw KensaException("Did not find method declaration for test method [${method.name}]")
 
-        return index to testMethods[index]
+        return index to declarations.testMethods[index]
     }
 
-    private fun matchingDeclarationFor(method: Method, toSimpleTypeName: (Class<*>) -> String) = { dc: MethodDeclarationContext ->
-        method.normalisedPlatformName == dc.name &&
-            // Only match on parameter simple type name - saves having to go looking in the imports
-            dc.parameterNamesAndTypes.map {
-                it.second.substringAfterLast('.').replace(greedyGenericPattern, "")
-            } == method.parameterTypes.map(toSimpleTypeName)
-    }
-
-    companion object {
-        private val greedyGenericPattern = "<.*>".toRegex()
+    private fun Method.findMatchingDeclaration() = { dc: MethodDeclarationContext ->
+        val sourceTypes = dc.parameterTypes
+        normalisedPlatformName == dc.name &&
+            declarationsByClass[declaringClass]?.imports?.match(parameterTypes, sourceTypes) == true
     }
 }
 
@@ -51,7 +80,7 @@ class MethodParser(
                         with(parserDelegate) { clazz.findMethodDeclarations() }
                     }
                 }
-                val (indexInSource, testMethodDeclaration) = methodDeclarations.findTestMethodDeclaration(method, testClass.toSimpleName())
+                val (indexInSource, testMethodDeclaration) = methodDeclarations.findTestMethodDeclaration(method)
 
                 val directives = cache.getOrPutRenderingDirectives(testClass) { testClass.findAllRenderingDirectives() }
                 val properties = cache.getOrPutProperties(testClass) {
@@ -71,7 +100,7 @@ class MethodParser(
                         acc.apply { putAll(clazz.prepareMethods()) }
                     }
                 }
-                val nestedMethods = testClass.prepareNestedMethods(methodDeclarations.nestedMethods, ParseContext(properties, methods))
+                val nestedMethods = testClass.prepareNestedMethods(methodDeclarations, ParseContext(properties, methods))
                 val testMethodSentences = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
 
                 ParsedMethod(
@@ -91,19 +120,23 @@ class MethodParser(
     private fun sentenceBuilder(): (Boolean, Location, Location) -> SentenceBuilder =
         { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, previousLocation, configuration.dictionary, configuration.tabSize) }
 
-    private fun Class<*>.prepareNestedMethods(declarations: List<MethodDeclarationContext>, parseContext: ParseContext): Map<String, ParsedNestedMethod> =
+    private fun Class<*>.prepareNestedMethods(methodDeclarations: MethodDeclarations, parseContext: ParseContext): Map<String, ParsedNestedMethod> =
         cache.getOrPutNestedMethods(this) {
+            val imports = methodDeclarations.declarationsByClass[this]?.imports ?: Imports(emptySet(), emptySet(), this)
+            val declarations = methodDeclarations.declarationsByClass[this]?.nestedMethods ?: emptyList()
+
             declarations
-                .map {
+                .map { dc ->
+                    val method = findNestedMethod(dc, imports)
                     val parameters = with(parserDelegate) {
-                        findLocalOrSourcesMethod(it.name).prepareParameters(it.parameterNamesAndTypes)
+                        method.prepareParameters(dc.parameterNamesAndTypes)
                     }
                     ParsedNestedMethod(
-                        it.name,
+                        dc.name,
                         parameters,
                         ParserStateMachine(sentenceBuilder()).run {
                             with(parserDelegate) {
-                                parse(this@run, parseContext.copy(parameters.descriptors), it)
+                                parse(this@run, parseContext.copy(parameters.descriptors), dc)
                             }
                             sentences
                         }
@@ -111,6 +144,18 @@ class MethodParser(
                 }
                 .associateBy({ it.name }, { it })
         }
+
+    private fun Class<*>.findNestedMethod(dc: MethodDeclarationContext, imports: Imports): Method =
+        allMethods.filter { it.normalisedPlatformName == dc.name }
+            .find { method ->
+                val syntheticCount = method.findSyntheticKotlinReceivers().size
+                val totalMethodParams = method.parameterTypes.size
+
+                if (totalMethodParams != syntheticCount + dc.parameterTypes.size) return@find false
+
+                val realMethodParams = method.parameterTypes.drop(syntheticCount).toTypedArray()
+                imports.match(realMethodParams, dc.parameterTypes)
+            } ?: throw KensaException("Did not find nested method [${dc.name}] in class [${this.name}]")
 
     private fun Class<*>.prepareTestMethodSentences(methodDeclarationContext: MethodDeclarationContext, parseContext: ParseContext): List<TemplateSentence> =
         ParserStateMachine(sentenceBuilder()).run {
@@ -159,7 +204,7 @@ class MethodParser(
                     val propertyClass = it.returnType.classifier as? KClass<*>
                     it.hasKotlinOrJavaAnnotation<RenderedValue>() ||
                         it.hasKotlinOrJavaAnnotation<RenderedValueContainer>() ||
-                        it.hasKotlinOrJavaAnnotation<Highlight>()||
+                        it.hasKotlinOrJavaAnnotation<Highlight>() ||
                         directives.containsKey(propertyClass)
                 }
                 .flatMap { property ->

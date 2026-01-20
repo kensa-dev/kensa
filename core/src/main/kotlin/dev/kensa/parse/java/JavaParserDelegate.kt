@@ -6,6 +6,7 @@ import dev.kensa.parse.java.Java20Parser.ClassDeclarationContext
 import dev.kensa.parse.java.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.util.SourceCode
 import dev.kensa.util.isKotlinClass
+import dev.kensa.util.toClassOrNull
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.atn.PredictionMode
@@ -31,7 +32,12 @@ class JavaParserDelegate(
 
         // TODO : Need to test with nested classes as this probably won't work...
         val sourceStream = sourceCode.sourceStreamFor(this)
-        val declaration = sourceStream.compilationUnit().ordinaryCompilationUnit()
+        val compilationUnit = sourceStream.compilationUnit().ordinaryCompilationUnit()
+
+        val importStrings = compilationUnit.importDeclaration()?.map { it.text.substringAfter("import").trimEnd(';').trim() } ?: emptyList()
+        val imports = Imports(importStrings, this)
+
+        val declaration = compilationUnit
             .topLevelClassOrInterfaceDeclaration()
             .mapNotNull { it.classDeclaration() ?: it.interfaceDeclaration() }
             .firstOrNull { decl ->
@@ -66,7 +72,7 @@ class JavaParserDelegate(
             }
         }
 
-        return MethodDeclarations(testMethods, nestedMethods, emphasisedMethods)
+        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testMethods, nestedMethods, emphasisedMethods)))
     }
 
     override fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =

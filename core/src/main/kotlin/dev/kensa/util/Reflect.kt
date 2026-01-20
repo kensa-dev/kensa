@@ -50,6 +50,7 @@ fun <T> ReflectPredicate<T>.and(other: ReflectPredicate<T>): ReflectPredicate<T>
 private val allTheMethods: ReflectPredicate<Method> = { true }
 private fun notDeclaredIn(clazz: Class<*>): ReflectPredicate<Method> = { it.declaringClass != clazz }
 private fun named(name: String): ReflectPredicate<Method> = { it.name == name || it.kotlinFunction?.name == name }
+private fun withParameterTypes(types: Array<out Class<*>>): ReflectPredicate<Method> = { it.parameterTypes.contentEquals(types) }
 private fun noParameters(): ReflectPredicate<Method> = { it.parameters.isEmpty() }
 private val allTheFields: ReflectPredicate<Field> = { true }
 private fun withFieldName(name: String): ReflectPredicate<Field> = { it.name == name }
@@ -91,6 +92,21 @@ internal fun Method.actualDeclaringClass(): Class<*> {
     return findMatchingMethodsInHierarchy()?.declaringClass ?: declaringClass
 }
 
+@OptIn(ExperimentalContextParameters::class)
+fun Method.findSyntheticKotlinReceivers(): List<Pair<String, String>> =
+    kotlinFunction?.let { fn ->
+        buildList {
+            fn.contextParameters.forEachIndexed { idx, p ->
+                val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
+                add("context$${idx + 1}" to t)
+            }
+            fn.extensionReceiverParameter?.let { p ->
+                val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
+                add("receiver" to t)
+            }
+        }
+    } ?: emptyList()
+
 @Suppress("UNCHECKED_CAST")
 internal fun <T> Any.invokeMethod(name: String): T? {
 
@@ -118,23 +134,43 @@ internal fun <T> Any.invokeMethodOrNull(method: Method): T? = method.run {
     }
 }
 
-fun Class<*>.findLocalOrSourcesMethod(name: String): Method =
-    findMethodOrNull(name) ?: findSourcesMethodOrNull(name) ?: throw IllegalArgumentException("No method [$name] found in class [${this}] or any sources class")
+fun Class<*>.findLocalOrSourcesMethods(name: String, vararg paramTypes: Class<*>) =
+    findMethodOrNull(name, paramTypes) ?: findSourcesMethods(name, paramTypes) ?: throw IllegalArgumentException("No method [$name] found in class [${this}] or any sources class")
 
-fun Class<*>.findSourcesMethodOrNull(name: String): Method? =
+private fun Class<*>.findSourcesMethods(name: String, paramTypes: Array<out Class<*>>) =
     findAnnotation<Sources>()?.value
         ?.map { it.java }
         ?.firstNotNullOfOrNull {
-            it.findMethodOrNull(name)
+            it.findMethodOrNull(name, paramTypes)
         }
 
-fun Class<*>.findMethodOrNull(name: String) =
-    findMethodsInHierarchy(named(name))
-        .firstOrNull()
+private fun Class<*>.findMethodOrNull(name: String, paramTypes: Array<out Class<*>>): Method? =
+    findMethodsInHierarchy(named(name).and(withParameterTypes(paramTypes))).firstOrNull()
 
+fun Class<*>.findMethod(name: String, vararg paramTypes: Class<*>) =
+    findMethodOrNull(name, paramTypes) ?: throw IllegalArgumentException("No method [$name] found in class [${this}]")
 
-fun Class<*>.findMethod(name: String) =
-    findMethodOrNull(name) ?: throw IllegalArgumentException("No method [$name] found in class [${this}]")
+fun String.toClassOrNull(): Class<*>? = try {
+    Class.forName(this)
+} catch (e: Exception) {
+    null
+}
+
+fun String.toClassOrMaybeNested(): Class<*>? {
+    toClassOrNull()?.let { return it }
+
+    var attempt = this
+    while (attempt.contains('.')) {
+        attempt = attempt.replaceLastOccurrence('.', '$')
+        attempt.toClassOrNull()?.let { return it }
+    }
+    return null
+}
+
+private fun String.replaceLastOccurrence(oldChar: Char, newChar: Char): String {
+    val index = lastIndexOf(oldChar)
+    return if (index == -1) this else StringBuilder(this).apply { setCharAt(index, newChar) }.toString()
+}
 
 internal fun Class<*>.findRequiredField(name: String) = this.findField(withFieldName(name)) ?: throw IllegalArgumentException("Did not find field [$name] in class [$simpleName]")
 
@@ -216,11 +252,13 @@ inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? =
                     .find { it.javaGetter == this }
                     ?.annotations?.filterIsInstance<T>()?.firstOrNull()
         }
+
         is Field -> {
             annotations.filterIsInstance<T>().firstOrNull()
                 ?: getAnnotation(T::class.java)
                 ?: kotlinProperty?.annotations?.filterIsInstance<T>()?.firstOrNull()
         }
+
         else -> annotations.filterIsInstance<T>().firstOrNull() ?: getAnnotation(T::class.java)
     }
 

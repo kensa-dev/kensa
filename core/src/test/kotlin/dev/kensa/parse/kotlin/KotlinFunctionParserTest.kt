@@ -780,7 +780,7 @@ internal class KotlinFunctionParserTest {
                 )
             )
 
-            val method = KotlinWithParameters::class.java.findMethod(functionName)
+            val method = KotlinWithParameters::class.java.findMethod(functionName, java.lang.String::class.java, Integer::class.java)
             val parsedMethod = parser.parse(method)
 
             with(parsedMethod) {
@@ -804,7 +804,7 @@ internal class KotlinFunctionParserTest {
             val functionName = "parameterizedTest"
             val parser = createParserFor(aFunctionNamed(functionName))
 
-            val testMethod = KotlinWithParameters::class.java.findMethod(functionName)
+            val testMethod = KotlinWithParameters::class.java.findMethod(functionName, java.lang.String::class.java, Integer::class.java)
             val parsedTestMethod = parser.parse(testMethod)
 
             parsedTestMethod.nestedMethods

@@ -3,16 +3,14 @@ package dev.kensa.parse.kotlin
 import dev.kensa.parse.*
 import dev.kensa.util.SourceCode
 import dev.kensa.util.isKotlinClass
+import dev.kensa.util.toClassOrNull
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import java.lang.reflect.Method
-import kotlin.reflect.KClass
-import kotlin.reflect.full.contextParameters
-import kotlin.reflect.full.extensionReceiverParameter
-import kotlin.reflect.jvm.kotlinFunction
+import dev.kensa.util.findSyntheticKotlinReceivers
 
 class KotlinParserDelegate(
     private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean,
@@ -36,8 +34,13 @@ class KotlinParserDelegate(
 
         // TODO : Need to test with nested classes as this probably won't work...
         val sourceStream = sourceCode.sourceStreamFor(this)
+        val compilationUnit = sourceStream.compilationUnit()
+
+        val importStrings = compilationUnit.importList().children?.map { it.text.substringAfter("import").trim() } ?: emptyList()
+        val imports = Imports(importStrings, this)
+
         ArrayList<KotlinParser.FunctionDeclarationContext>().apply {
-            sourceStream.compilationUnit().topLevelObject().forEach {
+            compilationUnit.topLevelObject().forEach {
                 findFunctionDeclarations(it, this)
             }
 
@@ -46,11 +49,11 @@ class KotlinParserDelegate(
             }
         }
 
-        return MethodDeclarations(testFunctions, nestedFunctions, emphasisedFunctions)
+        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testFunctions, nestedFunctions, emphasisedFunctions)))
     }
 
     override fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
-        val combined = syntheticKotlinReceivers() + parameterNamesAndTypes
+        val combined = findSyntheticKotlinReceivers() + parameterNamesAndTypes
 
         return MethodParameters(
             parameters.mapIndexed { index, parameter ->
@@ -58,21 +61,6 @@ class KotlinParserDelegate(
             }.associateByTo(LinkedHashMap(), ElementDescriptor::name)
         )
     }
-
-    @OptIn(ExperimentalContextParameters::class)
-    fun Method.syntheticKotlinReceivers(): List<Pair<String, String>> =
-        kotlinFunction?.let { fn ->
-            buildList {
-                fn.contextParameters.forEachIndexed { idx, p ->
-                    val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
-                    add("context$${idx + 1}" to t)
-                }
-                fn.extensionReceiverParameter?.let { p ->
-                    val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
-                    add("receiver" to t)
-                }
-            }
-        } ?: emptyList()
 
     private fun findFunctionDeclarations(it: ParserRuleContext, result: MutableList<KotlinParser.FunctionDeclarationContext>) {
         it.children?.forEach {
