@@ -1,6 +1,11 @@
 <h2 class="github">Changelog</h2>
 
 ### v0.5.36
+- Improving how nested sentences are matched with source code. Now using full type matching.
+- Fixing autoOpen of tabs in modern UI.
+- Adding overflow popover panel for issues in test header.
+
+### v0.5.36
 - Adding support for `Notes` in test output.
   Kensa will recognise `///` as a note when it is placed before a Given/When/Then keyword. 
   Notes will also be recognised at the end of a line (immediately following a `}` or `)`)
