@@ -1,9 +1,11 @@
 <h2 class="github">Changelog</h2>
 
-### v0.5.36
+### v0.5.38
 - Improving how nested sentences are matched with source code. Now using full type matching.
 - Fixing autoOpen of tabs in modern UI.
 - Adding overflow popover panel for issues in test header.
+
+### v0.5.37 - cancelled
 
 ### v0.5.36
 - Adding support for `Notes` in test output.
