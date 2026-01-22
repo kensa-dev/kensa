@@ -70,6 +70,7 @@ class KensaConfigurator(private val configuration: Configuration) {
     fun withSectionOrder(vararg order: Section): KensaConfigurator = apply { configuration.sectionOrder = order.toList() }
 
     fun withAutoOpenTab(tab: Tab): KensaConfigurator = apply { configuration.autoOpenTab = tab }
+    fun withAutoExpandNotes(value: Boolean): KensaConfigurator = apply { configuration.autoExpandNotes = value }
 
     fun withSetupStrategy(setupStrategy: SetupStrategy): KensaConfigurator = apply { configuration.setupStrategy = setupStrategy }
 
@@ -127,6 +128,7 @@ class Configuration {
     var issueTrackerUrl: URL = URI.create("http://empty").toURL()
     var tabSize: Int = 5
     var autoOpenTab: Tab = Tab.None
+    var autoExpandNotes: Boolean = false
     var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
     var titleText: String = "Index"

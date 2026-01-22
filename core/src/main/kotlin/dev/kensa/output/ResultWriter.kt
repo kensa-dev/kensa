@@ -73,6 +73,8 @@ class ResultWriter(private val configuration: Configuration) {
     private fun writeModernConfiguration() =
         with(configuration) {
             val json = jsonObject()
+                .add("autoOpenTab", autoOpenTab.name)
+                .add("autoExpandNotes", autoExpandNotes)
                 .add("titleText", titleText)
                 .add("issueTrackerUrl", issueTrackerUrl.toString())
                 .add("acronyms", acronymsAsJson(dictionary.acronyms))

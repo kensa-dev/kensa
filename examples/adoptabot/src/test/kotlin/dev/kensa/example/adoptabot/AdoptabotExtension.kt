@@ -1,6 +1,7 @@
 package dev.kensa.example.adoptabot
 
 import dev.kensa.Kensa.konfigure
+import dev.kensa.Tab
 import dev.kensa.UiMode
 import dev.kensa.junit.KensaExtension
 import dev.kensa.withRenderers
@@ -33,6 +34,7 @@ class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
             titleText = "Adoptabot Acceptance Tests"
             uiMode = UiMode.Modern
             outputDir = Path("${System.getProperty("user.dir")}/build/kensa-output")
+            autoOpenTab = Tab.SequenceDiagram
             withRenderers {
                 interactionRenderer(ResponseRenderer)
             }

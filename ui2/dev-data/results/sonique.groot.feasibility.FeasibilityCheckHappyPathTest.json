@@ -5,7 +5,21 @@
   "notes": null,
   "minimumUniquePackageName": "feasibility",
   "issues": [
-    "OSSSONIQUE-429"
+    "OSSSONIQUE-429",
+    "OSSSONIQUE-216",
+    "OSSSONIQUE-217",
+    "OSSSONIQUE-218",
+    "OSSSONIQUE-219",
+    "OSSSONIQUE-220",
+    "OSSSONIQUE-221",
+    "OSSSONIQUE-222",
+    "OSSSONIQUE-223",
+    "OSSSONIQUE-224",
+    "OSSSONIQUE-225",
+    "OSSSONIQUE-226",
+    "OSSSONIQUE-227",
+    "OSSSONIQUE-228",
+    "OSSSONIQUE-229"
   ],
   "tests": [
     {
@@ -14,7 +28,6 @@
       "displayName": "Returns Feasibility Result For Address Ready For Service With Internal Connection",
       "notes": null,
       "issues": [
-        "OSSSONIQUE-216"
       ],
       "state": "Passed",
       "autoOpenTab": "sequenceDiagram",

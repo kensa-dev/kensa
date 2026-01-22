@@ -29,16 +29,24 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
 
     const availableTabIds = tabs.map(t => t.id as TabValue);
 
-    const [activeTab, setActiveTab] = useState<TabValue>(() => {
-        if (autoOpenTab && availableTabIds.includes(autoOpenTab as TabValue)) {
-            return autoOpenTab as TabValue;
+    const resolveTab = (incoming?: string): TabValue | undefined => {
+        if (!incoming) return undefined;
+
+        if (incoming in Tab) {
+            return Tab[incoming as keyof typeof Tab];
         }
-        return availableTabIds[0] || Tab.Givens;
+
+        return availableTabIds.find(id => id === incoming);
+    };
+
+    const [activeTab, setActiveTab] = useState<TabValue>(() => {
+        return resolveTab(autoOpenTab) || availableTabIds[0] || Tab.Givens;
     });
 
     useEffect(() => {
-        if (autoOpenTab && availableTabIds.includes(autoOpenTab as TabValue)) {
-            setActiveTab(autoOpenTab as TabValue);
+        const resolved = resolveTab(autoOpenTab);
+        if (resolved) {
+            setActiveTab(resolved);
         }
     }, [autoOpenTab, invocation]);
 

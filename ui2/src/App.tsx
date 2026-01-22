@@ -6,13 +6,13 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components
 import {cn} from "@/lib/utils";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {TestCard} from './components/TestCard';
-import {IssueBadge} from './components/IssueBadge';
 import {Separator} from "./components/ui/separator"
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
 import {useNavigate, useLocation, useSearchParams} from 'react-router-dom';
 import {isNative} from '@/lib/utils';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
 import {TestDetail} from "@/types/Test.ts";
+import { IssueList } from './components/IssueList';
 import {
     CommandDialog,
     CommandEmpty,
@@ -317,7 +317,7 @@ const App = () => {
 
                         <ResizablePanel defaultSize={80} className="flex flex-col h-full overflow-hidden">
                             <SidebarInset className="flex flex-col h-full overflow-hidden">
-                                <header className="sticky top-0 z-10 flex h-12 shrink-0 items-center justify-between bg-background/80 backdrop-blur px-4 border-b">
+                                <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between bg-background/80 backdrop-blur px-4 border-b">
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={toggleSidebar}
@@ -337,11 +337,7 @@ const App = () => {
                                                     <h1 className="text-[14px] font-black truncate text-neutral-800 dark:text-neutral-100 leading-tight">
                                                         {selectedIndex.displayName}
                                                     </h1>
-                                                    <div className="flex items-center gap-1">
-                                                        {testDetail?.issues?.map((issue: string) => (
-                                                            <IssueBadge key={issue} issue={issue}/>
-                                                        ))}
-                                                    </div>
+                                                    <IssueList issues={testDetail?.issues} />
                                                 </div>
                                             </div>
                                         )}
