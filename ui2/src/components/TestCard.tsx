@@ -1,11 +1,18 @@
 import * as React from 'react';
-import {Beaker, ChevronDown, ChevronRight} from 'lucide-react';
-import {cn} from "@/lib/utils";
-import {SectionRenderer} from './SectionRenderer';
-import {InvocationCard} from "@/components/InvocationCard.tsx";
+import { Beaker, ChevronDown, ChevronRight } from 'lucide-react';
+import { cn } from "@/lib/utils";
+import { SectionRenderer } from './SectionRenderer';
+import { InvocationCard } from "@/components/InvocationCard.tsx";
 import { IssueBadge } from './IssueBadge';
+import {Invocation, Test} from "@/types/Test.ts";
 
-export const TestCard = ({test, initialExpanded}: any) => {
+interface TestCardProps {
+    test: Test;
+    initialExpanded?: boolean;
+    initialExpandedInvocation?: number;
+}
+
+export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1 }: TestCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
 
     React.useEffect(() => {
@@ -16,7 +23,7 @@ export const TestCard = ({test, initialExpanded}: any) => {
 
     return (
         <div className={cn(
-            "bg-card border rounded-xl shadow-sm overflow-hidden mb-8 transition-all",
+            "bg-card border rounded-xl shadow-sm overflow-hidden transition-all",
             isPassed ? "border-emerald-500/30" : "border-rose-500/30"
         )}>
             <div
@@ -29,17 +36,14 @@ export const TestCard = ({test, initialExpanded}: any) => {
                 <h3 className={cn(
                     "font-bold flex items-center gap-2 text-sm tracking-tight",
                 )}>
-                    <Beaker size={16} className={isPassed ? "text-emerald-600" : "text-rose-600"}/>
+                    <Beaker size={16} className={isPassed ? "text-emerald-600" : "text-rose-600"} />
                     {test.displayName}
                 </h3>
                 <div className="flex items-center gap-1.5 ml-4">
                     {test.issues?.map((issue: string) => (
-                        <IssueBadge
-                            key={issue}
-                            issue={issue}
-                        />
+                        <IssueBadge key={issue} issue={issue} />
                     ))}
-                    {isExpanded ? <ChevronDown size={16} className="..." /> : <ChevronRight size={16} className="..." />}
+                    {isExpanded ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />}
                 </div>
             </div>
 
@@ -49,7 +53,7 @@ export const TestCard = ({test, initialExpanded}: any) => {
                     isPassed ? "bg-emerald-50/30 dark:bg-emerald-950/10" : "bg-rose-50/30 dark:bg-rose-950/10"
                 )}>
                     <div className="space-y-4">
-                        {test.invocations.map((invocation: any, invIdx: number) => {
+                        {test.invocations.map((invocation: Invocation, invIdx: number) => {
                             const isParameterized = invocation.parameters && invocation.parameters.length > 0;
 
                             if (isParameterized) {
@@ -59,6 +63,7 @@ export const TestCard = ({test, initialExpanded}: any) => {
                                         invocation={invocation}
                                         autoOpenTab={test.autoOpenTab}
                                         isLast={invIdx === test.invocations.length - 1}
+                                        initialExpanded={initialExpandedInvocation >= 0 ? invIdx === initialExpandedInvocation : invocation.state === 'Failed'}
                                     />
                                 );
                             }
@@ -79,5 +84,3 @@ export const TestCard = ({test, initialExpanded}: any) => {
         </div>
     );
 };
-
-export default TestCard;

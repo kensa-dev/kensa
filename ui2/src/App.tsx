@@ -5,7 +5,6 @@ import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {cn, loadJson, useNavigateWithSearch} from "@/lib/utils";
 import {ImperativePanelHandle} from "react-resizable-panels";
-import {TestCard} from './components/TestCard';
 import {Separator} from "./components/ui/separator"
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
 import {useLocation, useSearchParams} from 'react-router-dom';
@@ -22,6 +21,7 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import {Badge} from "@/components/ui/badge.tsx";
+import { TestContainer } from './components/TestContainer';
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -34,7 +34,6 @@ const App = () => {
     const searchQuery = searchParams.get("q") || "";
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('theme') === 'dark');
-    const [firstFailIndex, setFirstFailIndex] = useState<number>(-1);
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [commandQuery, setCommandQuery] = useState("");
@@ -167,7 +166,6 @@ const App = () => {
         const loadTestDetail = async () => {
             setIsLoading(true);
             setTestDetail(null);
-            setFirstFailIndex(-1);
 
             const data = await loadJson<TestDetail>(
                 `results/${selectedIndex.id}.json`,
@@ -175,8 +173,6 @@ const App = () => {
             );
 
             if (data) {
-                const failIndex = data.tests.findIndex(t => t.state === 'Failed');
-                setFirstFailIndex(failIndex);
                 setTestDetail(data);
             }
 
@@ -365,13 +361,10 @@ const App = () => {
                                                         <p>Loading result details...</p>
                                                     </div>
                                                 ) : testDetail ? (
-                                                    testDetail.tests.map((test, i: number) => (
-                                                        <TestCard
-                                                            key={`${testDetail.testClass}-${i}`}
-                                                            test={test}
-                                                            initialExpanded={i === firstFailIndex}
-                                                        />
-                                                    ))
+                                                    <TestContainer
+                                                        tests={testDetail.tests}
+                                                        testClass={testDetail.testClass}
+                                                    />
                                                 ) : null}
                                             </div>
                                         </div>

@@ -2,15 +2,33 @@ import * as React from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { SectionRenderer } from './SectionRenderer';
+import {Invocation, NameAndValue} from "@/types/Test.ts";
 
-export const InvocationCard = ({ invocation, autoOpenTab, isLast }: any) => {
-    const [isExpanded, setIsExpanded] = React.useState(invocation.state === 'Failed');
+interface InvocationCardProps {
+    invocation: Invocation;
+    autoOpenTab?: string;
+    isLast: boolean;
+    initialExpanded?: boolean;
+}
+
+export const InvocationCard = ({ invocation, autoOpenTab, isLast, initialExpanded }: InvocationCardProps) => {
+    const [isExpanded, setIsExpanded] = React.useState<boolean>(() => {
+        if (initialExpanded !== undefined) return initialExpanded;
+        return invocation.state === 'Failed';
+    });
+
+    React.useEffect(() => {
+        if (initialExpanded !== undefined) {
+            setIsExpanded(initialExpanded);
+        }
+    }, [initialExpanded]);
+
     const isPassed = invocation.state === 'Passed';
     const parametersTitle = React.useMemo(() => {
         if (!invocation.parameters || invocation.parameters.length === 0) {
             return invocation.displayName || "Invocation";
         }
-        return invocation.parameters.map((p: any) => {
+        return invocation.parameters.map((p: NameAndValue) => {
             const [key, val] = Object.entries(p)[0];
             return `${key}: ${val}`;
         }).join(', ');
