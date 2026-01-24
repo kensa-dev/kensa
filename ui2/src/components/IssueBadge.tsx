@@ -1,21 +1,58 @@
-import {Link} from "react-router-dom"
-import {Badge} from "@/components/ui/badge"
-import {ConfigContext} from "@/contexts/ConfigContext.tsx";
-import {useContext} from "react";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { ConfigContext } from "@/contexts/ConfigContext.tsx";
+import { useContext } from "react";
+import { cn } from "@/lib/utils";
 
-export const IssueBadge = ({issue}: { issue: string }) => {
-    const {issueTrackerUrl} = useContext(ConfigContext);
+type TestState = "Passed" | "Failed";
+
+export const IssueBadge = ({ issue, testState }: { issue: string; testState?: TestState }) => {
+    const { issueTrackerUrl } = useContext(ConfigContext);
+
+    const baseClasses =
+        "rounded-md border transition-colors bg-clip-padding";
+
+    const toneClasses =
+        testState === "Passed"
+            ? cn(
+                "border-emerald-500/30 text-emerald-700 dark:text-emerald-300",
+                "!bg-emerald-500/[0.06] hover:!bg-emerald-500/[0.08]",
+                "dark:!bg-emerald-500/[0.10] dark:hover:!bg-emerald-500/[0.18]"
+            )
+            : testState === "Failed"
+                ? cn(
+                    "border-rose-500/30 text-rose-700 dark:text-rose-300",
+                    "!bg-rose-500/[0.06] hover:!bg-rose-500/[0.08]",
+                    "dark:!bg-rose-500/[0.10] dark:hover:!bg-rose-500/[0.18]"
+                )
+                : cn(
+                    "border-border/50 text-muted-foreground",
+                    "!bg-muted/15 hover:!bg-muted/22",
+                    "dark:!bg-muted/20 dark:hover:!bg-muted/30"
+                );
 
     if (!issueTrackerUrl) {
         return (
-            <Badge variant="outline">{issue}</Badge>
-        )
-    } else {
-        const href = issueTrackerUrl.endsWith('/') ? `${issueTrackerUrl}${issue}` : `${issueTrackerUrl}/${issue}`;
-        return (
-            <Badge variant="outline" asChild>
-                <Link target="_blank" to={href}>{issue}</Link>
+            <Badge className={cn(baseClasses, toneClasses)}>
+                {issue}
             </Badge>
         );
     }
+
+    const href = issueTrackerUrl.endsWith("/")
+        ? `${issueTrackerUrl}${issue}`
+        : `${issueTrackerUrl}/${issue}`;
+
+    return (
+        <Badge asChild className={cn(baseClasses, toneClasses)}>
+            <Link
+                target="_blank"
+                to={href}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+            >
+                {issue}
+            </Link>
+        </Badge>
+    );
 };

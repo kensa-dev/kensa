@@ -29,7 +29,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
             <div
                 className={cn(
                     "px-5 py-3 border-b flex items-center justify-between cursor-pointer select-none transition-colors",
-                    isPassed ? "bg-emerald-500/10 hover:bg-emerald-500/20" : "bg-rose-500/10 hover:bg-rose-500/20"
+                    isPassed ? "bg-emerald-500/10 hover:bg-emerald-500/15" : "bg-rose-500/10 hover:bg-rose-500/15"
                 )}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
@@ -39,9 +39,10 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                     <Beaker size={16} className={isPassed ? "text-emerald-600" : "text-rose-600"} />
                     {test.displayName}
                 </h3>
+
                 <div className="flex items-center gap-1.5 ml-4">
                     {test.issues?.map((issue: string) => (
-                        <IssueBadge key={issue} issue={issue} />
+                        <IssueBadge key={issue} issue={issue} testState={test.state} />
                     ))}
                     {isExpanded ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />}
                 </div>

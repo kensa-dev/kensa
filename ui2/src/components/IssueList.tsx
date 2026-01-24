@@ -2,22 +2,47 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {IssueBadge} from './IssueBadge';
 import {cn} from "@/lib/utils";
 
+type TestState = "Passed" | "Failed";
+
 interface IssueListProps {
     issues?: string[];
     limit?: number;
+    testState?: TestState;
 }
 
-export const IssueList = ({issues = [], limit = 5}: IssueListProps) => {
+export const IssueList = ({issues = [], limit = 5, testState}: IssueListProps) => {
     if (!issues || issues.length === 0) return null;
 
     const hasMore = issues.length > limit;
     const initialIssues = issues.slice(0, limit);
 
+    const moreBadgeClasses =
+        testState === "Passed"
+            ? cn(
+                "rounded-md border transition-colors bg-clip-padding",
+                "border-emerald-500/30 text-emerald-700 dark:text-emerald-300",
+                "!bg-emerald-500/[0.06] hover:!bg-emerald-500/[0.08]",
+                "dark:!bg-emerald-500/[0.10] dark:hover:!bg-emerald-500/[0.18]"
+            )
+            : testState === "Failed"
+                ? cn(
+                    "rounded-md border transition-colors bg-clip-padding",
+                    "border-rose-500/30 text-rose-700 dark:text-rose-300",
+                    "!bg-rose-500/[0.06] hover:!bg-rose-500/[0.08]",
+                    "dark:!bg-rose-500/[0.10] dark:hover:!bg-rose-500/[0.18]"
+                )
+                : cn(
+                    "rounded-md border transition-colors bg-clip-padding",
+                    "border-border/50 text-muted-foreground",
+                    "!bg-muted/15 hover:!bg-muted/22",
+                    "dark:!bg-muted/20 dark:hover:!bg-muted/30"
+                );
+
     return (
         <div className="flex items-center gap-1 shrink-0">
             <div className="flex items-center gap-1">
                 {initialIssues.map((issue) => (
-                    <IssueBadge key={issue} issue={issue}/>
+                    <IssueBadge key={issue} issue={issue} testState={testState}/>
                 ))}
             </div>
 
@@ -27,13 +52,16 @@ export const IssueList = ({issues = [], limit = 5}: IssueListProps) => {
                         <button
                             type="button"
                             className={cn(
-                                "flex items-center justify-center rounded-full bg-secondary/50 hover:bg-secondary transition-colors",
-                                "text-[10px] h-5 px-2 font-bold border border-border/50 text-muted-foreground whitespace-nowrap outline-none"
+                                moreBadgeClasses,
+                                "inline-flex items-center justify-center",
+                                "text-[10px] h-5 px-2 font-bold whitespace-nowrap",
+                                "outline-none cursor-pointer select-none"
                             )}
                         >
                             +{issues.length - limit} more
                         </button>
                     </PopoverTrigger>
+
                     <PopoverContent
                         className="w-80 p-3 shadow-xl border-border/40 bg-background/95 backdrop-blur-md rounded-xl"
                         align="end"
@@ -48,7 +76,7 @@ export const IssueList = ({issues = [], limit = 5}: IssueListProps) => {
                             <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 max-h-[300px] overflow-y-auto pr-1">
                                 {issues.map((issue) => (
                                     <div key={issue} className="flex">
-                                        <IssueBadge issue={issue}/>
+                                        <IssueBadge issue={issue} testState={testState}/>
                                     </div>
                                 ))}
                             </div>

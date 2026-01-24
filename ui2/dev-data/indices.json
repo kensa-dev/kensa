@@ -32,12 +32,12 @@
       "id": "dev.kensa.adoptabot.AdoptionServiceTest",
       "displayName": "Adoption Service Test",
       "testClass": "dev.kensa.adoptabot.AdoptionServiceTest",
-      "state": "Passed",
+      "state": "Failed",
       "children": [
         {
           "displayName": "should allow adopting a bot",
           "testMethod": "shouldAllowAdoptingABot",
-          "state": "Passed"
+          "state": "Failed"
         }
       ]
     },

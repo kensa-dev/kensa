@@ -5,7 +5,6 @@ import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {cn, loadJson, useNavigateWithSearch} from "@/lib/utils";
 import {ImperativePanelHandle} from "react-resizable-panels";
-import {Separator} from "./components/ui/separator"
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {isNative} from '@/lib/utils';
@@ -317,7 +316,16 @@ const App = () => {
 
                         <ResizablePanel defaultSize={80} className="flex flex-col h-full overflow-hidden">
                             <SidebarInset className="flex flex-col h-full overflow-hidden">
-                                <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between bg-background/80 backdrop-blur px-4 border-b">
+                                <header
+                                    className={cn(
+                                        "sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between backdrop-blur px-4 border-b",
+                                        selectedIndex?.state === "Passed"
+                                            ? "bg-emerald-500/10 border-emerald-500/30"
+                                            : selectedIndex?.state === "Failed"
+                                                ? "bg-rose-500/10 border-rose-500/30"
+                                                : "bg-background/80 border-border"
+                                    )}
+                                >
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={toggleSidebar}
@@ -325,19 +333,26 @@ const App = () => {
                                         >
                                             <PanelLeft size={18} className={cn(isSidebarCollapsed && "opacity-50")}/>
                                         </button>
-                                        <Separator orientation="vertical" className="h-4"/>
 
                                         {selectedIndex && (
-                                            <div className="flex flex-col py-1 ml-2">
-                                                <div className="flex items-center gap-1.5 text-[11px] font-mono tracking-wider opacity-70 text-neutral-800 dark:text-neutral-100">
-                                                    <Package size={10}/>
-                                                    {selectedIndex.testClass}
+                                            <div
+                                                className={cn(
+                                                    "flex flex-col py-1 ml-2",
+                                                    "rounded-lg px-2 -mx-2 transition-colors",
+                                                    "py-1.5 gap-0.5"
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-2 text-[11px] leading-5 font-mono tracking-wider opacity-70 text-neutral-800 dark:text-neutral-100">
+                                                    <Package size={12} className="shrink-0 opacity-80"/>
+                                                    <span className="truncate">
+                                                            {selectedIndex.testClass}
+                                                        </span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <h1 className="text-[14px] font-black truncate text-neutral-800 dark:text-neutral-100 leading-tight">
                                                         {selectedIndex.displayName}
                                                     </h1>
-                                                    <IssueList issues={testDetail?.issues} />
+                                                    <IssueList issues={testDetail?.issues} testState={selectedIndex.state} />
                                                 </div>
                                             </div>
                                         )}

@@ -119,7 +119,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                     )}
 
                     {(activeTab === Tab.SequenceDiagram) && (
-                        <div className="p-6 rounded-lg overflow-auto border border-border shadow-inner min-h-[400px] flex items-center justify-center">
+                        <div className="bg-white p-6 rounded-lg overflow-auto border border-border shadow-inner min-h-[400px] flex items-center justify-center">
                             <div
                                 ref={svgRef}
                                 className="max-w-full cursor-pointer"
