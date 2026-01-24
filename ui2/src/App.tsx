@@ -3,7 +3,7 @@ import {Beaker, Package, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar.tsx';
 import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import {cn} from "@/lib/utils";
+import {cn, loadJson} from "@/lib/utils";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {TestCard} from './components/TestCard';
 import {Separator} from "./components/ui/separator"
@@ -94,7 +94,6 @@ const App = () => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const isMod = e.metaKey || e.ctrlKey;
 
-            // Cmd+K: Global Jump
             if (isMod && e.key === "k") {
                 e.preventDefault();
                 setOpen((prev) => !prev);
@@ -133,53 +132,58 @@ const App = () => {
     };
 
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                const configRes = await fetch('./configuration.json');
-                if (!configRes.ok) throw new Error(`Config load failed: ${configRes.status}`);
-                const configData = await configRes.json();
-                setConfig(configData);
+        const loadInitialData = async () => {
+            const configData = await loadJson<KensaConfig>('./configuration.json', 'Configuration');
+            if (!configData) return;
+            setConfig(configData);
 
-                const indicesRes = await fetch('./indices.json');
-                if (!indicesRes.ok) throw new Error(`Indices load failed: ${indicesRes.status}`);
-                const indicesData = await indicesRes.json();
+            const indicesData = await loadJson<{ indices: Indices }>(
+                './indices.json',
+                'Indices tree'
+            );
+            if (!indicesData) return;
 
-                const loadedIndices: Indices = indicesData.indices || [];
+            const loadedIndices = indicesData.indices || [];
 
-                if (loadedIndices.length > 0) {
-                    const rootNode: Index = {
-                        id: 'root-project',
-                        type: 'project',
-                        displayName: configData.titleText || "Kensa Tests",
-                        testClass: '',
-                        state: loadedIndices.some(i => i.state === 'Failed') ? 'Failed' : 'Passed',
-                        children: loadedIndices
-                    };
-                    setIndices([rootNode]);
-                }
-            } catch (err) {
-                console.error("Critical error loading Kensa data:", err);
+            if (loadedIndices.length > 0) {
+                const rootNode: Index = {
+                    id: 'root-project',
+                    type: 'project',
+                    displayName: configData.titleText || "Kensa Tests",
+                    testClass: '',
+                    state: loadedIndices.some(i => i.state === 'Failed') ? 'Failed' : 'Passed',
+                    children: loadedIndices
+                };
+                setIndices([rootNode]);
             }
         };
 
-        loadData();
+        void loadInitialData();
     }, []);
 
     useEffect(() => {
         if (!selectedIndex) return;
-        setIsLoading(true);
-        setTestDetail(null);
-        setFirstFailIndex(-1);
 
-        fetch(`./results/${selectedIndex.id}.json`)
-            .then(res => res.json())
-            .then(data => {
-                const failIndex = data.tests.findIndex((t: TestDetail) => t.state === 'Failed');
+        const loadTestDetail = async () => {
+            setIsLoading(true);
+            setTestDetail(null);
+            setFirstFailIndex(-1);
+
+            const data = await loadJson<TestDetail>(
+                `results/${selectedIndex.id}.json`,
+                `Test results (${selectedIndex.displayName})`
+            );
+
+            if (data) {
+                const failIndex = data.tests.findIndex(t => t.state === 'Failed');
                 setFirstFailIndex(failIndex);
                 setTestDetail(data);
-                setIsLoading(false);
-            })
-            .catch(() => setIsLoading(false));
+            }
+
+            setIsLoading(false);
+        };
+
+        void loadTestDetail();
     }, [selectedIndex]);
 
     useEffect(() => {
