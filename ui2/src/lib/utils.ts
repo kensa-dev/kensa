@@ -1,5 +1,7 @@
 import {type ClassValue, clsx} from "clsx"
 import {twMerge} from "tailwind-merge"
+import { useNavigate, useLocation } from 'react-router-dom';
+import type { NavigateOptions, To } from 'react-router-dom';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -30,4 +32,22 @@ export async function loadJson<T>(
         console.error(`Error loading ${label} from ${path}:`, err);
         return null;
     }
+}
+
+export function useNavigateWithSearch() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    return (to: To, options: NavigateOptions = {}) => {
+        if (typeof to === 'string') {
+            const [pathname, currentSearch] = to.split('?');
+            const preservedSearch = currentSearch
+                ? `?${currentSearch}`
+                : location.search;
+
+            return navigate(`${pathname}${preservedSearch}`, options);
+        }
+
+        return navigate(to, options);
+    };
 }

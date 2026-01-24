@@ -3,12 +3,12 @@ import {Beaker, Package, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar.tsx';
 import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import {cn, loadJson} from "@/lib/utils";
+import {cn, loadJson, useNavigateWithSearch} from "@/lib/utils";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {TestCard} from './components/TestCard';
 import {Separator} from "./components/ui/separator"
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
-import {useNavigate, useLocation, useSearchParams} from 'react-router-dom';
+import {useLocation, useSearchParams} from 'react-router-dom';
 import {isNative} from '@/lib/utils';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
 import {TestDetail} from "@/types/Test.ts";
@@ -40,7 +40,7 @@ const App = () => {
     const [commandQuery, setCommandQuery] = useState("");
     const searchInputRef = useRef<HTMLInputElement>(null);
 
-    const navigate = useNavigate();
+    const navigate = useNavigateWithSearch();
     const location = useLocation();
 
     const onSearchChange = (query: string) => {
