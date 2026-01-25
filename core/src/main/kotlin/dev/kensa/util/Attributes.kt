@@ -8,6 +8,7 @@ import java.util.LinkedHashMap
 
 class Attributes private constructor(private val attributes: Map<String, Any?>) : Sequence<Map.Entry<String, Any?>> {
     object Key {
+        const val InteractionId = "InteractionId"
         const val Group = "Group"
         const val Arrow = "ArrowStyle"
     }

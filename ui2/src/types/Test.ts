@@ -38,6 +38,8 @@ export interface RenderedInteraction {
 export interface Interaction {
     id: string
     name: string
+    from?: string | null
+    to?: string | null
     rendered: RenderedInteraction
     attributes: NameAndValues
 }

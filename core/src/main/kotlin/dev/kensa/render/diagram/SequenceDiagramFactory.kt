@@ -2,7 +2,9 @@ package dev.kensa.render.diagram
 
 import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.state.CapturedInteractions
+import dev.kensa.util.Attributes
 import dev.kensa.util.KensaMap
+import dev.kensa.util.Attributes.Key.InteractionId
 import net.sourceforge.plantuml.FileFormat.SVG
 import net.sourceforge.plantuml.FileFormatOption
 import net.sourceforge.plantuml.SourceStringReader
@@ -79,14 +81,16 @@ object IsSvgCompatible : (KensaMap.Entry) -> Boolean {
 object ToGroupedSvg : (KensaMap.Entry) -> Pair<String?, String> {
     override fun invoke(entry: KensaMap.Entry): Pair<String?, String> =
         keyPattern.matchEntire(entry.key)?.let { result ->
-            val interactionId = entry.key.hashCode().toString()
+            val interactionId = entry.attributes.get<String>(InteractionId)
+                ?: error("Missing $InteractionId attribute for sequence diagram interaction")
+
             val interactionName = result.groupValues[1].trim()
             val from = result.groupValues[2].trim()
             val to = result.groupValues[3].trim()
 
             Pair(
                 entry.attributes.group,
-                """$from ${entry.attributes.arrowStyle.value} ${to}:<text class=sequence_diagram_clickable sequence_diagram_interaction_id="$interactionId">${interactionName}</text>"""
+                """$from ${entry.attributes.arrowStyle.value} ${to}:<text class=sequence_diagram_clickable sequence_diagram_interaction_id="$interactionId">$interactionName</text>"""
             )
         } ?: Pair(entry.attributes.group, entry.value.toString().trim())
 }

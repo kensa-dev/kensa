@@ -1,4 +1,38 @@
+/* Pointers */
 .sequence_diagram_clickable,
 .sequence_diagram_clickable * {
-    cursor: pointer;
+  cursor: pointer;
+}
+
+.sequence-diagram .actor {
+  cursor: pointer;
+}
+
+/* Filtering: dim all interaction SVG elements unless highlighted */
+.sequence-diagram.filtered [sequence_diagram_interaction_id]:not(.filter-highlight) {
+  opacity: 0.2 !important;
+}
+
+/* Optional: highlight styling similar to the old behavior */
+.sequence-diagram.filtered [sequence_diagram_interaction_id].filter-highlight {
+  opacity: 1 !important;
+}
+
+/* Actor highlight */
+.sequence-diagram.filtered rect.actor.filter-highlight {
+  fill: #d6faae !important;
+}
+
+.sequence-diagram.filtered text.actor.filter-highlight {
+  fill: #487913 !important;
+  font-weight: bold !important;
+}
+
+/* No-matches feedback (kept minimal) */
+.sequence-diagram.filtered.no-matches rect.actor.filter-highlight {
+  fill: red !important;
+}
+
+.sequence-diagram.filtered.no-matches text.actor.filter-highlight {
+  fill: #ffeeee !important;
 }

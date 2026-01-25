@@ -24,6 +24,8 @@ import com.eclipsesource.json.Json.`object` as jsonObject
 
 object JsonTransforms {
 
+    private val interactionKeyPattern = "^(.*) from (.+) to (.+)$".toRegex()
+
     fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue = { container: TestContainer ->
         jsonObject()
             .add("testClass", container.testClass.name)
@@ -168,12 +170,19 @@ object JsonTransforms {
         entry.takeUnless {
             it.key.matches("^\\{.+}.*$".toRegex())
         }?.let {
+            val implicitId = it.attributes.get<String>(Attributes.Key.InteractionId) ?: it.key.hashCode().toString()
+
+            val match = interactionKeyPattern.matchEntire(it.key)
+            val from = match?.groupValues?.getOrNull(2)?.trim()
+            val to = match?.groupValues?.getOrNull(3)?.trim()
+
             jsonObject()
-                .add("id", it.key.hashCode().toString())
+                .add("id", implicitId)
                 .add("name", it.key)
+                .add("from", from)
+                .add("to", to)
                 .add("rendered", renderedInteractionAsJson(it.value!!, it.attributes, renderers))
-                .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))
-        }
+                .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))        }
     }
 
     private fun renderedInteractionAsJson(value: Any, attributes: Attributes, renderers: Renderers): JsonValue =
