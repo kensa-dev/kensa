@@ -3,8 +3,6 @@ import { FileJson, Info, ChevronUp, ChevronDown, Copy, Search, X, Maximize2, Ext
 import hljs from 'highlight.js';
 import { cn } from "@/lib/utils";
 
-// --- DOM Manipulation Helpers ---
-
 const getAllTextNodes = (root: Node): Text[] => {
     const textNodes: Text[] = [];
     const stack = [root];

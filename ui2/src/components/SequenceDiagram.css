@@ -1,26 +1,78 @@
-/* Pointers */
 .sequence_diagram_clickable,
 .sequence_diagram_clickable * {
   cursor: pointer;
 }
 
-.sequence-diagram .actor {
+.sequence-diagram .participant,
+.sequence-diagram .participant * {
   cursor: pointer;
 }
 
-/* Filtering: dim all interaction SVG elements unless highlighted */
-.sequence-diagram.filtered [sequence_diagram_interaction_id]:not(.filter-highlight) {
+.sd-panel {
+  position: relative;
+}
+
+.sd-scroll {
+  overflow: auto;
+  border: none;
+  border-radius: 12px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px;
+}
+
+.sequence-diagram svg {
+  max-width: none;
+  display: block;
+}
+
+.sd-expand {
+  position: absolute;
+  top: 8px;
+  right: 18px;
+  z-index: 2;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 6px;
+  border-radius: 10px;
+
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--background) / 0.75);
+  border: 1px solid hsl(var(--border));
+  backdrop-filter: blur(6px);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.sd-panel:hover .sd-expand,
+.sd-expand:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sd-expand:hover {
+  background: hsl(var(--accent) / 0.6);
+  color: hsl(var(--foreground));
+}
+
+.sequence-diagram.filtered g.message[data-interaction-id]:not(.filter-highlight) {
   opacity: 0.2 !important;
 }
 
-/* Optional: highlight styling similar to the old behavior */
-.sequence-diagram.filtered [sequence_diagram_interaction_id].filter-highlight {
+.sequence-diagram.filtered g.message[data-interaction-id].filter-highlight {
   opacity: 1 !important;
 }
 
-/* Actor highlight */
-.sequence-diagram.filtered rect.actor.filter-highlight {
-  fill: #d6faae !important;
+.sequence-diagram.filtered .participant rect.filter-highlight {
+  stroke: #487913 !important;
+  stroke-width: 2 !important;
 }
 
 .sequence-diagram.filtered text.actor.filter-highlight {
@@ -28,7 +80,6 @@
   font-weight: bold !important;
 }
 
-/* No-matches feedback (kept minimal) */
 .sequence-diagram.filtered.no-matches rect.actor.filter-highlight {
   fill: red !important;
 }
