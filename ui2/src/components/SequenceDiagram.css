@@ -1,0 +1,4 @@
+.sequence_diagram_clickable,
+.sequence_diagram_clickable * {
+    cursor: pointer;
+}

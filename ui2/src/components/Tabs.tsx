@@ -4,6 +4,7 @@ import {InteractionDialog} from './InteractionDialog';
 import {cn} from "@/lib/utils";
 import {Tab} from "@/constants.ts";
 import {Interaction, Invocation, NameAndValues} from "@/types/Test.ts";
+import {SequenceDiagram} from "@/components/SequenceDiagram.tsx";
 
 type TabValue = typeof Tab[keyof typeof Tab];
 
@@ -119,13 +120,11 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                     )}
 
                     {(activeTab === Tab.SequenceDiagram) && (
-                        <div className="bg-white p-6 rounded-lg overflow-auto border border-border shadow-inner min-h-[400px] flex items-center justify-center">
-                            <div
-                                ref={svgRef}
-                                className="max-w-full cursor-pointer"
-                                dangerouslySetInnerHTML={{__html: invocation[Tab.SequenceDiagram] ?? ''}}
-                            />
-                        </div>
+                        <SequenceDiagram
+                            sequenceDiagram={invocation[Tab.SequenceDiagram] ?? ""}
+                            capturedInteractions={invocation[Tab.CapturedInteractions] ?? []}
+                            testState={testState}
+                        />
                     )}
                 </div>
             </div>
