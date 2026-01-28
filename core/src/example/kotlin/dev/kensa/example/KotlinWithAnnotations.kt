@@ -1,9 +1,9 @@
 package dev.kensa.example
 
 import dev.kensa.DummyAssert.Companion.assertThat
+import dev.kensa.ExpandableSentence
 import dev.kensa.GivensBuilder
 import dev.kensa.Highlight
-import dev.kensa.NestedSentence
 import dev.kensa.RenderedValue
 import dev.kensa.SomeBuilder.Companion.someBuilder
 
@@ -34,14 +34,14 @@ class KotlinWithAnnotations {
     fun method1() {
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun nested1(): GivensBuilder {
         return someBuilder()
             .withSomething()
             .build()
     }
 
-    @NestedSentence
+    @ExpandableSentence
     internal fun internalNested() {
     }
 

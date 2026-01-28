@@ -6,7 +6,6 @@ import dev.kensa.parse.java.Java20Parser.ClassDeclarationContext
 import dev.kensa.parse.java.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.util.SourceCode
 import dev.kensa.util.isKotlinClass
-import dev.kensa.util.toClassOrNull
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.atn.PredictionMode
@@ -27,7 +26,7 @@ class JavaParserDelegate(
 
     override fun Class<*>.findMethodDeclarations(): MethodDeclarations {
         val testMethods = mutableListOf<MethodDeclarationContext>()
-        val nestedMethods = mutableListOf<MethodDeclarationContext>()
+        val expandableSentenceMethods = mutableListOf<MethodDeclarationContext>()
         val emphasisedMethods = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
@@ -54,7 +53,7 @@ class JavaParserDelegate(
                     normalClassDeclaration().classBody().classBodyDeclaration().forEach { cbd ->
                         cbd.classMemberDeclaration()?.methodDeclaration()?.let { md ->
                             testMethods.takeIf { isClassTest(md) }?.add(JavaMethodDeclarationContext(md))
-                            nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaMethodDeclarationContext(md))
+                            expandableSentenceMethods.takeIf { md.isAnnotatedAsExpandableSentence() }?.add(JavaMethodDeclarationContext(md))
                             emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md))
                         }
                     }
@@ -63,7 +62,7 @@ class JavaParserDelegate(
                     normalInterfaceDeclaration().interfaceBody().interfaceMemberDeclaration().forEach { imd ->
                         imd.interfaceMethodDeclaration()?.let { md ->
                             testMethods.takeIf { isInterfaceTest(md) }?.add(JavaInterfaceDeclarationContext(md))
-                            nestedMethods.takeIf { md.isAnnotatedAsNested() }?.add(JavaInterfaceDeclarationContext(md))
+                            expandableSentenceMethods.takeIf { md.isAnnotatedAsExpandableSentence() }?.add(JavaInterfaceDeclarationContext(md))
                             emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaInterfaceDeclarationContext(md))
                         }
                     }
@@ -72,7 +71,7 @@ class JavaParserDelegate(
             }
         }
 
-        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testMethods, nestedMethods, emphasisedMethods)))
+        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testMethods, expandableSentenceMethods, emphasisedMethods)))
     }
 
     override fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
@@ -89,10 +88,10 @@ class JavaParserDelegate(
             interpreter.predictionMode = antlrPredicationMode
         }.compilationUnit()
 
-    private fun Java20Parser.MethodDeclarationContext.isAnnotatedAsNested() =
+    private fun Java20Parser.MethodDeclarationContext.isAnnotatedAsExpandableSentence() =
         methodModifier().any { mm ->
             mm.annotation()?.markerAnnotation()?.typeName()?.text?.let {
-                ParserDelegate.nestedSentenceAnnotationNames.contains(it)
+                ParserDelegate.expandableSentenceAnnotationNames.contains(it)
             } ?: false
         }
 
@@ -103,10 +102,10 @@ class JavaParserDelegate(
             } ?: false
         }
 
-    private fun Java20Parser.InterfaceMethodDeclarationContext.isAnnotatedAsNested() =
+    private fun Java20Parser.InterfaceMethodDeclarationContext.isAnnotatedAsExpandableSentence() =
         interfaceMethodModifier().any { mm ->
             mm.annotation()?.markerAnnotation()?.typeName()?.text?.let {
-                ParserDelegate.nestedSentenceAnnotationNames.contains(it)
+                ParserDelegate.expandableSentenceAnnotationNames.contains(it)
             } ?: false
         }
 

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 
-public class JavaWithNestedSentenceTest extends JavaExampleTest implements WithHamcrest {
+public class JavaWithExpandableSentenceTest extends JavaExampleTest implements WithHamcrest {
 
     @RenderedValue
     private final String aValue = "aStringValue";
@@ -29,7 +29,7 @@ public class JavaWithNestedSentenceTest extends JavaExampleTest implements WithH
     }
 
     @Test
-    void testWithNestedScenarioParameter() {
+    void testWithExpandableScenarioParameter() {
         given(somePrerequisites());
 
         whenever(someAction(myScenario));
@@ -38,7 +38,7 @@ public class JavaWithNestedSentenceTest extends JavaExampleTest implements WithH
     }
 
     @Test
-    void testWithNestedSentenceExpression() {
+    void testWithExpandableSentenceExpression() {
         givenSomePrerequisites();
 
         wheneverSomeAction(myScenario);
@@ -51,27 +51,27 @@ public class JavaWithNestedSentenceTest extends JavaExampleTest implements WithH
         return interactions -> aValue;
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private void givenSomePrerequisites() {
          given((GivensBuilder) (givens) -> givens.put("foo", "bar"));
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private GivensBuilder somePrerequisites() {
         return (givens) -> givens.put("foo", "bar");
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private ActionUnderTest wheneverSomeAction(@RenderedValue MyScenario aScenarioOf) {
         return someActionUnderTest(aScenarioOf.getStringValue());
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private ActionUnderTest someActionWith(@RenderedValue String parameter1) {
         return someActionUnderTest(parameter1);
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private ActionUnderTest someAction(@RenderedValue MyScenario aScenarioOf) {
         return someActionUnderTest(aScenarioOf.getStringValue());
     }

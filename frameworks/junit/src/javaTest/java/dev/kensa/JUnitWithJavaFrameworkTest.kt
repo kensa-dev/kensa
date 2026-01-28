@@ -11,7 +11,7 @@ import dev.kensa.example.JavaWithFixturesTest
 import dev.kensa.example.JavaWithGenericParameterizedTest
 import dev.kensa.example.JavaWithLiteralsTest
 import dev.kensa.example.JavaWithMultiplePassingTests
-import dev.kensa.example.JavaWithNestedSentenceTest
+import dev.kensa.example.JavaWithExpandableSentenceTest
 import dev.kensa.example.JavaWithNotesTest
 import dev.kensa.example.JavaWithOutputDisabledTest
 import dev.kensa.example.JavaWithParameterResolverExtensionTest
@@ -120,7 +120,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
                 JavaWithGenericParameterizedTest::class,
                 JavaWithAnnotationFeatureTest::class,
                 JavaWithRecordTest::class,
-                JavaWithNestedSentenceTest::class,
+                JavaWithExpandableSentenceTest::class,
                 JavaWithLiteralsTest::class,
                 JavaWithTypeArgumentsTest::class,
                 JavaWithFixturesTest::class,

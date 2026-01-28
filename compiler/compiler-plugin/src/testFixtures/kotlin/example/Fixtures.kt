@@ -1,6 +1,6 @@
 package example
 
-import dev.kensa.NestedSentence
+import dev.kensa.ExpandableSentence
 import dev.kensa.RenderedValue
 
 interface Service {
@@ -8,12 +8,12 @@ interface Service {
 }
 
 class NestedSentences(private val service: Service) {
-    @NestedSentence
+    @ExpandableSentence
     fun foo(bar: String) {
         service.call(arrayOf(bar))
     }
 
-    @NestedSentence
+    @ExpandableSentence
     fun bar(baz: Int) {
         service.call(arrayOf(baz))
     }

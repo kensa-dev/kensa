@@ -1,6 +1,6 @@
 {
-  "testClass": "dev.kensa.example.JavaWithNestedSentenceTest",
-  "displayName": "Java With Nested Sentence Test",
+  "testClass": "dev.kensa.example.JavaWithExpandableSentenceTest",
+  "displayName": "Java With Expandable Sentence Test",
   "state": "Passed",
   "notes": null,
   "minimumUniquePackageName": "example",
@@ -145,8 +145,8 @@
     },
     {
       "elapsedTime": "14 Ms",
-      "testMethod": "testWithNestedScenarioParameter",
-      "displayName": "Test With Nested Scenario Parameter",
+      "testMethod": "testWithExpandableScenarioParameter",
+      "displayName": "Test With Expandable Scenario Parameter",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -294,14 +294,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "testWithNestedScenarioParameter()"
+          "displayName": "testWithExpandableScenarioParameter()"
         }
       ]
     },
     {
       "elapsedTime": "",
-      "testMethod": "testWithNestedSentenceExpression",
-      "displayName": "Test With Nested Sentence Expression",
+      "testMethod": "testWithExpandableSentenceExpression",
+      "displayName": "Test With Expandable Sentence Expression",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -443,7 +443,7 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "testWithNestedSentenceExpression()"
+          "displayName": "testWithExpandableSentenceExpression()"
         }
       ]
     }

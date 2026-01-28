@@ -1,6 +1,9 @@
 package dev.kensa.example;
 
-import dev.kensa.*;
+import dev.kensa.ExpandableSentence;
+import dev.kensa.GivensBuilder;
+import dev.kensa.Highlight;
+import dev.kensa.RenderedValue;
 
 import static dev.kensa.DummyAssert.assertThat;
 import static dev.kensa.SomeBuilder.someBuilder;
@@ -26,7 +29,7 @@ public class JavaWithVariousFields {
     private void method1() {
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private GivensBuilder nested1() {
         return someBuilder()
                 .withSomething()

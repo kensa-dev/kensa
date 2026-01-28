@@ -1,7 +1,7 @@
 package dev.kensa.example
 
 import dev.kensa.DummyAssert.Companion.assertThat
-import dev.kensa.NestedSentence
+import dev.kensa.ExpandableSentence
 
 class KotlinWithParameters {
 
@@ -9,24 +9,24 @@ class KotlinWithParameters {
         assertThat(first).isIn("a", "b")
     }
 
-    @NestedSentence
+    @ExpandableSentence
     fun String.anExtensionFunction(first: String?, second: Int?) {
         assertThat(first).isIn("a", "b")
     }
 
     context(intParam: Int)
-    @NestedSentence
+    @ExpandableSentence
     fun aFunctionWithContextParametersBeforeFn(first: String?, second: Int?) {
         assertThat(first).isIn("a", "b")
     }
 
-    @NestedSentence
+    @ExpandableSentence
     context(intParam: Int)
     fun aFunctionWithContextParametersBeforeContext(first: String?, second: Int?) {
         assertThat(first).isIn("a", "b")
     }
 
-    @NestedSentence
+    @ExpandableSentence
     context(intParam: Int)
     fun String.anExtensionFunctionWithContextParameters(first: String?, second: Int?) {
         assertThat(first).isIn("a", "b")

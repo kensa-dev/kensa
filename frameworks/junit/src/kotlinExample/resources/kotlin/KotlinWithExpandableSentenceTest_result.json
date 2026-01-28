@@ -1,6 +1,6 @@
 {
-  "testClass": "dev.kensa.example.KotlinWithNestedSentenceTest",
-  "displayName": "Kotlin With Nested Sentence Test",
+  "testClass": "dev.kensa.example.KotlinWithExpandableSentenceTest",
+  "displayName": "Kotlin With Expandable Sentence Test",
   "state": "Passed",
   "notes": null,
   "minimumUniquePackageName": "example",
@@ -8,8 +8,8 @@
   "tests": [
     {
       "elapsedTime": "1 Ms",
-      "testMethod": "simpleNested",
-      "displayName": "Simple Nested",
+      "testMethod": "simpleExpandable",
+      "displayName": "Simple Expandable",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -155,14 +155,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "simpleNested()"
+          "displayName": "simpleExpandable()"
         }
       ]
     },
     {
       "elapsedTime": "1 Ms",
-      "testMethod": "nestedWithMultiLineParameters",
-      "displayName": "Nested With Multi Line Parameters",
+      "testMethod": "expandableWithMultiLineParameters",
+      "displayName": "Expandable With Multi Line Parameters",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -609,14 +609,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "nestedWithMultiLineParameters()"
+          "displayName": "expandableWithMultiLineParameters()"
         }
       ]
     },
     {
       "elapsedTime": "",
-      "testMethod": "nestedWithScenarioParameters",
-      "displayName": "Nested With Scenario Parameters",
+      "testMethod": "expandableWithScenarioParameters",
+      "displayName": "Expandable With Scenario Parameters",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -757,14 +757,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "nestedWithScenarioParameters()"
+          "displayName": "expandableWithScenarioParameters()"
         }
       ]
     },
     {
       "elapsedTime": "1 Ms",
-      "testMethod": "nestedWithFixtureAndScenarioParameters",
-      "displayName": "Nested With Fixture And Scenario Parameters",
+      "testMethod": "expandableWithFixtureAndScenarioParameters",
+      "displayName": "Expandable With Fixture And Scenario Parameters",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -1040,14 +1040,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "nestedWithFixtureAndScenarioParameters()"
+          "displayName": "expandableWithFixtureAndScenarioParameters()"
         }
       ]
     },
     {
       "elapsedTime": "26 Ms",
-      "testMethod": "nestedWithNestedExpression",
-      "displayName": "Nested With Nested Expression",
+      "testMethod": "expandableWithExpandableExpression",
+      "displayName": "Expandable With Expandable Expression",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -1173,14 +1173,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "nestedWithNestedExpression()"
+          "displayName": "expandableWithExpandableExpression()"
         }
       ]
     },
     {
       "elapsedTime": "",
-      "testMethod": "nestedWithNestedExpressionInInterface",
-      "displayName": "Nested With Nested Expression In Interface",
+      "testMethod": "expandableWithExpandableExpressionInInterface",
+      "displayName": "Expandable With Expandable Expression In Interface",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -1342,14 +1342,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "nestedWithNestedExpressionInInterface()"
+          "displayName": "expandableWithExpandableExpressionInInterface()"
         }
       ]
     },
     {
       "elapsedTime": "1 Ms",
-      "testMethod": "parameterisedWithNestedSentence",
-      "displayName": "Parameterised With Nested Sentence",
+      "testMethod": "parameterisedWithExpandableSentence",
+      "displayName": "Parameterised With Expandable Sentence",
       "notes": null,
       "issues": [],
       "state": "Passed",

@@ -4,7 +4,7 @@ import com.natpryce.hamkrest.equalTo
 import dev.kensa.Action
 import dev.kensa.ActionContext
 import dev.kensa.GivensContext
-import dev.kensa.NestedSentence
+import dev.kensa.ExpandableSentence
 import dev.kensa.RenderedValue
 import dev.kensa.StateCollector
 import dev.kensa.fixture.FixtureRegistry.registerFixtures
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, InterfaceWithNestedSentence {
+class KotlinWithExpandableSentenceTest : KotlinExampleTest(), WithHamkrest, InterfaceWithExpandableSentence {
 
     init {
         registerFixtures(KotlinTestFixtures)
@@ -35,7 +35,7 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
     private fun myString(foo: String = ""): String = "myStringThing"
 
     @Test
-    fun simpleNested() {
+    fun simpleExpandable() {
         given(somePrerequisites())
 
         whenever(someActionNoParameters())
@@ -45,7 +45,7 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
     }
 
     @Test
-    fun nestedWithMultiLineParameters() {
+    fun expandableWithMultiLineParameters() {
         whenever(
             someActionWith2(
                 parameter1 = "my parameter",
@@ -65,7 +65,7 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
     }
 
     @Test
-    fun nestedWithScenarioParameters() {
+    fun expandableWithScenarioParameters() {
         given(somePrerequisites())
 
         whenever(someAction(myScenario))
@@ -75,7 +75,7 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
     }
 
     @Test
-    fun nestedWithFixtureAndScenarioParameters() {
+    fun expandableWithFixtureAndScenarioParameters() {
         given(somePrerequisites())
 
         whenever(
@@ -90,7 +90,7 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
     }
 
     @Test
-    fun nestedWithNestedExpression() {
+    fun expandableWithExpandableExpression() {
         givenSomePrerequisites()
 
         wheneverSomeActionWith(aScenarioOf = myScenario)
@@ -99,7 +99,7 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
     }
 
     @Test
-    fun nestedWithNestedExpressionInInterface() {
+    fun expandableWithExpandableExpressionInInterface() {
         givenSomePrerequisites()
 
         whenever { someActionWith4(parameter1 = myScenario.stringValue, parameter2 = "aParameter", parameter3 = "anotherParameter") }
@@ -109,16 +109,16 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
 
     @ParameterizedTest
     @ValueSource(strings = ["one", "two"])
-    fun parameterisedWithNestedSentence(value: String) {
+    fun parameterisedWithExpandableSentence(value: String) {
         givenSomePrerequisites()
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun givenSomePrerequisites() {
         given(somePrerequisites())
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun wheneverSomeActionWith(@RenderedValue aScenarioOf: MyScenario) {
         whenever(someAction(aScenarioOf))
     }
@@ -133,30 +133,30 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
         return Action { }
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun someActionWith(@RenderedValue parameter1: String): Action<ActionContext> {
         return someOtherAction(parameter1)
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun someActionWith2(@RenderedValue parameter1: String, @RenderedValue parameter2: String): Action<ActionContext> {
         someActionWith(parameter2)
         return someOtherAction(parameter1)
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun someActionWith3(@RenderedValue parameter1: String, @RenderedValue parameter2: String, @RenderedValue parameter3: String): Action<ActionContext> {
         someActionWith(parameter2)
         someActionWith(parameter3)
         return someOtherAction(parameter1)
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun someAction(@RenderedValue aScenarioOf: MyScenario): Action<ActionContext> {
         return someOtherAction(aScenarioOf.stringValue)
     }
 
-    @NestedSentence
+    @ExpandableSentence
     private fun someActionNoParameters(): Action<ActionContext> {
         return someOtherAction("anAction")
     }
@@ -166,8 +166,8 @@ class KotlinWithNestedSentenceTest : KotlinExampleTest(), WithHamkrest, Interfac
     }
 }
 
-interface InterfaceWithNestedSentence {
-    @NestedSentence
+interface InterfaceWithExpandableSentence {
+    @ExpandableSentence
     fun someActionWith4(@RenderedValue parameter1: String, @RenderedValue parameter2: String, @RenderedValue parameter3: String): Action<ActionContext> {
         return someActionWith(parameter1)
     }
