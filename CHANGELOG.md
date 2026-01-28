@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.39
+- Modern UI improvements.
+- Fixing issue where `ExpandableSentence` annotation was not working properly.
+
 ### v0.5.38
 - Improving how nested sentences are matched with source code. Now using full type matching.
 - Fixing autoOpen of tabs in modern UI.
