@@ -1,7 +1,8 @@
 import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
-import {Search, Package, FileText, Globe, ChevronRight, X} from "lucide-react"
+import {Search, Globe, ChevronRight, X} from "lucide-react"
+import { Folder, FolderOpen, Diamond } from "lucide-react"
 import {buildTree} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
@@ -284,9 +285,11 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                 </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-2">
-                <SidebarGroup>
-                    <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/70">Test Explorer</SidebarGroupLabel>
+            <SidebarContent className="px-2 gap-1">
+                <SidebarGroup className="p-1">
+                    <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/70 h-7 px-2">
+                        Test Explorer
+                    </SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
                         {filteredIndices.map((node) => (
                             <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId}/>
@@ -307,20 +310,38 @@ interface RecursiveMenuItemProps {
 function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps) {
     const isSelected = selectedId === node.id;
 
+    const iconTone =
+        node.state === "Failed"
+            ? "text-destructive"
+            : node.state === "Passed"
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-muted-foreground/70";
+
     if (node.type === 'project') {
         const treeChildren = buildTree(node.children || []);
+        const [open, setOpen] = React.useState(true);
+
         return (
-            <Collapsible defaultOpen className="group/collapsible">
+            <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
                 <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                        <SidebarMenuButton className="h-8 text-[12px] font-bold text-foreground">
-                            <ChevronRight className="h-3 w-3 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 opacity-50"/>
-                            <Globe className="h-3.5 w-3.5 text-emerald-500"/>
-                            <span>{node.displayName}</span>
+                        <SidebarMenuButton size="sm" className="text-[12px] font-bold text-foreground">
+                            <ChevronRight
+                                className={cn(
+                                    "h-3 w-3 transition-transform duration-200 opacity-50",
+                                    open && "rotate-90"
+                                )}
+                            />
+                            {open
+                                ? <FolderOpen className={cn("h-3.5 w-3.5", iconTone)} />
+                                : <Folder className={cn("h-3.5 w-3.5", iconTone)} />
+                            }
+                            <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
                         </SidebarMenuButton>
                     </CollapsibleTrigger>
+
                     <CollapsibleContent>
-                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2">
+                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2 py-0">
                             {treeChildren.map((child) => (
                                 <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
                             ))}
@@ -332,18 +353,29 @@ function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps)
     }
 
     if (node.type === 'package') {
+        const [open, setOpen] = React.useState(true);
+
         return (
-            <Collapsible defaultOpen className="group/collapsible">
+            <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
                 <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                        <SidebarMenuButton className="h-8 text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200">
-                            <ChevronRight className="h-3 w-3 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 opacity-50"/>
-                            <Package className="h-3.5 w-3.5 opacity-70"/>
-                            <span>{node.displayName}</span>
+                        <SidebarMenuButton size="sm" className="text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200">
+                            <ChevronRight
+                                className={cn(
+                                    "h-3 w-3 transition-transform duration-200 opacity-50",
+                                    open && "rotate-90"
+                                )}
+                            />
+                            {open
+                                ? <FolderOpen className={cn("h-3.5 w-3.5", iconTone)} />
+                                : <Folder className={cn("h-3.5 w-3.5", iconTone)} />
+                            }
+                            <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
                         </SidebarMenuButton>
                     </CollapsibleTrigger>
+
                     <CollapsibleContent>
-                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2">
+                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2 py-0">
                             {node.children?.map((child) => (
                                 <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
                             ))}
@@ -357,21 +389,17 @@ function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps)
     return (
         <SidebarMenuItem>
             <SidebarMenuButton
+                size="sm"
                 isActive={isSelected}
                 onClick={() => onSelect(node)}
                 className={cn(
-                    "h-8 text-[12px] transition-all",
+                    "text-[12px] transition-all",
                     isSelected ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground",
                     node.state === 'Failed' && !isSelected && "text-destructive font-medium"
                 )}
             >
-                <FileText className={cn("h-3.5 w-3.5", node.state === 'Failed' ? "text-destructive" : "opacity-50")}/>
-                <span className="truncate">{node.displayName}</span>
-                {node.state === 'Failed' && (
-                    <div className="ml-auto">
-                        <div className="w-1.5 h-1.5 rounded-full bg-destructive shadow-[0_0_8px_rgba(244,63,94,0.4)]"/>
-                    </div>
-                )}
+                <Diamond className={cn("h-3.5 w-3.5", iconTone)}/>
+                <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
             </SidebarMenuButton>
         </SidebarMenuItem>
     );
