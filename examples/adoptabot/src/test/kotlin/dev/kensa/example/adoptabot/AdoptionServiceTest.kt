@@ -3,16 +3,24 @@ package dev.kensa.example.adoptabot
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.kensa.*
+import dev.kensa.Kensa.konfigure
 import dev.kensa.example.adoptabot.AdoptabotExtension.Companion.client
 import dev.kensa.example.adoptabot.AdoptabotExtension.Companion.port
 import dev.kensa.example.adoptabot.AdoptabotParty.AdoptionService
 import dev.kensa.example.adoptabot.AdoptabotParty.Client
 import dev.kensa.example.adoptabot.AdoptionStatus.Adopted
 import dev.kensa.example.adoptabot.AdoptionStatus.Available
+import dev.kensa.service.logs.LogFileQueryService.FileSource
 import dev.kensa.junit.KensaTest
 import dev.kensa.kotest.WithKotest
 import dev.kensa.render.Language.Json
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
+import dev.kensa.tabs.InvocationIdentifierProvider
+import dev.kensa.tabs.KensaTabContext
+import dev.kensa.tabs.KensaTabRenderer
+import dev.kensa.service.logs.LogFileQueryService
+import dev.kensa.service.logs.LogQueryService
+import dev.kensa.tabs.logs.LogsTabRenderer
 import dev.kensa.util.Attributes
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.and
@@ -25,9 +33,23 @@ import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
 import org.http4k.kotest.haveStatus
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.io.path.Path
+
+class MyTabRenderer : KensaTabRenderer {
+    override fun render(ctx: KensaTabContext): String = "Here's the tab content: ${ctx.tabId}"
+}
+
+class MyTabRenderer2 : KensaTabRenderer {
+    override fun render(ctx: KensaTabContext): String = "Here's the tab content: ${ctx.tabId}"
+}
+
+class IdProvider : InvocationIdentifierProvider {
+    override fun identifier(ctx: KensaTabContext): String = "12345"
+}
 
 /**
  * BDD tests for the robot adoption service using Kensa.
@@ -37,6 +59,7 @@ import org.junit.jupiter.api.extension.ExtendWith
  * service, including checking availability and adopting robots.
  */
 @ExtendWith(AdoptabotExtension::class)
+@KensaTab(id = "Meh", name = "MyTab", renderer = MyTabRenderer::class)
 class AdoptionServiceTest : KensaTest, WithKotest {
 
     /**
@@ -56,13 +79,19 @@ class AdoptionServiceTest : KensaTest, WithKotest {
 
     /**
      * Tests that a client can check the availability of robots.
-     * 
+     *
      * This test:
      * 1. Sets up some available robots
      * 2. Makes a request to check availability
      * 3. Verifies that the response has a 200 OK status and contains the available robots
      */
     @Test
+    @KensaTab(id = "Meh1", name = "MyTab2", renderer = MyTabRenderer2::class)
+    @KensaTab(
+        name = "Logs",
+        renderer = LogsTabRenderer::class,
+        identifierProvider = IdProvider::class
+    )
     fun canCheckAvailabilityOfRobots() {
         /// You can add notes to your BDD statements like this...
         /// multiline comments will be shown as a single note in the test output
@@ -246,5 +275,23 @@ class AdoptionServiceTest : KensaTest, WithKotest {
         private val theUnavailableRobots = allRobots.filter { it.status != Available }
 
         private val theAvailableRobots = allRobots.filter { it.status == Available }
+
+        @JvmStatic
+        @BeforeAll
+        fun registerServices() {
+            konfigure {
+                registerTabService(LogQueryService::class) {
+                    LogFileQueryService(
+                        listOf(
+                            FileSource(
+                                "appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log")
+                            )
+                        ),
+                        "#########",
+                        "TrackingId"
+                    )
+                }
+            }
+        }
     }
 }

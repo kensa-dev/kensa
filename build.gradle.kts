@@ -42,7 +42,7 @@ subprojects {
             withType<KotlinCompile> {
                 compilerOptions {
                     jvmTarget.set(kotlinJvmTarget)
-                    freeCompilerArgs.addAll(listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts", "-Xnon-local-break-continue"))
+                    freeCompilerArgs.addAll(listOf("-Xjvm-default=all", "-opt-in=kotlin.contracts.ExperimentalContracts", "-Xexplicit-backing-fields", "-Xnon-local-break-continue"))
                 }
             }
 

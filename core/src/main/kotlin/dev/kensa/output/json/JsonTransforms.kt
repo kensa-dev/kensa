@@ -26,7 +26,17 @@ object JsonTransforms {
 
     private val interactionKeyPattern = "^(.*) from (.+) to (.+)$".toRegex()
 
-    fun toJsonWith(renderers: Renderers): (TestContainer) -> JsonValue = { container: TestContainer ->
+    data class CustomTabContent(
+        val tabId: String,
+        val label: String,
+        val file: String,
+        val mediaType: String = "text/plain"
+    )
+
+    fun toJsonWith(
+        renderers: Renderers,
+        customTabs: (TestMethodContainer, TestInvocation, Int) -> List<CustomTabContent> = { _, _, _ -> emptyList() }
+    ): (TestContainer) -> JsonValue = { container: TestContainer ->
         jsonObject()
             .add("testClass", container.testClass.name)
             .add("displayName", container.displayName)
@@ -37,22 +47,32 @@ object JsonTransforms {
             .add("tests", asJsonArray(container.orderedMethodContainers) { testMethodContainer: TestMethodContainer ->
                 var totalElapsed: Duration = Duration.ZERO
 
-                val invocations = asJsonArray(testMethodContainer.invocations) { i ->
-                    totalElapsed += i.elapsed
 
-                    jsonObject()
-                        .add("elapsedTime", i.elapsed.format())
-                        .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
-                        .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
-                        .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
-                        .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
-                        .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
-                        .add("capturedOutputs", asJsonArray(i.outputs, nvAsJson(renderers)))
-                        .add("fixtures", asJsonArray(i.fixtures, nvAsJson(renderers)))
-                        .add("sequenceDiagram", i.sequenceDiagram?.toString())
-                        .add("state", i.state.description)
-                        .add("executionException", executionExceptionFrom(i))
-                        .add("displayName", i.parameterizedTestDescription ?: i.displayName)
+                val invocations = Json.array().apply {
+                    testMethodContainer.invocations.forEachIndexed { idx, i ->
+                        totalElapsed += i.elapsed
+
+                        val invocationJson = jsonObject()
+                            .add("elapsedTime", i.elapsed.format())
+                            .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
+                            .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
+                            .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
+                            .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
+                            .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
+                            .add("capturedOutputs", asJsonArray(i.outputNamesAndValues, nvAsJson(renderers)))
+                            .add("fixtures", asJsonArray(i.fixturesNamesAndValues, nvAsJson(renderers)))
+                            .add("sequenceDiagram", i.sequenceDiagram?.toString())
+                            .add("state", i.state.description)
+                            .add("executionException", executionExceptionFrom(i))
+                            .add("displayName", i.parameterizedTestDescription ?: i.displayName)
+
+                        val tabs = customTabs(testMethodContainer, i, idx)
+                        if (tabs.isNotEmpty()) {
+                            invocationJson.add("customTabContents", asJsonArray(tabs, customTabContentAsJson()))
+                        }
+
+                        add(invocationJson)
+                    }
                 }
 
                 jsonObject()
@@ -65,6 +85,14 @@ object JsonTransforms {
                     .add("autoOpenTab", testMethodContainer.autoOpenTab.name)
                     .add("invocations", invocations)
             })
+    }
+
+    private fun customTabContentAsJson(): (CustomTabContent) -> JsonValue = { t ->
+        jsonObject()
+            .add("tabId", t.tabId)
+            .add("label", t.label)
+            .add("file", t.file)
+            .add("mediaType", t.mediaType)
     }
 
     fun <T, R, V> ((T) -> R).andThen(other: (R) -> V): ((T) -> V) = { other(this(it)) }
@@ -101,6 +129,7 @@ object JsonTransforms {
                     .add("state", invocation.state.description)
             })
     }
+
     fun toJsonString(): (JsonValue) -> String = { jv: JsonValue ->
         try {
             StringWriter().let {
@@ -122,24 +151,27 @@ object JsonTransforms {
                 when (token) {
                     is RenderedToken.RenderedExpandableTabularToken -> {
                         add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
-                        add("tokens", Json.array().add(
-                            jsonObject().apply {
-                                add("type", "table")
-                                if (token.headers.isNotEmpty()) {
-                                    add("headers", asJsonArray(token.headers))
+                        add(
+                            "tokens", Json.array().add(
+                                jsonObject().apply {
+                                    add("type", "table")
+                                    if (token.headers.isNotEmpty()) {
+                                        add("headers", asJsonArray(token.headers))
+                                    }
+                                    add("rows", asJsonArray(token.rows) { row ->
+                                        asJsonArray(row) { cell -> baseTokenJson(cell) }
+                                    })
                                 }
-                                add("rows", asJsonArray(token.rows) { row ->
-                                    asJsonArray(row) { cell -> baseTokenJson(cell) }
-                                })
-                            }
-                        ))
+                            ))
                     }
+
                     is RenderedToken.RenderedExpandableToken -> {
                         add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
                         add("tokens", asJsonArray(token.expandableTokens) { tokens ->
                             asJsonArray(tokens) { t -> baseTokenJson(t) }
                         })
                     }
+
                     else -> {}
                 }
             }
@@ -182,7 +214,8 @@ object JsonTransforms {
                 .add("from", from)
                 .add("to", to)
                 .add("rendered", renderedInteractionAsJson(it.value!!, it.attributes, renderers))
-                .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))        }
+                .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))
+        }
     }
 
     private fun renderedInteractionAsJson(value: Any, attributes: Attributes, renderers: Renderers): JsonValue =

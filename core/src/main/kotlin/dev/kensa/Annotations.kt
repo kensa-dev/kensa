@@ -4,9 +4,62 @@ import dev.kensa.RenderedHintStrategy.NoHint
 import dev.kensa.RenderedValueStrategy.UseIdentifierName
 import dev.kensa.RenderedValueStyle.Default
 import dev.kensa.state.SetupStrategy
+import dev.kensa.tabs.InvocationIdentifierProvider
+import dev.kensa.tabs.KensaTabRenderer
+import dev.kensa.tabs.NoInvocationIdentifierProvider
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.*
 import kotlin.reflect.KClass
+
+
+enum class KensaTabVisibility {
+    Always,
+    OnlyOnFailure
+}
+
+/**
+ * Declares a custom per-invocation tab for the Modern UI report.
+ *
+ * ### Usage
+ * Annotate a marker interface (or other class type) and have your test class implement it:
+ *
+ * ```kotlin
+ * @KensaTab(name = "Logs", renderer = MyLogsRenderer::class)
+ * interface WithLogs
+ *
+ * class MyTest : WithLogs { /* ... */ }
+ * ```
+ *
+ * During report generation, Kensa discovers all KensaTab annotations present on interfaces
+ * implemented by the test class. For each test invocation, Kensa will:
+ *
+ * 1. Instantiate the specified [renderer] (Kotlin `object` singletons are supported, otherwise a no-arg
+ *    constructor is required).
+ * 2. Call the renderer for the current invocation.
+ * 3. If the renderer returns a non-blank string, write it to a file in the report output directory.
+ * 4. Add an entry to the invocation JSON (`customTabContents`) that points the UI at the generated file.
+ *
+ * Returning `null` or a blank string from the renderer omits the tab for that invocation.
+ *
+ * ### Fields
+ * - [id]: Optional stable identifier used for URL/path generation and for `autoOpenTab`.
+ *   If empty, Kensa derives an id from [name]. Prefer setting this explicitly if you want to keep the
+ *   tab id stable when renaming [name].
+ * - [name]: Human-readable label displayed in the UI tab button.
+ * - [renderer]: A class implementing [KensaTabRenderer] that produces the tab content for an invocation.
+ * - [identifierProvider]: A class implementing [InvocationIdentifierProvider] that provides a per-invocation identifier used to correlate external data (e.g. logs) to this invocation. If not specified, [NoInvocationIdentifierProvider] is used.
+ * - [visibility]: Controls when the tab should be generated for an invocation.
+ */
+@Target(CLASS, FUNCTION)
+@Retention(RUNTIME)
+@Repeatable
+annotation class KensaTab(
+    val id: String = "",
+    val name: String,
+    val renderer: KClass<out KensaTabRenderer>,
+    val identifierProvider: KClass<out InvocationIdentifierProvider> = NoInvocationIdentifierProvider::class,
+    val visibility: KensaTabVisibility = KensaTabVisibility.Always
+)
 
 @Retention(RUNTIME)
 @Target(CLASS, FUNCTION)

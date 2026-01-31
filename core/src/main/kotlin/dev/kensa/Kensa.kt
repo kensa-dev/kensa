@@ -11,12 +11,14 @@ import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.Keyword
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.state.SetupStrategy
+import dev.kensa.state.TestInvocation
 import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.atn.PredictionMode
 import java.net.URI
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.Path
 import kotlin.reflect.KClass
 
@@ -116,6 +118,14 @@ class Configuration {
     var sourceLocations: List<Path> = emptyList()
     val sourceCode: SourceCode by lazy { SourceCode({ sourceLocations }) }
     var uiMode: UiMode = UiMode.Legacy
+
+    internal val tabServiceFactories: Map<KClass<*>, () -> Any>
+        field = ConcurrentHashMap<KClass<*>, () -> Any>()
+
+    fun <T : Any> registerTabService(type: KClass<T>, factory: () -> T) {
+        tabServiceFactories[type] = factory
+    }
+
     val renderers: Renderers = Renderers()
     var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR)
     var flattenOutputPackages: Boolean = false
@@ -133,7 +143,7 @@ class Configuration {
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
     var titleText: String = "Index"
 
-    private var _sectionOrder: List<Section> = listOf(Buttons, Sentences, Exception)
+    private var _sectionOrder: List<Section> = listOf(Tabs, Sentences, Exception)
     var sectionOrder: List<Section>
         get() = _sectionOrder
         set(order) {

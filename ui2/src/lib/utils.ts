@@ -14,13 +14,13 @@ export const isNative = (): boolean => {
 export async function loadJson<T>(
     path: string,
     label: string,
-    options: { baseUrl?: string } = {}
+    options: { baseUrl?: string; signal?: AbortSignal } = {}
 ): Promise<T | null> {
     try {
-        const normalizedPath = path.replace(/^\.?\//, '');
+        const normalizedPath = path.replace(/^\.\//, '');
         const url = `${options.baseUrl || '.'}/${normalizedPath}`;
 
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: options.signal });
 
         if (!res.ok) {
             console.warn(`${label} load failed: ${res.status} ${res.statusText} (${url})`);
@@ -29,11 +29,38 @@ export async function loadJson<T>(
 
         return (await res.json()) as T;
     } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return null;
+
         console.error(`Error loading ${label} from ${path}:`, err);
         return null;
     }
 }
 
+export async function loadText(
+    path: string,
+    label: string,
+    options: { baseUrl?: string; signal?: AbortSignal } = {}
+): Promise<string | null> {
+    try {
+        const normalizedPath = path.replace(/^\.\//, '');
+        const url = `${options.baseUrl || '.'}/${normalizedPath}`;
+
+        const res = await fetch(url, { signal: options.signal });
+
+        if (!res.ok) {
+            console.warn(`${label} load failed: ${res.status} ${res.statusText} (${url})`);
+            return null;
+        }
+
+        return await res.text();
+    } catch (err) {
+        // Abort is expected when switching tabs quickly.
+        if (err instanceof DOMException && err.name === "AbortError") return null;
+
+        console.error(`Error loading ${label} from ${path}:`, err);
+        return null;
+    }
+}
 export function useNavigateWithSearch() {
     const navigate = useNavigate();
     const location = useLocation();

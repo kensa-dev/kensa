@@ -34,4 +34,7 @@ project(":framework-testng").projectDir = file("frameworks/testng")
 include("adoptabot")
 project(":adoptabot").projectDir = file("examples/adoptabot")
 
+include("docker-logs")
+project(":docker-logs").projectDir = file("docker-logs")
+
 include("bom")

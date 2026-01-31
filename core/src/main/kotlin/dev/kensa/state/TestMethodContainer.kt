@@ -2,15 +2,14 @@ package dev.kensa.state
 
 import dev.kensa.Tab
 import dev.kensa.context.TestContext
-import dev.kensa.fixture.Fixtures
-import dev.kensa.outputs.CapturedOutputs
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
 class TestMethodContainer(private val testInvocationFactory: TestInvocationFactory, val method: Method, val displayName: String, val notes: String?, val issues: List<String>, private val initialState: TestState, val autoOpenTab: Tab) {
     val invocationContexts = mutableMapOf<UUID, TestInvocationContext>()
-    val invocations = mutableListOf<TestInvocation>()
+    val invocations: List<TestInvocation>
+        field = mutableListOf<TestInvocation>()
 
     // TODO: Need a better way
     //    val indexInSource: Int by lazy { invocations.first().indexInSource }

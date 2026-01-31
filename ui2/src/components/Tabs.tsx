@@ -5,8 +5,17 @@ import {cn} from "@/lib/utils";
 import {Tab} from "@/constants.ts";
 import {Interaction, Invocation, NameAndValues} from "@/types/Test.ts";
 import {SequenceDiagram} from "@/components/SequenceDiagram.tsx";
+import {loadText} from "@/lib/utils.ts";
+import {CustomTabPanel} from "@/components/CustomTabPanel.tsx";
 
 type TabValue = typeof Tab[keyof typeof Tab];
+
+const mediaTypeToLanguage = (mediaType?: string): string => {
+    const mt = (mediaType ?? "text/plain").toLowerCase();
+    if (mt.includes("json")) return "json";
+    if (mt.includes("xml")) return "xml";
+    return "plaintext";
+};
 
 interface TabProps {
     invocation: Invocation;
@@ -17,7 +26,7 @@ interface TabProps {
 export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
     const isPassed = testState === 'Passed';
 
-    const tabs = [
+    const builtinTabs = [
         {id: Tab.Givens, label: 'Givens', count: invocation[Tab.Givens]?.length},
         {id: Tab.CapturedInteractions, label: 'Interactions', count: invocation[Tab.CapturedInteractions]?.length},
         {id: Tab.CapturedOutputs, label: 'Outputs', count: invocation[Tab.CapturedOutputs]?.length},
@@ -25,12 +34,25 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
         {id: Tab.SequenceDiagram, label: 'Sequence Diagram', exists: !!invocation[Tab.SequenceDiagram]},
     ].filter(t => (t.count && t.count > 0) || t.exists);
 
+    const customTabs = (invocation.customTabContents ?? []).map((t) => ({
+        id: t.tabId,
+        label: t.label,
+        file: t.file,
+        mediaType: t.mediaType ?? 'text/plain',
+        kind: 'custom' as const,
+    }));
+
+    const tabs = [
+        ...builtinTabs.map(t => ({...t, kind: 'builtin' as const})),
+        ...customTabs
+    ];
+
     const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
     const svgRef = useRef<HTMLDivElement>(null);
 
-    const availableTabIds = tabs.map(t => t.id as TabValue);
+    const availableTabIds = tabs.map(t => t.id);
 
-    const resolveTab = (incoming?: string): TabValue | undefined => {
+    const resolveTab = (incoming?: string): (TabValue | string) | undefined => {
         if (!incoming) return undefined;
 
         if (incoming in Tab) {
@@ -40,7 +62,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
         return availableTabIds.find(id => id === incoming);
     };
 
-    const [activeTab, setActiveTab] = useState<TabValue>(() => {
+    const [activeTab, setActiveTab] = useState<(TabValue | string)>(() => {
         return resolveTab(autoOpenTab) || availableTabIds[0] || Tab.Givens;
     });
 
@@ -65,6 +87,67 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
             return () => svgRef.current?.removeEventListener('click', clickHandler);
         }
     }, [activeTab, invocation]);
+
+    const [customTabCache, setCustomTabCache] = useState<Record<string, {status: 'idle' | 'loading' | 'ready' | 'error', content?: string}>>({});
+
+    const inFlightRef = useRef<Map<string, AbortController>>(new Map());
+
+    const activeCustomTab = tabs.find(t => t.kind === 'custom' && t.id === activeTab) as
+        | { kind: 'custom', id: string, label: string, file: string, mediaType: string }
+        | undefined;
+
+    const activeCustomFile = activeCustomTab?.file;
+    const activeCustomLabel = activeCustomTab?.label ?? 'Custom tab';
+
+    useEffect(() => {
+        if (!activeCustomFile) return;
+
+        const cached = customTabCache[activeCustomFile];
+        if (cached?.status === 'ready' || cached?.status === 'loading') return;
+
+        if (inFlightRef.current.has(activeCustomFile)) return;
+
+        const controller = new AbortController();
+        inFlightRef.current.set(activeCustomFile, controller);
+
+        setCustomTabCache(prev => ({
+            ...prev,
+            [activeCustomFile]: {status: 'loading'}
+        }));
+
+        loadText(activeCustomFile, `custom tab "${activeCustomLabel}"`, { signal: controller.signal })
+            .then((content) => {
+                if (controller.signal.aborted) return;
+
+                if (content == null) {
+                    setCustomTabCache(prev => ({
+                        ...prev,
+                        [activeCustomFile]: {status: 'error'}
+                    }));
+                    return;
+                }
+
+                setCustomTabCache(prev => ({
+                    ...prev,
+                    [activeCustomFile]: {status: 'ready', content}
+                }));
+            })
+            .catch(() => {
+                if (controller.signal.aborted) return;
+                setCustomTabCache(prev => ({
+                    ...prev,
+                    [activeCustomFile]: {status: 'error'}
+                }));
+            })
+            .finally(() => {
+                inFlightRef.current.delete(activeCustomFile);
+            });
+
+        return () => {
+            controller.abort();
+            inFlightRef.current.delete(activeCustomFile);
+        };
+    }, [activeCustomFile, activeCustomLabel]);
 
     if (tabs.length === 0) return null;
 
@@ -125,6 +208,29 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                             capturedInteractions={invocation[Tab.CapturedInteractions] ?? []}
                             testState={testState}
                         />
+                    )}
+
+                    {activeCustomTab && (
+                        <div className="space-y-1">
+                            {activeCustomFile && customTabCache[activeCustomFile]?.status === 'loading' && (
+                                <div className="text-xs text-muted-foreground">Loading…</div>
+                            )}
+                            {activeCustomFile && customTabCache[activeCustomFile]?.status === 'error' && (
+                                <div className="text-xs text-rose-700 dark:text-rose-300">
+                                    Failed to load tab content.
+                                </div>
+                            )}
+                            {activeCustomFile && customTabCache[activeCustomFile]?.status === 'ready' && (
+                                <div className="-m-4">
+                                    <CustomTabPanel
+                                        title={activeCustomLabel}
+                                        content={customTabCache[activeCustomFile]?.content ?? ""}
+                                        testState={testState}
+                                        language={mediaTypeToLanguage(activeCustomTab?.mediaType)}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>

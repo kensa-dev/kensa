@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/bom" />
             <option value="$PROJECT_DIR$/compiler/compiler-plugin" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/docker-logs" />
             <option value="$PROJECT_DIR$/examples/adoptabot" />
             <option value="$PROJECT_DIR$/frameworks/junit" />
             <option value="$PROJECT_DIR$/frameworks/kotest" />

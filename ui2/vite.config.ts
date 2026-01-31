@@ -10,9 +10,17 @@ const devDataPlugin = (): Plugin => ({
     name: 'serve-dev-data',
     configureServer(server) {
         server.middlewares.use((req, res, next) => {
-            if (req.url?.endsWith('.json') || req.url?.includes('/results/')) {
-                req.url = req.url.replace(/^\//, '/dev-data/');
+            const url = req.url ?? '';
+
+            const shouldRewrite =
+                url.endsWith('.json') ||
+                url.includes('/results/') ||
+                url.startsWith('/tabs/');
+
+            if (shouldRewrite) {
+                req.url = url.replace(/^\//, '/dev-data/');
             }
+
             next();
         });
     }

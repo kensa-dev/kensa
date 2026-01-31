@@ -32,12 +32,12 @@
       "id": "dev.kensa.adoptabot.AdoptionServiceTest",
       "displayName": "Adoption Service Test",
       "testClass": "dev.kensa.adoptabot.AdoptionServiceTest",
-      "state": "Failed",
+      "state": "Passed",
       "children": [
         {
           "displayName": "should allow adopting a bot",
           "testMethod": "shouldAllowAdoptingABot",
-          "state": "Failed"
+          "state": "Passed"
         }
       ]
     },
@@ -45,7 +45,7 @@
       "id": "dev.kensa.adoptabot.InventoryServiceTest",
       "displayName": "Inventory Service Test",
       "testClass": "dev.kensa.adoptabot.InventoryServiceTest",
-      "state": "Failed",
+      "state": "Passed",
       "children": [
         {
           "displayName": "should decrement stock after adoption",
@@ -55,7 +55,7 @@
         {
           "displayName": "should fail when stock is empty",
           "testMethod": "shouldFailWhenEmpty",
-          "state": "Failed"
+          "state": "Passed"
         }
       ]
     },

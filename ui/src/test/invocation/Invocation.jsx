@@ -10,6 +10,7 @@ const TestBody = ({invocation, testStateClass, autoOpenTab}) => {
         {
             sectionOrder.map((section, idx) => {
                     switch (section) {
+                        case Section.Tabs:
                         case Section.Buttons:
                             return <Tabs key={idx} invocation={invocation} testStateClass={testStateClass} autoOpenTab={autoOpenTab}/>
                         case Section.Exception:

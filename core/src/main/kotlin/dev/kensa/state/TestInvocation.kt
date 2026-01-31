@@ -19,8 +19,8 @@ class TestInvocation(
     parsedInvocation: ParsedInvocation,
     interactions: CapturedInteractions,
     givens: Givens,
-    outputs: CapturedOutputs,
-    fixtures: Fixtures
+    val outputs: CapturedOutputs,
+    val fixtures: Fixtures
 ) {
     val sentences: List<RenderedSentence> = parsedInvocation.sentences
     val parameters: Collection<NamedValue> = parsedInvocation.namedParameterValues
@@ -29,9 +29,9 @@ class TestInvocation(
     val indexInSource : Int = parsedInvocation.indexInSource
     val state: TestState
 
-    val outputs = outputs.values()
+    val outputNamesAndValues = outputs.values()
 
-    val fixtures = fixtures.values()
+    val fixturesNamesAndValues = fixtures.values()
 
     private val _givens = givens
     val givens: Set<KensaMap.Entry>

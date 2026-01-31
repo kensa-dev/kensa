@@ -7,7 +7,7 @@
   "flattenPackages": false,
   "packageDisplayMode": "HideCommonPackages",
   "sectionOrder": [
-    "Buttons",
+    "Tabs",
     "Sentences",
     "Exception"
   ]

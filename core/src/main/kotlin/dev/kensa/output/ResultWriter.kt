@@ -9,6 +9,7 @@ import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms.toJsonString
 import dev.kensa.output.json.JsonTransforms.toJsonWith
 import dev.kensa.output.json.JsonTransforms.toModernIndexJson
+import dev.kensa.tabs.TabArtifactManager
 import dev.kensa.output.template.FileTemplate.IndexFileTemplate
 import dev.kensa.output.template.FileTemplate.TestFileTemplate
 import dev.kensa.sentence.Acronym
@@ -117,7 +118,12 @@ class ResultWriter(private val configuration: Configuration) {
 
     fun writeModernTest(container: TestContainer) {
         with(configuration) {
-            val json = toJsonWith(renderers)(container)
+            val tabArtifacts = TabArtifactManager().generate(container, outputDir, configuration)
+
+            val json = toJsonWith(renderers) { methodContainer, _, invocationIndex ->
+                tabArtifacts[TabArtifactManager.InvocationKey(methodContainer.method.name, invocationIndex)] ?: emptyList()
+            }(container)
+
             val string = toJsonString()(json)
 
             val resultsPath: Path = outputDir.resolve("results")

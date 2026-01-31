@@ -44,6 +44,13 @@ export interface Interaction {
     attributes: NameAndValues
 }
 
+export interface CustomTabContent {
+    tabId: string
+    label: string
+    file: string
+    mediaType?: string
+}
+
 export interface Invocation {
     state: string
     displayName: string
@@ -57,6 +64,7 @@ export interface Invocation {
     fixtures: NameAndValues
     sequenceDiagram?: string
     executionException: Record<string, string>
+    customTabContents?: CustomTabContent[]
 }
 
 export interface Test {

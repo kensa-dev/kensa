@@ -20,6 +20,7 @@ export const ExpandIcon = ({isExpanded, onClick}) =>
 export const stateClassFor = state => "test-" + state.toLowerCase();
 
 export const Section = {
+    Tabs: 'Tabs',
     Buttons: 'Buttons',
     Exception: 'Exception',
     Sentences: 'Sentences'
