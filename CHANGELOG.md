@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.40 
+- Experimental support for custom tabs in Modern UI. Includes ability to query log files
+  and docker logs.
+
 ### v0.5.39
 - Modern UI improvements.
 - Fixing issue where `ExpandableSentence` annotation was not working properly.
