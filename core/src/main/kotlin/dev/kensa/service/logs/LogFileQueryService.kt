@@ -40,7 +40,7 @@ class LogFileQueryService(
                     }
 
                     for (line in lines) {
-                        if (line.trim() == normalizedDelimiterLine) {
+                        if (line.trim().startsWith(normalizedDelimiterLine)) {
                             if (isInBlock) flushBlock() else {
                                 isInBlock = true
                                 current.appendLine(delimiterLine)

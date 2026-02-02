@@ -121,17 +121,16 @@ class LogFileQueryServiceTest {
     }
 
     @Test
-    fun `block delimiter comparison is trim based and block text is trimmed`() {
+    fun `block delimiter comparison is trim and startsWith based and block text is trimmed`() {
         val log = tempDir.resolve("trim.log")
         log.writeText(
-            // delimiter lines include extra spaces; class compares line.trim() to delimiterLine.trim()
             """
-                 $DELIMITER  
+                 $DELIMITER   2026-02-02T12:34:56Z
                 $ID_FIELD: x
     
                 payload
     
-                 $DELIMITER    
+                 $DELIMITER    extra-junk
             """.trimIndent(),
             UTF_8
         )
@@ -145,7 +144,6 @@ class LogFileQueryServiceTest {
         service.query("x").should { records ->
             records shouldHaveSize 1
 
-            // The stored block includes delimiterLine as appended (exact delimiterLine), and is trimmed overall.
             val record = records.single()
             record.text.startsWith(DELIMITER) shouldBe true
             record.text.contains("payload") shouldBe true
