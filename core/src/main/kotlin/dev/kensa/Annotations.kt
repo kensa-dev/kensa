@@ -58,7 +58,8 @@ annotation class KensaTab(
     val name: String,
     val renderer: KClass<out KensaTabRenderer>,
     val identifierProvider: KClass<out InvocationIdentifierProvider> = NoInvocationIdentifierProvider::class,
-    val visibility: KensaTabVisibility = KensaTabVisibility.Always
+    val visibility: KensaTabVisibility = KensaTabVisibility.Always,
+    val sourceId: String = ""
 )
 
 @Retention(RUNTIME)

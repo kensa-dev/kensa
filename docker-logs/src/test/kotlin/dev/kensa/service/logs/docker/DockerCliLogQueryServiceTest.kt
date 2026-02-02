@@ -2,7 +2,9 @@ package dev.kensa.service.logs.docker
 
 import dev.kensa.service.logs.LogRecord
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 
 class DockerCliLogQueryServiceTest {
@@ -32,13 +34,13 @@ class DockerCliLogQueryServiceTest {
             runner = fakeRunner
         )
 
-        val a: List<LogRecord> = service.query("AAA")
+        val a: List<LogRecord> = service.query("app", "AAA")
         a.shouldHaveSize(1)
         a[0].sourceId shouldBe "app"
         a[0].identifier shouldBe "AAA"
         a[0].text.contains("Payload: one") shouldBe true
 
-        val b: List<LogRecord> = service.query("BBB")
+        val b: List<LogRecord> = service.query("app", "BBB")
         b.shouldHaveSize(1)
         b[0].sourceId shouldBe "app"
         b[0].text.contains("Payload: two") shouldBe true
@@ -76,16 +78,21 @@ class DockerCliLogQueryServiceTest {
             runner = fakeRunner
         )
 
-        val records = service.query("AAA")
-        records.shouldHaveSize(2)
-        records[0].identifier shouldBe "AAA"
-        records[1].identifier shouldBe "AAA"
+        service.query("worker", "AAA")
+            .shouldHaveSize(1)
+            .first().should {
+                it.text.shouldContain("Payload: worker")
+            }
 
-        records.map { it.sourceId }.toSet() shouldBe setOf("app", "worker")
+        service.query("app", "AAA")
+            .shouldHaveSize(1)
+            .first().should {
+                it.text.shouldContain("Payload: app")
+            }
     }
 
     @Test
-    fun `ignores blocks without TrackingId`() {
+    fun `ignores blocks without id field`() {
         val fakeRunner = DockerLogsRunner { _ ->
             sequenceOf(
                 "***********",
@@ -104,6 +111,6 @@ class DockerCliLogQueryServiceTest {
             runner = fakeRunner
         )
 
-        service.query("anything").shouldHaveSize(0)
+        service.query("app", "anything").shouldHaveSize(0)
     }
 }

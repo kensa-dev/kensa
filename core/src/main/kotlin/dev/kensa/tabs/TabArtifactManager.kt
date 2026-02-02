@@ -101,7 +101,8 @@ class TabArtifactManager {
                 invocationState = invocation.state.description,
                 fixtures = invocation.fixtures,
                 capturedOutputs = invocation.outputs,
-                services = services
+                services = services,
+                sourceId = tab.sourceId
             )
 
             val identifierProvider: InvocationIdentifierProvider =

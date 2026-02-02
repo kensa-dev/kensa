@@ -7,16 +7,13 @@ import dev.kensa.tabs.KensaTabRenderer
 class LogsTabRenderer : KensaTabRenderer {
   override fun render(ctx: KensaTabContext): String? {
     val id = ctx.invocationIdentifier?.takeIf { it.isNotBlank() } ?: return null
-    val logs = ctx.services.get(LogQueryService::class).query(id)
+    val logs = ctx.services.get(LogQueryService::class).query(ctx.sourceId, id)
+
     if (logs.isEmpty()) return null
 
     return buildString {
-      logs.groupBy { it.sourceId }.forEach { (sourceId, records) ->
-        appendLine(":: Source: $sourceId ::")
-        records.forEach {
-          appendLine(it.text.trimEnd())
-          appendLine()
-        }
+      logs.forEach {
+        appendLine(it.text.trimEnd())
       }
     }.trimEnd()
   }

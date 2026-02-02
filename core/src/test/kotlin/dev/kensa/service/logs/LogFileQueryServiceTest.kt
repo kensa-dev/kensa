@@ -38,7 +38,7 @@ class LogFileQueryServiceTest {
             idField = ID_FIELD
         )
 
-        service.query("missing").shouldBeEmpty()
+        service.query("A", "missing").shouldBeEmpty()
     }
 
     @Test
@@ -81,17 +81,18 @@ class LogFileQueryServiceTest {
             idField = ID_FIELD
         )
 
-
-        service.query("shared").should { records ->
-            records.map { it.sourceId } shouldContainExactly listOf("ONE", "TWO")
+        service.query("ONE", "shared").should { records ->
+            records.map { it.sourceId } shouldContainExactly listOf("ONE")
             records.map { it.identifier }.distinct() shouldContainExactly listOf("shared")
         }
 
-        service.query("shared").should { records ->
+        service.query("TWO", "shared").should { records ->
             records.forAll { it.text shouldContain "from-" }
         }
 
-        service.query("other").map { it.sourceId } shouldContainExactly listOf("TWO")
+        service.query("TWO", "other").map { it.sourceId } shouldContainExactly listOf("TWO")
+
+        service.query("MISSING", "missing").shouldBeEmpty()
     }
 
     @Test
@@ -117,7 +118,7 @@ class LogFileQueryServiceTest {
             idField = ID_FIELD
         )
 
-        service.query("abc").shouldBeEmpty()
+        service.query("A", "abc").shouldBeEmpty()
     }
 
     @Test
@@ -127,9 +128,9 @@ class LogFileQueryServiceTest {
             """
                  $DELIMITER   2026-02-02T12:34:56Z
                 $ID_FIELD: x
-    
+
                 payload
-    
+
                  $DELIMITER    extra-junk
             """.trimIndent(),
             UTF_8
@@ -141,7 +142,7 @@ class LogFileQueryServiceTest {
             idField = ID_FIELD
         )
 
-        service.query("x").should { records ->
+        service.query("A", "x").should { records ->
             records shouldHaveSize 1
 
             val record = records.single()
@@ -168,7 +169,7 @@ class LogFileQueryServiceTest {
             idField = ID_FIELD
         )
 
-        service.query("eof") shouldHaveSize 1
+        service.query("A", "eof") shouldHaveSize 1
     }
 
     private companion object {

@@ -14,5 +14,6 @@ data class KensaTabContext(
     val invocationState: String,
     val fixtures: Fixtures,
     val capturedOutputs: CapturedOutputs,
-    val services: KensaTabServices
+    val services: KensaTabServices,
+    val sourceId: String = ""
 )
