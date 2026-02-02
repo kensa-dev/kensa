@@ -25,7 +25,7 @@ class LogFileQueryServiceTest {
         log.writeText(
             """
                $DELIMITER
-                $ID_FIELD: abc
+                id: abc
                 hello
                $DELIMITER
             """.trimIndent(),
@@ -34,8 +34,8 @@ class LogFileQueryServiceTest {
 
         val service = LogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
-            delimiterLine = DELIMITER,
-            idField = ID_FIELD
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
         )
 
         service.query("A", "missing").shouldBeEmpty()
@@ -50,7 +50,7 @@ class LogFileQueryServiceTest {
         log1.writeText(
             """
                $DELIMITER
-                $ID_FIELD: shared
+                id: shared
                 from-one
                $DELIMITER
             """.trimIndent(),
@@ -60,11 +60,11 @@ class LogFileQueryServiceTest {
         log2.writeText(
             """
                $DELIMITER
-                $ID_FIELD: shared
+                id: shared
                 from-two
                $DELIMITER
                $DELIMITER
-                $ID_FIELD: other
+                id: other
                 something-else
                $DELIMITER
             """.trimIndent(),
@@ -77,8 +77,8 @@ class LogFileQueryServiceTest {
                 FileSource(id = "MISSING", path = missing),
                 FileSource(id = "TWO", path = log2),
             ),
-            delimiterLine = DELIMITER,
-            idField = ID_FIELD
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
         )
 
         service.query("ONE", "shared").should { records ->
@@ -101,7 +101,7 @@ class LogFileQueryServiceTest {
         log.writeText(
             """
                $DELIMITER
-                $ID_FIELD:
+                id:
                 should-be-ignored
                $DELIMITER
                $DELIMITER
@@ -114,20 +114,20 @@ class LogFileQueryServiceTest {
 
         val service = LogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
-            delimiterLine = DELIMITER,
-            idField = ID_FIELD
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
         )
 
         service.query("A", "abc").shouldBeEmpty()
     }
 
     @Test
-    fun `block delimiter comparison is trim and startsWith based and block text is trimmed`() {
+    fun `block delimiter comparison is trim and regex based and preserves full delimiter line`() {
         val log = tempDir.resolve("trim.log")
         log.writeText(
             """
                  $DELIMITER   2026-02-02T12:34:56Z
-                $ID_FIELD: x
+                id: x
 
                 payload
 
@@ -138,8 +138,8 @@ class LogFileQueryServiceTest {
 
         val service = LogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
-            delimiterLine = DELIMITER,
-            idField = ID_FIELD
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
         )
 
         service.query("A", "x").should { records ->
@@ -147,6 +147,7 @@ class LogFileQueryServiceTest {
 
             val record = records.single()
             record.text.startsWith(DELIMITER) shouldBe true
+            record.text.contains("2026-02-02T12:34:56Z") shouldBe true
             record.text.contains("payload") shouldBe true
         }
     }
@@ -157,7 +158,7 @@ class LogFileQueryServiceTest {
         log.writeText(
             """
                $DELIMITER
-                $ID_FIELD: eof
+                id: eof
                 last-one
             """.trimIndent(),
             UTF_8
@@ -165,15 +166,15 @@ class LogFileQueryServiceTest {
 
         val service = LogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
-            delimiterLine = DELIMITER,
-            idField = ID_FIELD
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
         )
 
         service.query("A", "eof") shouldHaveSize 1
     }
 
     private companion object {
-        const val DELIMITER = "---BLOCK---"
-        const val ID_FIELD = "id"
+        private const val DELIMITER = "---BLOCK---"
+        private val ID_PATTERN = LogPatterns.idField("id")
     }
 }

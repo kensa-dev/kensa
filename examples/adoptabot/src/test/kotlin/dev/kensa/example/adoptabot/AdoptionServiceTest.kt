@@ -19,6 +19,7 @@ import dev.kensa.tabs.InvocationIdentifierProvider
 import dev.kensa.tabs.KensaTabContext
 import dev.kensa.tabs.KensaTabRenderer
 import dev.kensa.service.logs.LogFileQueryService
+import dev.kensa.service.logs.LogPatterns
 import dev.kensa.service.logs.LogQueryService
 import dev.kensa.tabs.logs.LogsTabRenderer
 import dev.kensa.util.Attributes
@@ -287,8 +288,8 @@ class AdoptionServiceTest : KensaTest, WithKotest {
                                 "appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log")
                             )
                         ),
-                        "#########",
-                        "TrackingId"
+                        LogPatterns.idField("TrackingId"),
+                        "#########"
                     )
                 }
             }
