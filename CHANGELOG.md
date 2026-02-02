@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.41 
+- Experimental LogFileQueryService now using `startsWith` for delimiter line matching. 
+
 ### v0.5.40 
 - Experimental support for custom tabs in Modern UI. Includes ability to query log files
   and docker logs.
