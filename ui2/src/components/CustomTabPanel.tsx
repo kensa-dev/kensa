@@ -261,26 +261,22 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
 
     return (
         <>
-            <div className={cn("flex flex-col bg-background overflow-hidden", isPassed ? "bg-emerald-500/[0.02]" : "bg-rose-500/[0.02]")}>
-                {toolbar}
+            <div className={cn(
+                "flex flex-col overflow-hidden bg-white dark:bg-background"
+            )}>
+                <div className={cn(
+                    "shrink-0",
+                    isPassed ? "bg-emerald-500/5" : "bg-rose-500/5"
+                )}>
+                    {toolbar}
+                </div>
                 {inlineContent}
             </div>
 
             <Dialog open={isMaximized} onOpenChange={setIsMaximized}>
                 <DialogContent
-                    onEscapeKeyDown={(e) => {
-                        const activeElement = document.activeElement;
-                        if (activeElement instanceof HTMLInputElement && activeElement.value !== "") {
-                            e.preventDefault();
-                            return;
-                        }
-                        if (isMaximized) {
-                            e.preventDefault();
-                            setIsMaximized(false);
-                        }
-                    }}
                     className={cn(
-                        "fixed flex flex-col gap-0 p-0 overflow-hidden outline-none shadow-2xl [&>button]:hidden border-none bg-background max-w-none",
+                        "fixed flex flex-col gap-0 p-0 overflow-hidden outline-none shadow-2xl [&>button]:hidden border-none bg-white dark:bg-background max-w-none",
                         "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
                         "w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl ring-1 ring-border/50 shadow-none"
                     )}
