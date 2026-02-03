@@ -10,7 +10,6 @@ interface CustomTabPanelProps {
     title: string;
     content: string;
     testState?: TestState;
-    language?: string;
     maxHeight?: number;
 }
 
@@ -43,24 +42,11 @@ const removeHighlights = (root: HTMLElement) => {
     });
 };
 
-const highlightHtml = (content: string, language?: string): string => {
-    const lang = (language ?? "").toLowerCase().trim();
-    if (!content) return "";
-
-    try {
-        if (!lang || lang === "plaintext" || lang === "plain" || lang === "text") {
-            return hljs.highlightAuto(content).value;
-        }
-        return hljs.highlight(content, {language: lang}).value;
-    } catch {
-        return hljs.highlightAuto(content).value;
-    }
-};
+const highlightHtml = (content: string): string => hljs.highlight(content, {language: "plaintext"}).value;
 
 export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                                                                   content,
                                                                   testState,
-                                                                  language = "plaintext",
                                                                   maxHeight = 700,
                                                               }) => {
     const isPassed = testState === "Passed";
@@ -74,7 +60,7 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
     const inlineCodeRef = React.useRef<HTMLElement>(null);
     const modalCodeRef = React.useRef<HTMLElement>(null);
 
-    const highlighted = React.useMemo(() => highlightHtml(content, language), [content, language]);
+    const highlighted = React.useMemo(() => highlightHtml(content), [content]);
 
     const applySearchTo = React.useCallback((root: HTMLElement | null) => {
         if (!root) return;
@@ -225,7 +211,7 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                 </button>
 
                 <span className="text-[9px] font-bold text-primary uppercase bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 ml-1">
-                    {(language || "text").toLowerCase()}
+                    {"plaintext"}
                 </span>
             </div>
         </div>

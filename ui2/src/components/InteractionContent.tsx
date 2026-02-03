@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { FileJson, Info, ChevronUp, ChevronDown, Copy, Search, X, Maximize2, ExternalLink, WrapText } from 'lucide-react';
 import hljs from 'highlight.js';
+import json from 'highlight.js/lib/languages/json';
+import xml from 'highlight.js/lib/languages/xml';
 import { cn } from "@/lib/utils";
+
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('xml', xml);
 
 const getAllTextNodes = (root: Node): Text[] => {
     const textNodes: Text[] = [];
