@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ChevronDown, ChevronUp, Copy, Info, Maximize2, Search, WrapText, X} from "lucide-react";
+import {ChevronDown, ChevronUp, Copy, Maximize2, Search, WrapText, X} from "lucide-react";
 import hljs from "highlight.js";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
 import {cn} from "@/lib/utils.ts";
@@ -58,7 +58,6 @@ const highlightHtml = (content: string, language?: string): string => {
 };
 
 export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
-                                                                  title,
                                                                   content,
                                                                   testState,
                                                                   language = "plaintext",
@@ -155,8 +154,12 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
         return () => window.cancelAnimationFrame(raf);
     }, [isMaximized, applySearchTo]);
 
-    const nextMatch = () => { if (matchCount > 0) setCurrentIndex((prev) => (prev + 1) % matchCount); };
-    const prevMatch = () => { if (matchCount > 0) setCurrentIndex((prev) => (prev - 1 + matchCount) % matchCount); };
+    const nextMatch = () => {
+        if (matchCount > 0) setCurrentIndex((prev) => (prev + 1) % matchCount);
+    };
+    const prevMatch = () => {
+        if (matchCount > 0) setCurrentIndex((prev) => (prev - 1 + matchCount) % matchCount);
+    };
 
     const onCopy = () => {
         if (!content) return;
@@ -171,7 +174,10 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                 <Search size={12} className="text-muted-foreground group-focus-within:text-primary"/>
                 <input
                     value={searchQuery}
-                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentIndex(0); }}
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentIndex(0);
+                    }}
                     placeholder="Find..."
                     className="bg-transparent border-none outline-none text-[11px] text-foreground placeholder:text-muted-foreground w-full"
                     onKeyDown={(e) => {
@@ -225,25 +231,39 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
         </div>
     );
 
-    const contentArea = (codeRef: React.RefObject<HTMLElement>, maxH?: number) => (
+    const contentArea = (codeRef: React.RefObject<HTMLElement>) => (
         <pre
             className={cn(
-                "flex-1 overflow-auto p-6 text-[13px] font-mono leading-relaxed selection:bg-primary/20 custom-scrollbar transition-all bg-transparent",
+                "p-6 text-[13px] font-mono leading-relaxed selection:bg-primary/20 transition-all bg-transparent",
                 isWrapped ? "whitespace-pre-wrap" : "whitespace-pre"
             )}
-            style={maxH ? {maxHeight: maxH} : undefined}
         >
-            <code ref={codeRef} className="hljs" dangerouslySetInnerHTML={{__html: highlighted}}/>
-        </pre>
+        <code ref={codeRef} className="hljs" dangerouslySetInnerHTML={{__html: highlighted}}/>
+    </pre>
+    );
+
+    const inlineContent = (
+        <div className="flex-1 overflow-auto custom-scrollbar" style={{maxHeight}}>
+            {contentArea(inlineCodeRef)}
+        </div>
+    );
+
+    const modalContent = (
+        <div className="flex flex-col h-full overflow-hidden">
+            <div className="shrink-0 sticky top-0 z-10">
+                {toolbar}
+            </div>
+            <div className="flex-1 overflow-auto custom-scrollbar">
+                {contentArea(modalCodeRef)}
+            </div>
+        </div>
     );
 
     return (
         <>
             <div className={cn("flex flex-col bg-background overflow-hidden", isPassed ? "bg-emerald-500/[0.02]" : "bg-rose-500/[0.02]")}>
                 {toolbar}
-                <div className="flex-1 flex flex-col overflow-hidden bg-background">
-                    {contentArea(inlineCodeRef, maxHeight)}
-                </div>
+                {inlineContent}
             </div>
 
             <Dialog open={isMaximized} onOpenChange={setIsMaximized}>
@@ -260,21 +280,12 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                         }
                     }}
                     className={cn(
-                        "fixed flex flex-col gap-0 p-0 overflow-hidden transition-all duration-500 ease-in-out outline-none shadow-2xl [&>button]:hidden border-none bg-background max-w-none",
+                        "fixed flex flex-col gap-0 p-0 overflow-hidden outline-none shadow-2xl [&>button]:hidden border-none bg-background max-w-none",
                         "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
                         "w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl ring-1 ring-border/50 shadow-none"
                     )}
                 >
-                    <div className={cn("flex-1 overflow-hidden transition-all duration-500", "p-0")}>
-                        <div className="p-0">
-                            <div className="flex flex-col h-full bg-background overflow-hidden">
-                                {toolbar}
-                                <div className="flex-1 overflow-hidden bg-background">
-                                    {contentArea(modalCodeRef)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {modalContent}
                 </DialogContent>
             </Dialog>
         </>
