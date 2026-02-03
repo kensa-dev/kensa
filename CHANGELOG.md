@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.42 
+- LogFileQueryService now using Regex for matching.
+- Improvements & fixes to Custom tab rendering in modern UI.
+
 ### v0.5.41 
 - Experimental LogFileQueryService now using `startsWith` for delimiter line matching. 
 
