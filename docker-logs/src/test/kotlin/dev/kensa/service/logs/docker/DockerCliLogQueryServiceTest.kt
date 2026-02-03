@@ -1,5 +1,6 @@
 package dev.kensa.service.logs.docker
 
+import dev.kensa.service.logs.LogPatterns
 import dev.kensa.service.logs.LogRecord
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should
@@ -29,8 +30,8 @@ class DockerCliLogQueryServiceTest {
             sources = listOf(
                 DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")
             ),
-            delimiterLine = "***********",
-            idField = "TrackingId",
+            delimiterLine = DELIMITER,
+            idPattern = ID_PATTERN,
             runner = fakeRunner
         )
 
@@ -74,7 +75,7 @@ class DockerCliLogQueryServiceTest {
                 DockerCliLogQueryService.DockerSource(id = "worker", container = "worker-container")
             ),
             delimiterLine = "***********",
-            idField = "TrackingId",
+            idPattern = ID_PATTERN,
             runner = fakeRunner
         )
 
@@ -106,11 +107,16 @@ class DockerCliLogQueryServiceTest {
             sources = listOf(
                 DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")
             ),
-            delimiterLine = "***********",
-            idField = "TrackingId",
+            delimiterLine = DELIMITER,
+            idPattern = ID_PATTERN,
             runner = fakeRunner
         )
 
         service.query("app", "anything").shouldHaveSize(0)
+    }
+
+    private companion object {
+        private const val DELIMITER = "***********"
+        private val ID_PATTERN = LogPatterns.idField("TrackingId")
     }
 }

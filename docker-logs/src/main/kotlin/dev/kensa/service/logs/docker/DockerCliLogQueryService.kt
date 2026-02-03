@@ -5,12 +5,14 @@ import dev.kensa.service.logs.LogRecord
 
 class DockerCliLogQueryService(
     private val sources: List<DockerSource>,
-    private val delimiterLine: String,
-    private val idField: String,
-    private val runner: DockerLogsRunner = ProcessDockerLogsRunner()
+    private val idPattern: Regex,
+    private val runner: DockerLogsRunner = ProcessDockerLogsRunner(),
+    delimiterLine: String,
 ) : LogQueryService {
 
     data class DockerSource(val id: String, val container: String)
+
+    private val delimiterRegex: Regex = Regex("^\\s*${Regex.escape(delimiterLine.trim())}.*$")
 
     private val index: Map<String, Map<String, List<LogRecord>>> by lazy { buildIndex() }
 
@@ -18,8 +20,6 @@ class DockerCliLogQueryService(
 
     private fun buildIndex(): Map<String, Map<String, List<LogRecord>>> =
         buildMap<String, Map<String, MutableList<LogRecord>>> {
-
-            val normalizedDelimiterLine = delimiterLine.trim()
 
             sources.forEach { source ->
 
@@ -40,10 +40,10 @@ class DockerCliLogQueryService(
                         }
 
                         for (line in lines) {
-                            if (line.trim().startsWith(normalizedDelimiterLine)) {
+                            if (delimiterRegex.matches(line)) {
                                 if (isInBlock) flushBlock() else {
                                     isInBlock = true
-                                    appendLine(delimiterLine)
+                                    appendLine(line)
                                 }
                                 continue
                             }
@@ -59,17 +59,9 @@ class DockerCliLogQueryService(
             }
         }
 
-    private fun extractId(blockText: String): String? {
-        val prefix = "$idField:"
-        return blockText
-            .lineSequence()
-            .map(String::trim)
+    private fun extractId(blockText: String): String? =
+        blockText.lineSequence()
             .firstNotNullOfOrNull { line ->
-                line
-                    .takeIf { it.startsWith(prefix) }
-                    ?.removePrefix(prefix)
-                    ?.trim()
-                    ?.takeIf(String::isNotBlank)
+                idPattern.matchEntire(line)?.groupValues?.getOrNull(1)?.trim()?.takeIf(String::isNotBlank)
             }
-    }
 }
