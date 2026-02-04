@@ -1,7 +1,7 @@
 import {type ClassValue, clsx} from "clsx"
 import {twMerge} from "tailwind-merge"
-import { useNavigate, useLocation } from 'react-router-dom';
-import type { NavigateOptions, To } from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
+import type {NavigateOptions, To} from 'react-router-dom';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -20,7 +20,7 @@ export async function loadJson<T>(
         const normalizedPath = path.replace(/^\.\//, '');
         const url = `${options.baseUrl || '.'}/${normalizedPath}`;
 
-        const res = await fetch(url, { signal: options.signal });
+        const res = await fetch(url, {signal: options.signal});
 
         if (!res.ok) {
             console.warn(`${label} load failed: ${res.status} ${res.statusText} (${url})`);
@@ -45,7 +45,7 @@ export async function loadText(
         const normalizedPath = path.replace(/^\.\//, '');
         const url = `${options.baseUrl || '.'}/${normalizedPath}`;
 
-        const res = await fetch(url, { signal: options.signal });
+        const res = await fetch(url, {signal: options.signal});
 
         if (!res.ok) {
             console.warn(`${label} load failed: ${res.status} ${res.statusText} (${url})`);
@@ -61,6 +61,7 @@ export async function loadText(
         return null;
     }
 }
+
 export function useNavigateWithSearch() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -77,4 +78,34 @@ export function useNavigateWithSearch() {
 
         return navigate(to, options);
     };
+}
+
+export function getAllTextNodes(root: Node): Text[] {
+    const textNodes: Text[] = [];
+    const stack = [root];
+    while (stack.length) {
+        const node = stack.pop();
+        if (node?.nodeType === Node.TEXT_NODE) {
+            textNodes.push(node as Text);
+        } else if (node?.childNodes) {
+            for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                stack.push(node.childNodes[i]);
+            }
+        }
+    }
+    return textNodes;
+}
+
+export function removeHighlights(root: HTMLElement) {
+    const marks = root.querySelectorAll('.search-highlight');
+    marks.forEach(mark => {
+        const parent = mark.parentNode;
+        if (parent) {
+            while (mark.firstChild) {
+                parent.insertBefore(mark.firstChild, mark);
+            }
+            parent.removeChild(mark);
+            parent.normalize();
+        }
+    });
 }

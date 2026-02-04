@@ -2,7 +2,7 @@ import * as React from "react";
 import {ChevronDown, ChevronUp, Copy, Maximize2, Search, WrapText, X} from "lucide-react";
 import hljs from "highlight.js";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
-import {cn} from "@/lib/utils.ts";
+import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils.ts";
 
 type TestState = "Passed" | "Failed" | string;
 
@@ -12,35 +12,6 @@ interface CustomTabPanelProps {
     testState?: TestState;
     maxHeight?: number;
 }
-
-const getAllTextNodes = (root: Node): Text[] => {
-    const textNodes: Text[] = [];
-    const stack = [root];
-    while (stack.length) {
-        const node = stack.pop();
-        if (node?.nodeType === Node.TEXT_NODE) {
-            textNodes.push(node as Text);
-        } else if (node?.childNodes) {
-            for (let i = node.childNodes.length - 1; i >= 0; i--) {
-                stack.push(node.childNodes[i]);
-            }
-        }
-    }
-    return textNodes;
-};
-
-const removeHighlights = (root: HTMLElement) => {
-    const marks = root.querySelectorAll(".search-highlight");
-    marks.forEach((mark) => {
-        const parent = mark.parentNode;
-        if (!parent) return;
-        while (mark.firstChild) {
-            parent.insertBefore(mark.firstChild, mark);
-        }
-        parent.removeChild(mark);
-        parent.normalize();
-    });
-};
 
 const highlightHtml = (content: string): string => hljs.highlight(content, {language: "plaintext"}).value;
 
@@ -96,8 +67,7 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                         mid.splitText(searchQuery.length);
 
                         const mark = document.createElement("span");
-                        mark.className =
-                            "search-highlight px-0.5 rounded-sm bg-yellow-300 text-black transition-all duration-200";
+                        mark.className = "search-highlight";
                         mid.parentNode?.replaceChild(mark, mid);
                         mark.appendChild(mid);
                         nodeMatchElements.unshift(mark);
@@ -111,15 +81,17 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
         });
 
         if (allMatchElements.length > 0) {
-            const activeIdx = ((currentIndex % allMatchElements.length) + allMatchElements.length) % allMatchElements.length;
-            const activeMark = allMatchElements[activeIdx];
-            if (activeMark) {
-                activeMark.className = cn(
-                    "search-highlight px-0.5 rounded-sm transition-all duration-200",
-                    "bg-orange-500 text-white shadow-[0_0_10px_rgba(249,115,22,0.8)] ring-1 ring-orange-300 z-10 scale-110"
-                );
-                activeMark.scrollIntoView({block: "center", inline: "nearest", behavior: "smooth"});
-            }
+            const activeIdx =
+                ((currentIndex % allMatchElements.length) + allMatchElements.length) % allMatchElements.length;
+
+            allMatchElements.forEach((el, idx) => {
+                if (idx === activeIdx) {
+                    el.classList.add("search-highlight-active");
+                    el.scrollIntoView({block: "center", inline: "nearest", behavior: "smooth"});
+                } else {
+                    el.classList.remove("search-highlight-active");
+                }
+            });
         }
 
         setMatchCount(allMatchElements.length);

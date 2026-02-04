@@ -3,40 +3,10 @@ import { FileJson, Info, ChevronUp, ChevronDown, Copy, Search, X, Maximize2, Ext
 import hljs from 'highlight.js';
 import json from 'highlight.js/lib/languages/json';
 import xml from 'highlight.js/lib/languages/xml';
-import { cn } from "@/lib/utils";
+import { cn, getAllTextNodes, removeHighlights } from "@/lib/utils";
 
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('xml', xml);
-
-const getAllTextNodes = (root: Node): Text[] => {
-    const textNodes: Text[] = [];
-    const stack = [root];
-    while (stack.length) {
-        const node = stack.pop();
-        if (node?.nodeType === Node.TEXT_NODE) {
-            textNodes.push(node as Text);
-        } else if (node?.childNodes) {
-            for (let i = node.childNodes.length - 1; i >= 0; i--) {
-                stack.push(node.childNodes[i]);
-            }
-        }
-    }
-    return textNodes;
-};
-
-const removeHighlights = (root: HTMLElement) => {
-    const marks = root.querySelectorAll('.search-highlight');
-    marks.forEach(mark => {
-        const parent = mark.parentNode;
-        if (parent) {
-            while (mark.firstChild) {
-                parent.insertBefore(mark.firstChild, mark);
-            }
-            parent.removeChild(mark);
-            parent.normalize();
-        }
-    });
-};
 
 export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpand, isMaximized, onToggleMaximize }: any) => {
     const { rendered } = interaction;
