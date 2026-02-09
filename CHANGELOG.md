@@ -1,5 +1,11 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.43 
+- Adding `scope` support for tabs, alowing single log tab content to be shown across multiple tests.
+- Add RawLogFileQueryService for displaying raw files without indexing.
+- Add ability to jump to and expand a specific test via the 'method' query parameter.
+- DockerCliLogQueryService now using Regex for matching.
+
 ### v0.5.42 
 - LogFileQueryService now using Regex for matching.
 - Improvements & fixes to Custom tab rendering in modern UI.
