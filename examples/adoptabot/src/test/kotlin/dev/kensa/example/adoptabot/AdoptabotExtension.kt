@@ -8,7 +8,6 @@ import dev.kensa.withRenderers
 import org.http4k.client.OkHttp
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
-import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.ExtensionContext

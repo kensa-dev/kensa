@@ -10,17 +10,19 @@ import dev.kensa.example.adoptabot.AdoptabotParty.AdoptionService
 import dev.kensa.example.adoptabot.AdoptabotParty.Client
 import dev.kensa.example.adoptabot.AdoptionStatus.Adopted
 import dev.kensa.example.adoptabot.AdoptionStatus.Available
-import dev.kensa.service.logs.LogFileQueryService.FileSource
+import dev.kensa.service.logs.FileSource
 import dev.kensa.junit.KensaTest
 import dev.kensa.kotest.WithKotest
 import dev.kensa.render.Language.Json
+import dev.kensa.service.logs.CompositeLogQueryService
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.tabs.InvocationIdentifierProvider
 import dev.kensa.tabs.KensaTabContext
 import dev.kensa.tabs.KensaTabRenderer
-import dev.kensa.service.logs.LogFileQueryService
+import dev.kensa.service.logs.IndexedLogFileQueryService
 import dev.kensa.service.logs.LogPatterns
 import dev.kensa.service.logs.LogQueryService
+import dev.kensa.service.logs.RawLogFileQueryService
 import dev.kensa.tabs.logs.LogsTabRenderer
 import dev.kensa.util.Attributes
 import io.kotest.matchers.MatcherResult
@@ -61,6 +63,13 @@ class IdProvider : InvocationIdentifierProvider {
  */
 @ExtendWith(AdoptabotExtension::class)
 @KensaTab(id = "Meh", name = "MyTab", renderer = MyTabRenderer::class)
+@KensaTab(
+    name = "App Logs",
+    renderer = LogsTabRenderer::class,
+    scope = KensaTabScope.PerSuite,
+    sourceId = "appLog",
+    visibility = KensaTabVisibility.Always
+)
 class AdoptionServiceTest : KensaTest, WithKotest {
 
     /**
@@ -89,9 +98,11 @@ class AdoptionServiceTest : KensaTest, WithKotest {
     @Test
     @KensaTab(id = "Meh1", name = "MyTab2", renderer = MyTabRenderer2::class)
     @KensaTab(
-        name = "Logs",
+        name = "Audit Logs",
         renderer = LogsTabRenderer::class,
-        identifierProvider = IdProvider::class
+        identifierProvider = IdProvider::class,
+        sourceId = "auditLog",
+        visibility = KensaTabVisibility.Always
     )
     fun canCheckAvailabilityOfRobots() {
         /// You can add notes to your BDD statements like this...
@@ -282,15 +293,22 @@ class AdoptionServiceTest : KensaTest, WithKotest {
         fun registerServices() {
             konfigure {
                 registerTabService(LogQueryService::class) {
-                    LogFileQueryService(
+                    val appLog = RawLogFileQueryService(
+                        sources = listOf(
+                            FileSource("appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log"))
+                        ),
+                        tailLines = 200
+                    )
+
+                    val auditLog = IndexedLogFileQueryService(
                         listOf(
-                            FileSource(
-                                "appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log")
-                            )
+                            FileSource("auditLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/audit.log"))
                         ),
                         LogPatterns.idField("TrackingId"),
                         "#########"
                     )
+
+                    CompositeLogQueryService(mapOf("appLog" to appLog, "auditLog" to auditLog))
                 }
             }
         }
