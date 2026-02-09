@@ -16,7 +16,13 @@ class DockerCliLogQueryService(
 
     private val index: Map<String, Map<String, List<LogRecord>>> by lazy { buildIndex() }
 
-    override fun query(sourceId: String, identifier: String): List<LogRecord> = index[sourceId]?.get(identifier) ?: emptyList()
+    override fun query(sourceId: String, identifier: String): List<LogRecord> = index[sourceId]?.get(identifier).orEmpty()
+
+    override fun queryAll(sourceId: String): List<LogRecord> =
+        index[sourceId]
+            ?.values
+            ?.flatten()
+            .orEmpty()
 
     private fun buildIndex(): Map<String, Map<String, List<LogRecord>>> =
         buildMap<String, Map<String, MutableList<LogRecord>>> {

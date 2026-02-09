@@ -1,31 +1,31 @@
 package dev.kensa.service.logs
 
 import java.nio.charset.StandardCharsets.UTF_8
-import java.nio.file.Path
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.notExists
 
-class LogFileQueryService(
+class IndexedLogFileQueryService(
     private val sources: List<FileSource>,
     private val idPattern: Regex,
     delimiterLine: String
 ) : LogQueryService {
 
-    data class FileSource(val id: String, val path: Path)
-
-    private val delimiterRegex: Regex = Regex("^\\s*${Regex.escape(delimiterLine.trim())}.*$")
+    private val delimiterRegex: Regex = LogPatterns.delimiterPrefix(delimiterLine)
 
     private val index: Map<String, Map<String, List<LogRecord>>> by lazy { buildIndex() }
 
     override fun query(sourceId: String, identifier: String): List<LogRecord> =
         index[sourceId]?.get(identifier).orEmpty()
 
+    override fun queryAll(sourceId: String): List<LogRecord> =
+        index[sourceId]?.values?.flatten().orEmpty()
+
     private fun buildIndex(): Map<String, Map<String, List<LogRecord>>> =
-        buildMap<String, Map<String, List<LogRecord>>> {
+        buildMap {
             sources.forEach { source ->
                 if (source.path.notExists()) return@forEach
 
-                val recordsById = buildMap<String, MutableList<LogRecord>> {
+                val blocksById = buildMap {
                     source.path.bufferedReader(UTF_8).useLines { lines ->
                         val buf = StringBuilder()
                         var isInBlock = false
@@ -43,9 +43,7 @@ class LogFileQueryService(
 
                         for (line in lines) {
                             if (delimiterRegex.matches(line)) {
-                                if (isInBlock) {
-                                    flushBlock()
-                                } else {
+                                if (isInBlock) flushBlock() else {
                                     isInBlock = true
                                     buf.appendLine(line)
                                 }
@@ -59,7 +57,7 @@ class LogFileQueryService(
                     }
                 }
 
-                put(source.id, recordsById.mapValues { (_, v) -> v.toList() })
+                put(source.id, blocksById.mapValues { (_, v) -> v.toList() })
             }
         }
 

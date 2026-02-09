@@ -17,6 +17,11 @@ enum class KensaTabVisibility {
     OnlyOnFailure
 }
 
+enum class KensaTabScope {
+    PerInvocation,
+    PerSuite
+}
+
 /**
  * Declares a custom per-invocation tab for the Modern UI report.
  *
@@ -49,6 +54,7 @@ enum class KensaTabVisibility {
  * - [renderer]: A class implementing [KensaTabRenderer] that produces the tab content for an invocation.
  * - [identifierProvider]: A class implementing [InvocationIdentifierProvider] that provides a per-invocation identifier used to correlate external data (e.g. logs) to this invocation. If not specified, [NoInvocationIdentifierProvider] is used.
  * - [visibility]: Controls when the tab should be generated for an invocation.
+ * - [scope]: Controls whether the tab is content is generated per-invocation or per-suite.
  */
 @Target(CLASS, FUNCTION)
 @Retention(RUNTIME)
@@ -59,7 +65,8 @@ annotation class KensaTab(
     val renderer: KClass<out KensaTabRenderer>,
     val identifierProvider: KClass<out InvocationIdentifierProvider> = NoInvocationIdentifierProvider::class,
     val visibility: KensaTabVisibility = KensaTabVisibility.Always,
-    val sourceId: String = ""
+    val sourceId: String = "",
+    val scope: KensaTabScope = KensaTabScope.PerInvocation
 )
 
 @Retention(RUNTIME)

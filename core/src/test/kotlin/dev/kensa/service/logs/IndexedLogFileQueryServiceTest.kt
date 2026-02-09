@@ -1,6 +1,5 @@
 package dev.kensa.service.logs
 
-import dev.kensa.service.logs.LogFileQueryService.FileSource
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -14,7 +13,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.Path
 import kotlin.io.path.writeText
 
-class LogFileQueryServiceTest {
+class IndexedLogFileQueryServiceTest {
 
     @TempDir
     lateinit var tempDir: Path
@@ -32,7 +31,7 @@ class LogFileQueryServiceTest {
             UTF_8
         )
 
-        val service = LogFileQueryService(
+        val service = IndexedLogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
@@ -71,7 +70,7 @@ class LogFileQueryServiceTest {
             UTF_8
         )
 
-        val service = LogFileQueryService(
+        val service = IndexedLogFileQueryService(
             sources = listOf(
                 FileSource(id = "ONE", path = log1),
                 FileSource(id = "MISSING", path = missing),
@@ -112,7 +111,7 @@ class LogFileQueryServiceTest {
             UTF_8
         )
 
-        val service = LogFileQueryService(
+        val service = IndexedLogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
@@ -136,7 +135,7 @@ class LogFileQueryServiceTest {
             UTF_8
         )
 
-        val service = LogFileQueryService(
+        val service = IndexedLogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
@@ -164,13 +163,64 @@ class LogFileQueryServiceTest {
             UTF_8
         )
 
-        val service = LogFileQueryService(
+        val service = IndexedLogFileQueryService(
             sources = listOf(FileSource(id = "A", path = log)),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
         )
 
         service.query("A", "eof") shouldHaveSize 1
+    }
+
+    @Test
+    fun `queryAll returns all blocks across identifiers for a source`() {
+        val log = tempDir.resolve("all.log")
+        log.writeText(
+            """
+               $DELIMITER
+                id: a
+                one
+               $DELIMITER
+               $DELIMITER
+                id: b
+                two
+               $DELIMITER
+            """.trimIndent(),
+            UTF_8
+        )
+
+        val service = IndexedLogFileQueryService(
+            sources = listOf(FileSource(id = "A", path = log)),
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
+        )
+
+        val all = service.queryAll("A")
+        all.shouldHaveSize(2)
+        all.map { it.identifier }.toSet() shouldBe setOf("a", "b")
+    }
+
+    @Test
+    fun `unknown source returns empty for query and queryAll`() {
+        val log = tempDir.resolve("a.log")
+        log.writeText(
+            """
+               $DELIMITER
+                id: x
+                payload
+               $DELIMITER
+            """.trimIndent(),
+            UTF_8
+        )
+
+        val service = IndexedLogFileQueryService(
+            sources = listOf(FileSource(id = "A", path = log)),
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
+        )
+
+        service.query("missing", "x").shouldBeEmpty()
+        service.queryAll("missing").shouldBeEmpty()
     }
 
     private companion object {

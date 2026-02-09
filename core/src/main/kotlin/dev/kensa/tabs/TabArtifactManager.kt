@@ -2,6 +2,8 @@ package dev.kensa.tabs
 
 import dev.kensa.Configuration
 import dev.kensa.KensaTab
+import dev.kensa.KensaTabScope.PerInvocation
+import dev.kensa.KensaTabScope.PerSuite
 import dev.kensa.KensaTabVisibility.OnlyOnFailure
 import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms
@@ -19,7 +21,19 @@ class TabArtifactManager {
 
     data class InvocationKey(val testMethod: String, val invocationIndex: Int)
 
-    fun generate(container: TestContainer, outputDir: Path, configuration: Configuration): Map<InvocationKey, List<JsonTransforms.CustomTabContent>> {
+    private data class PreparedTab(
+        val tab: KensaTab,
+        val stableTabId: String,
+        val tabIdForPath: String
+    )
+
+    private val suiteTabCache = mutableMapOf<String, JsonTransforms.CustomTabContent?>()
+
+    fun generate(
+        container: TestContainer,
+        outputDir: Path,
+        configuration: Configuration,
+    ): Map<InvocationKey, List<JsonTransforms.CustomTabContent>> {
         val classTabs: List<KensaTab> = container.testClass.findAllAnnotations<KensaTab>().toList()
 
         if (classTabs.isEmpty() && container.orderedMethodContainers.none { it.method.findAllAnnotations<KensaTab>().isNotEmpty() }) {
@@ -38,8 +52,9 @@ class TabArtifactManager {
         container.orderedMethodContainers.forEach { methodContainer ->
             val methodTabs: List<KensaTab> = methodContainer.method.findAllAnnotations<KensaTab>().toList()
             val tabsForMethod: List<KensaTab> = classTabs + methodTabs
-
             if (tabsForMethod.isEmpty()) return@forEach
+
+            val preparedTabs = prepareTabs(tabsForMethod)
 
             methodContainer.invocations.forEachIndexed { invocationIndex, invocation ->
                 val key = InvocationKey(methodContainer.method.name, invocationIndex)
@@ -49,9 +64,9 @@ class TabArtifactManager {
                     methodContainer = methodContainer,
                     invocation = invocation,
                     invocationIndex = invocationIndex,
-                    tabs = tabsForMethod,
+                    tabs = preparedTabs,
                     outputDir = outputDir,
-                    services = services
+                    services = services,
                 )
 
                 if (tabsForInvocation.isNotEmpty()) {
@@ -63,71 +78,128 @@ class TabArtifactManager {
         return result
     }
 
+    private fun prepareTabs(tabs: List<KensaTab>): List<PreparedTab> {
+        val usedIds = mutableMapOf<String, Int>()
+
+        return tabs.map { tab ->
+            val baseId = baseTabId(tab)
+            val stableTabId = disambiguate(baseId, usedIds)
+            PreparedTab(
+                tab = tab,
+                stableTabId = stableTabId,
+                tabIdForPath = safePathSegment(stableTabId)
+            )
+        }
+    }
+
     private fun generateForInvocation(
         container: TestContainer,
         methodContainer: TestMethodContainer,
         invocation: TestInvocation,
         invocationIndex: Int,
-        tabs: List<KensaTab>,
+        tabs: List<PreparedTab>,
         outputDir: Path,
-        services: KensaTabServices
+        services: KensaTabServices,
     ): List<JsonTransforms.CustomTabContent> {
         val safeClass = safePathSegment(container.testClass.name)
         val safeMethod = safePathSegment(methodContainer.method.name)
-        val usedIds = mutableMapOf<String, Int>()
 
-        return tabs.mapNotNull { tab ->
+        return tabs.mapNotNull { prepared ->
+            val tab = prepared.tab
+            val stableTabId = prepared.stableTabId
+            val tabIdForPath = prepared.tabIdForPath
+
             if (tab.visibility == OnlyOnFailure && invocation.state == Passed) {
                 return@mapNotNull null
             }
 
-            val baseId = baseTabId(tab)
-            val stableTabId = disambiguate(baseId, usedIds)
+            when (tab.scope) {
+                PerInvocation -> {
+                    val relativeFile = "tabs/$safeClass/$safeMethod/invocation-$invocationIndex/$tabIdForPath.txt"
+                    renderAndWriteTab(
+                        container = container,
+                        methodContainer = methodContainer,
+                        invocation = invocation,
+                        invocationIndex = invocationIndex,
+                        tab = tab,
+                        stableTabId = stableTabId,
+                        services = services,
+                        outputDir = outputDir,
+                        relativeFile = relativeFile
+                    )
+                }
 
-            val tabIdForPath = safePathSegment(stableTabId)
-            val relativeFile = "tabs/$safeClass/$safeMethod/invocation-$invocationIndex/$tabIdForPath.txt"
-
-            val outputFile = outputDir.resolve(relativeFile)
-            outputFile.parent.createDirectories()
-
-            val baseCtx = KensaTabContext(
-                tabId = stableTabId,
-                tabName = tab.name,
-                invocationIdentifier = null,
-                testClass = container.testClass.name,
-                testMethod = methodContainer.method.name,
-                invocationIndex = invocationIndex,
-                invocationDisplayName = invocation.parameterizedTestDescription ?: invocation.displayName,
-                invocationState = invocation.state.description,
-                fixtures = invocation.fixtures,
-                capturedOutputs = invocation.outputs,
-                services = services,
-                sourceId = tab.sourceId
-            )
-
-            val identifierProvider: InvocationIdentifierProvider =
-                tab.identifierProvider.objectInstance ?: tab.identifierProvider.createInstance()
-
-            val invocationIdentifier = identifierProvider.identifier(baseCtx)
-
-            val ctx = baseCtx.copy(invocationIdentifier = invocationIdentifier)
-
-            val renderer: KensaTabRenderer =
-                tab.renderer.objectInstance ?: tab.renderer.createInstance()
-
-            val content = renderer.render(ctx)
-                ?.takeIf { it.isNotBlank() }
-                ?: return@mapNotNull null
-
-            outputFile.writeText(content)
-
-            JsonTransforms.CustomTabContent(
-                tabId = stableTabId,
-                label = tab.name,
-                file = relativeFile,
-                mediaType = "text/plain"
-            )
+                PerSuite -> {
+                    val cacheKey = "$stableTabId::${tab.sourceId}"
+                    suiteTabCache.getOrPut(cacheKey) {
+                        val relativeFile = "tabs/suite/$tabIdForPath.txt"
+                        renderAndWriteTab(
+                            container = container,
+                            methodContainer = methodContainer,
+                            invocation = invocation,
+                            invocationIndex = 0,
+                            tab = tab,
+                            stableTabId = stableTabId,
+                            services = services,
+                            outputDir = outputDir,
+                            relativeFile = relativeFile
+                        )
+                    }
+                }
+            }
         }
+    }
+
+    private fun renderAndWriteTab(
+        container: TestContainer,
+        methodContainer: TestMethodContainer,
+        invocation: TestInvocation,
+        invocationIndex: Int,
+        tab: KensaTab,
+        stableTabId: String,
+        services: KensaTabServices,
+        outputDir: Path,
+        relativeFile: String
+    ): JsonTransforms.CustomTabContent? {
+        val outputFile = outputDir.resolve(relativeFile)
+        outputFile.parent.createDirectories()
+
+        val baseCtx = KensaTabContext(
+            tabId = stableTabId,
+            tabName = tab.name,
+            invocationIdentifier = null,
+            testClass = container.testClass.name,
+            testMethod = methodContainer.method.name,
+            invocationIndex = invocationIndex,
+            invocationDisplayName = invocation.parameterizedTestDescription ?: invocation.displayName,
+            invocationState = invocation.state.description,
+            fixtures = invocation.fixtures,
+            capturedOutputs = invocation.outputs,
+            services = services,
+            sourceId = tab.sourceId
+        )
+
+        val identifierProvider: InvocationIdentifierProvider =
+            tab.identifierProvider.objectInstance ?: tab.identifierProvider.createInstance()
+
+        val invocationIdentifier = identifierProvider.identifier(baseCtx)
+        val ctx = baseCtx.copy(invocationIdentifier = invocationIdentifier)
+
+        val renderer: KensaTabRenderer =
+            tab.renderer.objectInstance ?: tab.renderer.createInstance()
+
+        val content = renderer.render(ctx)
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
+
+        outputFile.writeText(content)
+
+        return JsonTransforms.CustomTabContent(
+            tabId = stableTabId,
+            label = tab.name,
+            file = relativeFile,
+            mediaType = "text/plain"
+        )
     }
 
     private fun baseTabId(tab: KensaTab): String {
@@ -135,7 +207,8 @@ class TabArtifactManager {
 
         val rendererId = tab.renderer.qualifiedName ?: tab.renderer.simpleName ?: "Renderer"
         val providerId = tab.identifierProvider.qualifiedName ?: tab.identifierProvider.simpleName ?: "IdProvider"
-        return "$rendererId:$providerId:${tab.name}"
+        val source = tab.sourceId.takeIf { it.isNotBlank() } ?: "no-source"
+        return "$rendererId:$providerId:$source:${tab.name}"
     }
 
     private fun disambiguate(baseId: String, used: MutableMap<String, Int>): String {

@@ -6,15 +6,18 @@ import dev.kensa.tabs.KensaTabRenderer
 
 class LogsTabRenderer : KensaTabRenderer {
   override fun render(ctx: KensaTabContext): String? {
-    val id = ctx.invocationIdentifier?.takeIf { it.isNotBlank() } ?: return null
-    val logs = ctx.services.get(LogQueryService::class).query(ctx.sourceId, id)
+    val sourceId = ctx.sourceId.takeIf { it.isNotBlank() } ?: return null
+    val svc = ctx.services.get(LogQueryService::class)
+
+    val logs = ctx.invocationIdentifier
+      ?.takeIf { it.isNotBlank() }
+      ?.let { id -> svc.query(sourceId, id) }
+      ?: svc.queryAll(sourceId)
 
     if (logs.isEmpty()) return null
 
     return buildString {
-      logs.forEach {
-        appendLine(it.text.trimEnd())
-      }
+      logs.forEach { appendLine(it.text.trimEnd()) }
     }.trimEnd()
   }
 }

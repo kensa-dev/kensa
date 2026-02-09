@@ -9,10 +9,10 @@ import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms.toJsonString
 import dev.kensa.output.json.JsonTransforms.toJsonWith
 import dev.kensa.output.json.JsonTransforms.toModernIndexJson
-import dev.kensa.tabs.TabArtifactManager
 import dev.kensa.output.template.FileTemplate.IndexFileTemplate
 import dev.kensa.output.template.FileTemplate.TestFileTemplate
 import dev.kensa.sentence.Acronym
+import dev.kensa.tabs.TabArtifactManager
 import dev.kensa.util.IoUtil
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -24,6 +24,8 @@ class ResultWriter(private val configuration: Configuration) {
     init {
         IoUtil.recreate(configuration.outputDir)
     }
+
+    private val tabArtifactManager = TabArtifactManager()
 
     fun write(containers: List<TestContainer>) {
         when (configuration.uiMode) {
@@ -118,7 +120,7 @@ class ResultWriter(private val configuration: Configuration) {
 
     fun writeModernTest(container: TestContainer) {
         with(configuration) {
-            val tabArtifacts = TabArtifactManager().generate(container, outputDir, configuration)
+            val tabArtifacts = tabArtifactManager.generate(container, outputDir, configuration)
 
             val json = toJsonWith(renderers) { methodContainer, _, invocationIndex ->
                 tabArtifacts[TabArtifactManager.InvocationKey(methodContainer.method.name, invocationIndex)] ?: emptyList()

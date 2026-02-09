@@ -2,6 +2,7 @@ package dev.kensa.service.logs.docker
 
 import dev.kensa.service.logs.LogPatterns
 import dev.kensa.service.logs.LogRecord
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -113,6 +114,90 @@ class DockerCliLogQueryServiceTest {
         )
 
         service.query("app", "anything").shouldHaveSize(0)
+    }
+
+    @Test
+    fun `queryAll returns all blocks for a source`() {
+        val fakeRunner = DockerLogsRunner { _ ->
+            sequenceOf(
+                "***********",
+                "TrackingId: AAA",
+                "Payload: one",
+                "***********",
+                "***********",
+                "TrackingId: BBB",
+                "Payload: two",
+                "***********"
+            )
+        }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")),
+            delimiterLine = DELIMITER,
+            idPattern = ID_PATTERN,
+            runner = fakeRunner
+        )
+
+        val all = service.queryAll("app")
+        all.shouldHaveSize(2)
+        all.map { it.identifier }.toSet() shouldBe setOf("AAA", "BBB")
+    }
+
+    @Test
+    fun `delimiter match allows suffix after delimiter`() {
+        val fakeRunner = DockerLogsRunner { _ ->
+            sequenceOf(
+                "*********** 2026-02-02T12:34:56Z",
+                "TrackingId: AAA",
+                "Payload: one",
+                "*********** trailing",
+            )
+        }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")),
+            delimiterLine = DELIMITER,
+            idPattern = ID_PATTERN,
+            runner = fakeRunner
+        )
+
+        service.query("app", "AAA").shouldHaveSize(1).first().text.shouldContain("2026-02-02T12:34:56Z")
+    }
+
+    @Test
+    fun `flushes last block at EOF without closing delimiter`() {
+        val fakeRunner = DockerLogsRunner { _ ->
+            sequenceOf(
+                "***********",
+                "TrackingId: EOF",
+                "Payload: last-one"
+                // no closing delimiter
+            )
+        }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")),
+            delimiterLine = DELIMITER,
+            idPattern = ID_PATTERN,
+            runner = fakeRunner
+        )
+
+        service.query("app", "EOF").shouldHaveSize(1).first().text.shouldContain("last-one")
+    }
+
+    @Test
+    fun `unknown source returns empty`() {
+        val fakeRunner = DockerLogsRunner { _ -> emptySequence() }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")),
+            delimiterLine = DELIMITER,
+            idPattern = ID_PATTERN,
+            runner = fakeRunner
+        )
+
+        service.query("missing", "AAA").shouldBeEmpty()
+        service.queryAll("missing").shouldBeEmpty()
     }
 
     private companion object {
