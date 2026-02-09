@@ -31,6 +31,7 @@ const App = () => {
     const [testDetail, setTestDetail] = useState<TestDetail | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const searchQuery = searchParams.get("q") || "";
+    const testToExpand = searchParams.get("method") || "";
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('theme') === 'dark');
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
@@ -379,6 +380,7 @@ const App = () => {
                                                     <TestContainer
                                                         tests={testDetail.tests}
                                                         testClass={testDetail.testClass}
+                                                        testToExpand={testToExpand}
                                                     />
                                                 ) : null}
                                             </div>
