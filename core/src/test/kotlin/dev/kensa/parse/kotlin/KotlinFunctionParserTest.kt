@@ -188,6 +188,7 @@ internal class KotlinFunctionParserTest {
                         NewLine.asTemplateToken(),
                         Indent.asTemplateToken(),
                         Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
                         Word.asTemplateToken("thing"),
                         Note.asTemplateToken("Note after closing bracket")
                     )
@@ -354,6 +355,7 @@ internal class KotlinFunctionParserTest {
                     Word.asTemplateToken("something"),
                     Word.asTemplateToken("with"),
                     NewLine.asTemplateToken(),
+                    Indent.asTemplateToken(),
                     Indent.asTemplateToken(),
                     Indent.asTemplateToken(),
                     Word.asTemplateToken("a"),

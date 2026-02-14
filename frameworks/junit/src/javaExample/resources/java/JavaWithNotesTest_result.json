@@ -110,6 +110,12 @@
               },
               {
                 "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
                   "tk-wd"
                 ],
                 "value": "things"
@@ -123,6 +129,12 @@
               {
                 "types": [
                   "tk-nl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
                 ],
                 "value": ""
               },

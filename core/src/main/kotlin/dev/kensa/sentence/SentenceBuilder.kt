@@ -232,10 +232,8 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
             if (lineNumber > lastLocation.lineNumber) {
                 append("", NewLine)
 
-                if (linePosition - startingLocation.linePosition > 0) {
-                    repeat(linePosition / tabSize) {
-                        append("", Indent)
-                    }
+                repeat(linePosition / tabSize) {
+                    append("", Indent)
                 }
             }
         }

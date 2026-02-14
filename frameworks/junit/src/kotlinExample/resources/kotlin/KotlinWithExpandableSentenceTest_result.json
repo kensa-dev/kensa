@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "simpleExpandable",
       "displayName": "Simple Expandable",
       "notes": null,
@@ -16,7 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             [
@@ -160,7 +160,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
       "notes": null,
@@ -169,7 +169,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "2 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -182,6 +182,12 @@
               {
                 "types": [
                   "tk-nl"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
+                  "tk-in"
                 ],
                 "value": ""
               },
@@ -229,6 +235,12 @@
                   },
                   {
                     "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
                       "tk-id"
                     ],
                     "value": "parameter1"
@@ -248,6 +260,12 @@
                   {
                     "types": [
                       "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
                     ],
                     "value": ""
                   },
@@ -441,6 +459,12 @@
               },
               {
                 "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
                   "tk-ex"
                 ],
                 "value": "some Action With 2",
@@ -448,6 +472,12 @@
                   {
                     "types": [
                       "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
                     ],
                     "value": ""
                   },
@@ -496,6 +526,12 @@
                   {
                     "types": [
                       "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
                     ],
                     "value": ""
                   },
@@ -614,7 +650,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
       "notes": null,
@@ -623,7 +659,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -821,6 +857,12 @@
               },
               {
                 "types": [
+                  "tk-in"
+                ],
+                "value": ""
+              },
+              {
+                "types": [
                   "tk-ex"
                 ],
                 "value": "some Action With 3",
@@ -828,6 +870,12 @@
                   {
                     "types": [
                       "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
                     ],
                     "value": ""
                   },
@@ -893,6 +941,12 @@
                   },
                   {
                     "types": [
+                      "tk-in"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
                       "tk-id"
                     ],
                     "value": "parameter2"
@@ -912,6 +966,12 @@
                   {
                     "types": [
                       "tk-nl"
+                    ],
+                    "value": ""
+                  },
+                  {
+                    "types": [
+                      "tk-in"
                     ],
                     "value": ""
                   },
@@ -1045,7 +1105,7 @@
       ]
     },
     {
-      "elapsedTime": "26 Ms",
+      "elapsedTime": "19 Ms",
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
       "notes": null,
@@ -1054,7 +1114,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "26 Ms",
+          "elapsedTime": "19 Ms",
           "highlights": [],
           "sentences": [
             [
@@ -1347,7 +1407,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
       "notes": null,
@@ -1356,7 +1416,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             [

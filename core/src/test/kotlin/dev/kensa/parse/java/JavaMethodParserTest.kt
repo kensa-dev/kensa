@@ -62,6 +62,7 @@ internal class JavaMethodParserTest {
                         NewLine.asTemplateToken(),
                         Indent.asTemplateToken(),
                         Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
                         Word.asTemplateToken("thing"),
                     )
                 )
@@ -98,9 +99,11 @@ internal class JavaMethodParserTest {
                     Indent.asTemplateToken(),
                     Indent.asTemplateToken(),
                     Indent.asTemplateToken(),
+                    Indent.asTemplateToken(),
                     Word.asTemplateToken("with"),
                     Word.asTemplateToken("something"),
                     NewLine.asTemplateToken(),
+                    Indent.asTemplateToken(),
                     Indent.asTemplateToken(),
                     Indent.asTemplateToken(),
                     Indent.asTemplateToken(),
@@ -197,6 +200,7 @@ internal class JavaMethodParserTest {
                         Indent.asTemplateToken(),
                         Indent.asTemplateToken(),
                         Indent.asTemplateToken(),
+                        Indent.asTemplateToken(),
                         Note.asTemplateToken("Note after closing brace")
                     )
                 ),
@@ -221,6 +225,7 @@ internal class JavaMethodParserTest {
                     listOf(
                         Keyword.asTemplateToken("Then"),
                         NewLine.asTemplateToken(),
+                        Indent.asTemplateToken(),
                         Indent.asTemplateToken(),
                         Indent.asTemplateToken(),
                         Word.asTemplateToken("thing"),

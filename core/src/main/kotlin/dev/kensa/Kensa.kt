@@ -136,7 +136,7 @@ class Configuration {
     var antlrErrorListenerDisabled: Boolean = true
     var umlDirectives: List<UmlDirective> = ArrayList()
     var issueTrackerUrl: URL = URI.create("http://empty").toURL()
-    var tabSize: Int = 5
+    var tabSize: Int = 4
     var autoOpenTab: Tab = Tab.None
     var autoExpandNotes: Boolean = false
     var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
