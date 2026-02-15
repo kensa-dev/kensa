@@ -14,7 +14,7 @@ const Sentence = ({ sentence, isNested = false }: SentenceProps) => {
     return (
         <div className={cn(
             "sentence-container flex flex-wrap items-baseline leading-relaxed text-foreground",
-            "text-[13px] leading-relaxed",
+            "text-[14px] leading-relaxed",
             isNested && "ml-1 border-muted pl-3 py-0.5 my-1"
         )}>
             {sentence.map((token, index) => {

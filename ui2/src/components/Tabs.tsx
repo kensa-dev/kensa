@@ -10,13 +10,6 @@ import {CustomTabPanel} from "@/components/CustomTabPanel.tsx";
 
 type TabValue = typeof Tab[keyof typeof Tab];
 
-const mediaTypeToLanguage = (mediaType?: string): string => {
-    const mt = (mediaType ?? "text/plain").toLowerCase();
-    if (mt.includes("json")) return "json";
-    if (mt.includes("xml")) return "xml";
-    return "plaintext";
-};
-
 interface TabProps {
     invocation: Invocation;
     testState: 'Passed' | 'Failed' | string;
@@ -155,11 +148,11 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
         <>
             <div className={cn(
                 "mt-4 border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
-                isPassed ? "border-emerald-500/20" : "border-rose-500/20"
+                isPassed ? "border-success-30" : "border-failure-30"
             )}>
                 <div className={cn(
                     "flex border-b overflow-x-auto transition-colors",
-                    isPassed ? "bg-emerald-500/5 border-emerald-500/20" : "bg-rose-500/5 border-rose-500/20"
+                    isPassed ? "bg-success-10 border-success-30" : "bg-failure-10 border-failure-30"
                 )}>
                     {tabs.map((tab) => (
                         <button
@@ -169,11 +162,11 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                                 "px-4 py-2 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2",
                                 activeTab === tab.id
                                     ? (isPassed
-                                        ? "bg-background text-neutral-800 dark:text-neutral-100 border-emerald-500"
-                                        : "bg-background text-neutral-800 dark:text-neutral-100 border-rose-500")
+                                        ? "bg-background text-neutral-800 dark:text-neutral-100 border-success-30"
+                                        : "bg-background text-neutral-800 dark:text-neutral-100 border-failure-30")
                                     : (isPassed
-                                        ? "text-muted-foreground border-transparent hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-400"
-                                        : "text-muted-foreground border-transparent hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-400")
+                                        ? "text-muted-foreground border-transparent hover:bg-success-10 hover:text-success"
+                                        : "text-muted-foreground border-transparent hover:bg-failure-10 hover:text-failure")
                             )}
                         >
                             {tab.label}
@@ -183,7 +176,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
 
                 <div className={cn(
                     "p-4 transition-colors",
-                    isPassed ? "bg-emerald-50/20 dark:bg-emerald-950/5" : "bg-rose-50/20 dark:bg-rose-950/5"
+                    isPassed ? "bg-success-2 dark:bg-success-10" : "bg-failure-2 dark:bg-failure-10"
                 )}>
                     {activeTab === Tab.Givens && <DataTable data={invocation[Tab.Givens]} isPassed={isPassed}/>}
                     {activeTab === Tab.CapturedOutputs && <DataTable data={invocation[Tab.CapturedOutputs]} isPassed={isPassed}/>}
@@ -216,7 +209,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                                 <div className="text-xs text-muted-foreground">Loading…</div>
                             )}
                             {activeCustomFile && customTabCache[activeCustomFile]?.status === 'error' && (
-                                <div className="text-xs text-rose-700 dark:text-rose-300">
+                                <div className="text-xs text-failure dark:text-failure">
                                     Failed to load tab content.
                                 </div>
                             )}
@@ -226,7 +219,6 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                                         title={activeCustomLabel}
                                         content={customTabCache[activeCustomFile]?.content ?? ""}
                                         testState={testState}
-                                        language={mediaTypeToLanguage(activeCustomTab?.mediaType)}
                                     />
                                 </div>
                             )}
@@ -257,11 +249,11 @@ const DataTable = ({data, isPassed}: { data: NameAndValues, isPassed: boolean })
             Object.entries(row).map(([key, val], j) => (
                 <tr key={`${i}-${j}`} className={cn(
                     "group transition-colors",
-                    isPassed ? "hover:bg-emerald-500/5" : "hover:bg-rose-500/5"
+                    isPassed ? "hover:bg-success-10" : "hover:bg-failure-10"
                 )}>
                     <td className={cn(
                         "py-2 font-medium align-top text-xs",
-                        isPassed ? "text-emerald-900 dark:text-emerald-100" : "text-rose-900 dark:text-rose-100"
+                        isPassed ? "text-success dark:text-success" : "text-failure dark:text-failure"
                     )}>{key}</td>
                     <td className="py-2 text-muted-foreground font-mono text-[11px] whitespace-pre-wrap">{val}</td>
                 </tr>

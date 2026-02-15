@@ -173,7 +173,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
             <SidebarHeader className="p-3 pb-0 gap-3">
                 <div className="flex items-center justify-between px-1">
                     <div className="flex items-center gap-2">
-                        <KensaLogo className="w-6 h-6 text-emerald-500 drop-shadow-sm"/>
+                        <KensaLogo className="w-6 h-6 text-success drop-shadow-sm"/>
                         <span className="group-data-[collapsible=icon]:hidden font-black tracking-tighter text-base text-foreground/90">KENSA</span>
                     </div>
                     <a
@@ -314,7 +314,7 @@ function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps)
         node.state === "Failed"
             ? "text-destructive"
             : node.state === "Passed"
-                ? "text-emerald-600 dark:text-emerald-400"
+                ? "text-success dark:text-success"
                 : "text-muted-foreground/70";
 
     if (node.type === 'project') {

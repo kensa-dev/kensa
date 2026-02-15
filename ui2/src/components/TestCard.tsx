@@ -24,19 +24,17 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
     return (
         <div className={cn(
             "bg-card border rounded-xl shadow-sm overflow-hidden transition-all",
-            isPassed ? "border-emerald-500/30" : "border-rose-500/30"
+            isPassed ? "border-success-30" : "border-failure-30"
         )}>
             <div
                 className={cn(
                     "px-5 py-3 border-b flex items-center justify-between cursor-pointer select-none transition-colors",
-                    isPassed ? "bg-emerald-500/10 hover:bg-emerald-500/15" : "bg-rose-500/10 hover:bg-rose-500/15"
+                    isPassed ? "bg-success-10 hover:bg-success-15" : "bg-failure-10 hover:bg-failure-15"
                 )}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <h3 className={cn(
-                    "font-bold flex items-center gap-2 text-sm tracking-tight",
-                )}>
-                    <Beaker size={16} className={isPassed ? "text-emerald-600" : "text-rose-600"} />
+                <h3 className={"font-bold flex items-center gap-2 text-sm tracking-tight"}>
+                    <Beaker size={16} className={isPassed ? "text-success" : "text-failure"} />
                     {test.displayName}
                 </h3>
 
@@ -51,7 +49,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
             {isExpanded && (
                 <div className={cn(
                     "p-6 space-y-4",
-                    isPassed ? "bg-emerald-50/30 dark:bg-emerald-950/10" : "bg-rose-50/30 dark:bg-rose-950/10"
+                    isPassed ? "bg-success-2 dark:bg-success-10" : "bg-failure-2 dark:bg-failure-10"
                 )}>
                     <div className="space-y-4">
                         {test.invocations.map((invocation: Invocation, invIdx: number) => {

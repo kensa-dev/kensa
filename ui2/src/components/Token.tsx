@@ -24,27 +24,101 @@ const Expandable = ({token}: { token: TokenType }) => {
         }
     }, [isExpanded]);
 
+    const isMultilineParams = Boolean(parameterTokens?.[0]?.types?.includes("tk-nl"));
+
+    const splitParameterLines = (pts: TokenType[]) => {
+        const lines: TokenType[][] = [];
+        let current: TokenType[] = [];
+
+        for (const t of pts) {
+            const types = t.types || [];
+            if (types.includes("tk-nl")) {
+                lines.push(current);
+                current = [];
+                continue;
+            }
+            current.push(t);
+        }
+        if (current.length > 0) lines.push(current);
+
+        return lines;
+    };
+
+    const renderParameterLine = (line: TokenType[], lineIdx: number) => {
+        let i = 0;
+        while (i < line.length && (line[i].types || []).includes("tk-in")) i += 1;
+
+        const indentCount = i;
+        const contentTokens = line.slice(i);
+
+        return (
+            <div key={`param-line-${lineIdx}`} className="flex items-baseline">
+                {indentCount > 0 && (
+                    <span
+                        aria-hidden="true"
+                        className="shrink-0"
+                        style={{ width: `${indentCount * 1.5}rem` }}
+                    />
+                )}
+
+                <span className="flex flex-wrap items-baseline gap-x-1 gap-y-0.5">
+                    {contentTokens.map((t, idx) => (
+                        <Token key={`param-${lineIdx}-${idx}`} token={t} />
+                    ))}
+                </span>
+            </div>
+        );
+    };
+
+    const renderParameterTokens = (pts: TokenType[]) => {
+        if (!isMultilineParams) {
+            return (
+                <span className="inline-flex flex-wrap items-baseline gap-x-1 whitespace-pre-wrap break-words">
+                    {pts.map((t, idx) => (
+                        <Token key={`param-inline-${idx}`} token={t}/>
+                    ))}
+                </span>
+            );
+        }
+
+        const lines = splitParameterLines(pts);
+
+        const normalized = lines.length > 0 && lines[0].length === 0 ? lines.slice(1) : lines;
+
+        return (
+            <div className="space-y-0.5">
+                {normalized.map(renderParameterLine)}
+            </div>
+        );
+    };
+
     return (
         <HoverCard openDelay={200} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <span className="inline-flex items-baseline" ref={triggerRef}>
+                <span className={cn("inline-flex items-baseline", "flex-wrap")} ref={triggerRef}>
                     <span
                         onClick={() => setIsExpanded(!isExpanded)}
                         className={cn(
-                            "cursor-pointer font-black transition-all select-none border-b-2",
+                            "cursor-pointer font-black transition-all select-none",
+                            "underline underline-offset-2 decoration-2",
                             isExpanded
-                                ? "text-primary border-primary/40 bg-primary/5 px-1 rounded-t-sm"
-                                : "text-foreground/80 border-border hover:border-primary/50 hover:text-foreground"
+                                ? "text-primary decoration-primary/60 bg-primary/5 px-1 rounded-t-sm"
+                                : "text-foreground/80 decoration-border hover:decoration-primary/60 hover:text-foreground"
                         )}
                     >
-                            {value}
-                        </span>
-                    {parameterTokens && parameterTokens?.length > 0 && (
-                        <span className="ml-1.5 px-1.5 py-0.5 rounded bg-muted/50 text-[11px] font-mono border border-border/40 text-muted-foreground tracking-tighter">
-                            {parameterTokens.map((t, i) => (
-                                <Token key={i} token={t}/>
-                            ))}
-                        </span>
+                        {value}
+                    </span>
+
+                    {parameterTokens && parameterTokens.length > 0 && (
+                        <div
+                            className={cn(
+                                "px-2 rounded bg-muted/40 border border-border/20 text-foreground/90",
+                                "leading-relaxed",
+                                isMultilineParams ? "basis-full mt-1 ml-0" : "ml-1.5"
+                            )}
+                        >
+                            {renderParameterTokens(parameterTokens)}
+                        </div>
                     )}
                 </span>
             </HoverCardTrigger>
@@ -53,10 +127,7 @@ const Expandable = ({token}: { token: TokenType }) => {
                 <HoverCardContent
                     side="top"
                     align="start"
-                    className={cn(
-                        "p-4 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1",
-                        "w-[450px]"
-                    )}
+                    className={"p-4 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1 w-[450px]"}
                 >
                     <div className="space-y-1">
                         {tokens?.map((item: NestedItem, idx: number) => {
@@ -72,7 +143,7 @@ const Expandable = ({token}: { token: TokenType }) => {
 
             {isExpanded && (
                 <div
-                    className="w-full mt-2 mb-2 pl-4 border-l-2 border-primary/20 bg-primary/[0.01] py-2 rounded-r-lg overflow-x-auto"
+                    className="w-full mt-2 mb-2 pl-4 border-l-2 border-primary/20 bg-primary/[0.01] py-0.5 rounded-r-lg overflow-x-auto"
                     style={{marginLeft: `${leftOffset}px`}}
                 >
                     {tokens?.map((item: NestedItem, idx: number) => {
@@ -107,7 +178,7 @@ const TokenTable = ({headers, rows}: { headers?: string[], rows: TokenType[][] }
                 {rows.map((row, rowIdx) => (
                     <TableRow key={rowIdx} className="hover:bg-muted/20 transition-colors border-border/40">
                         {row.map((cell, cellIdx) => (
-                            <TableCell key={cellIdx} className="py-2 px-4 text-xs font-medium">
+                            <TableCell key={cellIdx} className="py-2 px-4 text-xs">
                                 <Token token={cell}/>
                             </TableCell>
                         ))}
@@ -125,7 +196,14 @@ const InfoToken = ({value, tooltipContent, tokenCls}: { value: string, tooltipCo
         <TooltipProvider>
             <Tooltip delayDuration={200}>
                 <TooltipTrigger asChild>
-                    <span className={cn("cursor-help border-b border-dotted border-muted-foreground/50 font-medium", tokenCls)}>
+                    <span
+                        className={cn(
+                            "cursor-help font-medium",
+                            "underline decoration-dotted decoration-muted-foreground/60 underline-offset-2",
+                            "hover:decoration-muted-foreground",
+                            tokenCls
+                        )}
+                    >
                         {value}
                     </span>
                 </TooltipTrigger>
@@ -157,20 +235,18 @@ const NoteToken = ({value}: { value: string }) => {
                         "inline-flex items-baseline transition-all duration-200 ease-out group/note mx-1",
                         "border-l-2 border-muted-foreground/30 pl-1.5 pr-1 rounded-r-sm",
                         "leading-none align-baseline",
-
                         isExpanded ? "cursor-default border-l-4 bg-muted/40" : "cursor-help bg-muted/20 hover:bg-muted/60",
-
                         isExpanded
                             ? "text-foreground whitespace-pre-wrap"
                             : "text-muted-foreground/60"
                     )}
                 >
                     {isExpanded ? (
-                        <span className="text-[13px] leading-normal">
+                        <span className="leading-normal">
                             {value}
                         </span>
                     ) : (
-                        <span className="font-black tracking-widest text-[13px] opacity-60">
+                        <span className="font-black tracking-widest opacity-60">
                             ···
                         </span>
                     )}
@@ -183,7 +259,7 @@ const NoteToken = ({value}: { value: string }) => {
                     align="start"
                     className="w-80 p-0 shadow-2xl border-border/50 overflow-hidden rounded-xl"
                 >
-                    <div className="p-3 text-[13px] leading-relaxed text-foreground/90 bg-background whitespace-pre-wrap font-sans">
+                    <div className="p-3 leading-relaxed text-foreground/90 bg-background whitespace-pre-wrap font-sans">
                         {value}
                     </div>
                 </HoverCardContent>
@@ -193,16 +269,16 @@ const NoteToken = ({value}: { value: string }) => {
 };
 
 const styles: Record<string, string> = {
-    'tk-kw': 'text-foreground/90 font-bold tracking-tight opacity-80',
-    'tk-wd': 'text-muted-foreground/70 font-normal',
-    'tk-id': 'text-foreground font-semibold underline decoration-border/40 underline-offset-4',
-    'tk-sl': 'text-foreground/90 font-medium italic',
-    'tk-fv': 'font-mono font-bold text-foreground bg-muted/40 px-1.5 py-0.5 rounded border border-border/10',
-    'tk-pv': 'font-mono font-bold text-foreground bg-muted/40 px-1.5 py-0.5 rounded border border-border/10',
-    'tk-num': 'font-mono font-bold text-foreground/90',
-    'tk-bo': 'font-mono font-semibold text-foreground/60',
-    'tk-null': 'text-muted-foreground/30 italic line-through decoration-muted-foreground/10',
-    'tk-pph': 'text-foreground font-semibold underline decoration-foreground/30 underline-offset-[6px] tracking-tight'
+    'tk-kw': 'text-foreground font-bold tracking-tight',
+    'tk-wd': 'text-foreground/90',
+    'tk-id': 'text-foreground',
+    'tk-sl': 'text-foreground/90 italic',
+    'tk-fv': 'text-foreground bg-muted/20 px-0.5 py-0.5 rounded border border-border/15',
+    'tk-pv': 'text-foreground bg-muted/20 px-0.5 py-0.5 rounded border border-border/15',
+    'tk-num': 'font-semibold text-foreground',
+    'tk-bo': 'font-semibold text-foreground/80',
+    'tk-null': 'text-muted-foreground/70 italic line-through decoration-muted-foreground/30',
+    'tk-pph': 'text-foreground tracking-tight'
 };
 const getMappedCls = (types: string[]) => types.map((t: string) => styles[t] || '').join(' ');
 
@@ -215,7 +291,7 @@ export const Token = ({token}: { token: TokenType }) => {
     if (types.includes("tk-ac")) return <InfoToken value={value} tooltipContent={value ? acronyms[value] : null} tokenCls={tokenCls}/>;
     if (types.includes("tk-hi")) return <InfoToken value={value} tooltipContent={hint ? hint : null} tokenCls={tokenCls}/>;
     if (types.includes("tk-nt")) return <NoteToken value={value}/>;
-    if (types.includes("tk-tb")) return <div className="my-2 p-4 bg-muted/30 rounded-lg font-mono text-[11px] whitespace-pre-wrap leading-relaxed">{value}</div>;
+    if (types.includes("tk-tb")) return <div className="my-2 p-4 bg-muted/30 rounded-lg text-[11px] whitespace-pre-wrap leading-relaxed">{value}</div>;
 
     return <span className={cn(getMappedCls(types), "inline")}>{value}</span>;
 };

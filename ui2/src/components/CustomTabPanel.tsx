@@ -161,7 +161,7 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
             <div className="flex items-center gap-1 shrink-0">
                 <button
                     onClick={() => setIsMaximized(!isMaximized)}
-                    className={cn("p-1.5 rounded-md transition-all flex items-center justify-center text-muted-foreground hover:text-primary")}
+                    className={"p-1.5 rounded-md transition-all flex items-center justify-center text-muted-foreground hover:text-primary"}
                     title={isMaximized ? "Exit Fullscreen" : "Maximize"}
                 >
                     {isMaximized ? <X size={16}/> : <Maximize2 size={14}/>}
@@ -219,12 +219,10 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
 
     return (
         <>
-            <div className={cn(
-                "flex flex-col overflow-hidden bg-white dark:bg-background"
-            )}>
+            <div className={"flex flex-col overflow-hidden bg-white dark:bg-background"}>
                 <div className={cn(
                     "shrink-0",
-                    isPassed ? "bg-emerald-500/5" : "bg-rose-500/5"
+                    isPassed ? "bg-success-10" : "bg-failure-10"
                 )}>
                     {toolbar}
                 </div>
@@ -233,11 +231,10 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
 
             <Dialog open={isMaximized} onOpenChange={setIsMaximized}>
                 <DialogContent
-                    className={cn(
-                        "fixed flex flex-col gap-0 p-0 overflow-hidden outline-none shadow-2xl [&>button]:hidden border-none bg-white dark:bg-background max-w-none",
-                        "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-                        "w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl ring-1 ring-border/50 shadow-none"
-                    )}
+                    className={
+                        "fixed flex flex-col gap-0 p-0 overflow-hidden outline-none shadow-2xl [&>button]:hidden border-none bg-white dark:bg-background max-w-none " +
+                        "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl ring-1 ring-border/50 shadow-none"
+                    }
                 >
                     {modalContent}
                 </DialogContent>

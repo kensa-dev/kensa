@@ -35,9 +35,7 @@ export function InteractionDialog({interaction, isOpen, onClose, isPassed}: any)
                 }}
                 className={cn(
                     "fixed flex flex-col gap-0 p-0 overflow-hidden transition-all duration-500 ease-in-out outline-none shadow-2xl [&>button]:hidden border-none bg-background max-w-none",
-
                     "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-
                     (isMaximized && hasValidPayload)
                         ? "w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl ring-1 ring-border/50 shadow-none"
                         : "w-[90vw] lg:w-[1024px] h-[80vh] rounded-xl border border-border shadow-2xl"
@@ -46,10 +44,10 @@ export function InteractionDialog({interaction, isOpen, onClose, isPassed}: any)
                 {!isMaximized && (
                     <DialogHeader className={cn(
                         "px-6 h-12 flex flex-row items-center justify-between border-b shrink-0 transition-colors animate-in fade-in duration-500",
-                        isPassed ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/10 border-rose-500/20"
+                        isPassed ? "bg-success-10 border-success-30" : "bg-failure-10 border-failure-30"
                     )}>
                         <div className="flex items-center gap-3 overflow-hidden mr-auto">
-                            <Activity className={isPassed ? "text-emerald-600" : "text-rose-600"} size={18}/>
+                            <Activity className={isPassed ? "text-success" : "text-failure"} size={18}/>
                             <DialogTitle className="text-xs font-bold truncate uppercase tracking-widest opacity-80 text-foreground">
                                 {interaction.name}
                             </DialogTitle>

@@ -4,7 +4,6 @@ import {InteractionDialog} from "@/components/InteractionDialog";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
 import {Info, Maximize2, X} from "lucide-react";
 import "./SequenceDiagram.css";
-import {cn} from "@/lib/utils.ts";
 
 type TestState = "Passed" | "Failed" | string;
 
@@ -271,7 +270,7 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
 
                 <div
                     ref={scrollRef}
-                    className="sd-scroll"
+                    className="bg-white sd-scroll"
                     style={{ maxHeight, ["--sd-bg" as any]: isPassed ? "rgba(16, 185, 129, 0.06)" : "rgba(244, 63, 94, 0.06)" }}
                 >
                     <div
@@ -284,11 +283,10 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
 
             <Dialog open={isMaximized} onOpenChange={setIsMaximized}>
                 <DialogContent
-                    className={cn(
-                        "fixed flex flex-col gap-0 p-0 overflow-hidden outline-none [&>button]:hidden border-none bg-background max-w-none",
-                        "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+                    className={"fixed flex flex-col gap-0 p-0 overflow-hidden outline-none [&>button]:hidden border-none bg-background max-w-none " +
+                        "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 " +
                         "w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl ring-1 ring-border/50 shadow-none"
-                    )}
+                    }
                 >
                     <div className="px-4 h-12 flex flex-row justify-between border-b shrink-0 bg-background">
                         <div className="px-4 py-1.5 border-b border-border/20 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 shrink-0">
@@ -304,7 +302,7 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-auto p-6 flex justify-center">
+                    <div className="bg-white flex-1 overflow-auto p-6 flex justify-center">
                         <div
                             ref={modalRootRef}
                             className={rootClasses}

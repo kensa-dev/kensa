@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { TestCard } from './TestCard';
-import { cn } from "@/lib/utils";
 import {Invocation, Test} from "@/types/Test.ts";
 
 interface TestContainerProps {
@@ -90,7 +89,7 @@ export const TestContainer = ({ tests, testClass, testToExpand }: TestContainerP
                 <div
                     key={`${testClass}-${i}`}
                     ref={(el) => { cardRefs.current[i] = el; }}
-                    className={cn("scroll-mt-16")}
+                    className={"scroll-mt-16"}
                 >
                     <TestCard
                         test={test}

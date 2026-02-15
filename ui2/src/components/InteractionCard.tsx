@@ -9,20 +9,17 @@ export const InteractionCard = ({ interaction, isPassed, onExpand }: any) => {
     return (
         <div className={cn(
             "mb-2 border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
-            isPassed ? "border-emerald-500/20" : "border-rose-500/20"
+            isPassed ? "border-success-30" : "border-failure-30"
         )}>
             <div
                 className={cn(
                     "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors select-none",
-                    isPassed ? "hover:bg-emerald-500/10" : "hover:bg-rose-500/10"
+                    isPassed ? "hover:bg-success-10" : "hover:bg-failure-10"
                 )}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <Activity size={14} className={isPassed ? "text-emerald-500" : "text-rose-500"} />
-                <span className={cn(
-                    "text-[12px] font-semibold flex-1",
-                    "text-neutral-800 dark:text-neutral-100"
-                )}>{interaction.name}</span>
+                <Activity size={14} className={isPassed ? "text-success" : "text-failure"} />
+                <span className={"text-[12px] font-semibold flex-1 text-neutral-800 dark:text-neutral-100"}>{interaction.name}</span>
                 {isExpanded ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />}
             </div>
 

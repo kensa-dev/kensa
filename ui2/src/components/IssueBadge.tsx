@@ -9,27 +9,27 @@ type TestState = "Passed" | "Failed";
 export const IssueBadge = ({ issue, testState }: { issue: string; testState?: TestState }) => {
     const { issueTrackerUrl } = useContext(ConfigContext);
 
-    const baseClasses =
-        "rounded-md border transition-colors bg-clip-padding";
+    const baseClasses = "rounded-md border transition-colors bg-clip-padding";
 
-    const toneClasses =
+    const toneClasses = cn(
         testState === "Passed"
-            ? cn(
-                "border-emerald-500/30 text-emerald-700 dark:text-emerald-300",
-                "!bg-emerald-500/[0.06] hover:!bg-emerald-500/[0.08]",
-                "dark:!bg-emerald-500/[0.10] dark:hover:!bg-emerald-500/[0.18]"
-            )
+            ? [
+                "border-success-30 text-success dark:text-success",
+                "!bg-success-10 hover:!bg-success-15",
+                "dark:!bg-success-10 dark:hover:!bg-success-15",
+            ]
             : testState === "Failed"
-                ? cn(
-                    "border-rose-500/30 text-rose-700 dark:text-rose-300",
-                    "!bg-rose-500/[0.06] hover:!bg-rose-500/[0.08]",
-                    "dark:!bg-rose-500/[0.10] dark:hover:!bg-rose-500/[0.18]"
-                )
-                : cn(
+                ? [
+                    "border-failure-30 text-failure dark:text-failure",
+                    "!bg-failure-10 hover:!bg-failure-15",
+                    "dark:!bg-failure-10 dark:hover:!bg-failure-15",
+                ]
+                : [
                     "border-border/50 text-muted-foreground",
                     "!bg-muted/15 hover:!bg-muted/22",
-                    "dark:!bg-muted/20 dark:hover:!bg-muted/30"
-                );
+                    "dark:!bg-muted/20 dark:hover:!bg-muted/30",
+                ]
+    );
 
     if (!issueTrackerUrl) {
         return (

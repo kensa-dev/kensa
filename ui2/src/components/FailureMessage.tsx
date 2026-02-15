@@ -5,19 +5,19 @@ export const FailureMessage = ({ invocation }: any) => {
     if (!ex || !ex.message) return null;
 
     return (
-        <div className="my-4 rounded-lg border border-rose-200 bg-rose-50/50 overflow-hidden">
+        <div className="my-4 rounded-lg border border-failure-10 bg-failure-2 overflow-hidden">
             <div className="flex items-start gap-3 p-4">
-                <AlertCircle className="text-rose-600 shrink-0 mt-0.5" size={18} />
+                <AlertCircle className="text-failure shrink-0 mt-0.5" size={18} />
                 <div className="space-y-2">
-                    <p className="text-sm font-bold text-rose-900 leading-tight">
+                    <p className="text-sm font-bold text-failure leading-tight">
                         {ex.message}
                     </p>
                     {ex.stackTrace && (
                         <details className="group">
-                            <summary className="text-[10px] font-black uppercase tracking-widest text-rose-500 cursor-pointer hover:text-rose-700 transition-colors list-none">
+                            <summary className="text-[10px] font-black uppercase tracking-widest text-failure cursor-pointer hover:text-failure transition-colors list-none">
                                 View Stacktrace
                             </summary>
-                            <pre className="mt-3 p-4 bg-rose-900 text-rose-100 text-[11px] font-mono rounded-md overflow-auto max-h-[300px] shadow-inner selection:bg-rose-500/30">
+                            <pre className="mt-3 p-4 bg-failure-10 text-failure text-[11px] font-mono rounded-md overflow-auto max-h-[300px] shadow-inner selection:bg-failure-10">
                                 {ex.stackTrace}
                             </pre>
                         </details>

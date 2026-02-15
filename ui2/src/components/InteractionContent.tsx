@@ -68,10 +68,7 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
             const activeIdx = currentIndex % allMatchElements.length;
             const activeMark = allMatchElements[activeIdx];
             if (activeMark) {
-                activeMark.className = cn(
-                    "search-highlight px-0.5 rounded-sm transition-all duration-200",
-                    "bg-orange-500 text-white shadow-[0_0_10px_rgba(249,115,22,0.8)] ring-1 ring-orange-300 z-10 scale-110"
-                );
+                activeMark.className = "search-highlight px-0.5 rounded-sm transition-all duration-200 bg-orange-500 text-white shadow-[0_0_10px_rgba(249,115,22,0.8)] ring-1 ring-orange-300 z-10 scale-110";
                 activeMark.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
             }
         }
@@ -94,7 +91,7 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
                 <div className={cn(
                     "flex flex-col border-b overflow-hidden transition-all duration-300 bg-background",
                     hasValidPayload ? "shrink-0 max-h-[40%]" : "flex-1",
-                    isPassed ? "bg-emerald-500/[0.02]" : "bg-rose-500/[0.02]"
+                    isPassed ? "bg-success-10" : "bg-failure-10"
                 )}>
                     <div className="px-4 py-1.5 border-b border-border/20 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 shrink-0">
                         <Info size={12} /> Interaction Metadata
@@ -103,7 +100,7 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {metadataGroups.map((group: any, i: number) => (
                                 <div key={i} className="space-y-2">
-                                    <div className={cn("text-[10px] font-bold uppercase tracking-tight flex items-center gap-2", isPassed ? "text-emerald-600" : "text-rose-600")}>
+                                    <div className={cn("text-[10px] font-bold uppercase tracking-tight flex items-center gap-2", isPassed ? "text-success" : "text-failure")}>
                                         <div className="w-1 h-3 rounded-full bg-current opacity-50" />
                                         {group.name}
                                     </div>
@@ -167,9 +164,7 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
                             ) : onToggleMaximize ? (
                                 <button
                                     onClick={onToggleMaximize}
-                                    className={cn(
-                                        "p-1.5 rounded-md transition-all flex items-center justify-center text-muted-foreground hover:text-primary"
-                                    )}
+                                    className={"p-1.5 rounded-md transition-all flex items-center justify-center text-muted-foreground hover:text-primary"}
                                     title={isMaximized ? "Exit Fullscreen" : "Maximize"}
                                 >
                                     {isMaximized ? <X size={16}/> : <Maximize2 size={14}/>}
