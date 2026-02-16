@@ -1,8 +1,6 @@
 package dev.kensa.service.logs
 
-import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -32,7 +30,7 @@ class IndexedLogFileQueryServiceTest {
         )
 
         val service = IndexedLogFileQueryService(
-            sources = listOf(FileSource(id = "A", path = log)),
+            source = FileSource(id = "A", path = log),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
         )
@@ -41,22 +39,9 @@ class IndexedLogFileQueryServiceTest {
     }
 
     @Test
-    fun `query returns records for identifier across multiple sources and ignores missing files`() {
-        val log1 = tempDir.resolve("one.log")
-        val log2 = tempDir.resolve("two.log")
-        val missing = tempDir.resolve("missing.log")
-
-        log1.writeText(
-            """
-               $DELIMITER
-                id: shared
-                from-one
-               $DELIMITER
-            """.trimIndent(),
-            UTF_8
-        )
-
-        log2.writeText(
+    fun `query returns records for identifier and unknown source is empty`() {
+        val log = tempDir.resolve("two.log")
+        log.writeText(
             """
                $DELIMITER
                 id: shared
@@ -71,27 +56,25 @@ class IndexedLogFileQueryServiceTest {
         )
 
         val service = IndexedLogFileQueryService(
-            sources = listOf(
-                FileSource(id = "ONE", path = log1),
-                FileSource(id = "MISSING", path = missing),
-                FileSource(id = "TWO", path = log2),
-            ),
+            source = FileSource(id = "TWO", path = log),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
         )
 
-        service.query("ONE", "shared").should { records ->
-            records.map { it.sourceId } shouldContainExactly listOf("ONE")
-            records.map { it.identifier }.distinct() shouldContainExactly listOf("shared")
-        }
-
         service.query("TWO", "shared").should { records ->
-            records.forAll { it.text shouldContain "from-" }
+            records shouldHaveSize 1
+            records.single().sourceId shouldBe "TWO"
+            records.single().identifier shouldBe "shared"
+            records.single().text shouldContain "from-two"
         }
 
-        service.query("TWO", "other").map { it.sourceId } shouldContainExactly listOf("TWO")
+        service.query("TWO", "other").should { records ->
+            records shouldHaveSize 1
+            records.single().text shouldContain "something-else"
+        }
 
-        service.query("MISSING", "missing").shouldBeEmpty()
+        service.query("missing", "shared").shouldBeEmpty()
+        service.queryAll("missing").shouldBeEmpty()
     }
 
     @Test
@@ -112,12 +95,13 @@ class IndexedLogFileQueryServiceTest {
         )
 
         val service = IndexedLogFileQueryService(
-            sources = listOf(FileSource(id = "A", path = log)),
+            source = FileSource(id = "A", path = log),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
         )
 
         service.query("A", "abc").shouldBeEmpty()
+        service.queryAll("A").shouldBeEmpty()
     }
 
     @Test
@@ -136,7 +120,7 @@ class IndexedLogFileQueryServiceTest {
         )
 
         val service = IndexedLogFileQueryService(
-            sources = listOf(FileSource(id = "A", path = log)),
+            source = FileSource(id = "A", path = log),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
         )
@@ -164,7 +148,7 @@ class IndexedLogFileQueryServiceTest {
         )
 
         val service = IndexedLogFileQueryService(
-            sources = listOf(FileSource(id = "A", path = log)),
+            source = FileSource(id = "A", path = log),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
         )
@@ -190,7 +174,7 @@ class IndexedLogFileQueryServiceTest {
         )
 
         val service = IndexedLogFileQueryService(
-            sources = listOf(FileSource(id = "A", path = log)),
+            source = FileSource(id = "A", path = log),
             idPattern = ID_PATTERN,
             delimiterLine = DELIMITER
         )
@@ -198,29 +182,6 @@ class IndexedLogFileQueryServiceTest {
         val all = service.queryAll("A")
         all.shouldHaveSize(2)
         all.map { it.identifier }.toSet() shouldBe setOf("a", "b")
-    }
-
-    @Test
-    fun `unknown source returns empty for query and queryAll`() {
-        val log = tempDir.resolve("a.log")
-        log.writeText(
-            """
-               $DELIMITER
-                id: x
-                payload
-               $DELIMITER
-            """.trimIndent(),
-            UTF_8
-        )
-
-        val service = IndexedLogFileQueryService(
-            sources = listOf(FileSource(id = "A", path = log)),
-            idPattern = ID_PATTERN,
-            delimiterLine = DELIMITER
-        )
-
-        service.query("missing", "x").shouldBeEmpty()
-        service.queryAll("missing").shouldBeEmpty()
     }
 
     private companion object {

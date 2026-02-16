@@ -10,19 +10,14 @@ import dev.kensa.example.adoptabot.AdoptabotParty.AdoptionService
 import dev.kensa.example.adoptabot.AdoptabotParty.Client
 import dev.kensa.example.adoptabot.AdoptionStatus.Adopted
 import dev.kensa.example.adoptabot.AdoptionStatus.Available
-import dev.kensa.service.logs.FileSource
 import dev.kensa.junit.KensaTest
 import dev.kensa.kotest.WithKotest
 import dev.kensa.render.Language.Json
-import dev.kensa.service.logs.CompositeLogQueryService
+import dev.kensa.service.logs.*
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.tabs.InvocationIdentifierProvider
 import dev.kensa.tabs.KensaTabContext
 import dev.kensa.tabs.KensaTabRenderer
-import dev.kensa.service.logs.IndexedLogFileQueryService
-import dev.kensa.service.logs.LogPatterns
-import dev.kensa.service.logs.LogQueryService
-import dev.kensa.service.logs.RawLogFileQueryService
 import dev.kensa.tabs.logs.LogsTabRenderer
 import dev.kensa.util.Attributes
 import io.kotest.matchers.MatcherResult
@@ -294,16 +289,12 @@ class AdoptionServiceTest : KensaTest, WithKotest {
             konfigure {
                 registerTabService(LogQueryService::class) {
                     val appLog = RawLogFileQueryService(
-                        sources = listOf(
-                            FileSource("appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log"))
-                        ),
+                        source = FileSource("appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log")),
                         tailLines = 200
                     )
 
                     val auditLog = IndexedLogFileQueryService(
-                        listOf(
-                            FileSource("auditLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/audit.log"))
-                        ),
+                        source = FileSource("auditLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/audit.log")),
                         LogPatterns.idField("TrackingId"),
                         "#########"
                     )

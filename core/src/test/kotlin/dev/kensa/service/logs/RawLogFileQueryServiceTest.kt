@@ -27,7 +27,7 @@ class RawLogFileQueryServiceTest {
         )
 
         val service = RawLogFileQueryService(
-            sources = listOf(FileSource(id = "appLog", path = log))
+            source = FileSource(id = "appLog", path = log)
         )
 
         val records = service.queryAll("appLog")
@@ -51,7 +51,7 @@ class RawLogFileQueryServiceTest {
         )
 
         val service = RawLogFileQueryService(
-            sources = listOf(FileSource(id = "appLog", path = log))
+            source = FileSource(id = "appLog", path = log)
         )
 
         val records = service.query("appLog", "ERROR")
@@ -68,7 +68,7 @@ class RawLogFileQueryServiceTest {
         val missing = tempDir.resolve("missing.log")
 
         val service = RawLogFileQueryService(
-            sources = listOf(FileSource(id = "missingSource", path = missing))
+            source = FileSource(id = "missingSource", path = missing)
         )
 
         service.queryAll("missingSource").shouldBeEmpty()
@@ -89,7 +89,7 @@ class RawLogFileQueryServiceTest {
         )
 
         val service = RawLogFileQueryService(
-            sources = listOf(FileSource(id = "appLog", path = log)),
+            source = FileSource(id = "appLog", path = log),
             tailLines = 2
         )
 
@@ -110,7 +110,7 @@ class RawLogFileQueryServiceTest {
         )
 
         val service = RawLogFileQueryService(
-            sources = listOf(FileSource(id = "appLog", path = log)),
+            source = FileSource(id = "appLog", path = log),
             tailLines = 0
         )
 
@@ -124,7 +124,7 @@ class RawLogFileQueryServiceTest {
         val missing = tempDir.resolve("missing.log")
 
         val service = RawLogFileQueryService(
-            sources = listOf(FileSource(id = "missingSource", path = missing))
+            source = FileSource(id = "missingSource", path = missing)
         )
 
         service.query("unknown", "ERROR").shouldBeEmpty()
@@ -146,11 +146,10 @@ class RawLogFileQueryServiceTest {
         )
 
         val service = RawLogFileQueryService(
-            sources = listOf(FileSource(id = "appLog", path = log)),
+            source = FileSource(id = "appLog", path = log),
             tailLines = 2
         )
 
-        // Tail is: "INFO three", "ERROR new" so only the new ERROR should remain
         val records = service.query("appLog", "ERROR")
         records.shouldHaveSize(1)
         records.single().text shouldBe "ERROR new"

@@ -8,8 +8,12 @@ class CompositeLogQueryService(
 ) : LogQueryService {
 
     override fun query(sourceId: String, identifier: String): List<LogRecord> =
-        delegatesBySourceId[sourceId]?.query(sourceId, identifier).orEmpty()
+        delegateFor(sourceId).query(sourceId, identifier)
 
     override fun queryAll(sourceId: String): List<LogRecord> =
-        delegatesBySourceId[sourceId]?.queryAll(sourceId).orEmpty()
+        delegateFor(sourceId).queryAll(sourceId)
+
+    private fun delegateFor(sourceId: String): LogQueryService =
+        delegatesBySourceId[sourceId]
+            ?: error("No LogQueryService registered for sourceId [$sourceId]")
 }
