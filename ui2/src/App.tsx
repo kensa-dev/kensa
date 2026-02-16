@@ -369,7 +369,7 @@ const App = () => {
 
                                 <main className="flex-1 overflow-y-auto bg-muted/30">
                                     {selectedIndex ? (
-                                        <div className="p-6 lg:p-8">
+                                        <div className="p-6 lg:p-4">
                                             <div className="max-w-[1400px] mx-auto">
                                                 {isLoading ? (
                                                     <div className="h-64 flex flex-col items-center justify-center text-muted-foreground">

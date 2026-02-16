@@ -48,7 +48,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
 
             {isExpanded && (
                 <div className={cn(
-                    "p-6 space-y-4",
+                    "p-4 space-y-4",
                     isPassed ? "bg-success-2 dark:bg-success-10" : "bg-failure-2 dark:bg-failure-10"
                 )}>
                     <div className="space-y-4">

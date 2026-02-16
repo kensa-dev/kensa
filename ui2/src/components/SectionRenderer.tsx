@@ -20,7 +20,7 @@ export const SectionRenderer = ({ invocation, testState, autoOpenTab }: SectionR
             {sectionOrder.map((section, idx) => {
                 switch (section) {
                     case Section.Tabs:
-                        return <div key={idx} className="mb-6"><Tabs invocation={invocation} testState={testState} autoOpenTab={autoOpenTab} /></div>;
+                        return <div key={idx} className="mb-4"><Tabs invocation={invocation} testState={testState} autoOpenTab={autoOpenTab} /></div>;
 
                     case Section.Sentences:
                         return (

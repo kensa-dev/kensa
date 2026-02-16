@@ -1,25 +1,88 @@
 import * as React from 'react';
-import { FileJson, Info, ChevronUp, ChevronDown, Copy, Search, X, Maximize2, ExternalLink, WrapText } from 'lucide-react';
+import {ChevronDown, ChevronUp, Copy, ExternalLink, FileJson, Info, Maximize2, Search, WrapText, X} from 'lucide-react';
 import hljs from 'highlight.js';
 import json from 'highlight.js/lib/languages/json';
 import xml from 'highlight.js/lib/languages/xml';
-import { cn, getAllTextNodes, removeHighlights } from "@/lib/utils";
+import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils";
+import {DataTable} from "@/components/DataTable.tsx";
+import {NameAndValues} from "@/types/Test.ts";
 
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('xml', xml);
 
-export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpand, isMaximized, onToggleMaximize }: any) => {
-    const { rendered } = interaction;
+type MetadataAttribute = Record<string, unknown>;
+
+type MetadataGroup = {
+    name: string;
+    attributes: MetadataAttribute[];
+};
+
+type Payload = {
+    name: string;
+    language?: string;
+    value?: string;
+};
+
+type RenderedInteraction = {
+    values?: Payload[];
+    attributes?: MetadataGroup[];
+};
+
+type Interaction = {
+    rendered: RenderedInteraction;
+};
+
+type InteractionContentProps = {
+    interaction: Interaction;
+    isPassed: boolean;
+    hideMetadata?: boolean;
+    onExpand?: () => void;
+    isMaximized?: boolean;
+    onToggleMaximize?: () => void;
+};
+
+const formatMetadataValue = (v: unknown): string => {
+    if (v == null) return "";
+    if (typeof v === "string") return v;
+    if (typeof v === "number" || typeof v === "boolean" || typeof v === "bigint") return String(v);
+    if (v instanceof Date) return v.toISOString();
+    try {
+        return JSON.stringify(v);
+    } catch {
+        return String(v);
+    }
+};
+
+export const InteractionContent = ({
+                                       interaction,
+                                       isPassed,
+                                       hideMetadata,
+                                       onExpand,
+                                       isMaximized,
+                                       onToggleMaximize,
+                                   }: InteractionContentProps) => {
+    const {rendered} = interaction;
     const [searchQuery, setSearchQuery] = React.useState("");
     const [currentIndex, setCurrentIndex] = React.useState(0);
     const [isWrapped, setIsWrapped] = React.useState(false);
     const codeRef = React.useRef<HTMLElement>(null);
 
-    const payloads = rendered.values || [];
-    const metadataGroups = rendered.attributes || [];
-    const hasValidPayload = React.useMemo(() => payloads.some((p: any) => p.value && p.value.trim() !== ""), [payloads]);
+    const payloads: Payload[] = rendered.values ?? [];
+    const metadataGroups: MetadataGroup[] = rendered.attributes ?? [];
+
+    const hasValidPayload = React.useMemo(
+        () => payloads.some((p) => typeof p.value === "string" && p.value.trim() !== ""),
+        [payloads]
+    );
 
     const [matchCount, setMatchCount] = React.useState(0);
+
+    const [activeMetaTab, setActiveMetaTab] = React.useState(0);
+
+    React.useEffect(() => {
+        if (metadataGroups.length === 0) return;
+        setActiveMetaTab((prev) => Math.min(prev, metadataGroups.length - 1));
+    }, [metadataGroups.length]);
 
     React.useLayoutEffect(() => {
         const root = codeRef.current;
@@ -36,7 +99,7 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
         const lowerQuery = searchQuery.toLowerCase();
         const allMatchElements: HTMLElement[] = [];
 
-        textNodes.forEach(node => {
+        textNodes.forEach((node) => {
             const text = node.data.toLowerCase();
             const matchOffsets: number[] = [];
             let start = 0;
@@ -58,7 +121,8 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
                         mid.parentNode?.replaceChild(mark, mid);
                         mark.appendChild(mid);
                         nodeMatchElements.unshift(mark);
-                    } catch (e) { /* ignore split errors */ }
+                    } catch (e) { /* ignore split errors */
+                    }
                 }
             }
             allMatchElements.push(...nodeMatchElements);
@@ -69,73 +133,109 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
             const activeMark = allMatchElements[activeIdx];
             if (activeMark) {
                 activeMark.className = "search-highlight px-0.5 rounded-sm transition-all duration-200 bg-orange-500 text-white shadow-[0_0_10px_rgba(249,115,22,0.8)] ring-1 ring-orange-300 z-10 scale-110";
-                activeMark.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+                activeMark.scrollIntoView({block: 'center', inline: 'nearest', behavior: 'smooth'});
             }
         }
 
         setMatchCount(allMatchElements.length);
     }, [searchQuery, currentIndex, isWrapped, interaction]);
 
-    const onCopy = () => { if (payloads[0]?.value) navigator.clipboard.writeText(payloads[0].value); };
-    const nextMatch = () => { if (matchCount > 0) setCurrentIndex(prev => (prev + 1) % matchCount); };
-    const prevMatch = () => { if (matchCount > 0) setCurrentIndex(prev => (prev - 1 + matchCount) % matchCount); };
+    const onCopy = () => {
+        if (payloads[0]?.value) navigator.clipboard.writeText(payloads[0].value);
+    };
+    const nextMatch = () => {
+        if (matchCount > 0) setCurrentIndex((prev) => (prev + 1) % matchCount);
+    };
+    const prevMatch = () => {
+        if (matchCount > 0) setCurrentIndex((prev) => (prev - 1 + matchCount) % matchCount);
+    };
+
+    const activeGroup: MetadataGroup | undefined = metadataGroups[activeMetaTab];
+    const activeGroupTableData: NameAndValues = React.useMemo(() => {
+        if (!activeGroup) return [];
+
+        return activeGroup.attributes.map((attr) => Object.fromEntries(Object.entries(attr).map(([k, v]) => [k, formatMetadataValue(v)] as const)));
+    }, [activeGroup]);
 
     return (
         <div className={cn(
             "flex flex-col h-full bg-background relative font-sans transition-all duration-500",
-            isMaximized ? "border-none shadow-none rounded-none" : "border rounded-xl border-border/60 shadow-sm"
+            isMaximized
+                ? "border-none shadow-none rounded-none"
+                : "border rounded-xl border-border/60 shadow-sm overflow-hidden"
         )}>
 
             {/* Metadata Dashboard */}
             {!hideMetadata && metadataGroups.length > 0 && (
                 <div className={cn(
-                    "flex flex-col border-b overflow-hidden transition-all duration-300 bg-background",
-                    hasValidPayload ? "shrink-0 max-h-[40%]" : "flex-1",
-                    isPassed ? "bg-success-10" : "bg-failure-10"
+                    "flex flex-col overflow-hidden transition-all duration-300 bg-background",
+                    hasValidPayload ? "shrink-0 max-h-[40%] border-b" : "flex-1",
                 )}>
-                    <div className="px-4 py-1.5 border-b border-border/20 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 shrink-0">
-                        <Info size={12} /> Interaction Metadata
+                    <div
+                        className={cn(
+                            "px-4 py-1.5 border-b flex items-center gap-2 text-[10px] font-black uppercase tracking-widest shrink-0",
+                            "bg-background border-border/20 text-muted-foreground/90",
+                            "rounded-t-xl"
+                        )}
+                    >
+                        <Info size={12}/> Interaction Metadata
                     </div>
+
+                    {/* Tabs */}
+                    <div className={cn(
+                        "flex border-b overflow-x-auto transition-colors shrink-0",
+                        isPassed ? "bg-success-10 border-success-30" : "bg-failure-10 border-failure-30"
+                    )}>
+                        {metadataGroups.map((group, i) => (
+                            <button
+                                key={`${group.name}-${i}`}
+                                type="button"
+                                onClick={() => setActiveMetaTab(i)}
+                                className={cn(
+                                    "px-4 py-2 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2",
+                                    activeMetaTab === i
+                                        ? (isPassed
+                                            ? "bg-background text-neutral-800 dark:text-neutral-100 border-success-30"
+                                            : "bg-background text-neutral-800 dark:text-neutral-100 border-failure-30")
+                                        : (isPassed
+                                            ? "text-muted-foreground border-transparent hover:bg-success-10 hover:text-success"
+                                            : "text-muted-foreground border-transparent hover:bg-failure-10 hover:text-failure")
+                                )}
+                                title={group.name}
+                            >
+                                {group.name}
+                            </button>
+                        ))}
+                    </div>
+
                     <div className="overflow-y-auto p-4 custom-scrollbar">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {metadataGroups.map((group: any, i: number) => (
-                                <div key={i} className="space-y-2">
-                                    <div className={cn("text-[10px] font-bold uppercase tracking-tight flex items-center gap-2", isPassed ? "text-success" : "text-failure")}>
-                                        <div className="w-1 h-3 rounded-full bg-current opacity-50" />
-                                        {group.name}
-                                    </div>
-                                    <div className="space-y-1 ml-3">
-                                        {group.attributes.map((attr: any, j: number) => (
-                                            Object.entries(attr).map(([k, v]: [string, any]) => (
-                                                <div key={`${j}-${k}`} className="flex flex-col text-[11px] py-0.5 group">
-                                                    <span className="text-muted-foreground/80 font-medium leading-tight">{k}</span>
-                                                    <span className="text-foreground font-mono break-all leading-tight selection:bg-primary/20">{v}</span>
-                                                </div>
-                                            ))
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        {activeGroup ? (
+                            <div className="ml-3">
+                                <DataTable data={activeGroupTableData} isPassed={isPassed}/>
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             )}
 
             {/* Payload */}
             {hasValidPayload && (
-                <div className="flex-1 flex flex-col overflow-hidden bg-background">
+                <div className="flex-1 flex flex-col overflow-hidden bg-background mb-2">
                     <div className="bg-muted/40 px-3 py-1.5 border-b border-border/50 flex justify-between items-center shrink-0 gap-4">
                         <div className="flex items-center gap-2 shrink-0 text-muted-foreground">
-                            <FileJson size={14} className="text-primary/60" />
+                            <FileJson size={14} className="text-primary/60"/>
                             <span className="text-[10px] font-mono uppercase tracking-widest">{payloads[0].name}</span>
                         </div>
 
                         {/* Search Toolbar */}
                         <div className="flex items-center bg-background border border-border rounded-md px-2 py-0.5 gap-2 grow max-w-md mx-auto group focus-within:ring-1 focus-within:ring-primary transition-all">
-                            <Search size={12} className="text-muted-foreground group-focus-within:text-primary" />
+                            <Search size={12} className="text-muted-foreground group-focus-within:text-primary"/>
                             <input
                                 value={searchQuery}
-                                onChange={(e) => { setSearchQuery(e.target.value); setCurrentIndex(0); }}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    setCurrentIndex(0);
+                                }}
                                 placeholder="Find..."
                                 className="bg-transparent border-none outline-none text-[11px] text-foreground placeholder:text-muted-foreground w-full"
                                 onKeyDown={(e) => {
@@ -188,9 +288,15 @@ export const InteractionContent = ({ interaction, isPassed, hideMetadata, onExpa
                         "flex-1 overflow-auto p-6 text-[13px] font-mono leading-relaxed selection:bg-primary/20 custom-scrollbar transition-all bg-transparent",
                         isWrapped ? "whitespace-pre-wrap" : "whitespace-pre"
                     )}>
-                        <code ref={codeRef} className="hljs" dangerouslySetInnerHTML={{
-                            __html: payloads[0].value ? hljs.highlight(payloads[0].value, {language: payloads[0].language?.toLowerCase() || 'json'}).value : ''
-                        }}/>
+                        <code
+                            ref={codeRef}
+                            className="hljs"
+                            dangerouslySetInnerHTML={{
+                                __html: payloads[0].value
+                                    ? hljs.highlight(payloads[0].value, {language: payloads[0].language?.toLowerCase() || 'json'}).value
+                                    : ''
+                            }}
+                        />
                     </pre>
                 </div>
             )}

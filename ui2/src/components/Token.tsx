@@ -112,9 +112,9 @@ const Expandable = ({token}: { token: TokenType }) => {
                     {parameterTokens && parameterTokens.length > 0 && (
                         <div
                             className={cn(
-                                "px-2 rounded bg-muted/40 border border-border/20 text-foreground/90",
-                                "leading-relaxed",
-                                isMultilineParams ? "basis-full mt-1 ml-0" : "ml-1.5"
+                                "py-0.5 rounded bg-muted/40 border border-border/20 text-foreground/90",
+                                "leading-snug",
+                                isMultilineParams ? "basis-full mt-1 ml-0 max-w[56-rem] w-fit" : "ml-1.5"
                             )}
                         >
                             {renderParameterTokens(parameterTokens)}

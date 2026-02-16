@@ -84,7 +84,7 @@ export const TestContainer = ({ tests, testClass, testToExpand }: TestContainerP
     }, [tests, testToExpand]);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4">
             {tests.map((test, i) => (
                 <div
                     key={`${testClass}-${i}`}

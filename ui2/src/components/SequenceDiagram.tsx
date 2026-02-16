@@ -289,7 +289,7 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                     }
                 >
                     <div className="px-4 h-12 flex flex-row justify-between border-b shrink-0 bg-background">
-                        <div className="px-4 py-1.5 border-b border-border/20 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 shrink-0">
+                        <div className="px-4 py-1.5 border-b border-border/20 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/90 shrink-0">
                             <Info size={12} /> Sequence Diagram
                         </div>
                         <button

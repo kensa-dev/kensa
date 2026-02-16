@@ -1,12 +1,13 @@
-import {useState, useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {InteractionCard} from './InteractionCard';
 import {InteractionDialog} from './InteractionDialog';
 import {cn} from "@/lib/utils";
 import {Tab} from "@/constants.ts";
-import {Interaction, Invocation, NameAndValues} from "@/types/Test.ts";
+import {Interaction, Invocation} from "@/types/Test.ts";
 import {SequenceDiagram} from "@/components/SequenceDiagram.tsx";
 import {loadText} from "@/lib/utils.ts";
 import {CustomTabPanel} from "@/components/CustomTabPanel.tsx";
+import {DataTable} from "@/components/DataTable.tsx";
 
 type TabValue = typeof Tab[keyof typeof Tab];
 
@@ -147,7 +148,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
     return (
         <>
             <div className={cn(
-                "mt-4 border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
+                "border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
                 isPassed ? "border-success-30" : "border-failure-30"
             )}>
                 <div className={cn(
@@ -235,30 +236,3 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
         </>
     );
 };
-
-const DataTable = ({data, isPassed}: { data: NameAndValues, isPassed: boolean }) => (
-    <table className="w-full text-left border-collapse">
-        <thead>
-        <tr className="border-b border-border text-[10px] uppercase tracking-widest text-muted-foreground">
-            <th className="py-2 font-semibold w-1/3">Name</th>
-            <th className="py-2 font-semibold">Value</th>
-        </tr>
-        </thead>
-        <tbody className="divide-y divide-border/40">
-        {data.map((row, i) => (
-            Object.entries(row).map(([key, val], j) => (
-                <tr key={`${i}-${j}`} className={cn(
-                    "group transition-colors",
-                    isPassed ? "hover:bg-success-10" : "hover:bg-failure-10"
-                )}>
-                    <td className={cn(
-                        "py-2 font-medium align-top text-xs",
-                        isPassed ? "text-success dark:text-success" : "text-failure dark:text-failure"
-                    )}>{key}</td>
-                    <td className="py-2 text-muted-foreground font-mono text-[11px] whitespace-pre-wrap">{val}</td>
-                </tr>
-            ))
-        ))}
-        </tbody>
-    </table>
-);

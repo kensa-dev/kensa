@@ -187,7 +187,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
                 {isNative && (
                     <Select value={environment} onValueChange={onEnvChange}>
-                        <SelectTrigger className="h-8 text-[11px] font-medium bg-muted/50 border-transparent hover:bg-muted transition-colors group-data-[collapsible=icon]:hidden">
+                        <SelectTrigger className="h-8 text-[12px] font-medium bg-muted/50 border-transparent hover:bg-muted transition-colors group-data-[collapsible=icon]:hidden">
                             <Globe className="mr-2 h-3.5 w-3.5 text-blue-500"/>
                             <SelectValue/>
                         </SelectTrigger>
@@ -220,7 +220,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                     <input
                                         ref={inputRef}
                                         placeholder="Filter tests..."
-                                        className="flex-1 bg-transparent border-none py-0.5 text-[11px] outline-none min-w-[120px]"
+                                        className="flex-1 bg-transparent border-none py-0.5 text-[12px] outline-none min-w-[120px]"
                                         value={inputValue}
                                         onChange={(e) => handleInputChange(e.target.value)}
                                         onKeyDown={(e) => {
@@ -272,7 +272,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                                 key={item}
                                                 value={item}
                                                 onSelect={() => applySelection(item)}
-                                                className="text-[11px] cursor-pointer"
+                                                className="text-[12px] cursor-pointer"
                                             >
                                                 {item}
                                             </CommandItem>
@@ -287,7 +287,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
             <SidebarContent className="px-2 gap-1">
                 <SidebarGroup className="p-1">
-                    <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/70 h-7 px-2">
+                    <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/90 h-7 px-2">
                         Test Explorer
                     </SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
@@ -315,7 +315,7 @@ function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps)
             ? "text-destructive"
             : node.state === "Passed"
                 ? "text-success dark:text-success"
-                : "text-muted-foreground/70";
+                : "text-muted-foreground/90";
 
     if (node.type === 'project') {
         const treeChildren = buildTree(node.children || []);
