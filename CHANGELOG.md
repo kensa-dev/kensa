@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.44
+  - Fix issue where some report lines would not be indented correctly
+  - Modern UI improvements
+
 ### v0.5.43 
 - Adding `scope` support for tabs, alowing single log tab content to be shown across multiple tests.
 - Add RawLogFileQueryService for displaying raw files without indexing.
