@@ -27,6 +27,7 @@
 
     --success: 160 84% 39%;
     --failure: 346 77% 50%;
+    --disabled: 38 92% 50%;
   }
 
   .dark {
@@ -52,6 +53,7 @@
 
     --success: 160 84% 45%;
     --failure: 346 77% 60%;
+    --disabled: 38 92% 50%;
   }
 }
 
@@ -67,6 +69,7 @@
 @layer utilities {
   .text-success { color: hsl(var(--success)); }
   .text-failure { color: hsl(var(--failure)); }
+  .text-disabled { color: hsl(var(--disabled)); }
 
   .bg-success-2  { background-color: hsl(var(--success) / 0.02); }
   .bg-success-5  { background-color: hsl(var(--success) / 0.05); }
@@ -80,11 +83,20 @@
   .bg-failure-10 { background-color: hsl(var(--failure) / 0.10); }
   .bg-failure-15 { background-color: hsl(var(--failure) / 0.15); }
 
+  .bg-disabled-2  { background-color: hsl(var(--disabled) / 0.02); }
+  .bg-disabled-5  { background-color: hsl(var(--disabled) / 0.05); }
+  .bg-disabled-8  { background-color: hsl(var(--disabled) / 0.08); }
+  .bg-disabled-10 { background-color: hsl(var(--disabled) / 0.10); }
+  .bg-disabled-15 { background-color: hsl(var(--disabled) / 0.15); }
+
   .border-success-20 { border-color: hsl(var(--success) / 0.20); }
   .border-success-30 { border-color: hsl(var(--success) / 0.30); }
 
   .border-failure-20 { border-color: hsl(var(--failure) / 0.20); }
   .border-failure-30 { border-color: hsl(var(--failure) / 0.30); }
+
+  .border-disabled-20 { border-color: hsl(var(--disabled) / 0.20); }
+  .border-disabled-30 { border-color: hsl(var(--disabled) / 0.30); }
 }
 
 .hljs {

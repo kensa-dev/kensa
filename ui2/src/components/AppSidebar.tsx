@@ -2,13 +2,13 @@ import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
 import {Search, Globe, ChevronRight, X} from "lucide-react"
-import { Folder, FolderOpen, Diamond } from "lucide-react"
+import {Folder, FolderOpen, Diamond} from "lucide-react"
 import {buildTree} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
 import {
     Sidebar,
-    SidebarContent,
+    SidebarContent, SidebarFooter,
     SidebarGroup,
     SidebarGroupLabel,
     SidebarHeader,
@@ -42,6 +42,44 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+
+interface StateCounts {
+    passed: number;
+    failed: number;
+    disabled: number;
+    total: number;
+}
+
+const countStates = (nodes: Indices): StateCounts => {
+    const counts: StateCounts = {passed: 0, failed: 0, disabled: 0, total: 0};
+
+    const walk = (items: Indices) => {
+        for (const node of items) {
+            if (node.testMethod) {
+                counts.total++;
+                if (node.state === "Passed") counts.passed++;
+                else if (node.state === "Failed") counts.failed++;
+                else if (node.state === "Disabled") counts.disabled++;
+            }
+            if (node.children) walk(node.children);
+        }
+    };
+
+    walk(nodes);
+    return counts;
+};
+
+const countChildStates = (node: Index): StateCounts => {
+    return countStates(node.children ?? []);
+};
+
+const FILTER_STATES = ['passed', 'failed', 'disabled'] as const;
+
+const BAR_SEGMENTS = [
+    {key: "passed" as const, color: "text-success", bg: "bg-success-10", barCls: "bg-[hsl(var(--success))]"},
+    {key: "failed" as const, color: "text-failure", bg: "bg-failure-10", barCls: "bg-[hsl(var(--failure))]"},
+    {key: "disabled" as const, color: "text-disabled", bg: "bg-disabled-10", barCls: "bg-[hsl(var(--disabled))]"},
+] as const;
 
 interface AppSidebarProps {
     indices: Indices;
@@ -81,7 +119,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
         return Array.from(issues).sort();
     }, [indices]);
 
-    const states = ['passed', 'failed', 'disabled'];
+    const states = FILTER_STATES;
 
     const handleInputChange = (val: string) => {
         setInputValue(val);
@@ -167,6 +205,34 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
             .map(idx => filterNode(idx))
             .filter((idx): idx is Index => Boolean(idx));
     }, [indices, queryMeta, inputValue]);
+
+    const {globalCounts, stateCountsById} = React.useMemo(() => {
+        const global: StateCounts = {passed: 0, failed: 0, disabled: 0, total: 0};
+        const map = new Map<string, StateCounts>();
+
+        const walk = (nodes: Indices) => {
+            for (const node of nodes) {
+                if (node.testMethod) {
+                    global.total++;
+                    if (node.state === "Passed") global.passed++;
+                    else if (node.state === "Failed") global.failed++;
+                    else if (node.state === "Disabled") global.disabled++;
+                }
+
+                if (node.id && node.testClass && node.children && node.children.length > 0) {
+                    const counts = countChildStates(node);
+                    if (counts.failed > 0 || counts.disabled > 0) {
+                        map.set(node.id, counts);
+                    }
+                }
+
+                if (node.children) walk(node.children);
+            }
+        };
+
+        walk(filteredIndices);
+        return {globalCounts: global, stateCountsById: map};
+    }, [filteredIndices]);
 
     return (
         <Sidebar className="w-full border-none">
@@ -292,12 +358,116 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                     </SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
                         {filteredIndices.map((node) => (
-                            <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId}/>
+                            <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}/>
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>
+
+            <SidebarFooter className="p-3 pt-0">
+                <StateCountBar counts={globalCounts}/>
+            </SidebarFooter>
         </Sidebar>
+    );
+}
+
+function StateBadges({counts}: { counts: StateCounts }) {
+    return (
+        <span className="flex items-center gap-1 shrink-0 ml-auto">
+            {counts.failed > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-failure-10 text-failure text-[9px] font-bold px-1">
+                    {counts.failed}
+                </span>
+            )}
+            {counts.disabled > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-disabled-10 text-disabled text-[9px] font-bold px-1">
+                    {counts.disabled}
+                </span>
+            )}
+        </span>
+    );
+}
+
+function StateCountBar({counts}: { counts: StateCounts }) {
+    const {total} = counts;
+    if (total === 0) return null;
+
+    const active = BAR_SEGMENTS
+        .map(s => ({...s, count: counts[s.key]}))
+        .filter(s => s.count > 0);
+
+    return (
+        <div className="space-y-2">
+            <div className="flex h-1.5 rounded-full overflow-hidden bg-muted/50">
+                {active.map((seg) => (
+                    <div
+                        key={seg.key}
+                        className={cn("transition-all duration-500", seg.barCls)}
+                        style={{width: `${(seg.count / total) * 100}%`}}
+                    />
+                ))}
+            </div>
+
+            <div className="flex items-center justify-center gap-2">
+                {active.map((seg) => (
+                    <span
+                        key={seg.key}
+                        className={cn(
+                            "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold",
+                            seg.color, seg.bg
+                        )}
+                    >
+                        {seg.count} {seg.key}
+                    </span>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+interface CollapsibleMenuNodeProps {
+    node: Index;
+    onSelect: (node: Index) => void;
+    selectedId: string | null;
+    stateCountsById: Map<string, StateCounts>;
+    iconTone: string;
+    childCounts: StateCounts | null;
+    labelClassName: string;
+    children: Index[];
+}
+
+function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconTone, childCounts, labelClassName, children}: CollapsibleMenuNodeProps) {
+    const [open, setOpen] = React.useState(true);
+
+    return (
+        <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
+            <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton size="sm" className={labelClassName}>
+                        <ChevronRight
+                            className={cn(
+                                "h-3 w-3 transition-transform duration-200 opacity-50",
+                                open && "rotate-90"
+                            )}
+                        />
+                        {open
+                            ? <FolderOpen className={cn("h-3.5 w-3.5", iconTone)}/>
+                            : <Folder className={cn("h-3.5 w-3.5", iconTone)}/>
+                        }
+                        <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
+                        {childCounts && <StateBadges counts={childCounts}/>}
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                    <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2 py-0">
+                        {children.map((child) => (
+                            <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}/>
+                        ))}
+                    </SidebarMenuSub>
+                </CollapsibleContent>
+            </SidebarMenuItem>
+        </Collapsible>
     );
 }
 
@@ -305,9 +475,10 @@ interface RecursiveMenuItemProps {
     node: Index;
     onSelect: (node: Index) => void;
     selectedId: string | null;
+    stateCountsById: Map<string, StateCounts>;
 }
 
-function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps) {
+const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById}: RecursiveMenuItemProps) {
     const isSelected = selectedId === node.id;
 
     const iconTone =
@@ -317,72 +488,27 @@ function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps)
                 ? "text-success dark:text-success"
                 : "text-muted-foreground/90";
 
+    const childCounts = node.id ? stateCountsById.get(node.id) ?? null : null;
+
     if (node.type === 'project') {
-        const treeChildren = buildTree(node.children || []);
-        const [open, setOpen] = React.useState(true);
-
         return (
-            <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
-                <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                        <SidebarMenuButton size="sm" className="text-[12px] font-bold text-foreground">
-                            <ChevronRight
-                                className={cn(
-                                    "h-3 w-3 transition-transform duration-200 opacity-50",
-                                    open && "rotate-90"
-                                )}
-                            />
-                            {open
-                                ? <FolderOpen className={cn("h-3.5 w-3.5", iconTone)} />
-                                : <Folder className={cn("h-3.5 w-3.5", iconTone)} />
-                            }
-                            <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
-                        </SidebarMenuButton>
-                    </CollapsibleTrigger>
-
-                    <CollapsibleContent>
-                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2 py-0">
-                            {treeChildren.map((child) => (
-                                <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
-                            ))}
-                        </SidebarMenuSub>
-                    </CollapsibleContent>
-                </SidebarMenuItem>
-            </Collapsible>
+            <CollapsibleMenuNode
+                node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
+                iconTone={iconTone} childCounts={childCounts}
+                labelClassName="text-[12px] font-bold text-foreground"
+                children={buildTree(node.children || [])}
+            />
         );
     }
 
     if (node.type === 'package') {
-        const [open, setOpen] = React.useState(true);
-
         return (
-            <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
-                <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                        <SidebarMenuButton size="sm" className="text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200">
-                            <ChevronRight
-                                className={cn(
-                                    "h-3 w-3 transition-transform duration-200 opacity-50",
-                                    open && "rotate-90"
-                                )}
-                            />
-                            {open
-                                ? <FolderOpen className={cn("h-3.5 w-3.5", iconTone)} />
-                                : <Folder className={cn("h-3.5 w-3.5", iconTone)} />
-                            }
-                            <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
-                        </SidebarMenuButton>
-                    </CollapsibleTrigger>
-
-                    <CollapsibleContent>
-                        <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2 py-0">
-                            {node.children?.map((child) => (
-                                <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId}/>
-                            ))}
-                        </SidebarMenuSub>
-                    </CollapsibleContent>
-                </SidebarMenuItem>
-            </Collapsible>
+            <CollapsibleMenuNode
+                node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
+                iconTone={iconTone} childCounts={childCounts}
+                labelClassName="text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                children={node.children || []}
+            />
         );
     }
 
@@ -395,12 +521,14 @@ function RecursiveMenuItem({node, onSelect, selectedId}: RecursiveMenuItemProps)
                 className={cn(
                     "text-[12px] transition-all",
                     isSelected ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground",
-                    node.state === 'Failed' && !isSelected && "text-destructive font-medium"
+                    node.state === 'Failed' && !isSelected && "text-destructive font-medium",
+                    node.state === 'Disabled' && !isSelected && "text-disabled opacity-70"
                 )}
             >
-                <Diamond className={cn("h-3.5 w-3.5", iconTone)}/>
+                <Diamond className={cn("h-3.5 w-3.5 shrink-0", iconTone)}/>
                 <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
+                {childCounts && <StateBadges counts={childCounts}/>}
             </SidebarMenuButton>
         </SidebarMenuItem>
     );
-}
+});

@@ -3,6 +3,8 @@ import {TabType} from "@/constants.ts"
 export type NameAndValue = Record<string, string>
 export type NameAndValues = NameAndValue[]
 
+export type TestState = "Passed" | "Failed" | "Disabled"
+
 export interface TableData {
     type: 'table'
     headers?: string[]
@@ -52,7 +54,7 @@ export interface CustomTabContent {
 }
 
 export interface Invocation {
-    state: string
+    state: TestState
     displayName: string
     elapsedTime: string
     highlights: string[]
@@ -73,7 +75,7 @@ export interface Test {
     displayName: string
     notes: string | null
     issues: string[]
-    state: 'Passed' | 'Failed'
+    state: TestState
     autoOpenTab?: TabType
     invocations: Invocation[]
 }
@@ -81,7 +83,7 @@ export interface Test {
 export interface TestDetail {
     testClass: string
     displayName: string
-    state: 'Passed' | 'Failed'
+    state: TestState
     notes: string | null
     minimumUniquePackageName: string
     issues: string[]
