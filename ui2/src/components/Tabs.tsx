@@ -3,7 +3,7 @@ import {InteractionCard} from './InteractionCard';
 import {InteractionDialog} from './InteractionDialog';
 import {cn} from "@/lib/utils";
 import {Tab} from "@/constants.ts";
-import {Interaction, Invocation} from "@/types/Test.ts";
+import {Interaction, Invocation, TestState} from "@/types/Test.ts";
 import {SequenceDiagram} from "@/components/SequenceDiagram.tsx";
 import {loadText} from "@/lib/utils.ts";
 import {CustomTabPanel} from "@/components/CustomTabPanel.tsx";
@@ -13,7 +13,7 @@ type TabValue = typeof Tab[keyof typeof Tab];
 
 interface TabProps {
     invocation: Invocation;
-    testState: 'Passed' | 'Failed' | string;
+    testState: TestState;
     autoOpenTab?: string;
 }
 
@@ -179,9 +179,9 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                     "p-4 transition-colors",
                     isPassed ? "bg-success-2 dark:bg-success-10" : "bg-failure-2 dark:bg-failure-10"
                 )}>
-                    {activeTab === Tab.Givens && <DataTable data={invocation[Tab.Givens]} isPassed={isPassed}/>}
-                    {activeTab === Tab.CapturedOutputs && <DataTable data={invocation[Tab.CapturedOutputs]} isPassed={isPassed}/>}
-                    {activeTab === Tab.Fixtures && <DataTable data={invocation[Tab.Fixtures]} isPassed={isPassed}/>}
+                    {activeTab === Tab.Givens && <DataTable data={invocation[Tab.Givens]} testState={testState}/>}
+                    {activeTab === Tab.CapturedOutputs && <DataTable data={invocation[Tab.CapturedOutputs]} testState={testState}/>}
+                    {activeTab === Tab.Fixtures && <DataTable data={invocation[Tab.Fixtures]} testState={testState}/>}
 
                     {activeTab === Tab.CapturedInteractions && (
                         <div className="space-y-1">

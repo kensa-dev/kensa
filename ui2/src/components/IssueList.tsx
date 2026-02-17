@@ -1,13 +1,12 @@
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {IssueBadge} from './IssueBadge';
 import {cn} from "@/lib/utils";
-
-type TestState = "Passed" | "Failed";
+import {TestState} from "@/types/Test.ts";
 
 interface IssueListProps {
     issues?: string[];
     limit?: number;
-    testState?: TestState;
+    testState: TestState;
 }
 
 export const IssueList = ({issues = [], limit = 5, testState}: IssueListProps) => {

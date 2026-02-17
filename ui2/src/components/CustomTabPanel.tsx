@@ -3,8 +3,7 @@ import {ChevronDown, ChevronUp, Copy, Maximize2, Search, WrapText, X} from "luci
 import hljs from "highlight.js";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
 import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils.ts";
-
-type TestState = "Passed" | "Failed" | string;
+import {TestState} from "@/types/Test.ts";
 
 interface CustomTabPanelProps {
     title: string;

@@ -4,7 +4,31 @@ import { cn } from "@/lib/utils";
 import { SectionRenderer } from './SectionRenderer';
 import { InvocationCard } from "@/components/InvocationCard.tsx";
 import { IssueBadge } from './IssueBadge';
-import {Invocation, Test} from "@/types/Test.ts";
+import {Invocation, Test, TestState} from "@/types/Test.ts";
+
+const cardBorder: Record<TestState, string> = {
+    Passed: "border-success-30",
+    Failed: "border-failure-30",
+    Disabled: "border-disabled-30",
+};
+
+const headerBg: Record<TestState, string> = {
+    Passed: "bg-success-10 hover:bg-success-15",
+    Failed: "bg-failure-10 hover:bg-failure-15",
+    Disabled: "bg-disabled-10 hover:bg-disabled-15",
+};
+
+const iconColor: Record<TestState, string> = {
+    Passed: "text-success",
+    Failed: "text-failure",
+    Disabled: "text-disabled",
+};
+
+const bodyBg: Record<TestState, string> = {
+    Passed: "bg-success-2 dark:bg-success-10",
+    Failed: "bg-failure-2 dark:bg-failure-10",
+    Disabled: "bg-disabled-2 dark:bg-disabled-10",
+};
 
 interface TestCardProps {
     test: Test;
@@ -19,37 +43,41 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
         setIsExpanded(initialExpanded);
     }, [initialExpanded]);
 
-    const isPassed = test.state === 'Passed';
+    const state = test.state;
+    const isDisabled = state === 'Disabled';
 
     return (
         <div className={cn(
             "bg-card border rounded-xl shadow-sm overflow-hidden transition-all",
-            isPassed ? "border-success-30" : "border-failure-30"
+            cardBorder[state]
         )}>
             <div
                 className={cn(
                     "px-5 py-3 border-b flex items-center justify-between cursor-pointer select-none transition-colors",
-                    isPassed ? "bg-success-10 hover:bg-success-15" : "bg-failure-10 hover:bg-failure-15"
+                    headerBg[state],
+                    isDisabled ? "cursor-default" : "cursor-pointer"
                 )}
-                onClick={() => setIsExpanded(!isExpanded)}
+                onClick={() => !isDisabled && setIsExpanded(!isExpanded)}
             >
                 <h3 className={"font-bold flex items-center gap-2 text-sm tracking-tight"}>
-                    <Beaker size={16} className={isPassed ? "text-success" : "text-failure"} />
+                    <Beaker size={16} className={iconColor[state]} />
                     {test.displayName}
                 </h3>
 
                 <div className="flex items-center gap-1.5 ml-4">
                     {test.issues?.map((issue: string) => (
-                        <IssueBadge key={issue} issue={issue} testState={test.state} />
+                        <IssueBadge key={issue} issue={issue} testState={state} />
                     ))}
-                    {isExpanded ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />}
+                    {!isDisabled && (
+                        isExpanded ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />
+                    )}
                 </div>
             </div>
 
-            {isExpanded && (
+            {!isDisabled && isExpanded && (
                 <div className={cn(
                     "p-4 space-y-4",
-                    isPassed ? "bg-success-2 dark:bg-success-10" : "bg-failure-2 dark:bg-failure-10"
+                    bodyBg[state]
                 )}>
                     <div className="space-y-4">
                         {test.invocations.map((invocation: Invocation, invIdx: number) => {

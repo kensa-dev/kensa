@@ -4,11 +4,11 @@ import { FailureMessage } from './FailureMessage';
 import { Section } from '@/constants';
 import {useContext} from "react";
 import {ConfigContext} from "@/contexts/ConfigContext.tsx";
-import {Invocation} from "@/types/Test.ts";
+import {Invocation, TestState} from "@/types/Test.ts";
 
 interface SectionRendererProps {
     invocation: Invocation;
-    testState: string;
+    testState: TestState;
     autoOpenTab?: string;
 }
 

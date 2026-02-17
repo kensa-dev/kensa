@@ -1,11 +1,9 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import type {Interaction} from "@/types/Test.ts";
+import type {Interaction, TestState} from "@/types/Test.ts";
 import {InteractionDialog} from "@/components/InteractionDialog";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
 import {Info, Maximize2, X} from "lucide-react";
 import "./SequenceDiagram.css";
-
-type TestState = "Passed" | "Failed" | string;
 
 interface SequenceDiagramProps {
     sequenceDiagram: string;
@@ -33,7 +31,6 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                                                                     maxHeight = 700,
                                                                 }) => {
     const isPassed = testState === "Passed";
-
     const scrollRef = useRef<HTMLDivElement>(null);
     const inlineRootRef = useRef<HTMLDivElement>(null);
     const modalRootRef = useRef<HTMLDivElement>(null);

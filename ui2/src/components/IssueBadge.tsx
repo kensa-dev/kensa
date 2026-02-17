@@ -1,13 +1,12 @@
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { ConfigContext } from "@/contexts/ConfigContext.tsx";
-import { useContext } from "react";
-import { cn } from "@/lib/utils";
+import {Link} from "react-router-dom";
+import {Badge} from "@/components/ui/badge";
+import {ConfigContext} from "@/contexts/ConfigContext.tsx";
+import {useContext} from "react";
+import {cn} from "@/lib/utils";
+import {TestState} from "@/types/Test.ts";
 
-type TestState = "Passed" | "Failed";
-
-export const IssueBadge = ({ issue, testState }: { issue: string; testState?: TestState }) => {
-    const { issueTrackerUrl } = useContext(ConfigContext);
+export const IssueBadge = ({issue, testState}: { issue: string; testState: TestState }) => {
+    const {issueTrackerUrl} = useContext(ConfigContext);
 
     const baseClasses = "rounded-md border transition-colors bg-clip-padding";
 

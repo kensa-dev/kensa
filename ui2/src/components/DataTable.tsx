@@ -1,7 +1,13 @@
-import {NameAndValues} from "@/types/Test.ts";
+import {NameAndValues, TestState} from "@/types/Test.ts";
 import {cn} from "@/lib/utils.ts";
 
-export const DataTable = ({data, isPassed}: { data: NameAndValues, isPassed: boolean }) => (
+const rowHover: Record<TestState, string> = {
+    Passed: "hover:bg-success-10",
+    Failed: "hover:bg-failure-10",
+    Disabled: "hover:bg-disabled-10",
+};
+
+export const DataTable = ({data, testState}: { data: NameAndValues, testState: TestState }) => (
     <table className="w-full text-left border-collapse text-[13px] table-fixed">
         <colgroup>
             <col className="w-1/3" />
@@ -20,7 +26,7 @@ export const DataTable = ({data, isPassed}: { data: NameAndValues, isPassed: boo
             Object.entries(row).map(([key, val], j) => (
                 <tr key={`${i}-${j}`} className={cn(
                     "group transition-colors",
-                    isPassed ? "hover:bg-success-10" : "hover:bg-failure-10"
+                    rowHover[testState]
                 )}>
                     <td className="py-2 align-top truncate">{key}</td>
                     <td className="py-2 whitespace-pre-wrap break-words">{val}</td>
