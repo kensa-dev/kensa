@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef, useMemo} from 'react';
-import {Beaker, Package, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
+import {Beaker, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar.tsx';
 import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
@@ -344,7 +344,6 @@ const App = () => {
                                                 )}
                                             >
                                                 <div className="flex items-center gap-2 text-[11px] leading-5 font-mono tracking-wider opacity-70 text-neutral-800 dark:text-neutral-100">
-                                                    <Package size={12} className="shrink-0 opacity-80"/>
                                                     <span className="truncate">
                                                             {selectedIndex.testClass}
                                                         </span>

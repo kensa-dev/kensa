@@ -31,13 +31,6 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command"
-import {
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -76,9 +69,9 @@ const countChildStates = (node: Index): StateCounts => {
 const FILTER_STATES = ['passed', 'failed', 'disabled'] as const;
 
 const BAR_SEGMENTS = [
-    {key: "passed" as const, color: "text-success", bg: "bg-success-10", barCls: "bg-[hsl(var(--success))]"},
-    {key: "failed" as const, color: "text-failure", bg: "bg-failure-10", barCls: "bg-[hsl(var(--failure))]"},
-    {key: "disabled" as const, color: "text-disabled", bg: "bg-disabled-10", barCls: "bg-[hsl(var(--disabled))]"},
+    {key: "passed" as const, color: "text-success", bg: "bg-success-5", barCls: "bg-[hsl(var(--success)/0.8)]"},
+    {key: "failed" as const, color: "text-failure", bg: "bg-failure-5", barCls: "bg-[hsl(var(--failure)/0.8)]"},
+    {key: "disabled" as const, color: "text-disabled", bg: "bg-disabled-5", barCls: "bg-[hsl(var(--disabled)/0.8)]"},
 ] as const;
 
 interface AppSidebarProps {
@@ -94,19 +87,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef}: AppSidebarProps) {
-    const [inputValue, setInputValue] = React.useState("");
-    const [showPicker, setShowPicker] = React.useState(false);
-    const [pickerType, setPickerType] = React.useState<'state' | 'issue' | null>(null);
-
-    const handleRemoveBadge = (token: string) => {
-        const newQuery = searchQuery
-            .split(/\s+/)
-            .filter(part => part !== token)
-            .join(' ')
-            .trim();
-        onSearchChange(newQuery);
-    };
-
     const allIssues = React.useMemo(() => {
         const issues = new Set<string>();
         const collect = (nodes: Indices) => {
@@ -121,13 +101,35 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
     const states = FILTER_STATES;
 
+    const [inputValue, setInputValue] = React.useState("");
+    const [showPicker, setShowPicker] = React.useState(false);
+    const [pickerType, setPickerType] = React.useState<'state' | 'issue' | null>(null);
+    const [pickerIndex, setPickerIndex] = React.useState(0);
+
+    const pickerItems = React.useMemo(() => {
+        if (pickerType === 'state') return [...states];
+        if (pickerType === 'issue') return allIssues;
+        return [];
+    }, [pickerType, states, allIssues]);
+
+    const handleRemoveBadge = (token: string) => {
+        const newQuery = searchQuery
+            .split(/\s+/)
+            .filter(part => part !== token)
+            .join(' ')
+            .trim();
+        onSearchChange(newQuery);
+    };
+
     const handleInputChange = (val: string) => {
         setInputValue(val);
         if (val.endsWith('state:')) {
             setPickerType('state');
+            setPickerIndex(0);
             setShowPicker(true);
         } else if (val.endsWith('issue:')) {
             setPickerType('issue');
+            setPickerIndex(0);
             setShowPicker(true);
         } else {
             setShowPicker(false);
@@ -182,10 +184,28 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                 const matchesState = requiredStates.length === 0 ||
                     requiredStates.some(s => nodeState.startsWith(s.toLowerCase()));
 
-                const matchesIssue = requiredIssues.length === 0 ||
+                // Class issues...
+                const classMatchesIssue = requiredIssues.length === 0 ||
                     nodeIssues.some(ni => requiredIssues.some(ri => ni.includes(ri.toLowerCase())));
+                if (matchesText && matchesState && classMatchesIssue) return node;
 
-                return (matchesText && matchesState && matchesIssue) ? node : null;
+                // Child issues...
+                if (requiredIssues.length > 0 && node.children) {
+                    const matchingChildren = node.children.filter((child: Index) => {
+                        const childIssues = (child.issues || []).map((i: string) => i.toLowerCase());
+                        const childMatchesIssue = childIssues.some(ci => requiredIssues.some(ri => ci.includes(ri.toLowerCase())));
+                        const childState = (child.state || "").toLowerCase();
+                        const childMatchesState = requiredStates.length === 0 ||
+                            requiredStates.some(s => childState.startsWith(s.toLowerCase()));
+                        return childMatchesIssue && childMatchesState;
+                    });
+
+                    if (matchesText && matchingChildren.length > 0) {
+                        return {...node, children: matchingChildren};
+                    }
+                }
+
+                return null;
             }
 
             if (node.children) {
@@ -274,12 +294,18 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                 <div className="flex flex-wrap items-center gap-1 pl-7 w-full">
                                     {queryMeta.states.map(s => (
                                         <Badge key={s} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-blue-500/10 text-blue-600 border-blue-200">
-                                            state:{s} <X size={10} className="cursor-pointer" onClick={() => handleRemoveBadge(`state:${s}`)}/>
+                                            state:{s}
+                                            <span className="cursor-pointer" onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); handleRemoveBadge(`state:${s}`); }}>
+                                                    <X size={10} className="pointer-events-none" />
+                                                </span>
                                         </Badge>
                                     ))}
                                     {queryMeta.issues.map(i => (
                                         <Badge key={i} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-amber-500/10 text-amber-600 border-amber-200">
-                                            issue:{i} <X size={10} className="cursor-pointer" onClick={() => handleRemoveBadge(`issue:${i}`)}/>
+                                            issue:{i}
+                                            <span className="cursor-pointer" onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); handleRemoveBadge(`issue:${i}`); }}>
+                                                    <X size={10} className="pointer-events-none" />
+                                                </span>
                                         </Badge>
                                     ))}
 
@@ -290,6 +316,24 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                         value={inputValue}
                                         onChange={(e) => handleInputChange(e.target.value)}
                                         onKeyDown={(e) => {
+                                            if (showPicker && pickerItems.length > 0) {
+                                                if (e.key === 'ArrowDown') {
+                                                    e.preventDefault();
+                                                    setPickerIndex(i => Math.min(i + 1, pickerItems.length - 1));
+                                                    return;
+                                                }
+                                                if (e.key === 'ArrowUp') {
+                                                    e.preventDefault();
+                                                    setPickerIndex(i => Math.max(i - 1, 0));
+                                                    return;
+                                                }
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    applySelection(pickerItems[pickerIndex]);
+                                                    return;
+                                                }
+                                            }
+
                                             if (e.key === ' ' && showPicker) {
                                                 setShowPicker(false);
                                             }
@@ -306,7 +350,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                                 setInputValue("");
                                                 onSearchChange("");
                                                 setShowPicker(false);
-                                                e.currentTarget.blur();
+                                                inputRef?.current?.focus();
                                             }
 
                                             if (e.key === 'Backspace' && inputValue === '') {
@@ -329,23 +373,36 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                             side="bottom"
                             onOpenAutoFocus={(e) => e.preventDefault()}
                         >
-                            <Command className="rounded-lg border shadow-md">
-                                <CommandList>
-                                    <CommandEmpty>No matches found.</CommandEmpty>
-                                    <CommandGroup heading={pickerType === 'state' ? "Select State" : "Select Issue"}>
-                                        {(pickerType === 'state' ? states : allIssues).map((item) => (
-                                            <CommandItem
+                            <div className="rounded-lg bg-popover p-1">
+                                <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                                    {pickerType === 'state' ? "Select State" : "Select Issue"}
+                                </div>
+                                <div className="max-h-[200px] overflow-y-auto">
+                                    {pickerItems.length === 0 ? (
+                                        <div className="px-2 py-1.5 text-xs text-muted-foreground">No matches found.</div>
+                                    ) : (
+                                        pickerItems.map((item, idx) => (
+                                            <div
                                                 key={item}
-                                                value={item}
-                                                onSelect={() => applySelection(item)}
-                                                className="text-[12px] cursor-pointer"
+                                                className={cn(
+                                                    "flex items-center rounded-sm px-2 py-1.5 text-[12px] cursor-pointer",
+                                                    idx === pickerIndex
+                                                        ? "bg-accent text-accent-foreground"
+                                                        : "text-popover-foreground hover:bg-accent/50"
+                                                )}
+                                                onPointerDown={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    applySelection(item);
+                                                }}
+                                                onPointerEnter={() => setPickerIndex(idx)}
                                             >
                                                 {item}
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
                         </PopoverContent>
                     </Popover>
                 </div>
