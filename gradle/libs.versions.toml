@@ -16,7 +16,7 @@ minimalJson = "0.9.5"
 antlr = "4.13.2"
 nexusPublish = "2.0.0"
 jsoup = "1.21.2"
-byteBuddy = "1.17.8"
+byteBuddy = "1.18.4"
 
 http4k = "6.23.1.0"
 jackson = "2.20.1"
