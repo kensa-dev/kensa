@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.46
+  - Improve registration of log services for Modern UI (Thanks to Paul Reynolds)
+
 ### v0.5.45
   - Modern UI improvements:
     Keep focus in the search field after 'Escape' clear
