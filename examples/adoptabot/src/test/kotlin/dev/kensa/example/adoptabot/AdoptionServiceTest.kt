@@ -14,6 +14,7 @@ import dev.kensa.junit.KensaTest
 import dev.kensa.kotest.WithKotest
 import dev.kensa.render.Language.Json
 import dev.kensa.service.logs.*
+import dev.kensa.service.logs.LogQueryServiceRegistry.Companion.compositeLogQueryService
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.tabs.InvocationIdentifierProvider
 import dev.kensa.tabs.KensaTabContext
@@ -288,18 +289,10 @@ class AdoptionServiceTest : KensaTest, WithKotest {
         fun registerServices() {
             konfigure {
                 registerTabService(LogQueryService::class) {
-                    val appLog = RawLogFileQueryService(
-                        source = FileSource("appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log")),
-                        tailLines = 200
-                    )
-
-                    val auditLog = IndexedLogFileQueryService(
-                        source = FileSource("auditLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/audit.log")),
-                        LogPatterns.idField("TrackingId"),
-                        "#########"
-                    )
-
-                    CompositeLogQueryService(mapOf("appLog" to appLog, "auditLog" to auditLog))
+                    compositeLogQueryService {
+                        rawFile("appLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/app.log"), 200)
+                        indexedFile("auditLog", Path(System.getProperty("user.dir")).resolve("build/resources/test/logs/audit.log"), LogPatterns.idField("TrackingId"), "#########")
+                    }
                 }
             }
         }
