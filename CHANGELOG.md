@@ -1,5 +1,14 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.45
+  - Modern UI improvements:
+    Keep focus in the search field after 'Escape' clear
+    Remove package icon.
+    Add keyboard navigation to issue and state pickers.
+    Handle method level issue filtering 
+    Allow removing the state/issue badge by clicking on the x
+    Dial down bar colours a bit
+
 ### v0.5.44
   - Fix issue where some report lines would not be indented correctly
   - Modern UI improvements
