@@ -1,0 +1,44 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithCapturedOutputsTest",
+  "displayName": "Kotlin With Captured Outputs Test",
+  "state": "Not Executed",
+  "notes": null,
+  "minimumUniquePackageName": "",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "test3",
+      "displayName": "Test 3",
+      "notes": null,
+      "issues": [
+        "ISS-67890"
+      ],
+      "state": "Not Executed",
+      "autoOpenTab": "None",
+      "invocations": []
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test2",
+      "displayName": "Test 2",
+      "notes": null,
+      "issues": [],
+      "state": "Not Executed",
+      "autoOpenTab": "None",
+      "invocations": []
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test1",
+      "displayName": "Test 1",
+      "notes": null,
+      "issues": [
+        "ISS-23456"
+      ],
+      "state": "Not Executed",
+      "autoOpenTab": "None",
+      "invocations": []
+    }
+  ]
+}

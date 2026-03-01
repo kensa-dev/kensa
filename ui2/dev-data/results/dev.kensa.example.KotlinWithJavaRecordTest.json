@@ -1,0 +1,59 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithJavaRecordTest",
+  "displayName": "Kotlin With Java Record Test",
+  "state": "Failed",
+  "notes": null,
+  "minimumUniquePackageName": "",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "notes": null,
+      "issues": [],
+      "state": "Failed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            [
+              {
+                "types": [
+                  "tk-kw"
+                ],
+                "value": "Given"
+              },
+              {
+                "types": [
+                  "tk-wd"
+                ],
+                "value": "a java record with value"
+              },
+              {
+                "types": [
+                  "tk-fv"
+                ],
+                "value": "MyRecordValue"
+              }
+            ]
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Failed",
+          "executionException": {
+            "message": "Assertion failed: Expected value did not match actual value",
+            "stackTrace": "java.lang.AssertionError: Assertion failed: Expected value did not match actual value\n\tat dev.kensa.example.KotlinWithJavaRecordTest.passingTest(KotlinWithJavaRecordTest.kt:80)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)"
+          },
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}
