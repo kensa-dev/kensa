@@ -2,7 +2,7 @@
 kotlin = "2.3.0"
 coroutines = "1.10.2"
 node = "22.4.1"
-nodeGradle = "7.0.2"
+nodeGradle = "7.1.0"
 plantUml = "1.2025.10"
 pebble = "3.2.4"
 mockito = "6.2.2"
