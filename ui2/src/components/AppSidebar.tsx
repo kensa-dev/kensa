@@ -1,40 +1,15 @@
 import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
-import {Search, Globe, ChevronRight, X} from "lucide-react"
-import {Folder, FolderOpen, Diamond} from "lucide-react"
+import {ChevronRight, Diamond, Folder, FolderOpen, Globe, Search, X} from "lucide-react"
 import {buildTree} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
-import {
-    Sidebar,
-    SidebarContent, SidebarFooter,
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuSub,
-} from "@/components/ui/sidebar"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import {Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub,} from "@/components/ui/sidebar"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select"
 import {Index, Indices} from "@/types/Index";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from "@/components/ui/collapsible"
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 
 interface StateCounts {
     passed: number;
@@ -78,15 +53,16 @@ interface AppSidebarProps {
     indices: Indices;
     searchQuery: string;
     onSearchChange: (query: string) => void;
-    onSelect: (node: Index) => void;
+    onSelect: (node: Index, firstMatchingMethod: string | null, allMatchingMethods: string[]) => void;
     selectedId: string | null;
     environment: string;
     onEnvChange: (env: string) => void;
     isNative?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
+    onFilterApplied?: (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => void;
 }
 
-export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef}: AppSidebarProps) {
+export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied}: AppSidebarProps) {
     const allIssues = React.useMemo(() => {
         const issues = new Set<string>();
         const collect = (nodes: Indices) => {
@@ -159,7 +135,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
         return {text, issues, states};
     }, [searchQuery]);
 
-    const filteredIndices = React.useMemo(() => {
+    const {filteredIndices, firstMatchingTest, firstMatchingMethod, testMethodMap, matchingMethodsMap} = React.useMemo(() => {
         const {states, issues} = queryMeta;
 
         const activeTyping = inputValue.toLowerCase();
@@ -169,6 +145,11 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
         const requiredStates = typingState ? [...states, typingState] : states;
         const requiredIssues = typingIssue ? [...issues, typingIssue] : issues;
+
+        let firstTest: Index | null = null;
+        let firstMethod: string | null = null;
+        const methodMap = new Map<string, string | null>();
+        const allMatchingMethodsMap = new Map<string, string[]>();
 
         const filterNode = (node: Index): Index | null => {
             const isLeaf = node.testClass && (!node.children || node.children.every((c: Index) => c.testMethod));
@@ -187,22 +168,49 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                 // Class issues...
                 const classMatchesIssue = requiredIssues.length === 0 ||
                     nodeIssues.some(ni => requiredIssues.some(ri => ni.includes(ri.toLowerCase())));
-                if (matchesText && matchesState && classMatchesIssue) return node;
 
-                // Child issues...
-                if (requiredIssues.length > 0 && node.children) {
+                // If we have state/issue filters, we MUST filter children
+                if (node.children && (requiredStates.length > 0 || requiredIssues.length > 0)) {
                     const matchingChildren = node.children.filter((child: Index) => {
-                        const childIssues = (child.issues || []).map((i: string) => i.toLowerCase());
-                        const childMatchesIssue = childIssues.some(ci => requiredIssues.some(ri => ci.includes(ri.toLowerCase())));
                         const childState = (child.state || "").toLowerCase();
                         const childMatchesState = requiredStates.length === 0 ||
                             requiredStates.some(s => childState.startsWith(s.toLowerCase()));
-                        return childMatchesIssue && childMatchesState;
+
+                        if (requiredIssues.length > 0) {
+                            // If the class has the issue, all children match (issue at class level applies to all methods)
+                            if (classMatchesIssue) {
+                                return childMatchesState;
+                            }
+                            // Otherwise, check if the child has the issue
+                            const childIssues = (child.issues || []).map((i: string) => i.toLowerCase());
+                            const childMatchesIssue = childIssues.some(ci => requiredIssues.some(ri => ci.includes(ri.toLowerCase())));
+                            return childMatchesIssue && childMatchesState;
+                        }
+
+                        return childMatchesState;
                     });
 
-                    if (matchesText && matchingChildren.length > 0) {
+                    if (matchingChildren.length > 0 && matchesText) {
+                        const matchingMethod = matchingChildren[0]?.testMethod || null;
+                        const allMethods = matchingChildren.map(c => c.testMethod).filter((m): m is string => Boolean(m));
+                        methodMap.set(node.id, matchingMethod);
+                        allMatchingMethodsMap.set(node.id, allMethods);
+                        if (!firstTest) {
+                            firstTest = node;
+                            firstMethod = matchingMethod;
+                        }
                         return {...node, children: matchingChildren};
                     }
+                    // If no children match the state/issue filter, don't show this node
+                    return null;
+                }
+
+                // No state/issue filters - use class-level matching
+                if (matchesText && matchesState && classMatchesIssue) {
+                    methodMap.set(node.id, null);
+                    allMatchingMethodsMap.set(node.id, []);
+                    if (!firstTest) firstTest = node;
+                    return node;
                 }
 
                 return null;
@@ -214,6 +222,16 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                     .filter((child): child is Index => Boolean(child));
 
                 if (filteredChildren.length > 0) {
+                    const firstChildMethod = filteredChildren[0]?.testMethod || null;
+                    const allMethods = filteredChildren.map(c => c.testMethod).filter((m): m is string => Boolean(m));
+                    if (firstChildMethod && node.id) {
+                        methodMap.set(node.id, firstChildMethod);
+                        allMatchingMethodsMap.set(node.id, allMethods);
+                        if (!firstTest) {
+                            firstTest = node;
+                            firstMethod = firstChildMethod;
+                        }
+                    }
                     return {...node, children: filteredChildren};
                 }
             }
@@ -221,9 +239,17 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
             return null;
         };
 
-        return indices
+        const filtered = indices
             .map(idx => filterNode(idx))
             .filter((idx): idx is Index => Boolean(idx));
+
+        return {
+            filteredIndices: filtered,
+            firstMatchingTest: firstTest,
+            firstMatchingMethod: firstMethod,
+            testMethodMap: methodMap,
+            matchingMethodsMap: allMatchingMethodsMap
+        };
     }, [indices, queryMeta, inputValue]);
 
     const {globalCounts, stateCountsById} = React.useMemo(() => {
@@ -253,6 +279,21 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
         walk(filteredIndices);
         return {globalCounts: global, stateCountsById: map};
     }, [filteredIndices]);
+
+    const prevSearchQueryRef = React.useRef(searchQuery);
+    const prevInputValueRef = React.useRef(inputValue);
+
+    React.useEffect(() => {
+        const hasFilter = searchQuery || inputValue;
+        const filterChanged = prevSearchQueryRef.current !== searchQuery || prevInputValueRef.current !== inputValue;
+
+        if (onFilterApplied && hasFilter && filterChanged) {
+            onFilterApplied(firstMatchingTest, firstMatchingMethod, matchingMethodsMap);
+        }
+
+        prevSearchQueryRef.current = searchQuery;
+        prevInputValueRef.current = inputValue;
+    }, [firstMatchingTest, firstMatchingMethod, matchingMethodsMap, onFilterApplied, searchQuery, inputValue]);
 
     return (
         <Sidebar className="w-full border-none">
@@ -415,7 +456,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                     </SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
                         {filteredIndices.map((node) => (
-                            <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}/>
+                            <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById} testMethodMap={testMethodMap} matchingMethodsMap={matchingMethodsMap}/>
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
@@ -484,16 +525,18 @@ function StateCountBar({counts}: { counts: StateCounts }) {
 
 interface CollapsibleMenuNodeProps {
     node: Index;
-    onSelect: (node: Index) => void;
+    onSelect: (node: Index, firstMatchingMethod: string | null, allMatchingMethods: string[]) => void;
     selectedId: string | null;
     stateCountsById: Map<string, StateCounts>;
     iconTone: string;
     childCounts: StateCounts | null;
     labelClassName: string;
     children: Index[];
+    testMethodMap: Map<string, string | null>;
+    matchingMethodsMap: Map<string, string[]>;
 }
 
-function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconTone, childCounts, labelClassName, children}: CollapsibleMenuNodeProps) {
+function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconTone, childCounts, labelClassName, children, testMethodMap, matchingMethodsMap}: CollapsibleMenuNodeProps) {
     const [open, setOpen] = React.useState(true);
 
     return (
@@ -519,7 +562,7 @@ function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconT
                 <CollapsibleContent>
                     <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2 py-0">
                         {children.map((child) => (
-                            <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}/>
+                            <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById} testMethodMap={testMethodMap} matchingMethodsMap={matchingMethodsMap}/>
                         ))}
                     </SidebarMenuSub>
                 </CollapsibleContent>
@@ -530,12 +573,14 @@ function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconT
 
 interface RecursiveMenuItemProps {
     node: Index;
-    onSelect: (node: Index) => void;
+    onSelect: (node: Index, firstMatchingMethod: string | null, allMatchingMethods: string[]) => void;
     selectedId: string | null;
     stateCountsById: Map<string, StateCounts>;
+    testMethodMap: Map<string, string | null>;
+    matchingMethodsMap: Map<string, string[]>;
 }
 
-const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById}: RecursiveMenuItemProps) {
+const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById, testMethodMap, matchingMethodsMap}: RecursiveMenuItemProps) {
     const isSelected = selectedId === node.id;
 
     const iconTone =
@@ -554,6 +599,8 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                 iconTone={iconTone} childCounts={childCounts}
                 labelClassName="text-[12px] font-bold text-foreground"
                 children={buildTree(node.children || [])}
+                testMethodMap={testMethodMap}
+                matchingMethodsMap={matchingMethodsMap}
             />
         );
     }
@@ -565,6 +612,8 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                 iconTone={iconTone} childCounts={childCounts}
                 labelClassName="text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
                 children={node.children || []}
+                testMethodMap={testMethodMap}
+                matchingMethodsMap={matchingMethodsMap}
             />
         );
     }
@@ -574,7 +623,11 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
             <SidebarMenuButton
                 size="sm"
                 isActive={isSelected}
-                onClick={() => onSelect(node)}
+                onClick={() => {
+                    const method = testMethodMap.get(node.id) ?? null;
+                    const allMethods = matchingMethodsMap.get(node.id) ?? [];
+                    onSelect(node, method, allMethods);
+                }}
                 className={cn(
                     "text-[12px] transition-all",
                     isSelected ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground",

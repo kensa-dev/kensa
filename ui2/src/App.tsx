@@ -31,13 +31,15 @@ const App = () => {
     const [testDetail, setTestDetail] = useState<TestDetail | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const searchQuery = searchParams.get("q") || "";
-    const testToExpand = searchParams.get("method") || "";
+    const [testToExpand, setTestToExpand] = useState<string>("");
+    const [matchingMethods, setMatchingMethods] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('theme') === 'dark');
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [commandQuery, setCommandQuery] = useState("");
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const pendingTestToExpandRef = useRef<{testId: string, method: string} | null>(null);
 
     const navigate = useNavigateWithSearch();
     const location = useLocation();
@@ -48,6 +50,26 @@ const App = () => {
             else prev.delete("q");
             return prev;
         }, {replace: true});
+
+        if (!query) {
+            setMatchingMethods([]);
+        }
+    };
+
+    const handleFilterApplied = (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => {
+        if (firstTest && firstTest.id) {
+            if (selectedIndex?.id !== firstTest.id) {
+                navigate(`/test/${firstTest.id}`, {replace: true});
+            }
+            setTestToExpand(firstMethod || "");
+        } else {
+            setTestToExpand("");
+        }
+
+        if (selectedIndex?.id) {
+            const methods = matchingMethodsMap.get(selectedIndex.id) || [];
+            setMatchingMethods(methods);
+        }
     };
 
     useEffect(() => {
@@ -115,7 +137,7 @@ const App = () => {
             }
         };
 
-        window.addEventListener("keydown", handleKeyDown, true); // Use capture phase (true)
+        window.addEventListener("keydown", handleKeyDown, true);
         return () => window.removeEventListener("keydown", handleKeyDown, true);
     }, [isSidebarCollapsed]);
 
@@ -174,6 +196,11 @@ const App = () => {
 
             if (data) {
                 setTestDetail(data);
+
+                if (pendingTestToExpandRef.current?.testId === selectedIndex.id) {
+                    setTestToExpand(pendingTestToExpandRef.current.method);
+                    pendingTestToExpandRef.current = null;
+                }
             }
 
             setIsLoading(false);
@@ -298,15 +325,28 @@ const App = () => {
                                 onSearchChange={onSearchChange}
                                 environment={environment}
                                 onEnvChange={setEnvironment}
-                                onSelect={(node) => {
+                                onSelect={(node, firstMatchingMethod, allMatchingMethods) => {
                                     if (node.id.startsWith('pkg:') || node.id === 'root-project') {
                                         return;
                                     }
-                                    navigate(`/test/${node.id}`);
+
+                                    if (selectedIndex?.id === node.id) {
+                                        setTestToExpand(firstMatchingMethod || "");
+                                        setMatchingMethods(allMatchingMethods);
+                                    } else {
+                                        pendingTestToExpandRef.current = {
+                                            testId: node.id,
+                                            method: firstMatchingMethod || ""
+                                        };
+                                        setTestToExpand("");
+                                        setMatchingMethods(allMatchingMethods);
+                                        navigate(`/test/${node.id}`, {replace: true});
+                                    }
                                 }}
                                 selectedId={selectedIndex?.id ?? null}
                                 isNative={isNativeMode}
                                 inputRef={searchInputRef}
+                                onFilterApplied={handleFilterApplied}
                             />
                         </ResizablePanel>
 
@@ -377,9 +417,14 @@ const App = () => {
                                                     </div>
                                                 ) : testDetail ? (
                                                     <TestContainer
+                                                        key={`${selectedIndex?.id}-${testToExpand}-${searchQuery}`}
                                                         tests={testDetail.tests}
                                                         testClass={testDetail.testClass}
                                                         testToExpand={testToExpand}
+                                                        matchingMethods={matchingMethods}
+                                                        onClearFilter={() => {
+                                                            setMatchingMethods([]);
+                                                        }}
                                                     />
                                                 ) : null}
                                             </div>

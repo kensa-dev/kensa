@@ -120,7 +120,7 @@ object JsonTransforms {
             .add("issues", asJsonArray(container.issues))
             .add("displayName", container.displayName)
             .add("state", container.state.description)
-            .add("children", asJsonArray(container.methodContainers.values) { invocation: TestMethodContainer ->
+            .add("children", asJsonArray(container.orderedMethodContainers) { invocation: TestMethodContainer ->
                 jsonObject()
                     .add("id", "$id:${invocation.method.name}")
                     .add("testMethod", invocation.method.name)
