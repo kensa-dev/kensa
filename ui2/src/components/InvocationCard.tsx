@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { cn } from "@/lib/utils";
-import { SectionRenderer } from './SectionRenderer';
+import {ChevronDown, ChevronRight} from 'lucide-react';
+import {cn} from "@/lib/utils";
+import {SectionRenderer} from './SectionRenderer';
 import {Invocation, NameAndValue} from "@/types/Test.ts";
 
 interface InvocationCardProps {
@@ -11,7 +11,7 @@ interface InvocationCardProps {
     initialExpanded?: boolean;
 }
 
-export const InvocationCard = ({ invocation, autoOpenTab, isLast, initialExpanded }: InvocationCardProps) => {
+export const InvocationCard = ({invocation, autoOpenTab, isLast, initialExpanded}: InvocationCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState<boolean>(() => {
         if (initialExpanded !== undefined) return initialExpanded;
         return invocation.state === 'Failed';
@@ -25,14 +25,16 @@ export const InvocationCard = ({ invocation, autoOpenTab, isLast, initialExpande
 
     const isPassed = invocation.state === 'Passed';
     const parametersTitle = React.useMemo(() => {
-        if (!invocation.parameters || invocation.parameters.length === 0) {
-            return invocation.displayName || "Invocation";
-        }
-        return invocation.parameters.map((p: NameAndValue) => {
-            const [key, val] = Object.entries(p)[0];
-            return `${key}: ${val}`;
-        }).join(', ');
-    }, [invocation]);
+        if (invocation.displayName) return invocation.displayName;
+        if (invocation.parameters.length === 0) return "Invocation";
+
+        return invocation.parameters
+            .map((p: NameAndValue) => {
+                const [key, val] = Object.entries(p)[0];
+                return `${key}: ${val}`;
+            })
+            .join(", ");
+    }, [invocation.displayName, invocation.parameters]);
 
     return (
         <div className={cn(
@@ -48,7 +50,7 @@ export const InvocationCard = ({ invocation, autoOpenTab, isLast, initialExpande
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div className="flex items-center gap-3 overflow-hidden">
-                    {isExpanded ? <ChevronDown size={14} className="shrink-0 opacity-50" /> : <ChevronRight size={14} className="shrink-0 opacity-50" />}
+                    {isExpanded ? <ChevronDown size={14} className="shrink-0 opacity-50"/> : <ChevronRight size={14} className="shrink-0 opacity-50"/>}
                     <span className="text-[11px] font-mono truncate tracking-tight font-semibold">
                         {parametersTitle}
                     </span>
