@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v0.5.47
+  - Modern UI improvements:
+    Select test and expand first matching method when filtering.
+    Honour the display name
+
 ### v0.5.46
   - Improve registration of log services for Modern UI (Thanks to Paul Reynolds)
 
