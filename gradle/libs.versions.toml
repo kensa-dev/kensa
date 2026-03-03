@@ -7,7 +7,8 @@ plantUml = "1.2025.10"
 pebble = "3.2.4"
 mockito = "6.2.2"
 kotest = "6.0.7"
-junit = "5.13.4"
+junit5 = "5.14.3"
+junit6 = "6.0.3"
 assertJ = "3.27.7"
 hamcrest = "3.0"
 hamkrest = "1.8.0.1"
@@ -15,20 +16,17 @@ awaitility = "4.3.0"
 minimalJson = "0.9.5"
 antlr = "4.13.2"
 nexusPublish = "2.0.0"
-jsoup = "1.21.2"
 byteBuddy = "1.17.8"
 
 http4k = "6.23.1.0"
 jackson = "2.20.1"
 
 [libraries]
-kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlinCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 antlr = { module = "org.antlr:antlr4", version.ref = "antlr" }
-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 assertJCore = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
 hamcrestCore = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrest" }
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
@@ -41,14 +39,22 @@ kotestBom = { module = "io.kotest:kotest-bom", version.ref = "kotest" }
 kotestAssertionsCoreJvm = { module = "io.kotest:kotest-assertions-core-jvm" }
 kotestAssertionsJson = { module = "io.kotest:kotest-assertions-json" }
 
-junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
-junitJupiterParams = { module = "org.junit.jupiter:junit-jupiter-params" }
-junitJupiterApi = { module = "org.junit.jupiter:junit-jupiter-api" }
-junitJupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit5Bom = { module = "org.junit:junit-bom", version.ref = "junit5" }
+junit5JupiterParams = { module = "org.junit.jupiter:junit-jupiter-params" }
+junit5JupiterApi = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit5JupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit5PlatformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
+junit5PlatformEngine = { module = "org.junit.platform:junit-platform-engine" }
+junit5PlatformTestKit = { module = "org.junit.platform:junit-platform-testkit" }
 
-junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
-junitPlatformEngine = { module = "org.junit.platform:junit-platform-engine" }
-junitPlatformTestKit = { module = "org.junit.platform:junit-platform-testkit" }
+junit6Bom = { module = "org.junit:junit-bom", version.ref = "junit6" }
+junit6JupiterParams = { module = "org.junit.jupiter:junit-jupiter-params" }
+junit6JupiterApi = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit6JupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit6PlatformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
+junit6PlatformEngine = { module = "org.junit.platform:junit-platform-engine" }
+junit6PlatformTestKit = { module = "org.junit.platform:junit-platform-testkit" }
+
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
 byteBuddyCore = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
 

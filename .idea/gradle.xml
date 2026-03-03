@@ -18,7 +18,8 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/docker-logs" />
             <option value="$PROJECT_DIR$/examples/adoptabot" />
-            <option value="$PROJECT_DIR$/frameworks/junit" />
+            <option value="$PROJECT_DIR$/frameworks/junit/junit5" />
+            <option value="$PROJECT_DIR$/frameworks/junit/junit6" />
             <option value="$PROJECT_DIR$/frameworks/kotest" />
             <option value="$PROJECT_DIR$/frameworks/testng" />
             <option value="$PROJECT_DIR$/ui" />

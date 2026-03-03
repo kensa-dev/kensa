@@ -13,7 +13,8 @@ dependencies {
         api(project(":assertions-hamcrest"))
         api(project(":assertions-hamkrest"))
         api(project(":assertions-kotest"))
-        api(project(":framework-junit"))
+        api(project(":framework-junit5"))
+        api(project(":framework-junit6"))
         api(project(":framework-kotest"))
         api(project(":framework-testng"))
     }

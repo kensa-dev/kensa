@@ -7,10 +7,10 @@ dependencies {
     implementation(libs.kotestAssertionsCoreJvm)
     implementation(libs.kotlinCoroutines)
 
-    implementation(platform(libs.junitBom))
-    testImplementation(libs.junitPlatformLauncher)
-    testImplementation(libs.junitJupiterApi)
-    testImplementation(libs.junitJupiterEngine)
+    implementation(platform(libs.junit6Bom))
+    testImplementation(libs.junit6PlatformLauncher)
+    testImplementation(libs.junit6JupiterApi)
+    testImplementation(libs.junit6JupiterEngine)
     testImplementation(libs.kotlinCoroutinesTest)
     testImplementation(libs.mockitoKotlin)
 

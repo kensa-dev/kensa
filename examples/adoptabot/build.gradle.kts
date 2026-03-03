@@ -6,12 +6,12 @@ dependencies {
     testImplementation(libs.http4kClientOkHttp)
     testImplementation(libs.jacksonKotlin)
 
-    implementation(platform(libs.junitBom))
-    implementation(libs.junitJupiterParams)
-    implementation(libs.junitJupiterApi)
-    implementation(libs.junitJupiterEngine)
+    implementation(platform(libs.junit6Bom))
+    implementation(libs.junit6JupiterParams)
+    implementation(libs.junit6JupiterApi)
+    implementation(libs.junit6JupiterEngine)
 
     testImplementation(project(":assertions-hamcrest"))
     testImplementation(project(":assertions-kotest"))
-    testImplementation(project(":framework-junit"))
+    testImplementation(project(":framework-junit6"))
 }

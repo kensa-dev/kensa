@@ -14,4 +14,4 @@ object ThreadLocalKensaConfigurationProvider : KensaConfigurationProvider {
     }
 }
 
-fun testConfiguration(block: Configuration.() -> Unit) = ThreadLocalKensaConfigurationProvider().apply(block)
+fun testConfiguration(block: Configuration.() -> Unit) = ThreadLocalKensaConfigurationProvider().apply(block).apply { uiMode = UiMode.Modern }
