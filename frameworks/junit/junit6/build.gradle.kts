@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Paths
 
-description = "Kensa for JUnit5"
+description = "Kensa for JUnit6"
 
 private val uiBuildDir = Paths.get(project(":ui").layout.buildDirectory.get().toString(), "js")
 
