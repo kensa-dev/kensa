@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.0
+  - Experimental support for JUnit 6
+    * Breaking dependency change: Now need to specify junit dependency as either `dev.kensa:kensa-framework-junit5` or `dev.kensa:kensa-framework-junit6` 
+
 ### v0.5.47
   - Modern UI improvements:
     Select test and expand first matching method when filtering.
