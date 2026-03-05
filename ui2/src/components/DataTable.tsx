@@ -7,7 +7,12 @@ const rowHover: Record<TestState, string> = {
     Disabled: "hover:bg-disabled-10",
 };
 
-export const DataTable = ({data, testState}: { data: NameAndValues, testState: TestState }) => (
+interface DataTableProps {
+    data: NameAndValues;
+    testState: TestState;
+}
+
+export const DataTable = ({data, testState}: DataTableProps) => (
     <table className="w-full text-left border-collapse text-[13px] table-fixed">
         <colgroup>
             <col className="w-1/3" />

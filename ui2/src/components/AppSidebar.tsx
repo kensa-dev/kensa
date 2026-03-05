@@ -483,7 +483,11 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     );
 }
 
-function StateBadges({counts}: { counts: StateCounts }) {
+interface StateBadgesProps {
+    counts: StateCounts;
+}
+
+function StateBadges({counts}: StateBadgesProps) {
     return (
         <span className="flex items-center gap-1 shrink-0 ml-auto">
             {counts.failed > 0 && (
@@ -500,7 +504,11 @@ function StateBadges({counts}: { counts: StateCounts }) {
     );
 }
 
-function StateCountBar({counts}: { counts: StateCounts }) {
+interface StateCountBarProps {
+    counts: StateCounts;
+}
+
+function StateCountBar({counts}: StateCountBarProps) {
     const {total} = counts;
     if (total === 0) return null;
 

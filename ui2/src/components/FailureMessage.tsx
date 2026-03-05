@@ -1,6 +1,11 @@
 import { AlertCircle } from 'lucide-react';
+import { Invocation } from '@/types/Test';
 
-export const FailureMessage = ({ invocation }: any) => {
+interface FailureMessageProps {
+    invocation: Invocation;
+}
+
+export const FailureMessage = ({ invocation }: FailureMessageProps) => {
     const ex = invocation.executionException;
     if (!ex || !ex.message) return null;
 

@@ -2,8 +2,15 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight, Activity } from 'lucide-react';
 import { InteractionContent } from './InteractionContent'; // Import Content
 import { cn } from "@/lib/utils";
+import { Interaction } from '@/types/Test';
 
-export const InteractionCard = ({ interaction, isPassed, onExpand }: any) => {
+interface InteractionCardProps {
+    interaction: Interaction;
+    isPassed: boolean;
+    onExpand: (interaction: Interaction) => void;
+}
+
+export const InteractionCard = ({ interaction, isPassed, onExpand }: InteractionCardProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (

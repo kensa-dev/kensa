@@ -268,7 +268,7 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                 <div
                     ref={scrollRef}
                     className="bg-white sd-scroll"
-                    style={{ maxHeight, ["--sd-bg" as any]: isPassed ? "rgba(16, 185, 129, 0.06)" : "rgba(244, 63, 94, 0.06)" }}
+                    style={{ maxHeight, "--sd-bg": isPassed ? "rgba(16, 185, 129, 0.06)" : "rgba(244, 63, 94, 0.06)" } as React.CSSProperties}
                 >
                     <div
                         ref={inlineRootRef}

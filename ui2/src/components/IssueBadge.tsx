@@ -5,7 +5,12 @@ import {useContext} from "react";
 import {cn} from "@/lib/utils";
 import {TestState} from "@/types/Test.ts";
 
-export const IssueBadge = ({issue, testState}: { issue: string; testState: TestState }) => {
+interface IssueBadgeProps {
+    issue: string;
+    testState: TestState;
+}
+
+export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
     const {issueTrackerUrl} = useContext(ConfigContext);
 
     const baseClasses = "rounded-md border transition-colors bg-clip-padding";

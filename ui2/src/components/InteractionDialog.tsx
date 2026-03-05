@@ -3,13 +3,21 @@ import {Activity, X} from "lucide-react"
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog"
 import {InteractionContent} from "./InteractionContent"
 import {cn} from "@/lib/utils"
+import {Interaction, RenderedInteractionValue} from "@/types/Test"
 
-export function InteractionDialog({interaction, isOpen, onClose, isPassed}: any) {
+interface InteractionDialogProps {
+    interaction: Interaction | null;
+    isOpen: boolean;
+    onClose: () => void;
+    isPassed: boolean;
+}
+
+export function InteractionDialog({interaction, isOpen, onClose, isPassed}: InteractionDialogProps) {
     const [isMaximized, setIsMaximized] = React.useState(false)
 
     const hasValidPayload = React.useMemo(() => {
         if (!interaction?.rendered?.values) return false;
-        return interaction.rendered.values.some((p: any) => p.value && p.value.trim() !== "");
+        return interaction.rendered.values.some((p: RenderedInteractionValue) => p.value && p.value.trim() !== "");
     }, [interaction]);
 
     React.useEffect(() => {

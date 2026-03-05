@@ -7,7 +7,11 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {NestedItem, Token as TokenType} from '@/types/Test';
 
-const Expandable = ({token}: { token: TokenType }) => {
+interface ExpandableProps {
+    token: TokenType;
+}
+
+const Expandable = ({token}: ExpandableProps) => {
     const {value, parameterTokens, tokens} = token;
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [leftOffset, setLeftOffset] = React.useState(0);
@@ -159,7 +163,12 @@ const Expandable = ({token}: { token: TokenType }) => {
     );
 };
 
-const TokenTable = ({headers, rows}: { headers?: string[], rows: TokenType[][] }) => {
+interface TokenTableProps {
+    headers?: string[];
+    rows: TokenType[][];
+}
+
+const TokenTable = ({headers, rows}: TokenTableProps) => {
     if (!rows) return null;
     return (<div className="my-3 rounded-md border border-border/50 bg-background/50 overflow-hidden shadow-sm">
         <Table>
@@ -189,7 +198,13 @@ const TokenTable = ({headers, rows}: { headers?: string[], rows: TokenType[][] }
     </div>)
 };
 
-const InfoToken = ({value, tooltipContent, tokenCls}: { value: string, tooltipContent: string | null, tokenCls: string }) => {
+interface InfoTokenProps {
+    value: string;
+    tooltipContent: string | null;
+    tokenCls: string;
+}
+
+const InfoToken = ({value, tooltipContent, tokenCls}: InfoTokenProps) => {
     if (!tooltipContent) return <span className={tokenCls}>{value}</span>;
 
     return (
@@ -215,7 +230,11 @@ const InfoToken = ({value, tooltipContent, tokenCls}: { value: string, tooltipCo
     );
 };
 
-const NoteToken = ({value}: { value: string }) => {
+interface NoteTokenProps {
+    value: string;
+}
+
+const NoteToken = ({value}: NoteTokenProps) => {
     const {alwaysExpandNotes} = useConfig();
     const [isExpanded, setIsExpanded] = React.useState(alwaysExpandNotes);
 
@@ -282,7 +301,11 @@ const styles: Record<string, string> = {
 };
 const getMappedCls = (types: string[]) => types.map((t: string) => styles[t] || '').join(' ');
 
-export const Token = ({token}: { token: TokenType }) => {
+interface TokenProps {
+    token: TokenType;
+}
+
+export const Token = ({token}: TokenProps) => {
     const {acronyms} = useConfig();
     const {types = [], value, hint} = token;
     const tokenCls = types.join(" ");
