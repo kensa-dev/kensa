@@ -82,6 +82,17 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     const [pickerType, setPickerType] = React.useState<'state' | 'issue' | null>(null);
     const [pickerIndex, setPickerIndex] = React.useState(0);
 
+    const pickerListRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (showPicker && pickerListRef.current) {
+            const items = pickerListRef.current.children;
+            if (items[pickerIndex]) {
+                (items[pickerIndex] as HTMLElement).scrollIntoView({block: 'nearest'});
+            }
+        }
+    }, [pickerIndex, showPicker]);
+
     const pickerItems = React.useMemo(() => {
         if (pickerType === 'state') return [...states];
         if (pickerType === 'issue') return allIssues;
