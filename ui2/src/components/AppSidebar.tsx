@@ -280,19 +280,22 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
         return {globalCounts: global, stateCountsById: map};
     }, [filteredIndices]);
 
-    const prevSearchQueryRef = React.useRef(searchQuery);
-    const prevInputValueRef = React.useRef(inputValue);
+    const prevSearchQueryRef = React.useRef<string | null>(null);
+    const prevInputValueRef = React.useRef<string | null>(null);
+    const prevFirstMatchingTestRef = React.useRef<Index | null | undefined>(undefined);
 
     React.useEffect(() => {
         const hasFilter = searchQuery || inputValue;
         const filterChanged = prevSearchQueryRef.current !== searchQuery || prevInputValueRef.current !== inputValue;
+        const matchChanged = prevFirstMatchingTestRef.current !== firstMatchingTest;
 
-        if (onFilterApplied && hasFilter && filterChanged) {
+        if (onFilterApplied && hasFilter && (filterChanged || matchChanged)) {
             onFilterApplied(firstMatchingTest, firstMatchingMethod, matchingMethodsMap);
         }
 
         prevSearchQueryRef.current = searchQuery;
         prevInputValueRef.current = inputValue;
+        prevFirstMatchingTestRef.current = firstMatchingTest;
     }, [firstMatchingTest, firstMatchingMethod, matchingMethodsMap, onFilterApplied, searchQuery, inputValue]);
 
     return (
