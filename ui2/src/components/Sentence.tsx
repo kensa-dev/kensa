@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {cn} from "@/lib/utils";
 import { Token as TokenType } from '@/types/Test';
-import Token from "@/components/Token.tsx";
+import Token from "@/components/Token";
 
 interface SentenceProps {
     sentence: TokenType[];

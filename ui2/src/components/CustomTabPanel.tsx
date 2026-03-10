@@ -2,8 +2,8 @@ import * as React from "react";
 import {ChevronDown, ChevronUp, Copy, Maximize2, Search, WrapText, X} from "lucide-react";
 import hljs from "highlight.js";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
-import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils.ts";
-import {TestState} from "@/types/Test.ts";
+import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils";
+import {TestState} from "@/types/Test";
 
 interface CustomTabPanelProps {
     title: string;
@@ -221,7 +221,7 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
             <div className={"flex flex-col overflow-hidden bg-white dark:bg-background"}>
                 <div className={cn(
                     "shrink-0",
-                    isPassed ? "bg-success-10" : "bg-failure-10"
+                    isPassed ? "bg-success/10" : "bg-failure/10"
                 )}>
                     {toolbar}
                 </div>

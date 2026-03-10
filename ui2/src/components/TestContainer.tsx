@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TestCard } from './TestCard';
-import {Invocation, Test} from "@/types/Test.ts";
+import {Invocation, Test} from "@/types/Test";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 

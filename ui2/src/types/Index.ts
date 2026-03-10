@@ -1,4 +1,4 @@
-import {TestState} from "@/types/Test.ts";
+import {TestState} from "@/types/Test";
 
 export type NodeType = 'project' | 'package' | 'test'
 

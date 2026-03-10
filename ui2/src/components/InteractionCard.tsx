@@ -16,12 +16,12 @@ export const InteractionCard = ({ interaction, isPassed, onExpand }: Interaction
     return (
         <div className={cn(
             "mb-2 border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
-            isPassed ? "border-success-30" : "border-failure-30"
+            isPassed ? "border-success/30" : "border-failure/30"
         )}>
             <div
                 className={cn(
                     "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors select-none",
-                    isPassed ? "hover:bg-success-10" : "hover:bg-failure-10"
+                    isPassed ? "hover:bg-success/10" : "hover:bg-failure/10"
                 )}
                 onClick={() => setIsExpanded(!isExpanded)}
             >

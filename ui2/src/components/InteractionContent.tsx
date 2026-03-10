@@ -4,8 +4,8 @@ import hljs from 'highlight.js';
 import json from 'highlight.js/lib/languages/json';
 import xml from 'highlight.js/lib/languages/xml';
 import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils";
-import {DataTable} from "@/components/DataTable.tsx";
-import {NameAndValues} from "@/types/Test.ts";
+import {DataTable} from "@/components/DataTable";
+import {NameAndValues} from "@/types/Test";
 
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('xml', xml);
@@ -184,7 +184,7 @@ export const InteractionContent = ({
                     {/* Tabs */}
                     <div className={cn(
                         "flex border-b overflow-x-auto transition-colors shrink-0",
-                        isPassed ? "bg-success-10 border-success-30" : "bg-failure-10 border-failure-30"
+                        isPassed ? "bg-success/10 border-success/30" : "bg-failure/10 border-failure/30"
                     )}>
                         {metadataGroups.map((group, i) => (
                             <button
@@ -195,11 +195,11 @@ export const InteractionContent = ({
                                     "px-4 py-2 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2",
                                     activeMetaTab === i
                                         ? (isPassed
-                                            ? "bg-background text-neutral-800 dark:text-neutral-100 border-success-30"
-                                            : "bg-background text-neutral-800 dark:text-neutral-100 border-failure-30")
+                                            ? "bg-background text-neutral-800 dark:text-neutral-100 border-success/30"
+                                            : "bg-background text-neutral-800 dark:text-neutral-100 border-failure/30")
                                         : (isPassed
-                                            ? "text-muted-foreground border-transparent hover:bg-success-10 hover:text-success"
-                                            : "text-muted-foreground border-transparent hover:bg-failure-10 hover:text-failure")
+                                            ? "text-muted-foreground border-transparent hover:bg-success/10 hover:text-success"
+                                            : "text-muted-foreground border-transparent hover:bg-failure/10 hover:text-failure")
                                 )}
                                 title={group.name}
                             >
@@ -211,7 +211,7 @@ export const InteractionContent = ({
                     <div className="overflow-y-auto p-4 custom-scrollbar">
                         {activeGroup ? (
                             <div className="ml-3">
-                                <DataTable data={activeGroupTableData} isPassed={isPassed}/>
+                                <DataTable data={activeGroupTableData} testState={isPassed ? "Passed" : "Failed"}/>
                             </div>
                         ) : null}
                     </div>

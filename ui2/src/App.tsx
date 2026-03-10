@@ -1,6 +1,6 @@
 import {useState, useEffect, useRef, useMemo} from 'react';
 import {Beaker, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
-import {AppSidebar} from './components/AppSidebar.tsx';
+import {AppSidebar} from './components/AppSidebar';
 import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {cn, loadJson, useNavigateWithSearch} from "@/lib/utils";
@@ -9,7 +9,7 @@ import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigConte
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {isNative} from '@/lib/utils';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
-import {TestDetail} from "@/types/Test.ts";
+import {TestDetail} from "@/types/Test";
 import { IssueList } from './components/IssueList';
 import {
     CommandDialog,
@@ -19,7 +19,7 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
-import {Badge} from "@/components/ui/badge.tsx";
+import {Badge} from "@/components/ui/badge";
 import { TestContainer } from './components/TestContainer';
 
 const App = () => {

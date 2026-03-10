@@ -2,7 +2,7 @@ import * as React from 'react';
 import {ChevronDown, ChevronRight} from 'lucide-react';
 import {cn} from "@/lib/utils";
 import {SectionRenderer} from './SectionRenderer';
-import {Invocation, NameAndValue} from "@/types/Test.ts";
+import {Invocation, NameAndValue} from "@/types/Test";
 
 interface InvocationCardProps {
     invocation: Invocation;
@@ -40,12 +40,12 @@ export const InvocationCard = ({invocation, autoOpenTab, isLast, initialExpanded
         <div className={cn(
             "border rounded-lg overflow-hidden transition-all duration-200 bg-background",
             !isLast && "mb-3",
-            isPassed ? "border-success-30 shadow-sm" : "border-failure-30 shadow-sm"
+            isPassed ? "border-success/30 shadow-sm" : "border-failure/30 shadow-sm"
         )}>
             <div
                 className={cn(
                     "px-4 py-2 flex items-center justify-between cursor-pointer select-none transition-colors",
-                    isPassed ? "hover:bg-success-10 text-neutral-800 dark:text-neutral-100" : "hover:bg-failure-10 text-neutral-800 dark:text-neutral-100"
+                    isPassed ? "hover:bg-success/10 text-neutral-800 dark:text-neutral-100" : "hover:bg-failure/10 text-neutral-800 dark:text-neutral-100"
                 )}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
@@ -60,7 +60,7 @@ export const InvocationCard = ({invocation, autoOpenTab, isLast, initialExpanded
 
             {isExpanded && (
                 <div className={cn(
-                    isPassed ? "bg-success-2 dark:bg-success-10" : "bg-failure-2 dark:bg-success-10",
+                    isPassed ? "bg-success/2 dark:bg-success/10" : "bg-failure/2 dark:bg-success/10",
                     "p-4 pt-2 border-t border-border/40")}>
                     <SectionRenderer
                         invocation={invocation}

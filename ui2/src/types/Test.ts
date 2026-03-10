@@ -1,4 +1,4 @@
-import {TabType} from "@/constants.ts"
+import {TabType} from "@/constants"
 
 export type NameAndValue = Record<string, string>
 export type NameAndValues = NameAndValue[]

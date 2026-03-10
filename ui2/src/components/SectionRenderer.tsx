@@ -3,8 +3,8 @@ import { Tabs } from './Tabs';
 import { FailureMessage } from './FailureMessage';
 import { Section } from '@/constants';
 import {useContext} from "react";
-import {ConfigContext} from "@/contexts/ConfigContext.tsx";
-import {Invocation, TestState} from "@/types/Test.ts";
+import {ConfigContext} from "@/contexts/ConfigContext";
+import {Invocation, TestState} from "@/types/Test";
 
 interface SectionRendererProps {
     invocation: Invocation;

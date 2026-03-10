@@ -52,7 +52,7 @@ export function InteractionDialog({interaction, isOpen, onClose, isPassed}: Inte
                 {!isMaximized && (
                     <DialogHeader className={cn(
                         "px-6 h-12 flex flex-row items-center justify-between border-b shrink-0 transition-colors animate-in fade-in duration-500",
-                        isPassed ? "bg-success-10 border-success-30" : "bg-failure-10 border-failure-30"
+                        isPassed ? "bg-success/10 border-success/30" : "bg-failure/10 border-failure/30"
                     )}>
                         <div className="flex items-center gap-3 overflow-hidden mr-auto">
                             <Activity className={isPassed ? "text-success" : "text-failure"} size={18}/>

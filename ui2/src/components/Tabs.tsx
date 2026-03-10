@@ -2,12 +2,13 @@ import {useEffect, useRef, useState} from 'react';
 import {InteractionCard} from './InteractionCard';
 import {InteractionDialog} from './InteractionDialog';
 import {cn} from "@/lib/utils";
-import {Tab} from "@/constants.ts";
-import {Interaction, Invocation, TestState} from "@/types/Test.ts";
-import {SequenceDiagram} from "@/components/SequenceDiagram.tsx";
-import {loadText} from "@/lib/utils.ts";
-import {CustomTabPanel} from "@/components/CustomTabPanel.tsx";
-import {DataTable} from "@/components/DataTable.tsx";
+import {Tab} from "@/constants";
+import {Interaction, Invocation, TestState} from "@/types/Test";
+import {SequenceDiagram} from "@/components/SequenceDiagram";
+import {loadText} from "@/lib/utils";
+import {CustomTabPanel} from "@/components/CustomTabPanel";
+import {DataTable} from "@/components/DataTable";
+import {Tabs as ShadcnTabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 type TabValue = typeof Tab[keyof typeof Tab];
 
@@ -145,45 +146,54 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
 
     if (tabs.length === 0) return null;
 
+    const tabTriggerClass = cn(
+        "px-4 py-2 text-[11px] font-bold tracking-wider rounded-none border-b-2 transition-all whitespace-nowrap h-auto",
+        "data-[state=active]:bg-background data-[state=active]:shadow-none",
+        isPassed
+            ? "data-[state=active]:text-neutral-800 dark:data-[state=active]:text-neutral-100 data-[state=active]:border-success/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-success/10 data-[state=inactive]:hover:text-success"
+            : "data-[state=active]:text-neutral-800 dark:data-[state=active]:text-neutral-100 data-[state=active]:border-failure/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-failure/10 data-[state=inactive]:hover:text-failure"
+    );
+
+    const contentBg = cn(
+        "p-4 transition-colors",
+        isPassed ? "bg-success/2 dark:bg-success/10" : "bg-failure/2 dark:bg-failure/10"
+    );
+
     return (
         <>
-            <div className={cn(
-                "border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
-                isPassed ? "border-success-30" : "border-failure-30"
-            )}>
-                <div className={cn(
-                    "flex border-b overflow-x-auto transition-colors",
-                    isPassed ? "bg-success-10 border-success-30" : "bg-failure-10 border-failure-30"
+            <ShadcnTabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className={cn(
+                    "border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
+                    isPassed ? "border-success/30" : "border-failure/30"
+                )}
+            >
+                <TabsList className={cn(
+                    "w-full flex rounded-none h-auto border-b p-0 overflow-x-auto justify-start",
+                    isPassed ? "bg-success/10 border-success/30" : "bg-failure/10 border-failure/30"
                 )}>
                     {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={cn(
-                                "px-4 py-2 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2",
-                                activeTab === tab.id
-                                    ? (isPassed
-                                        ? "bg-background text-neutral-800 dark:text-neutral-100 border-success-30"
-                                        : "bg-background text-neutral-800 dark:text-neutral-100 border-failure-30")
-                                    : (isPassed
-                                        ? "text-muted-foreground border-transparent hover:bg-success-10 hover:text-success"
-                                        : "text-muted-foreground border-transparent hover:bg-failure-10 hover:text-failure")
-                            )}
-                        >
+                        <TabsTrigger key={tab.id} value={tab.id} className={tabTriggerClass}>
                             {tab.label}
-                        </button>
+                        </TabsTrigger>
                     ))}
-                </div>
+                </TabsList>
 
-                <div className={cn(
-                    "p-4 transition-colors",
-                    isPassed ? "bg-success-2 dark:bg-success-10" : "bg-failure-2 dark:bg-failure-10"
-                )}>
-                    {activeTab === Tab.Givens && <DataTable data={invocation[Tab.Givens]} testState={testState}/>}
-                    {activeTab === Tab.CapturedOutputs && <DataTable data={invocation[Tab.CapturedOutputs]} testState={testState}/>}
-                    {activeTab === Tab.Fixtures && <DataTable data={invocation[Tab.Fixtures]} testState={testState}/>}
+                <div className={contentBg}>
+                    <TabsContent value={Tab.Givens} className="mt-0">
+                        <DataTable data={invocation[Tab.Givens]} testState={testState}/>
+                    </TabsContent>
 
-                    {activeTab === Tab.CapturedInteractions && (
+                    <TabsContent value={Tab.CapturedOutputs} className="mt-0">
+                        <DataTable data={invocation[Tab.CapturedOutputs]} testState={testState}/>
+                    </TabsContent>
+
+                    <TabsContent value={Tab.Fixtures} className="mt-0">
+                        <DataTable data={invocation[Tab.Fixtures]} testState={testState}/>
+                    </TabsContent>
+
+                    <TabsContent value={Tab.CapturedInteractions} className="mt-0">
                         <div className="space-y-1">
                             {invocation[Tab.CapturedInteractions].map((interaction: Interaction) => (
                                 <InteractionCard
@@ -194,39 +204,42 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                                 />
                             ))}
                         </div>
-                    )}
+                    </TabsContent>
 
-                    {(activeTab === Tab.SequenceDiagram) && (
+                    <TabsContent value={Tab.SequenceDiagram} className="mt-0">
                         <SequenceDiagram
                             sequenceDiagram={invocation[Tab.SequenceDiagram] ?? ""}
                             capturedInteractions={invocation[Tab.CapturedInteractions] ?? []}
                             testState={testState}
                         />
-                    )}
+                    </TabsContent>
 
-                    {activeCustomTab && (
-                        <div className="space-y-1">
-                            {activeCustomFile && customTabCache[activeCustomFile]?.status === 'loading' && (
-                                <div className="text-xs text-muted-foreground">Loading…</div>
-                            )}
-                            {activeCustomFile && customTabCache[activeCustomFile]?.status === 'error' && (
-                                <div className="text-xs text-failure dark:text-failure">
-                                    Failed to load tab content.
-                                </div>
-                            )}
-                            {activeCustomFile && customTabCache[activeCustomFile]?.status === 'ready' && (
-                                <div className="-m-4">
-                                    <CustomTabPanel
-                                        title={activeCustomLabel}
-                                        content={customTabCache[activeCustomFile]?.content ?? ""}
-                                        testState={testState}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    {customTabs.map((tab) => (
+                        <TabsContent key={tab.id} value={tab.id} className="mt-0">
+                            <div className="space-y-1">
+                                {customTabCache[tab.file]?.status === 'loading' && (
+                                    <div className="text-xs text-muted-foreground">Loading…</div>
+                                )}
+                                {customTabCache[tab.file]?.status === 'error' && (
+                                    <div className="text-xs text-failure">
+                                        Failed to load tab content.
+                                    </div>
+                                )}
+                                {customTabCache[tab.file]?.status === 'ready' && (
+                                    <div className="-m-4">
+                                        <CustomTabPanel
+                                            title={tab.label}
+                                            content={customTabCache[tab.file]?.content ?? ""}
+                                            testState={testState}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </TabsContent>
+                    ))}
                 </div>
-            </div>
+            </ShadcnTabs>
+
             <InteractionDialog
                 interaction={selectedInteraction}
                 isOpen={!!selectedInteraction}

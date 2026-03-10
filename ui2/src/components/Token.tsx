@@ -2,8 +2,8 @@ import * as React from 'react';
 import {cn} from "@/lib/utils";
 import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/hover-card";
 import {useConfig} from '@/contexts/ConfigContext';
-import Sentence from "@/components/Sentence.tsx";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import Sentence from "@/components/Sentence";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {NestedItem, Token as TokenType} from '@/types/Test';
 

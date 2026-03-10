@@ -1,9 +1,9 @@
 import {Link} from "react-router-dom";
 import {Badge} from "@/components/ui/badge";
-import {ConfigContext} from "@/contexts/ConfigContext.tsx";
+import {ConfigContext} from "@/contexts/ConfigContext";
 import {useContext} from "react";
 import {cn} from "@/lib/utils";
-import {TestState} from "@/types/Test.ts";
+import {TestState} from "@/types/Test";
 
 interface IssueBadgeProps {
     issue: string;
@@ -18,15 +18,15 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
     const toneClasses = cn(
         testState === "Passed"
             ? [
-                "border-success-30 text-success dark:text-success",
-                "!bg-success-10 hover:!bg-success-15",
-                "dark:!bg-success-10 dark:hover:!bg-success-15",
+                "border-success/30 text-success dark:text-success",
+                "!bg-success/10 hover:!bg-success/15",
+                "dark:!bg-success/10 dark:hover:!bg-success/15",
             ]
             : testState === "Failed"
                 ? [
-                    "border-failure-30 text-failure dark:text-failure",
-                    "!bg-failure-10 hover:!bg-failure-15",
-                    "dark:!bg-failure-10 dark:hover:!bg-failure-15",
+                    "border-failure/30 text-failure dark:text-failure",
+                    "!bg-failure/10 hover:!bg-failure/15",
+                    "dark:!bg-failure/10 dark:hover:!bg-failure/15",
                 ]
                 : [
                     "border-border/50 text-muted-foreground",

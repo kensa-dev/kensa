@@ -1,7 +1,7 @@
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {IssueBadge} from './IssueBadge';
 import {cn} from "@/lib/utils";
-import {TestState} from "@/types/Test.ts";
+import {TestState} from "@/types/Test";
 
 interface IssueListProps {
     issues?: string[];
@@ -19,15 +19,15 @@ export const IssueList = ({issues = [], limit = 5, testState}: IssueListProps) =
         "rounded-md border transition-colors bg-clip-padding",
         testState === "Passed"
             ? [
-                "border-success-30 text-success dark:text-success",
-                "!bg-success-10 hover:!bg-success-15",
-                "dark:!bg-success-10 dark:hover:!bg-success-15",
+                "border-success/30 text-success dark:text-success",
+                "!bg-success/10 hover:!bg-success/15",
+                "dark:!bg-success/10 dark:hover:!bg-success/15",
             ]
             : testState === "Failed"
                 ? [
-                    "border-failure-30 text-failure dark:text-failure",
-                    "!bg-failure-10 hover:!bg-failure-15",
-                    "dark:!bg-failure-10 dark:hover:!bg-failure-15",
+                    "border-failure/30 text-failure dark:text-failure",
+                    "!bg-failure/10 hover:!bg-failure/15",
+                    "dark:!bg-failure/10 dark:hover:!bg-failure/15",
                 ]
                 : [
                     "border-border/50 text-muted-foreground",

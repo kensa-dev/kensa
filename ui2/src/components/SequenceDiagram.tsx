@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import type {Interaction, TestState} from "@/types/Test.ts";
+import type {Interaction, TestState} from "@/types/Test";
 import {InteractionDialog} from "@/components/InteractionDialog";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
 import {Info, Maximize2, X} from "lucide-react";

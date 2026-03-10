@@ -44,9 +44,9 @@ const countChildStates = (node: Index): StateCounts => {
 const FILTER_STATES = ['passed', 'failed', 'disabled'] as const;
 
 const BAR_SEGMENTS = [
-    {key: "passed" as const, color: "text-success", bg: "bg-success-5", barCls: "bg-[hsl(var(--success)/0.8)]"},
-    {key: "failed" as const, color: "text-failure", bg: "bg-failure-5", barCls: "bg-[hsl(var(--failure)/0.8)]"},
-    {key: "disabled" as const, color: "text-disabled", bg: "bg-disabled-5", barCls: "bg-[hsl(var(--disabled)/0.8)]"},
+    {key: "passed" as const, color: "text-success", bg: "bg-success/5", barCls: "bg-success/80"},
+    {key: "failed" as const, color: "text-failure", bg: "bg-failure/5", barCls: "bg-failure/80"},
+    {key: "disabled" as const, color: "text-disabled", bg: "bg-disabled/5", barCls: "bg-disabled/80"},
 ] as const;
 
 interface AppSidebarProps {
@@ -491,12 +491,12 @@ function StateBadges({counts}: StateBadgesProps) {
     return (
         <span className="flex items-center gap-1 shrink-0 ml-auto">
             {counts.failed > 0 && (
-                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-failure-10 text-failure text-[9px] font-bold px-1">
+                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-failure/10 text-failure text-[9px] font-bold px-1">
                     {counts.failed}
                 </span>
             )}
             {counts.disabled > 0 && (
-                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-disabled-10 text-disabled text-[9px] font-bold px-1">
+                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-disabled/10 text-disabled text-[9px] font-bold px-1">
                     {counts.disabled}
                 </span>
             )}

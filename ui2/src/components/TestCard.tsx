@@ -2,20 +2,20 @@ import * as React from 'react';
 import { Beaker, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { SectionRenderer } from './SectionRenderer';
-import { InvocationCard } from "@/components/InvocationCard.tsx";
+import { InvocationCard } from "@/components/InvocationCard";
 import { IssueBadge } from './IssueBadge';
-import {Invocation, Test, TestState} from "@/types/Test.ts";
+import {Invocation, Test, TestState} from "@/types/Test";
 
 const cardBorder: Record<TestState, string> = {
-    Passed: "border-success-30",
-    Failed: "border-failure-30",
-    Disabled: "border-disabled-30",
+    Passed: "border-success/30",
+    Failed: "border-failure/30",
+    Disabled: "border-disabled/30",
 };
 
 const headerBg: Record<TestState, string> = {
-    Passed: "bg-success-10 hover:bg-success-15",
-    Failed: "bg-failure-10 hover:bg-failure-15",
-    Disabled: "bg-disabled-10 hover:bg-disabled-15",
+    Passed: "bg-success/10 hover:bg-success/15",
+    Failed: "bg-failure/10 hover:bg-failure/15",
+    Disabled: "bg-disabled/10 hover:bg-disabled/15",
 };
 
 const iconColor: Record<TestState, string> = {
@@ -25,9 +25,9 @@ const iconColor: Record<TestState, string> = {
 };
 
 const bodyBg: Record<TestState, string> = {
-    Passed: "bg-success-2 dark:bg-success-10",
-    Failed: "bg-failure-2 dark:bg-failure-10",
-    Disabled: "bg-disabled-2 dark:bg-disabled-10",
+    Passed: "bg-success/2 dark:bg-success/10",
+    Failed: "bg-failure/2 dark:bg-failure/10",
+    Disabled: "bg-disabled/2 dark:bg-disabled/10",
 };
 
 interface TestCardProps {
