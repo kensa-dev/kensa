@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlinJvm) apply false
+    alias(libs.plugins.shadow) apply false
     alias(libs.plugins.nexusPublish)
     signing
     `maven-publish`

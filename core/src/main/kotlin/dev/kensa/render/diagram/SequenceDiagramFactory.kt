@@ -2,9 +2,8 @@ package dev.kensa.render.diagram
 
 import dev.kensa.render.diagram.directive.UmlDirective
 import dev.kensa.state.CapturedInteractions
-import dev.kensa.util.Attributes
-import dev.kensa.util.KensaMap
 import dev.kensa.util.Attributes.Key.InteractionId
+import dev.kensa.util.KensaMap
 import net.sourceforge.plantuml.FileFormat.SVG
 import net.sourceforge.plantuml.FileFormatOption
 import net.sourceforge.plantuml.SourceStringReader

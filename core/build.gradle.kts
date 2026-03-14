@@ -1,4 +1,7 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+apply(plugin = "com.gradleup.shadow")
 
 description = "A BDD testing framework for Kotlin & Java"
 
@@ -44,12 +47,22 @@ extensions.getByType(JavaPluginExtension::class.java).registerFeature("testSuppo
     capability("dev.kensa", "core-test-support", "$version")
 }
 
+// Private configuration used solely to resolve the plantuml JAR for bundling into
+// the shadow JAR. Kept separate from compileOnly so the shadow task has an explicit
+// list of JARs to merge (rather than the full runtimeClasspath).
+val plantUmlBundle: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isVisible = false
+}
+
 dependencies {
     compileOnly(project(":antlr"))
     implementation(libs.antlr)
     implementation(libs.kotlinReflect)
     implementation(libs.minimalJson)
-    implementation(libs.plantuml)
+    compileOnly(libs.plantuml)
+    plantUmlBundle(libs.plantuml)
     implementation(libs.pebble)
     "agentImplementation"(libs.byteBuddyCore)
 
@@ -67,6 +80,16 @@ dependencies {
     testImplementation(sourceSets["example"].output)
 
     "testSupportImplementation"(project(":core"))
+}
+
+afterEvaluate {
+    val shadowJarTask = tasks.named<ShadowJar>("shadowJar")
+    listOf("apiElements", "runtimeElements").forEach { config ->
+        configurations.named(config) {
+            outgoing.artifacts.clear()
+            outgoing.artifact(shadowJarTask)
+        }
+    }
 }
 
 tasks {
@@ -94,7 +117,9 @@ tasks {
         }
     }
 
-    named<Jar>("jar") {
+    named<ShadowJar>("shadowJar") {
+        archiveClassifier.set("")
+        relocate("net.sourceforge.plantuml", "dev.kensa.internal.plantuml")
         dependsOn(":ui:viteBuild", ":ui2:viteBuild")
         from(project(":antlr").sourceSets["main"].output)
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
@@ -103,5 +128,53 @@ tasks {
         from(project(":ui2").layout.buildDirectory.dir("js").get()) {
             into("/")
         }
+        configurations = listOf(plantUmlBundle)
+        exclude(
+            "org/eclipse/elk/**",
+            "org/eclipse/emf/**",
+            "org/scilab/**",
+            "com/google/common/**",
+            "com/google/thirdparty/**",
+            "com/google/errorprone/**",
+            "com/google/j2objc/**",
+            "org/checkerframework/**",
+            "org/jspecify/**",
+            "META-INF/INDEX.LIST",
+            "META-INF/*.SF",
+            "META-INF/*.DSA",
+            "META-INF/*.RSA",
+
+            "**/*elk*/**",
+            "**/*emf*/**",
+            "**/*jlatexmath*/**",
+            "**/*scilab*/**",
+            "**/*guava*/**",
+            "**/*common*/**",
+            "**/*thirdparty*/**",
+            "**/*errorprone*/**",
+            "**/*j2objc*/**",
+            "**/*checkerframework*/**",
+            "**/*jspecify*/**",
+            "**/zxing/**",
+
+            "docs/**",
+            "gen/**",
+            "jcckit/**",
+            "stdlib/**",
+            "smetana/**",
+            "schema/**",
+            "svg/**",
+            "themes/**",
+            "sprites/**",
+            "org/stathissideris//**",
+
+            "META-INF/maven/**",
+            "META-INF/versions/**",
+            "META-INF/proguard/**",
+            "META-INF/services/org.eclipse.elk*"
+        )
+        mergeServiceFiles()
     }
+
+    jar { enabled = false }
 }
