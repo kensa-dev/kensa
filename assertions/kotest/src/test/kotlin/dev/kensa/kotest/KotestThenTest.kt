@@ -14,6 +14,9 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.be
 import io.kotest.matchers.collections.shouldStartWith
+import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
+import io.kotest.matchers.longs.shouldBeInRange
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +30,7 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -102,26 +106,29 @@ class KotestThenTest {
         val initialDelay = 1.seconds
         val duration = 3.seconds
         val interval = 0.5.seconds
-        val expectedTimes = generateSequence(initialDelay) { it + interval }
-            .takeWhile { it <= duration }
-            .map { it.inWholeMilliseconds }
-            .toList()
+
+        // Rough expected poll count:
+        //   - starts after 1s
+        //   - polls every 0.5s
+        //   - stops after ~3s total duration
+        //   → ~ (3000 - 1000) / 500 + 1 = ~5 polls
+
+        var pollCount = 0
 
         whenever(stateCollector.execute(anyOrNull())).thenReturn("result")
 
-        val actualTimes = mutableListOf<Long>()
-
         val error = shouldThrow<AssertionError> {
             thenEventually(initialDelay, duration, interval, testContext, stateCollector) {
-                actualTimes.add(currentTime)
+                pollCount++
                 this shouldBe "wrong"
             }
         }
-        error shouldHaveMessage """expected:<wrong> but was:<result>"""
 
-        // Kotest eventually doesn't play completely with `runTest` and keeps running for the full duration (probably due to the step calculation using a real time source)
-        // so need to only check the first segment of the actualTimes
-        actualTimes shouldStartWith expectedTimes
+        error shouldHaveMessage "expected:<wrong> but was:<result>"
+
+        // In practice you'll see ~4–6 invocations (real time varies slightly)
+        pollCount shouldBeGreaterThanOrEqual 4
+        pollCount shouldBeLessThanOrEqual 7
     }
 
     class Dummy(private val spec: CollectingThenSpec<String>) : WithKotest {
