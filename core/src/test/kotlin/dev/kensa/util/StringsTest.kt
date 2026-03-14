@@ -26,6 +26,19 @@ internal class StringsTest {
     }
 
     @Test
+    internal fun `can un-camel with protected phrases`() {
+        "handlesOrderAcknowledgedCorrectly".unCamel(listOf("OrderAcknowledged")) shouldBe "Handles OrderAcknowledged Correctly"
+        "handlesOrderAcknowledgedCorrectly".unCamel(listOf("orderAcknowledged")) shouldBe "Handles OrderAcknowledged Correctly"
+        "OrderAcknowledgedCorrectly".unCamel(listOf("OrderAcknowledged")) shouldBe "OrderAcknowledged Correctly"
+        "handlesOrderAcknowledged".unCamel(listOf("OrderAcknowledged")) shouldBe "Handles OrderAcknowledged"
+        "handlesOrderAcknowledgedAndOrderPlaced".unCamel(listOf("OrderAcknowledged", "OrderPlaced")) shouldBe "Handles OrderAcknowledged And OrderPlaced"
+        "camelCasePhrase".unCamel(listOf("OrderAcknowledged")) shouldBe "Camel Case Phrase"
+        "".unCamel(listOf("OrderAcknowledged")) shouldBe ""
+        " ".unCamel(listOf("OrderAcknowledged")) shouldBe " "
+        "camelCasePhrase".unCamel(emptyList()) shouldBe "Camel Case Phrase"
+    }
+
+    @Test
     internal fun `can un-camel and separate with separator`() {
         "".unCamelToSeparated() shouldBe ""
         " ".unCamelToSeparated() shouldBe " "

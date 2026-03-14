@@ -25,13 +25,13 @@ val Class<*>.isKotlinObject get() = isKotlinClass && kotlin.objectInstance != nu
 val KClass<*>.isKotlinObject get() = isKotlinClass && objectInstance != null
 
 val Method.normalisedPlatformName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
-val Method.derivedTestName: String
-    get() =
-        takeIf { declaringClass.isKotlinClass }
-            ?.kotlinFunction
-            ?.name
-            ?.let { if (it.requiresBackTicks()) it else it.unCamel() }
-            ?: name.unCamel()
+
+fun Method.derivedTestName(protectedPhrases: Collection<String>): String =
+    takeIf { declaringClass.isKotlinClass }
+        ?.kotlinFunction
+        ?.name
+        ?.let { if (it.requiresBackTicks()) it else it.unCamel(protectedPhrases) }
+        ?: name.unCamel(protectedPhrases)
 
 private fun String.requiresBackTicks(): Boolean = isEmpty() || !this[0].isJavaIdentifierStart() || !all { it.isJavaIdentifierPart() }
 

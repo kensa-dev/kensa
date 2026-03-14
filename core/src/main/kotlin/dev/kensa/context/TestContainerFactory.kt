@@ -21,7 +21,7 @@ class TestContainerFactory(
         testClass.run {
             TestContainer(
                 this,
-                displayName.unCamel(),
+                displayName.unCamel(configuration.dictionary.protectedPhraseValues),
                 createMethodContainers(),
                 notes(),
                 issues(),
@@ -38,7 +38,7 @@ class TestContainerFactory(
         TestMethodContainer(
             testInvocationFactory,
             this,
-            deriveDisplayName { derivedTestName },
+            deriveDisplayName { derivedTestName(configuration.dictionary.protectedPhraseValues) },
             notes(),
             issues(),
             initialState(),

@@ -1,7 +1,6 @@
 package dev.kensa.sentence
 
-import java.util.TreeMap
-import kotlin.text.RegexOption.IGNORE_CASE
+import java.util.*
 
 class Dictionary {
     private val protectedPhrases: MutableSet<ProtectedPhrase> = LinkedHashSet()
@@ -13,6 +12,8 @@ class Dictionary {
     fun putProtectedPhrases(phrases: Set<ProtectedPhrase>) {
         protectedPhrases.addAll(phrases)
     }
+
+    val protectedPhraseValues: Set<String> get() = protectedPhrases.map { it.value }.toSet()
 
     private val _acronyms: MutableSet<Acronym> = LinkedHashSet()
     val acronyms: Set<Acronym>
