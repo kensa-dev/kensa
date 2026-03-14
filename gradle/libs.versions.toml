@@ -28,6 +28,7 @@ kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embe
 kotlinCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 antlr = { module = "org.antlr:antlr4", version.ref = "antlr" }
+antlrRuntime = { module = "org.antlr:antlr4-runtime", version.ref = "antlr" }
 assertJCore = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
 hamcrestCore = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrest" }
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }

@@ -58,7 +58,7 @@ val plantUmlBundle: Configuration by configurations.creating {
 
 dependencies {
     compileOnly(project(":antlr"))
-    implementation(libs.antlr)
+    implementation(libs.antlrRuntime)
     implementation(libs.kotlinReflect)
     implementation(libs.minimalJson)
     compileOnly(libs.plantuml)

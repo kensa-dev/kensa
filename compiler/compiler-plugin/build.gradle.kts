@@ -14,7 +14,7 @@ extensions.getByType(JavaPluginExtension::class.java).registerFeature("testFixtu
 dependencies {
     implementation(project(":core"))
 
-    implementation(libs.kotlinCompilerEmbeddable)
+    compileOnly(libs.kotlinCompilerEmbeddable)
 
     "testFixturesImplementation"(project(":core"))
     "testFixturesImplementation"(project(":core")) {

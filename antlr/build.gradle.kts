@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     antlr(libs.antlr)
-    api(libs.antlr)
+    api(libs.antlrRuntime)
 }
 
 java {

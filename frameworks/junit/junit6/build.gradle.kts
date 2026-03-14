@@ -78,7 +78,7 @@ plugins.withId("org.jetbrains.kotlin.jvm") {
 dependencies {
     api(project(":core"))
     compileOnly(project(":antlr"))
-    implementation(libs.antlr)
+    implementation(libs.antlrRuntime)
     implementation(libs.kotlinReflect)
 
     implementation(platform(libs.junit6Bom))
