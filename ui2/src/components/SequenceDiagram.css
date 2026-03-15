@@ -48,8 +48,8 @@
 .sequence-diagram svg path[fill="#FFD700"],
 .sequence-diagram svg path[fill="#ffD700"],
 .sequence-diagram svg path[fill="#ffd700"] {
-  fill: hsl(var(--primary) / 0.08) !important;
-  stroke: hsl(var(--border)) !important;
+  fill: hsl(220 50% 55% / 0.12) !important;
+  stroke: hsl(220 50% 55% / 0.35) !important;
   stroke-width: 1 !important;
 }
 .dark .sequence-diagram svg path[fill="#FFD700"],
@@ -61,7 +61,7 @@
 
 /* Group label text (bold) */
 .sequence-diagram svg text[font-weight="bold"] {
-  fill: hsl(var(--foreground) / 0.6) !important;
+  fill: hsl(220 60% 45%) !important;
   font-family: 'IBM Plex Sans', sans-serif !important;
   font-size: 11px !important;
   font-weight: 600 !important;
