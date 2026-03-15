@@ -119,6 +119,9 @@ tasks {
 
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("")
+        manifest {
+            attributes(mapOf("Implementation-Version" to rootProject.version))
+        }
         relocate("net.sourceforge.plantuml", "dev.kensa.internal.plantuml")
         dependsOn(":ui:viteBuild", ":ui2:viteBuild")
         from(project(":antlr").sourceSets["main"].output)

@@ -2,7 +2,7 @@ package dev.kensa.output
 
 import com.eclipsesource.json.Json
 import dev.kensa.Configuration
-import dev.kensa.Section.Buttons
+import dev.kensa.Section
 import dev.kensa.Section.Tabs
 import dev.kensa.UiMode
 import dev.kensa.context.TestContainer
@@ -15,6 +15,7 @@ import dev.kensa.sentence.Acronym
 import dev.kensa.tabs.TabArtifactManager
 import dev.kensa.util.IoUtil
 import java.nio.file.Path
+import java.time.Instant
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 import com.eclipsesource.json.Json.`object` as jsonObject
@@ -75,6 +76,7 @@ class ResultWriter(private val configuration: Configuration) {
 
     private fun writeModernConfiguration() =
         with(configuration) {
+            val kensaVersion = ResultWriter::class.java.`package`?.implementationVersion ?: "dev"
             val json = jsonObject()
                 .add("autoOpenTab", autoOpenTab.name)
                 .add("autoExpandNotes", autoExpandNotes)
@@ -83,9 +85,11 @@ class ResultWriter(private val configuration: Configuration) {
                 .add("acronyms", acronymsAsJson(dictionary.acronyms))
                 .add("flattenPackages", flattenOutputPackages)
                 .add("packageDisplayMode", packageDisplay.name)
+                .add("kensaVersion", kensaVersion)
+                .add("generatedAt", Instant.now().toString())
                 .add("sectionOrder", Json.array().apply {
                     sectionOrder.forEach {
-                        add((if (it == Buttons) Tabs else it).name)
+                        add((if (it == Tabs) Tabs else it).name)
                     }
                 })
 

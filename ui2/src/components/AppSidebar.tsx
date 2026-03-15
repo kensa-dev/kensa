@@ -11,6 +11,7 @@ import {Index, Indices} from "@/types/Index";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from "@/components/ui/collapsible"
 import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import {Kbd, KbdGroup} from "@/components/ui/kbd"
+import {useConfig} from "@/contexts/ConfigContext"
 
 interface StateCounts {
     passed: number;
@@ -480,8 +481,44 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
             <SidebarFooter className="p-3 pt-0">
                 <StateCountBar counts={globalCounts}/>
+                <ReportMeta/>
             </SidebarFooter>
         </Sidebar>
+    );
+}
+
+function formatGeneratedAt(iso: string): string {
+    try {
+        return new Intl.DateTimeFormat(undefined, {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: false
+        }).format(new Date(iso));
+    } catch {
+        return iso;
+    }
+}
+
+function ReportMeta() {
+    const config = useConfig();
+    const {kensaVersion, generatedAt} = config;
+    if (!kensaVersion && !generatedAt) return null;
+
+    return (
+        <div className="flex items-center justify-center gap-1.5 pt-1.5 border-t border-border/30 group-data-[collapsible=icon]:hidden">
+            {kensaVersion && (
+                <span className="text-[9px] font-mono text-muted-foreground/55 select-none tracking-wide">
+                    v{kensaVersion}
+                </span>
+            )}
+            {kensaVersion && generatedAt && (
+                <span className="text-[9px] text-muted-foreground/30 select-none">·</span>
+            )}
+            {generatedAt && (
+                <span className="text-[9px] font-mono text-muted-foreground/55 select-none">
+                    {formatGeneratedAt(generatedAt)}
+                </span>
+            )}
+        </div>
     );
 }
 

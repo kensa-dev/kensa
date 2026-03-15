@@ -7,7 +7,9 @@ export interface KensaConfig {
     acronyms: Record<string, string>;
     packageDisplayMode: string;
     sectionOrder: string[];
-    alwaysExpandNotes: boolean
+    alwaysExpandNotes: boolean;
+    kensaVersion?: string;
+    generatedAt?: string;
 }
 
 // Default fallback configuration
