@@ -41,6 +41,10 @@ const App = () => {
     const [commandQuery, setCommandQuery] = useState("");
     const searchInputRef = useRef<HTMLInputElement>(null);
     const pendingTestToExpandRef = useRef<{testId: string, method: string} | null>(null);
+    const searchQueryRef = useRef(searchQuery);
+    const commandOpenRef = useRef(open);
+    searchQueryRef.current = searchQuery;
+    commandOpenRef.current = open;
 
     const navigate = useNavigateWithSearch();
     const location = useLocation();
@@ -141,6 +145,18 @@ const App = () => {
         window.addEventListener("keydown", handleKeyDown, true);
         return () => window.removeEventListener("keydown", handleKeyDown, true);
     }, [isSidebarCollapsed]);
+
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && searchQueryRef.current && !commandOpenRef.current) {
+                e.preventDefault();
+                onSearchChange('');
+            }
+        };
+
+        document.addEventListener("keydown", handleEscape, true);
+        return () => document.removeEventListener("keydown", handleEscape, true);
+    }, []);
 
     const findNodeById = (nodes: Indices, id: string): Index | null => {
         for (const node of nodes) {
@@ -386,18 +402,36 @@ const App = () => {
                                             >
                                                 <Breadcrumb>
                                                     <BreadcrumbList className="font-mono text-[10px] tracking-wide opacity-60 flex-nowrap">
-                                                        {selectedIndex.testClass.split('.').map((segment, i, arr) => (
-                                                            i < arr.length - 1 ? (
+                                                        {selectedIndex.testClass.split('.').map((segment, i, arr) => {
+                                                            const fullPackage = arr.slice(0, i + 1).join('.');
+                                                            const pkgToken = `pkg:${fullPackage}`;
+                                                            const tokens = searchQuery.split(/\s+/);
+                                                            const isActive = tokens.includes(pkgToken);
+                                                            const toggle = () => {
+                                                                const without = tokens.filter(t => !t.startsWith('pkg:'));
+                                                                onSearchChange(isActive ? without.join(' ').trim() : [...without, pkgToken].join(' ').trim());
+                                                            };
+                                                            return i < arr.length - 1 ? (
                                                                 <BreadcrumbItem key={i}>
-                                                                    <span className="text-neutral-600 dark:text-neutral-400">{segment}</span>
+                                                                    <button
+                                                                        onClick={toggle}
+                                                                        className={cn(
+                                                                            "transition-colors underline-offset-2",
+                                                                            isActive
+                                                                                ? "text-indigo-500 dark:text-indigo-400 underline"
+                                                                                : "text-neutral-600 dark:text-neutral-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:underline"
+                                                                        )}
+                                                                    >
+                                                                        {segment}
+                                                                    </button>
                                                                     <BreadcrumbSeparator />
                                                                 </BreadcrumbItem>
                                                             ) : (
                                                                 <BreadcrumbItem key={i}>
                                                                     <BreadcrumbPage className="font-mono text-[10px] font-semibold text-neutral-700 dark:text-neutral-200">{segment}</BreadcrumbPage>
                                                                 </BreadcrumbItem>
-                                                            )
-                                                        ))}
+                                                            );
+                                                        })}
                                                     </BreadcrumbList>
                                                 </Breadcrumb>
                                                 <div className="flex items-center gap-3">

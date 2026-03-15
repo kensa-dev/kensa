@@ -85,6 +85,20 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     const [pickerIndex, setPickerIndex] = React.useState(0);
 
     const pickerListRef = React.useRef<HTMLDivElement>(null);
+    const inputValueRef = React.useRef(inputValue);
+    inputValueRef.current = inputValue;
+
+    React.useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && inputValueRef.current) {
+                e.preventDefault();
+                setInputValue('');
+                setShowPicker(false);
+            }
+        };
+        document.addEventListener('keydown', handleEscape, true);
+        return () => document.removeEventListener('keydown', handleEscape, true);
+    }, []);
 
     React.useEffect(() => {
         if (showPicker && pickerListRef.current) {
@@ -105,6 +119,19 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
         const newQuery = searchQuery
             .split(/\s+/)
             .filter(part => part !== token)
+            .join(' ')
+            .trim();
+        onSearchChange(newQuery);
+    };
+
+    const handleRemoveText = () => {
+        const newQuery = searchQuery
+            .split(/\s+/)
+            .filter(p =>
+                (p.startsWith('issue:') && p.length > 6) ||
+                (p.startsWith('state:') && p.length > 6) ||
+                (p.startsWith('pkg:') && p.length > 4)
+            )
             .join(' ')
             .trim();
         onSearchChange(newQuery);
@@ -136,27 +163,31 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     };
 
     const queryMeta = React.useMemo(() => {
-        const parts = searchQuery.split(/\s+/);
-        const issues = parts.filter(p => p.startsWith('issue:') && p.length > 6).map(p => p.split(':')[1]);
-        const states = parts.filter(p => p.startsWith('state:') && p.length > 6).map(p => p.split(':')[1].toLowerCase());
+        const parts = searchQuery.split(/\s+/).filter(Boolean);
+        const issues = parts.filter(p => p.startsWith('issue:') && p.length > 6).map(p => p.slice(6));
+        const states = parts.filter(p => p.startsWith('state:') && p.length > 6).map(p => p.slice(6).toLowerCase());
+        const packages = parts.filter(p => p.startsWith('pkg:') && p.length > 4).map(p => p.slice(4));
 
         const text = parts.filter(p =>
             !(p.startsWith('issue:') && p.length > 6) &&
-            !(p.startsWith('state:') && p.length > 6)
+            !(p.startsWith('state:') && p.length > 6) &&
+            !(p.startsWith('pkg:') && p.length > 4)
         ).join(' ');
 
-        return {text, issues, states};
+        return {text, issues, states, packages};
     }, [searchQuery]);
 
     const {filteredIndices, firstMatchingTest, firstMatchingMethod, testMethodMap, matchingMethodsMap} = React.useMemo(() => {
-        const {states, issues} = queryMeta;
+        const {states, issues, packages, text: committedText} = queryMeta;
 
         const activeTyping = inputValue.toLowerCase();
         const typingState = activeTyping.startsWith('state:') ? activeTyping.split(':')[1] : null;
         const typingIssue = activeTyping.startsWith('issue:') ? activeTyping.split(':')[1] : null;
-        const typingText = (!typingState && !typingIssue) ? activeTyping : "";
+        const typingPkg = activeTyping.startsWith('pkg:') && activeTyping.length > 4 ? activeTyping.slice(4) : null;
+        const typingText = (!typingState && !typingIssue && !typingPkg) ? activeTyping : "";
 
         const requiredStates = typingState ? [...states, typingState] : states;
+        const requiredPackages = typingPkg ? [...packages, typingPkg] : packages;
         const requiredIssues = typingIssue ? [...issues, typingIssue] : issues;
 
         let firstTest: Index | null = null;
@@ -173,7 +204,11 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                 const nodeState = (node.state || "").toLowerCase();
                 const nodeIssues = (node.issues || []).map((i: string) => i.toLowerCase());
 
-                const matchesText = !typingText || nodeName.includes(typingText) || nodeClass.includes(typingText);
+                const matchesText =
+                    (!committedText || nodeName.includes(committedText) || nodeClass.includes(committedText)) &&
+                    (!typingText || nodeName.includes(typingText) || nodeClass.includes(typingText));
+                const matchesPackage = requiredPackages.length === 0 ||
+                    requiredPackages.some(pkg => nodeClass.startsWith(pkg.toLowerCase()));
 
                 const matchesState = requiredStates.length === 0 ||
                     requiredStates.some(s => nodeState.startsWith(s.toLowerCase()));
@@ -203,7 +238,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                         return childMatchesState;
                     });
 
-                    if (matchingChildren.length > 0 && matchesText) {
+                    if (matchingChildren.length > 0 && matchesText && matchesPackage) {
                         const matchingMethod = matchingChildren[0]?.testMethod || null;
                         const allMethods = matchingChildren.map(c => c.testMethod).filter((m): m is string => Boolean(m));
                         methodMap.set(node.id, matchingMethod);
@@ -219,7 +254,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                 }
 
                 // No state/issue filters - use class-level matching
-                if (matchesText && matchesState && classMatchesIssue) {
+                if (matchesText && matchesPackage && matchesState && classMatchesIssue) {
                     methodMap.set(node.id, null);
                     allMatchingMethodsMap.set(node.id, []);
                     if (!firstTest) firstTest = node;
@@ -349,6 +384,14 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none"/>
 
                                 <div className="flex flex-wrap items-center gap-1 pl-7 w-full">
+                                    {queryMeta.packages.map(p => (
+                                        <Badge key={p} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 max-w-[160px]">
+                                            <span className="truncate">pkg:{p}</span>
+                                            <span className="cursor-pointer shrink-0" onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); handleRemoveBadge(`pkg:${p}`); }}>
+                                                <X size={10} className="pointer-events-none" />
+                                            </span>
+                                        </Badge>
+                                    ))}
                                     {queryMeta.states.map(s => (
                                         <Badge key={s} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-blue-500/10 text-blue-600 border-blue-200">
                                             state:{s}
@@ -365,6 +408,14 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                                 </span>
                                         </Badge>
                                     ))}
+                                    {queryMeta.text && (
+                                        <Badge variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-muted/80 text-muted-foreground border-border max-w-[160px]">
+                                            <span className="truncate">{queryMeta.text}</span>
+                                            <span className="cursor-pointer shrink-0" onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); handleRemoveText(); }}>
+                                                <X size={10} className="pointer-events-none" />
+                                            </span>
+                                        </Badge>
+                                    )}
 
                                     <input
                                         ref={inputRef}
