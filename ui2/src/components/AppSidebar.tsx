@@ -10,6 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/
 import {Index, Indices} from "@/types/Index";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from "@/components/ui/collapsible"
 import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
+import {Kbd, KbdGroup} from "@/components/ui/kbd"
 
 interface StateCounts {
     passed: number;
@@ -328,7 +329,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
                 {isNative && (
                     <Select value={environment} onValueChange={onEnvChange}>
-                        <SelectTrigger className="h-8 text-[12px] font-medium bg-muted/50 border-transparent hover:bg-muted transition-colors group-data-[collapsible=icon]:hidden">
+                        <SelectTrigger className="h-8 text-[13px] font-medium bg-muted/50 border-transparent hover:bg-muted transition-colors group-data-[collapsible=icon]:hidden">
                             <Globe className="mr-2 h-3.5 w-3.5 text-blue-500"/>
                             <SelectValue/>
                         </SelectTrigger>
@@ -367,7 +368,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                     <input
                                         ref={inputRef}
                                         placeholder="Filter tests..."
-                                        className="flex-1 bg-transparent border-none py-0.5 text-[12px] outline-none min-w-[120px]"
+                                        className="flex-1 bg-transparent border-none py-0.5 text-[13px] outline-none min-w-[120px]"
                                         value={inputValue}
                                         onChange={(e) => handleInputChange(e.target.value)}
                                         onKeyDown={(e) => {
@@ -416,9 +417,10 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                             }
                                         }}
                                     />
-                                    <kbd className="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-                                        <span className="text-xs">⌘</span>K
-                                    </kbd>
+                                    <KbdGroup className="pointer-events-none absolute right-1.5 top-2 hidden select-none sm:flex">
+                                        <Kbd>⌘+F</Kbd>
+                                        <Kbd>⌘+K</Kbd>
+                                    </KbdGroup>
                                 </div>
                             </div>
                         </PopoverTrigger>
@@ -440,7 +442,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                             <div
                                                 key={item}
                                                 className={cn(
-                                                    "flex items-center rounded-sm px-2 py-1.5 text-[12px] cursor-pointer",
+                                                    "flex items-center rounded-sm px-2 py-1.5 text-[13px] cursor-pointer",
                                                     idx === pickerIndex
                                                         ? "bg-accent text-accent-foreground"
                                                         : "text-popover-foreground hover:bg-accent/50"
@@ -607,10 +609,10 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
 
     const iconTone =
         node.state === "Failed"
-            ? "text-destructive"
+            ? "text-failure"
             : node.state === "Passed"
-                ? "text-success dark:text-success"
-                : "text-muted-foreground/90";
+                ? "text-success"
+                : "text-muted-foreground/70";
 
     const childCounts = node.id ? stateCountsById.get(node.id) ?? null : null;
 
@@ -619,7 +621,7 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
             <CollapsibleMenuNode
                 node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
                 iconTone={iconTone} childCounts={childCounts}
-                labelClassName="text-[12px] font-bold text-foreground"
+                labelClassName="text-[13px] font-bold text-foreground"
                 children={buildTree(node.children || [])}
                 testMethodMap={testMethodMap}
                 matchingMethodsMap={matchingMethodsMap}
@@ -632,7 +634,7 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
             <CollapsibleMenuNode
                 node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
                 iconTone={iconTone} childCounts={childCounts}
-                labelClassName="text-[12px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                labelClassName="text-[13px] text-muted-foreground hover:text-foreground"
                 children={node.children || []}
                 testMethodMap={testMethodMap}
                 matchingMethodsMap={matchingMethodsMap}
@@ -651,9 +653,9 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                     onSelect(node, method, allMethods);
                 }}
                 className={cn(
-                    "text-[12px] transition-all",
+                    "text-[13px] transition-all",
                     isSelected ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground",
-                    node.state === 'Failed' && !isSelected && "text-destructive font-medium",
+                    node.state === 'Failed' && !isSelected && "text-failure font-medium",
                     node.state === 'Disabled' && !isSelected && "text-disabled opacity-70"
                 )}
             >

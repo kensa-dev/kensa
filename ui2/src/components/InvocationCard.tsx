@@ -40,7 +40,7 @@ export const InvocationCard = ({invocation, autoOpenTab, isLast, initialExpanded
         <div className={cn(
             "border rounded-lg overflow-hidden transition-all duration-200 bg-background",
             !isLast && "mb-3",
-            isPassed ? "border-success/30 shadow-sm" : "border-failure/30 shadow-sm"
+            isPassed ? "border-success/40 shadow-sm" : "border-failure/40 shadow-sm"
         )}>
             <div
                 className={cn(
@@ -60,7 +60,7 @@ export const InvocationCard = ({invocation, autoOpenTab, isLast, initialExpanded
 
             {isExpanded && (
                 <div className={cn(
-                    isPassed ? "bg-success/2 dark:bg-success/10" : "bg-failure/2 dark:bg-success/10",
+                    isPassed ? "bg-success/[0.04] dark:bg-success/[0.08]" : "bg-failure/[0.04] dark:bg-failure/[0.08]",
                     "p-4 pt-2 border-t border-border/40")}>
                     <SectionRenderer
                         invocation={invocation}

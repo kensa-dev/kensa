@@ -14,7 +14,7 @@ interface DataTableProps {
 }
 
 export const DataTable = ({data, testState}: DataTableProps) => (
-    <Table className="text-[13px] table-fixed">
+    <Table className="text-[14px] table-fixed">
         <colgroup>
             <col className="w-1/3" />
             <col className="w-2/3" />

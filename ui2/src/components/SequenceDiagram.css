@@ -1,13 +1,14 @@
+/* ─── Cursors ─────────────────────────────────────────────── */
 .sequence_diagram_clickable,
 .sequence_diagram_clickable * {
   cursor: pointer;
 }
-
 .sequence-diagram .participant,
 .sequence-diagram .participant * {
   cursor: pointer;
 }
 
+/* ─── Container ───────────────────────────────────────────── */
 .sd-panel {
   position: relative;
 }
@@ -16,7 +17,6 @@
   overflow: auto;
   border: none;
   border-radius: 12px;
-
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -26,64 +26,146 @@
 .sequence-diagram svg {
   max-width: none;
   display: block;
+  background: transparent;
 }
 
+/* ─── Group / box frame ───────────────────────────────────── */
+
+/* Filled background rect of the box group */
+.sequence-diagram svg g > rect[fill="#FFFFFF"],
+.sequence-diagram svg g > rect[fill="#ffffff"] {
+  fill: hsl(var(--muted) / 0.25) !important;
+  stroke: hsl(var(--border)) !important;
+  stroke-width: 1 !important;
+}
+.dark .sequence-diagram svg g > rect[fill="#FFFFFF"],
+.dark .sequence-diagram svg g > rect[fill="#ffffff"] {
+  fill: hsl(var(--muted) / 0.6) !important;
+  stroke: hsl(var(--border)) !important;
+}
+
+/* Group label tab (yellow "Test" path) */
+.sequence-diagram svg path[fill="#FFD700"],
+.sequence-diagram svg path[fill="#ffD700"],
+.sequence-diagram svg path[fill="#ffd700"] {
+  fill: hsl(var(--primary) / 0.08) !important;
+  stroke: hsl(var(--border)) !important;
+  stroke-width: 1 !important;
+}
+.dark .sequence-diagram svg path[fill="#FFD700"],
+.dark .sequence-diagram svg path[fill="#ffD700"],
+.dark .sequence-diagram svg path[fill="#ffd700"] {
+  fill: hsl(220 50% 55% / 0.2) !important;
+  stroke: hsl(220 50% 60% / 0.4) !important;
+}
+
+/* Group label text (bold) */
+.sequence-diagram svg text[font-weight="bold"] {
+  fill: hsl(var(--foreground) / 0.6) !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+}
+.dark .sequence-diagram svg text[font-weight="bold"] {
+  fill: hsl(220 70% 75%) !important;
+}
+
+/* ─── Participants ────────────────────────────────────────── */
+
+/* Box fill */
+.sequence-diagram g.participant rect {
+  fill: hsl(var(--card)) !important;
+  stroke: hsl(var(--border)) !important;
+  stroke-width: 1 !important;
+}
+.dark .sequence-diagram g.participant rect {
+  fill: hsl(var(--muted)) !important;
+}
+
+/* Label text */
+.sequence-diagram g.participant text {
+  fill: hsl(var(--foreground)) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 12px !important;
+}
+
+/* ─── Lifelines ───────────────────────────────────────────── */
+.sequence-diagram g.participant-lifeline line {
+  stroke: hsl(var(--border)) !important;
+  stroke-width: 1 !important;
+  stroke-dasharray: 5, 4 !important;
+}
+.dark .sequence-diagram g.participant-lifeline line {
+  stroke: hsl(var(--muted-foreground) / 0.4) !important;
+}
+
+/* ─── Messages ────────────────────────────────────────────── */
+.sequence-diagram g.message line {
+  stroke: hsl(var(--muted-foreground) / 0.55) !important;
+  stroke-width: 1 !important;
+}
+
+.sequence-diagram g.message polygon {
+  fill: hsl(var(--muted-foreground) / 0.65) !important;
+  stroke: hsl(var(--muted-foreground) / 0.65) !important;
+  stroke-width: 1 !important;
+}
+
+.sequence-diagram g.message text {
+  fill: hsl(var(--foreground) / 0.85) !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 12px !important;
+}
+
+/* ─── Expand button ───────────────────────────────────────── */
 .sd-expand {
   position: absolute;
   top: 8px;
   right: 18px;
   z-index: 2;
-
   display: inline-flex;
   justify-content: center;
   align-items: flex-start;
-
   padding: 6px;
   border-radius: 10px;
-
   color: hsl(var(--muted-foreground));
   background: hsl(var(--background) / 0.75);
   border: 1px solid hsl(var(--border));
   backdrop-filter: blur(6px);
-
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms ease, background 150ms ease, color 150ms ease;
 }
-
 .sd-panel:hover .sd-expand,
 .sd-expand:focus-visible {
   opacity: 1;
   pointer-events: auto;
 }
-
 .sd-expand:hover {
   background: hsl(var(--accent) / 0.6);
   color: hsl(var(--foreground));
 }
 
+/* ─── Filtering ───────────────────────────────────────────── */
 .sequence-diagram.filtered g.message[data-interaction-id]:not(.filter-highlight) {
-  opacity: 0.2 !important;
+  opacity: 0.15 !important;
 }
-
 .sequence-diagram.filtered g.message[data-interaction-id].filter-highlight {
   opacity: 1 !important;
 }
-
 .sequence-diagram.filtered .participant rect.filter-highlight {
-  stroke: #487913 !important;
+  stroke: hsl(var(--success)) !important;
   stroke-width: 2 !important;
 }
-
 .sequence-diagram.filtered text.actor.filter-highlight {
-  fill: #487913 !important;
+  fill: hsl(var(--success)) !important;
   font-weight: bold !important;
 }
-
 .sequence-diagram.filtered.no-matches rect.actor.filter-highlight {
-  fill: red !important;
+  fill: hsl(var(--failure) / 0.2) !important;
+  stroke: hsl(var(--failure)) !important;
 }
-
 .sequence-diagram.filtered.no-matches text.actor.filter-highlight {
-  fill: #ffeeee !important;
+  fill: hsl(var(--failure)) !important;
 }

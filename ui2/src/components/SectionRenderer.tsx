@@ -5,6 +5,8 @@ import { Section } from '@/constants';
 import {useContext} from "react";
 import {ConfigContext} from "@/contexts/ConfigContext";
 import {Invocation, TestState} from "@/types/Test";
+import {isMajorKeyword} from "@/components/Token";
+import {Separator} from "@/components/ui/separator";
 
 interface SectionRendererProps {
     invocation: Invocation;
@@ -22,14 +24,55 @@ export const SectionRenderer = ({ invocation, testState, autoOpenTab }: SectionR
                     case Section.Tabs:
                         return <div key={idx} className="mb-4"><Tabs invocation={invocation} testState={testState} autoOpenTab={autoOpenTab} /></div>;
 
-                    case Section.Sentences:
+                    case Section.Sentences: {
+                        const sentences = invocation.sentences;
+
+                        const isPureNote = (line: typeof sentences[0]) => {
+                            const meaningful = line.filter(t => {
+                                const types = t.types || [];
+                                return !types.includes('tk-nl') && !types.includes('tk-in') && !types.includes('tk-bl');
+                            });
+                            return meaningful.length > 0 && meaningful.every(t => (t.types || []).includes('tk-nt'));
+                        };
+
+                        // Separator goes before the earliest consecutive pure-note sentence(s)
+                        // that immediately precede a new major keyword, so notes visually
+                        // belong to the section they were written adjacent to.
+                        const separatorAt = new Set<number>();
+                        let prevMajorIdx = -1;
+                        for (let i = 0; i < sentences.length; i++) {
+                            const kw = sentences[i].find(t => t.types?.includes('tk-kw'))?.value ?? '';
+                            if (isMajorKeyword(kw)) {
+                                if (prevMajorIdx >= 0) {
+                                    let sepIdx = i;
+                                    for (let j = i - 1; j > prevMajorIdx; j--) {
+                                        if (isPureNote(sentences[j])) sepIdx = j;
+                                        else break;
+                                    }
+                                    separatorAt.add(sepIdx);
+                                }
+                                prevMajorIdx = i;
+                            }
+                        }
+
+                        let lastMajorKw = '';
                         return (
-                            <div key={idx} className="space-y-1.5 my-4">
-                                {invocation.sentences.map((line, sIdx: number) => (
-                                    <Sentence key={sIdx} sentence={line} />
-                                ))}
+                            <div key={idx} className="my-4 space-y-0">
+                                {sentences.map((line, sIdx) => {
+                                    const kw = line.find(t => t.types?.includes('tk-kw'))?.value ?? '';
+                                    const isMajor = isMajorKeyword(kw);
+                                    if (isMajor) lastMajorKw = kw.toLowerCase().trim();
+                                    const inherited = isMajor ? undefined : lastMajorKw;
+                                    return (
+                                        <div key={sIdx}>
+                                            {separatorAt.has(sIdx) && <Separator className="my-2 opacity-30" />}
+                                            <Sentence sentence={line} inheritedKeyword={inherited} />
+                                        </div>
+                                    );
+                                })}
                             </div>
                         );
+                    }
 
                     case Section.Exception:
                         return <div key={idx} className="my-4"><FailureMessage invocation={invocation} /></div>;

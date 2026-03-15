@@ -63,7 +63,7 @@ export function InteractionDialog({interaction, isOpen, onClose, isPassed}: Inte
 
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md text-muted-foreground transition-colors focus:outline-none"
+                            className="p-2 hover:bg-muted hover:text-foreground rounded-md text-muted-foreground transition-colors focus:outline-none"
                         >
                             <X size={18}/>
                         </button>

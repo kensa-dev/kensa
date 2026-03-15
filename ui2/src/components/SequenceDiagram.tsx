@@ -83,7 +83,7 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
 
         svg
             .querySelectorAll(
-                `.participant[data-participant="${CSS.escape(actorName)}"] rect, .participant[data-participant="${CSS.escape(actorName)}"] text`
+                `.participant[data-qualified-name="${CSS.escape(actorName)}"] rect, .participant[data-qualified-name="${CSS.escape(actorName)}"] text`
             )
             .forEach((el) => (el as Element).classList.add("filter-highlight"));
     };
@@ -143,8 +143,8 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                 }
             }
 
-            const participant = target.closest?.(".participant[data-participant]") as Element | null;
-            const actorName = participant?.getAttribute("data-participant");
+            const participant = target.closest?.(".participant[data-qualified-name]") as Element | null;
+            const actorName = participant?.getAttribute("data-qualified-name");
             if (actorName) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -267,8 +267,8 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
 
                 <div
                     ref={scrollRef}
-                    className="bg-white sd-scroll"
-                    style={{ maxHeight, "--sd-bg": isPassed ? "rgba(16, 185, 129, 0.06)" : "rgba(244, 63, 94, 0.06)" } as React.CSSProperties}
+                    className="sd-scroll"
+                    style={{ maxHeight } as React.CSSProperties}
                 >
                     <div
                         ref={inlineRootRef}
@@ -292,14 +292,14 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                         <button
                             type="button"
                             onClick={() => setIsMaximized(false)}
-                            className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md text-muted-foreground transition-colors focus:outline-none"
+                            className="p-2 hover:bg-muted hover:text-foreground rounded-md text-muted-foreground transition-colors focus:outline-none"
                             title="Close"
                         >
                             <X size={18}/>
                         </button>
                     </div>
 
-                    <div className="bg-white flex-1 overflow-auto p-6 flex justify-center">
+                    <div className="flex-1 overflow-auto p-6 flex justify-center bg-background/50">
                         <div
                             ref={modalRootRef}
                             className={rootClasses}

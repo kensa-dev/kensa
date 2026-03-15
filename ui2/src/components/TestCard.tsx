@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Beaker, ChevronDown, ChevronRight } from 'lucide-react';
+import { CheckCircle2, XCircle, CircleMinus, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { SectionRenderer } from './SectionRenderer';
 import { InvocationCard } from "@/components/InvocationCard";
@@ -7,15 +7,15 @@ import { IssueBadge } from './IssueBadge';
 import {Invocation, Test, TestState} from "@/types/Test";
 
 const cardBorder: Record<TestState, string> = {
-    Passed: "border-success/30",
-    Failed: "border-failure/30",
-    Disabled: "border-disabled/30",
+    Passed: "border-success/40",
+    Failed: "border-failure/40",
+    Disabled: "border-disabled/35",
 };
 
 const headerBg: Record<TestState, string> = {
-    Passed: "bg-success/10 hover:bg-success/15",
-    Failed: "bg-failure/10 hover:bg-failure/15",
-    Disabled: "bg-disabled/10 hover:bg-disabled/15",
+    Passed: "bg-success/[0.09] hover:bg-success/[0.14]",
+    Failed: "bg-failure/[0.09] hover:bg-failure/[0.14]",
+    Disabled: "bg-disabled/[0.09] hover:bg-disabled/[0.14]",
 };
 
 const iconColor: Record<TestState, string> = {
@@ -24,10 +24,17 @@ const iconColor: Record<TestState, string> = {
     Disabled: "text-disabled",
 };
 
+const StateIcon = ({ state, size = 16 }: { state: TestState; size?: number }) => {
+    const cls = iconColor[state];
+    if (state === 'Failed')   return <XCircle size={size} className={cls} />;
+    if (state === 'Disabled') return <CircleMinus size={size} className={cls} />;
+    return <CheckCircle2 size={size} className={cls} />;
+};
+
 const bodyBg: Record<TestState, string> = {
-    Passed: "bg-success/2 dark:bg-success/10",
-    Failed: "bg-failure/2 dark:bg-failure/10",
-    Disabled: "bg-disabled/2 dark:bg-disabled/10",
+    Passed: "bg-success/[0.04] dark:bg-success/[0.08]",
+    Failed: "bg-failure/[0.04] dark:bg-failure/[0.08]",
+    Disabled: "bg-disabled/[0.04] dark:bg-disabled/[0.06]",
 };
 
 interface TestCardProps {
@@ -60,7 +67,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                 onClick={() => !isDisabled && setIsExpanded(!isExpanded)}
             >
                 <h3 className={"font-bold flex items-center gap-2 text-sm tracking-tight"}>
-                    <Beaker size={16} className={iconColor[state]} />
+                    <StateIcon state={state} />
                     {test.displayName}
                 </h3>
 
@@ -68,6 +75,11 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                     {test.issues?.map((issue: string) => (
                         <IssueBadge key={issue} issue={issue} testState={state} />
                     ))}
+                    {!isDisabled && !isExpanded && test.invocations.length > 1 && (
+                        <span className="text-[10px] font-mono text-muted-foreground/60 tabular-nums">
+                            {test.invocations.length}×
+                        </span>
+                    )}
                     {!isDisabled && (
                         isExpanded ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />
                     )}

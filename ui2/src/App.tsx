@@ -20,6 +20,7 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import {Badge} from "@/components/ui/badge";
+import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
 import { TestContainer } from './components/TestContainer';
 
 const App = () => {
@@ -383,11 +384,22 @@ const App = () => {
                                                     "py-1.5 gap-0.5"
                                                 )}
                                             >
-                                                <div className="flex items-center gap-2 text-[11px] leading-5 font-mono tracking-wider opacity-70 text-neutral-800 dark:text-neutral-100">
-                                                    <span className="truncate">
-                                                            {selectedIndex.testClass}
-                                                        </span>
-                                                </div>
+                                                <Breadcrumb>
+                                                    <BreadcrumbList className="font-mono text-[10px] tracking-wide opacity-60 flex-nowrap">
+                                                        {selectedIndex.testClass.split('.').map((segment, i, arr) => (
+                                                            i < arr.length - 1 ? (
+                                                                <BreadcrumbItem key={i}>
+                                                                    <span className="text-neutral-600 dark:text-neutral-400">{segment}</span>
+                                                                    <BreadcrumbSeparator />
+                                                                </BreadcrumbItem>
+                                                            ) : (
+                                                                <BreadcrumbItem key={i}>
+                                                                    <BreadcrumbPage className="font-mono text-[10px] font-semibold text-neutral-700 dark:text-neutral-200">{segment}</BreadcrumbPage>
+                                                                </BreadcrumbItem>
+                                                            )
+                                                        ))}
+                                                    </BreadcrumbList>
+                                                </Breadcrumb>
                                                 <div className="flex items-center gap-3">
                                                     <h1 className="text-[14px] font-black truncate text-neutral-800 dark:text-neutral-100 leading-tight">
                                                         {selectedIndex.displayName}

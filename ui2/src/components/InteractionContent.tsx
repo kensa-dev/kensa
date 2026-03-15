@@ -182,10 +182,7 @@ export const InteractionContent = ({
                     </div>
 
                     {/* Tabs */}
-                    <div className={cn(
-                        "flex border-b overflow-x-auto transition-colors shrink-0",
-                        isPassed ? "bg-success/10 border-success/30" : "bg-failure/10 border-failure/30"
-                    )}>
+                    <div className="flex border-b border-border/60 overflow-x-auto transition-colors shrink-0 bg-muted/30">
                         {metadataGroups.map((group, i) => (
                             <button
                                 key={`${group.name}-${i}`}
@@ -195,11 +192,9 @@ export const InteractionContent = ({
                                     "px-4 py-2 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2",
                                     activeMetaTab === i
                                         ? (isPassed
-                                            ? "bg-background text-neutral-800 dark:text-neutral-100 border-success/30"
-                                            : "bg-background text-neutral-800 dark:text-neutral-100 border-failure/30")
-                                        : (isPassed
-                                            ? "text-muted-foreground border-transparent hover:bg-success/10 hover:text-success"
-                                            : "text-muted-foreground border-transparent hover:bg-failure/10 hover:text-failure")
+                                            ? "bg-card text-foreground border-success/50"
+                                            : "bg-card text-foreground border-failure/50")
+                                        : "text-muted-foreground border-transparent hover:bg-muted/60 hover:text-foreground"
                                 )}
                                 title={group.name}
                             >
@@ -253,7 +248,7 @@ export const InteractionContent = ({
                                     </span>
                                     <button onClick={prevMatch} className="text-muted-foreground hover:text-foreground p-0.5"><ChevronUp size={12}/></button>
                                     <button onClick={nextMatch} className="text-muted-foreground hover:text-foreground p-0.5"><ChevronDown size={12}/></button>
-                                    <button onClick={() => setSearchQuery("")} className="text-muted-foreground hover:text-destructive p-0.5 ml-1"><X size={12}/></button>
+                                    <button onClick={() => setSearchQuery("")} className="text-muted-foreground hover:text-foreground p-0.5 ml-1"><X size={12}/></button>
                                 </div>
                             )}
                         </div>

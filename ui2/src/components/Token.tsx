@@ -251,21 +251,18 @@ const NoteToken = ({value}: NoteTokenProps) => {
                         setIsExpanded(!isExpanded);
                     }}
                     className={cn(
-                        "inline-flex items-baseline transition-all duration-200 ease-out group/note mx-1",
-                        "border-l-2 border-muted-foreground/30 pl-1.5 pr-1 rounded-r-sm",
-                        "leading-none align-baseline",
-                        isExpanded ? "cursor-default border-l-4 bg-muted/40" : "cursor-help bg-muted/20 hover:bg-muted/60",
+                        "inline-flex items-baseline transition-all duration-200 ease-out mx-1",
                         isExpanded
-                            ? "text-foreground whitespace-pre-wrap"
-                            : "text-muted-foreground/60"
+                            ? "border-l-2 border-muted-foreground/25 pl-2 pr-1 rounded-r-sm bg-muted/30 cursor-default text-foreground/80 whitespace-pre-wrap leading-normal"
+                            : "rounded px-1.5 py-0.5 bg-muted/40 hover:bg-muted/70 cursor-help text-muted-foreground/50 leading-none"
                     )}
                 >
                     {isExpanded ? (
-                        <span className="leading-normal">
+                        <span className="leading-normal text-[13px] italic">
                             {value}
                         </span>
                     ) : (
-                        <span className="font-black tracking-widest opacity-60">
+                        <span className="font-mono text-[11px] tracking-widest">
                             ···
                         </span>
                     )}
@@ -278,7 +275,7 @@ const NoteToken = ({value}: NoteTokenProps) => {
                     align="start"
                     className="w-80 p-0 shadow-2xl border-border/50 overflow-hidden rounded-xl"
                 >
-                    <div className="p-3 leading-relaxed text-foreground/90 bg-background whitespace-pre-wrap font-sans">
+                    <div className="p-3 leading-relaxed text-foreground/90 bg-background whitespace-pre-wrap font-sans text-[13px] italic">
                         {value}
                     </div>
                 </HoverCardContent>
@@ -287,8 +284,22 @@ const NoteToken = ({value}: NoteTokenProps) => {
     );
 };
 
+export const keywordColors: Record<string, string> = {
+    'given': 'text-sky-600 dark:text-sky-400',
+    'when':  'text-amber-600 dark:text-amber-400',
+    'then':  'text-emerald-600 dark:text-emerald-500',
+};
+
+const MAJOR_KEYWORDS = new Set(['given', 'when', 'then']);
+export const isMajorKeyword = (v: string) => MAJOR_KEYWORDS.has(v.toLowerCase().trim());
+
+const getKeywordCls = (value: string, inheritedKeyword?: string): string => {
+    const key = value.toLowerCase().trim();
+    return keywordColors[key] ?? (inheritedKeyword ? (keywordColors[inheritedKeyword] ?? 'text-foreground') : 'text-foreground');
+};
+
 const styles: Record<string, string> = {
-    'tk-kw': 'text-foreground font-bold tracking-tight',
+    'tk-kw': 'font-bold tracking-tight',
     'tk-wd': 'text-foreground/90',
     'tk-id': 'text-foreground',
     'tk-sl': 'text-foreground/90 italic',
@@ -303,13 +314,15 @@ const getMappedCls = (types: string[]) => types.map((t: string) => styles[t] || 
 
 interface TokenProps {
     token: TokenType;
+    inheritedKeyword?: string;
 }
 
-export const Token = ({token}: TokenProps) => {
+export const Token = ({token, inheritedKeyword}: TokenProps) => {
     const {acronyms} = useConfig();
     const {types = [], value, hint} = token;
     const tokenCls = types.join(" ");
 
+    if (types.includes("tk-kw")) return <span className={cn('font-bold tracking-tight inline', getKeywordCls(value, inheritedKeyword))}>{value}</span>;
     if (types.includes("tk-ex") || types.includes("tk-tab")) return <Expandable token={token}/>;
     if (types.includes("tk-ac")) return <InfoToken value={value} tooltipContent={value ? acronyms[value] : null} tokenCls={tokenCls}/>;
     if (types.includes("tk-hi")) return <InfoToken value={value} tooltipContent={hint ? hint : null} tokenCls={tokenCls}/>;

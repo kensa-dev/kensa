@@ -148,16 +148,13 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
 
     const tabTriggerClass = cn(
         "px-4 py-2 text-[11px] font-bold tracking-wider rounded-none border-b-2 transition-all whitespace-nowrap h-auto",
-        "data-[state=active]:bg-background data-[state=active]:shadow-none",
+        "data-[state=active]:bg-card data-[state=active]:shadow-none",
         isPassed
-            ? "data-[state=active]:text-neutral-800 dark:data-[state=active]:text-neutral-100 data-[state=active]:border-success/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-success/10 data-[state=inactive]:hover:text-success"
-            : "data-[state=active]:text-neutral-800 dark:data-[state=active]:text-neutral-100 data-[state=active]:border-failure/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-failure/10 data-[state=inactive]:hover:text-failure"
+            ? "data-[state=active]:text-success data-[state=active]:border-success/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-muted/60 data-[state=inactive]:hover:text-foreground"
+            : "data-[state=active]:text-failure data-[state=active]:border-failure/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-muted/60 data-[state=inactive]:hover:text-foreground"
     );
 
-    const contentBg = cn(
-        "p-4 transition-colors",
-        isPassed ? "bg-success/2 dark:bg-success/10" : "bg-failure/2 dark:bg-failure/10"
-    );
+    const contentBg = "p-4 transition-colors";
 
     return (
         <>
@@ -166,16 +163,22 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                 onValueChange={setActiveTab}
                 className={cn(
                     "border rounded-lg overflow-hidden bg-card shadow-sm transition-colors",
-                    isPassed ? "border-success/30" : "border-failure/30"
+                    isPassed ? "border-success/40" : "border-failure/40"
                 )}
             >
-                <TabsList className={cn(
-                    "w-full flex rounded-none h-auto border-b p-0 overflow-x-auto justify-start",
-                    isPassed ? "bg-success/10 border-success/30" : "bg-failure/10 border-failure/30"
-                )}>
+                <TabsList className="w-full flex rounded-none h-auto border-b border-border/60 p-0 overflow-x-auto justify-start bg-muted/30">
                     {tabs.map((tab) => (
                         <TabsTrigger key={tab.id} value={tab.id} className={tabTriggerClass}>
                             {tab.label}
+                            {'count' in tab && tab.count != null && tab.count > 0 && (
+                                <span className={cn(
+                                    "ml-1.5 inline-flex items-center justify-center rounded-full px-1.5 py-0 min-w-[18px] h-[16px] text-[10px] font-bold tabular-nums leading-none",
+                                    "bg-foreground/8 text-muted-foreground",
+                                    "data-[state=active]:bg-current/10"
+                                )}>
+                                    {tab.count}
+                                </span>
+                            )}
                         </TabsTrigger>
                     ))}
                 </TabsList>
