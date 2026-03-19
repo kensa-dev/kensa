@@ -26,7 +26,7 @@ internal class InteractionRenderersTest {
         renderers.renderInteraction(100, emptyAttributes())
             .shouldHaveSize(1)
             .first().should {
-                it.name shouldBe "Undefined Value"
+                it.name shouldBe "Value"
                 it.value shouldBe "100"
                 it.language shouldBe PlainText
             }

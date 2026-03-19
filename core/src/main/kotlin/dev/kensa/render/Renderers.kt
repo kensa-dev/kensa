@@ -1,5 +1,6 @@
 package dev.kensa.render
 
+import dev.kensa.render.Language.PlainText
 import dev.kensa.util.Attributes
 import java.util.*
 import kotlin.reflect.KClass
@@ -65,7 +66,7 @@ class Renderers {
             .map { entry -> entry.value }
             .firstOrNull()
 
-    fun renderInteraction(value: Any, attributes: Attributes): List<RenderedInteraction> = interactionRendererFor(value::class)?.render(value, attributes) ?: listOf(RenderedInteraction("Undefined Value", value.toString()))
+    fun renderInteraction(value: Any, attributes: Attributes): List<RenderedInteraction> = interactionRendererFor(value::class)?.render(value, attributes) ?: listOf(RenderedInteraction("Value", value.toString(), attributes.getOrDefault("language", PlainText)))
 
     fun renderInteractionAttributes(value: Any): List<RenderedAttributes> = interactionRendererFor(value::class)?.renderAttributes(value) ?: emptyList()
 
