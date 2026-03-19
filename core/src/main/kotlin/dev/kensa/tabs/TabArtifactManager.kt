@@ -198,7 +198,7 @@ class TabArtifactManager {
             tabId = stableTabId,
             label = tab.name,
             file = relativeFile,
-            mediaType = "text/plain"
+            mediaType = renderer.mediaType()
         )
     }
 

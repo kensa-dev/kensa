@@ -233,6 +233,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                                         <CustomTabPanel
                                             title={tab.label}
                                             content={customTabCache[tab.file]?.content ?? ""}
+                                            mediaType={tab.mediaType}
                                             testState={testState}
                                         />
                                     </div>

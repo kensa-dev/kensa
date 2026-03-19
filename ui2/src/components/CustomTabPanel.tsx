@@ -8,6 +8,7 @@ import {TestState} from "@/types/Test";
 interface CustomTabPanelProps {
     title: string;
     content: string;
+    mediaType?: string;
     testState?: TestState;
     maxHeight?: number;
 }
@@ -16,9 +17,21 @@ const highlightHtml = (content: string): string => hljs.highlight(content, {lang
 
 export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                                                                   content,
+                                                                  mediaType = 'text/plain',
                                                                   testState,
                                                                   maxHeight = 700,
                                                               }) => {
+    if (mediaType === 'text/html') {
+        return (
+            <iframe
+                srcDoc={content}
+                sandbox="allow-same-origin"
+                className="w-full border-0"
+                style={{minHeight: 200}}
+                title="tab content"
+            />
+        );
+    }
     const isPassed = testState === "Passed";
 
     const [isMaximized, setIsMaximized] = React.useState(false);

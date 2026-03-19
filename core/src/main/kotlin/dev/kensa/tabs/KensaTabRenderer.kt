@@ -5,6 +5,12 @@ interface KensaTabRenderer {
      * Return null (or blank) to omit the tab for this invocation.
      */
     fun render(ctx: KensaTabContext): String?
+
+    /**
+     * MIME type of the rendered content. Defaults to "text/plain".
+     * Override to return "text/html" when render() produces HTML markup.
+     */
+    fun mediaType(): String = "text/plain"
 }
 
 /**
