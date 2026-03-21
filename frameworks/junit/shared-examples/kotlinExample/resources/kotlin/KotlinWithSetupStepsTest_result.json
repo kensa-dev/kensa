@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "singleSetupStep",
       "displayName": "Single Setup Step",
       "notes": null,
@@ -16,11 +16,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "2 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 29,
+              "lineNumber": 28,
               "tokens": [
                 {
                   "types": [
@@ -37,7 +37,7 @@
               ]
             },
             {
-              "lineNumber": 31,
+              "lineNumber": 30,
               "tokens": [
                 {
                   "types": [
@@ -61,11 +61,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "key": "aStringValue"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -77,7 +72,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "chainedSetupStep",
       "displayName": "Chained Setup Step",
       "notes": null,
@@ -86,11 +81,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 36,
+              "lineNumber": 35,
               "tokens": [
                 {
                   "types": [
@@ -107,7 +102,7 @@
               ]
             },
             {
-              "lineNumber": 38,
+              "lineNumber": 37,
               "tokens": [
                 {
                   "types": [
@@ -130,7 +125,7 @@
               ]
             },
             {
-              "lineNumber": 39,
+              "lineNumber": 38,
               "tokens": [
                 {
                   "types": [
@@ -154,14 +149,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "key": "aStringValue"
-            },
-            {
-              "key2": "aStringValue2"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

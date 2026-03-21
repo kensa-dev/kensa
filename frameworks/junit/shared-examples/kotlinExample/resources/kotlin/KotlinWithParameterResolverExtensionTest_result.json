@@ -36,7 +36,6 @@
               "parameter": "myParameter"
             }
           ],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

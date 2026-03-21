@@ -107,14 +107,6 @@ annotation class Highlight(val value: String = "")
 @Target(ANNOTATION_CLASS, CLASS, FUNCTION)
 annotation class Issue(vararg val value: String)
 
-@Target(FUNCTION)
-@Retention(RUNTIME)
-@Deprecated(
-    message = "Use ExpandableSentence instead",
-    replaceWith = ReplaceWith("ExpandableSentence", "dev.kensa.ExpandableSentence")
-)
-annotation class NestedSentence
-
 /**
  * Annotation for marking methods or functions as expandable.
  * These methods can be called from within the main test methods/functions

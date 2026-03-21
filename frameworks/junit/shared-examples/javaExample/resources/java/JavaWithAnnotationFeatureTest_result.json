@@ -80,14 +80,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            },
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -185,14 +177,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "key_noHighlight": "noHighlight"
-            },
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -265,11 +249,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -320,14 +299,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "key_foo-bar": "foo-bar"
-            },
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

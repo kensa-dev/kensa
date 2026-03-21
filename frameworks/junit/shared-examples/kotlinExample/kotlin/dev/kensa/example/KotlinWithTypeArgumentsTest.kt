@@ -1,6 +1,7 @@
 package dev.kensa.example
 
-import dev.kensa.GivensBuilder
+import dev.kensa.Action
+import dev.kensa.GivensContext
 import org.junit.jupiter.api.Test
 
 class KotlinWithTypeArgumentsTest : KotlinExampleTest() {
@@ -10,5 +11,5 @@ class KotlinWithTypeArgumentsTest : KotlinExampleTest() {
         given(aLiteralOf<String>("aStringValue"))
     }
 
-    private fun <T> aLiteralOf(aValue: T?): GivensBuilder = GivensBuilder { }
+    private fun <T> aLiteralOf(aValue: T?): Action<GivensContext> = Action { }
 }

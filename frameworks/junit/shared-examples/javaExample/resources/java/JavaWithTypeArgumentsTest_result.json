@@ -20,7 +20,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 10,
+              "lineNumber": 11,
               "tokens": [
                 {
                   "types": [
@@ -44,7 +44,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

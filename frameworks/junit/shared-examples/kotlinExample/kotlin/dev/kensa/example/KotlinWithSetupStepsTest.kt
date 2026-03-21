@@ -4,9 +4,8 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import dev.kensa.ActionBlockBuilder.Companion.buildActions
 import dev.kensa.GivensBlockBuilder.Companion.buildGivens
-import dev.kensa.GivensBuilder
 import dev.kensa.RenderedValue
-import dev.kensa.StateExtractor
+import dev.kensa.StateCollector
 import dev.kensa.VerificationBlockBuilder.Companion.verify
 import dev.kensa.hamkrest.HamkrestSetupStep
 import dev.kensa.hamkrest.WithHamkrest
@@ -39,20 +38,14 @@ class KotlinWithSetupStepsTest : KotlinExampleTest(), WithHamkrest {
         then(theValue2(), equalTo(expectedValue2))
     }
 
-    private fun theValue() = StateExtractor { interactions -> aValue }
-    private fun theValue2() = StateExtractor { interactions -> aValue2 }
+    private fun theValue() = StateCollector { aValue }
+    private fun theValue2() = StateCollector { aValue2 }
 
     private fun aTask() = object : HamkrestSetupStep {
-        override fun givens() = buildGivens {
-            add(GivensBuilder { givens ->
-                givens.put("key", expectedValue)
-            })
-        }
+        override fun givens() = buildGivens { }
 
         override fun actions() = buildActions {
-            add { givens, interactions ->
-                aValue = givens.get<String>("key")!!
-            }
+            add { aValue = expectedValue }
         }
 
         override fun verify() = verify {
@@ -61,16 +54,10 @@ class KotlinWithSetupStepsTest : KotlinExampleTest(), WithHamkrest {
     }
 
     private fun anotherTask() = object : HamkrestSetupStep {
-        override fun givens() = buildGivens {
-            add(GivensBuilder { givens ->
-                givens.put("key2", expectedValue2)
-            })
-        }
+        override fun givens() = buildGivens { }
 
         override fun actions() = buildActions {
-            add { givens, interactions ->
-                aValue2 = givens.get<String>("key2")!!
-            }
+            add { aValue2 = expectedValue2 }
         }
 
         override fun verify() = verify {
@@ -78,4 +65,3 @@ class KotlinWithSetupStepsTest : KotlinExampleTest(), WithHamkrest {
         }
     }
 }
-

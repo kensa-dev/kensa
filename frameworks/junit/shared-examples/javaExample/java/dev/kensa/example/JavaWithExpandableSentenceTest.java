@@ -47,38 +47,40 @@ public class JavaWithExpandableSentenceTest extends JavaExampleTest implements W
     }
 
     @NotNull
-    private StateExtractor<String> theExtractedValue() {
-        return interactions -> aValue;
+    private StateCollector<String> theExtractedValue() {
+        return context -> aValue;
     }
 
     @ExpandableSentence
     private void givenSomePrerequisites() {
-         given((GivensBuilder) (givens) -> givens.put("foo", "bar"));
+        given((Action<GivensContext>) context -> {
+        });
     }
 
     @ExpandableSentence
-    private GivensBuilder somePrerequisites() {
-        return (givens) -> givens.put("foo", "bar");
+    private Action<GivensContext> somePrerequisites() {
+        return context -> {
+        };
     }
 
     @ExpandableSentence
-    private ActionUnderTest wheneverSomeAction(@RenderedValue MyScenario aScenarioOf) {
+    private Action<ActionContext> wheneverSomeAction(@RenderedValue MyScenario aScenarioOf) {
         return someActionUnderTest(aScenarioOf.getStringValue());
     }
 
     @ExpandableSentence
-    private ActionUnderTest someActionWith(@RenderedValue String parameter1) {
+    private Action<ActionContext> someActionWith(@RenderedValue String parameter1) {
         return someActionUnderTest(parameter1);
     }
 
     @ExpandableSentence
-    private ActionUnderTest someAction(@RenderedValue MyScenario aScenarioOf) {
+    private Action<ActionContext> someAction(@RenderedValue MyScenario aScenarioOf) {
         return someActionUnderTest(aScenarioOf.getStringValue());
     }
 
     @NotNull
-    private static ActionUnderTest someActionUnderTest(String withAParam) {
-        return (givens, interactions) -> {
+    private static Action<ActionContext> someActionUnderTest(String withAParam) {
+        return context -> {
         };
     }
 }

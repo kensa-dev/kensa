@@ -96,8 +96,6 @@ enum class PackageDisplay {
 }
 
 enum class Section {
-    @Deprecated("Use Tabs instead", replaceWith = ReplaceWith("Section.Tabs"))
-    Buttons,
     Exception,
     Sentences,
     Tabs
@@ -106,7 +104,6 @@ enum class Section {
 enum class Tab {
     CapturedInteractions,
     CapturedOutputs,
-    Givens,
     Parameters,
     SequenceDiagram,
     None

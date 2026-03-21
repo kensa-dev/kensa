@@ -54,7 +54,6 @@
               "param": "[{a=b}]"
             }
           ],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

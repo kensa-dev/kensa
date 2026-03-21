@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,11 +16,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 20,
+              "lineNumber": 21,
               "tokens": [
                 {
                   "types": [
@@ -37,7 +37,7 @@
               ]
             },
             {
-              "lineNumber": 22,
+              "lineNumber": 23,
               "tokens": [
                 {
                   "types": [
@@ -54,7 +54,7 @@
               ]
             },
             {
-              "lineNumber": 24,
+              "lineNumber": 25,
               "tokens": [
                 {
                   "types": [
@@ -78,11 +78,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

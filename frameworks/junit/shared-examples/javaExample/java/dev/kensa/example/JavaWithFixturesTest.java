@@ -1,7 +1,8 @@
 package dev.kensa.example;
 
-import dev.kensa.GivensBuilder;
-import dev.kensa.StateExtractor;
+import dev.kensa.Action;
+import dev.kensa.GivensContext;
+import dev.kensa.StateCollector;
 import dev.kensa.fixture.FixtureContainer;
 import dev.kensa.fixture.FixtureRegistry;
 import dev.kensa.fixture.PrimaryFixture;
@@ -45,20 +46,21 @@ public class JavaWithFixturesTest extends JavaExampleTest implements WithHamcres
         then(theFixture(fixtures(JavaTestFixtures.PUBLIC_FIXTURE)), is(222));
     }
 
-    private GivensBuilder somePrerequisites() {
-        return (givens) -> givens.put("foo", fixtures(STRING_FIXTURE));
+    private Action<GivensContext> somePrerequisites() {
+        return context -> {
+        };
     }
 
-    private StateExtractor<String> theStringFixture() {
-        return interactions -> fixtures(STRING_FIXTURE);
+    private StateCollector<String> theStringFixture() {
+        return context -> fixtures(STRING_FIXTURE);
     }
 
-    private StateExtractor<Boolean> theBooleanFixture() {
-        return interactions -> fixtures(MoreJavaTestFixtures.BOOLEAN_FIXTURE);
+    private StateCollector<Boolean> theBooleanFixture() {
+        return context -> fixtures(MoreJavaTestFixtures.BOOLEAN_FIXTURE);
     }
 
-    private <T> StateExtractor<T> theFixture(T value) {
-        return interactions -> value;
+    private <T> StateCollector<T> theFixture(T value) {
+        return context -> value;
     }
 }
 

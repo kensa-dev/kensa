@@ -1,13 +1,12 @@
 package dev.kensa.example
 
 import com.natpryce.hamkrest.equalTo
-import dev.kensa.ActionUnderTest
-import dev.kensa.GivensBuilder
+import dev.kensa.Action
+import dev.kensa.ActionContext
+import dev.kensa.GivensContext
 import dev.kensa.RenderedValue
-import dev.kensa.StateExtractor
+import dev.kensa.StateCollector
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 
 class KotlinWithTestOnInterfaceTest : KotlinInterfaceWithTestFunction, KotlinExampleTest(), WithHamkrest {
@@ -23,9 +22,9 @@ class KotlinWithTestOnInterfaceTest : KotlinInterfaceWithTestFunction, KotlinExa
         then(theExtractedValue(), equalTo(aValue))
     }
 
-    private fun theExtractedValue(): StateExtractor<String?> = StateExtractor { interactions: CapturedInteractions -> aValue }
+    private fun theExtractedValue(): StateCollector<String?> = StateCollector { aValue }
 
-    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): Action<GivensContext> = Action { }
 
-    private fun someAction(): ActionUnderTest = ActionUnderTest { _, _ -> }
+    private fun someAction(): Action<ActionContext> = Action { }
 }

@@ -18,7 +18,6 @@ class TestInvocation(
     val sequenceDiagram: SequenceDiagram?,
     parsedInvocation: ParsedInvocation,
     interactions: CapturedInteractions,
-    givens: Givens,
     val outputs: CapturedOutputs,
     val fixtures: Fixtures
 ) {
@@ -30,19 +29,13 @@ class TestInvocation(
     val state: TestState
 
     val outputNamesAndValues = outputs.values()
-
     val fixturesNamesAndValues = fixtures.values()
-
-    private val _givens = givens
-    val givens: Set<KensaMap.Entry>
-        get() = _givens.entrySet()
 
     private val _interactions = interactions
     val interactions: Set<KensaMap.Entry>
         get() = _interactions.entrySet()
 
     init {
-        _givens.putNamedValues(highlightedValues)
         state = if (executionException == null) Passed else Failed
     }
 }

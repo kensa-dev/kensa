@@ -4,14 +4,12 @@ import dev.kensa.*
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import dev.kensa.state.SetupStrategy
 import dev.kensa.util.findAnnotation
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
-import kotlin.DeprecationLevel.WARNING
 
-class TestContext(val givens: Givens, val interactions: CapturedInteractions, override val fixtures: Fixtures, override val outputs: CapturedOutputs) : WithFixturesAndOutputs {
+class TestContext(val interactions: CapturedInteractions, override val fixtures: Fixtures, override val outputs: CapturedOutputs) : WithFixturesAndOutputs {
 
     override val fixturesAndOutputs = FixturesAndOutputs(fixtures, outputs)
     val givensContext = GivensContext(fixtures, outputs)
@@ -23,30 +21,16 @@ class TestContext(val givens: Givens, val interactions: CapturedInteractions, ov
     }
 
     fun given(steps: SetupSteps) {
-        val givensContext = givensContext
-        val actionContext = actionContext
-
         steps.forEach { step ->
-            step.givens().buildWith(givensContext).executeWith(givens, givensContext)
-            step.actions().buildWith(actionContext).executeWith(givens, actionContext)
+            step.givens().buildWith(givensContext).executeWith(givensContext)
+            step.actions().buildWith(actionContext).executeWith(actionContext)
             step.verify().verifyWith(collectorContext)
         }
-    }
-
-    @Deprecated("use given(Action) instead", ReplaceWith("given(action)"), WARNING)
-    fun given(builder: GivensBuilder) {
-        builder.build(givens)
     }
 
     fun whenever(action: Action<ActionContext>) {
         interactions.isUnderTest = true
         action.execute(actionContext)
-    }
-
-    @Deprecated("use whenever(Action) instead", ReplaceWith("whenever(action)"), WARNING)
-    fun whenever(action: ActionUnderTest) {
-        interactions.isUnderTest = true
-        action.execute(givens, interactions)
     }
 
     fun disableInteractionTestGroup() {
@@ -55,7 +39,7 @@ class TestContext(val givens: Givens, val interactions: CapturedInteractions, ov
 
     companion object {
         operator fun invoke(testClass: Class<*>, testMethod: Method, setupStrategy: SetupStrategy) =
-            TestContext(Givens(), CapturedInteractions(testMethod.setupStrategy(testClass.setupStrategy(setupStrategy))), Fixtures(), CapturedOutputs())
+            TestContext(CapturedInteractions(testMethod.setupStrategy(testClass.setupStrategy(setupStrategy))), Fixtures(), CapturedOutputs())
 
         private fun AnnotatedElement.setupStrategy(default: SetupStrategy): SetupStrategy = findAnnotation<UseSetupStrategy>()?.value ?: default
     }

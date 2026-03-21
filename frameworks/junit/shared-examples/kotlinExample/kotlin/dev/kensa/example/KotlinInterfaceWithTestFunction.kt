@@ -1,8 +1,8 @@
 package dev.kensa.example
 
-import dev.kensa.GivensBuilder
+import dev.kensa.Action
+import dev.kensa.GivensContext
 import dev.kensa.junit.KensaTest
-import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 
 interface KotlinInterfaceWithTestFunction : KensaTest {
@@ -12,5 +12,5 @@ interface KotlinInterfaceWithTestFunction : KensaTest {
         given(somePrerequisites())
     }
 
-    private fun somePrerequisites(): GivensBuilder = GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): Action<GivensContext> = Action { }
 }

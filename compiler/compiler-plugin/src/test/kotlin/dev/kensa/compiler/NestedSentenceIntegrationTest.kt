@@ -6,7 +6,7 @@ import dev.kensa.context.RealNestedInvocation
 import dev.kensa.parse.ElementDescriptor
 import dev.kensa.parse.MethodParameters
 import dev.kensa.parse.ParsedNestedMethod
-import example.NestedSentences
+import example.ExpandableSentences
 import example.Service
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -20,7 +20,7 @@ import org.mockito.kotlin.verify
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
-class NestedSentenceIntegrationTest {
+class ExpandableSentenceIntegrationTest {
 
     private lateinit var nestedInvocationContext: NestedInvocationContext
     private val service = mock<Service>()
@@ -41,10 +41,10 @@ class NestedSentenceIntegrationTest {
     fun `simple annotated function compiles and executes`() {
         val methodName = "foo"
 
-        val parsedNestedMethod = mockParsedNestedMethod<NestedSentences>(methodName, String::class)
+        val parsedNestedMethod = mockParsedNestedMethod<ExpandableSentences>(methodName, String::class)
         nestedInvocationContext.update(mapOf(methodName to parsedNestedMethod))
 
-        val instance = NestedSentences(service)
+        val instance = ExpandableSentences(service)
 
         instance.foo("test arg")
 

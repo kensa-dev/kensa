@@ -1,6 +1,7 @@
 package dev.kensa.example;
 
-import dev.kensa.GivensBuilder;
+import dev.kensa.Action;
+import dev.kensa.GivensContext;
 import dev.kensa.Kensa;
 import dev.kensa.sentence.Acronym;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +24,13 @@ public class JavaWithAcronymsTest extends JavaExampleTest {
         and(aMethodNameWithFubarAcronym());
     }
 
-    GivensBuilder aMethodNameWithFttpAcronym() {
-        return (givens) -> {
+    Action<GivensContext> aMethodNameWithFttpAcronym() {
+        return context -> {
         };
     }
 
-    GivensBuilder aMethodNameWithFubarAcronym() {
-        return (givens) -> {
+    Action<GivensContext> aMethodNameWithFubarAcronym() {
+        return context -> {
         };
     }
-
 }

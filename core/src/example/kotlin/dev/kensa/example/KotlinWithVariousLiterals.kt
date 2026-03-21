@@ -1,6 +1,6 @@
 package dev.kensa.example
 
-import dev.kensa.StateExtractor
+import dev.kensa.StateCollector
 import dev.kensa.DummyAssert.Companion.assertThat
 
 class KotlinWithVariousLiterals {
@@ -11,8 +11,8 @@ class KotlinWithVariousLiterals {
         assertThat(theCharacterResult()).isEqualTo('a')
     }
 
-    private fun theNullResult() = StateExtractor { null }
-    private fun theHexResult() = StateExtractor { 0x123 }
-    private fun theBooleanResult() = StateExtractor { true }
-    private fun theCharacterResult() = StateExtractor { 'a' }
+    private fun theNullResult() = StateCollector { null }
+    private fun theHexResult() = StateCollector { 0x123 }
+    private fun theBooleanResult() = StateCollector { true }
+    private fun theCharacterResult() = StateCollector { 'a' }
 }

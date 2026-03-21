@@ -1,9 +1,10 @@
 package dev.kensa.example
 
-import dev.kensa.ActionUnderTest
+import dev.kensa.Action
+import dev.kensa.ActionContext
 import dev.kensa.DummyAssert.Companion.assertThat
 import dev.kensa.RenderedValue
-import dev.kensa.StateExtractor
+import dev.kensa.StateCollector
 
 class MyHolder {
     @RenderedValue
@@ -43,8 +44,7 @@ class KotlinWithScenario {
         assertThat(theExtractedValue()) isEqualTo myScenario.value
     }
 
-    private fun theExtractedValue() = StateExtractor { myScenario.value }
+    private fun theExtractedValue() = StateCollector { myScenario.value }
 
-    private fun actionWith(value: String) = ActionUnderTest { _, _ ->
-    }
+    private fun actionWith(value: String) = Action<ActionContext> { }
 }

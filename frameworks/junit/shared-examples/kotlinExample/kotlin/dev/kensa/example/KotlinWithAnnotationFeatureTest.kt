@@ -1,16 +1,20 @@
 package dev.kensa.example
 
 import com.natpryce.hamkrest.equalTo
+import dev.kensa.Action
+import dev.kensa.ActionContext
 import dev.kensa.Colour.BackgroundDanger
 import dev.kensa.Colour.TextLight
+import dev.kensa.Emphasise
+import dev.kensa.GivensContext
+import dev.kensa.Highlight
 import dev.kensa.RenderedValue
 import dev.kensa.RenderedValueContainer
+import dev.kensa.StateCollector
 import dev.kensa.TextStyle.*
 import dev.kensa.fixture.MyScenario
 import dev.kensa.fixture.MyScenarioHolder
 import dev.kensa.hamkrest.WithHamkrest
-import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -18,7 +22,7 @@ import org.junit.jupiter.params.provider.ValueSource
 
 class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
 
-    @dev.kensa.Highlight
+    @field:Highlight
     private val highlightMe = "givensViaHighlight"
 
     @RenderedValue
@@ -115,29 +119,26 @@ class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
     private fun aSimpleSentenceValueFunction() = "myValue"
 
     @RenderedValue
-    private fun aSentenceValueFunction() = _root_ide_package_.dev.kensa.example.MyThing("myValue")
+    private fun aSentenceValueFunction() = MyThing("myValue")
 
-    private fun somethingWith(value: String): dev.kensa.GivensBuilder = _root_ide_package_.dev.kensa.GivensBuilder { }
+    private fun somethingWith(value: String): Action<GivensContext> = Action { }
 
-    private fun theExtractedValue(): dev.kensa.StateExtractor<String?> = _root_ide_package_.dev.kensa.StateExtractor { interactions: CapturedInteractions -> aValue }
+    private fun theExtractedValue(): StateCollector<String?> = StateCollector { aValue }
 
-    private fun somePrerequisites(): dev.kensa.GivensBuilder = _root_ide_package_.dev.kensa.GivensBuilder { givens: Givens -> givens.put("foo", "bar") }
+    private fun somePrerequisites(): Action<GivensContext> = Action { }
 
-    private fun somePrerequisitesWith(vararg values: String): dev.kensa.GivensBuilder = _root_ide_package_.dev.kensa.GivensBuilder { givens: Givens ->
-        values.forEach { givens.put("key_$it", it) }
-    }
+    private fun somePrerequisitesWith(vararg values: String): Action<GivensContext> = Action { }
 
-    private fun someAction(): dev.kensa.ActionUnderTest = _root_ide_package_.dev.kensa.ActionUnderTest { _, _ -> }
-    private fun someActionWith(value: String): dev.kensa.ActionUnderTest = _root_ide_package_.dev.kensa.ActionUnderTest { _, _ -> }
+    private fun someAction(): Action<ActionContext> = Action { }
+    private fun someActionWith(value: String): Action<ActionContext> = Action { }
 
-    @dev.kensa.Emphasise(textStyles = [TextWeightBold, Italic, Uppercase], textColour = TextLight, backgroundColor = BackgroundDanger)
-    private fun someActionWithEmphasis(): dev.kensa.ActionUnderTest = _root_ide_package_.dev.kensa.ActionUnderTest { _, _ -> }
+    @Emphasise(textStyles = [TextWeightBold, Italic, Uppercase], textColour = TextLight, backgroundColor = BackgroundDanger)
+    private fun someActionWithEmphasis(): Action<ActionContext> = Action { }
 
     companion object {
         @JvmStatic
-        fun myThing() = listOf(_root_ide_package_.dev.kensa.example.MyThing("foo"), _root_ide_package_.dev.kensa.example.MyThing("bar"))
+        fun myThing() = listOf(MyThing("foo"), MyThing("bar"))
     }
 }
 
 data class MyThing(val value: String)
-

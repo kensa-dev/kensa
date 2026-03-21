@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "notes": null,
@@ -16,13 +16,13 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [
             "givensViaHighlight"
           ],
           "sentences": [
             {
-              "lineNumber": 38,
+              "lineNumber": 42,
               "tokens": [
                 {
                   "types": [
@@ -39,7 +39,7 @@
               ]
             },
             {
-              "lineNumber": 40,
+              "lineNumber": 44,
               "tokens": [
                 {
                   "types": [
@@ -56,7 +56,7 @@
               ]
             },
             {
-              "lineNumber": 42,
+              "lineNumber": 46,
               "tokens": [
                 {
                   "types": [
@@ -80,14 +80,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            },
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -114,7 +106,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 47,
+              "lineNumber": 51,
               "tokens": [
                 {
                   "types": [
@@ -131,7 +123,7 @@
               ]
             },
             {
-              "lineNumber": 49,
+              "lineNumber": 53,
               "tokens": [
                 {
                   "types": [
@@ -155,7 +147,7 @@
               ]
             },
             {
-              "lineNumber": 51,
+              "lineNumber": 55,
               "tokens": [
                 {
                   "types": [
@@ -179,14 +171,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            },
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -198,7 +182,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithHighlight",
       "displayName": "Test With Highlight",
       "notes": null,
@@ -207,13 +191,13 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
           "sentences": [
             {
-              "lineNumber": 56,
+              "lineNumber": 60,
               "tokens": [
                 {
                   "types": [
@@ -236,7 +220,7 @@
               ]
             },
             {
-              "lineNumber": 58,
+              "lineNumber": 62,
               "tokens": [
                 {
                   "types": [
@@ -260,7 +244,7 @@
               ]
             },
             {
-              "lineNumber": 60,
+              "lineNumber": 64,
               "tokens": [
                 {
                   "types": [
@@ -284,14 +268,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "key_noHighlight": "noHighlight"
-            },
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -318,7 +294,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 65,
+              "lineNumber": 69,
               "tokens": [
                 {
                   "types": [
@@ -340,7 +316,7 @@
               ]
             },
             {
-              "lineNumber": 67,
+              "lineNumber": 71,
               "tokens": [
                 {
                   "types": [
@@ -364,11 +340,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -380,64 +351,9 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "testWithSimpleFunctionSentenceValue",
       "displayName": "Test With Simple Function Sentence Value",
-      "notes": null,
-      "issues": [],
-      "state": "Passed",
-      "autoOpenTab": "None",
-      "invocations": [
-        {
-          "elapsedTime": "1 Ms",
-          "highlights": [
-            "givensViaHighlight"
-          ],
-          "sentences": [
-            {
-              "lineNumber": 72,
-              "tokens": [
-                {
-                  "types": [
-                    "tk-kw"
-                  ],
-                  "value": "Given"
-                },
-                {
-                  "types": [
-                    "tk-wd"
-                  ],
-                  "value": "something with"
-                },
-                {
-                  "types": [
-                    "tk-mv"
-                  ],
-                  "value": "myValue"
-                }
-              ]
-            }
-          ],
-          "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
-          "capturedInteractions": [],
-          "capturedOutputs": [],
-          "fixtures": [],
-          "sequenceDiagram": null,
-          "state": "Passed",
-          "executionException": {},
-          "displayName": "testWithSimpleFunctionSentenceValue()"
-        }
-      ]
-    },
-    {
-      "elapsedTime": "",
-      "testMethod": "testWithChainedFunctionSentenceValue",
-      "displayName": "Test With Chained Function Sentence Value",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -450,7 +366,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 77,
+              "lineNumber": 76,
               "tokens": [
                 {
                   "types": [
@@ -474,25 +390,20 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "testWithChainedFunctionSentenceValue()"
+          "displayName": "testWithSimpleFunctionSentenceValue()"
         }
       ]
     },
     {
       "elapsedTime": "1 Ms",
-      "testMethod": "testWithChainedFieldSentenceValue",
-      "displayName": "Test With Chained Field Sentence Value",
+      "testMethod": "testWithChainedFunctionSentenceValue",
+      "displayName": "Test With Chained Function Sentence Value",
       "notes": null,
       "issues": [],
       "state": "Passed",
@@ -505,7 +416,57 @@
           ],
           "sentences": [
             {
-              "lineNumber": 82,
+              "lineNumber": 81,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-mv"
+                  ],
+                  "value": "myValue"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testWithChainedFunctionSentenceValue()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testWithChainedFieldSentenceValue",
+      "displayName": "Test With Chained Field Sentence Value",
+      "notes": null,
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "givensViaHighlight"
+          ],
+          "sentences": [
+            {
+              "lineNumber": 86,
               "tokens": [
                 {
                   "types": [
@@ -529,11 +490,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -560,7 +516,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 88,
+              "lineNumber": 92,
               "tokens": [
                 {
                   "types": [
@@ -588,11 +544,6 @@
               "value": "MyThing"
             }
           ],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -608,7 +559,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 88,
+              "lineNumber": 92,
               "tokens": [
                 {
                   "types": [
@@ -636,11 +587,6 @@
               "value": "MyThing"
             }
           ],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -652,7 +598,7 @@
       ]
     },
     {
-      "elapsedTime": "2 Ms",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithRenderedValueFunctionWithParameters",
       "displayName": "Test With Rendered Value Function With Parameters",
       "notes": null,
@@ -661,13 +607,13 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "2 Ms",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
           "sentences": [
             {
-              "lineNumber": 93,
+              "lineNumber": 97,
               "tokens": [
                 {
                   "types": [
@@ -691,11 +637,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -707,7 +648,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "parameterisedTestWithRenderedValueFunctionWithParameters",
       "displayName": "Parameterised Test With Rendered Value Function With Parameters",
       "notes": null,
@@ -716,13 +657,13 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
           "sentences": [
             {
-              "lineNumber": 99,
+              "lineNumber": 103,
               "tokens": [
                 {
                   "types": [
@@ -748,11 +689,6 @@
           "parameters": [
             {
               "shouldNotBeRendered": "meh"
-            }
-          ],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
             }
           ],
           "capturedInteractions": [],
@@ -781,7 +717,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 104,
+              "lineNumber": 108,
               "tokens": [
                 {
                   "types": [
@@ -817,11 +753,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

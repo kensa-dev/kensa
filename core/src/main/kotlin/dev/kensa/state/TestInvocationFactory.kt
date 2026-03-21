@@ -20,7 +20,6 @@ class TestInvocationFactory(
             sequenceDiagramFactory.create(testContext.interactions),
             testInvocationParser.parse(testInvocationContext, parser),
             testContext.interactions,
-            testContext.givens,
             testContext.outputs,
             testContext.fixtures
         )

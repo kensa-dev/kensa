@@ -7,6 +7,7 @@
   "issues": [],
   "tests": [
     {
+      "elapsedTime": "",
       "testMethod": "simpleExpandable",
       "displayName": "Simple Expandable",
       "notes": null,
@@ -15,6 +16,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -146,7 +148,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -158,6 +159,7 @@
       ]
     },
     {
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
       "notes": null,
@@ -166,6 +168,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
@@ -634,7 +637,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -646,6 +648,7 @@
       ]
     },
     {
+      "elapsedTime": "",
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
       "notes": null,
@@ -654,6 +657,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -780,7 +784,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -792,6 +795,7 @@
       ]
     },
     {
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithFixtureAndScenarioParameters",
       "displayName": "Expandable With Fixture And Scenario Parameters",
       "notes": null,
@@ -800,6 +804,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
@@ -1075,7 +1080,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -1094,6 +1098,7 @@
       ]
     },
     {
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
       "notes": null,
@@ -1102,6 +1107,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
@@ -1210,7 +1216,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1222,6 +1227,7 @@
       ]
     },
     {
+      "elapsedTime": "",
       "testMethod": "expandableWithExpandableExpressionInInterface",
       "displayName": "Expandable With Expandable Expression In Interface",
       "notes": null,
@@ -1230,6 +1236,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -1374,7 +1381,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1386,6 +1392,7 @@
       ]
     },
     {
+      "elapsedTime": "",
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
       "notes": null,
@@ -1394,6 +1401,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -1430,7 +1438,6 @@
               "value": "one"
             }
           ],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1440,6 +1447,7 @@
           "displayName": "[1] one"
         },
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -1476,7 +1484,6 @@
               "value": "two"
             }
           ],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

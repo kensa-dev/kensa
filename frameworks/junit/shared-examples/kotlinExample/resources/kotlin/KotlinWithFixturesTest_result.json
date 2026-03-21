@@ -81,11 +81,6 @@
             ]
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "parent1"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -190,11 +185,6 @@
             ]
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "parent2"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -247,7 +237,6 @@
             ]
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -297,7 +286,6 @@
             ]
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -350,7 +338,6 @@
             ]
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [

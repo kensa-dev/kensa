@@ -2,7 +2,6 @@ package dev.kensa.agent
 
 import dev.kensa.ExpandableRenderedValue
 import dev.kensa.ExpandableSentence
-import dev.kensa.NestedSentence
 import dev.kensa.RenderedValue
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.agent.builder.AgentBuilder
@@ -26,7 +25,7 @@ object KensaAgent {
             builder.type(
                 declaresMethod(
                     isAnnotatedWith(
-                        anyOf(ExpandableSentence::class.java, NestedSentence::class.java, RenderedValue::class.java, ExpandableRenderedValue::class.java)
+                        anyOf(ExpandableSentence::class.java, RenderedValue::class.java, ExpandableRenderedValue::class.java)
                     )
                 ),
                 `is`(classLoader)
@@ -39,7 +38,7 @@ object KensaAgent {
         return typeNarrower.apply(agentBuilder)
             .transform { builder, _, _, _, _ ->
                 builder
-                    .method(isAnnotatedWith(anyOf(NestedSentence::class.java, ExpandableSentence::class.java)))
+                    .method(isAnnotatedWith(ExpandableSentence::class.java))
                     .intercept(MethodDelegation.to(ExpandableSentenceInterceptor::class.java))
                     .method(isAnnotatedWith(anyOf(RenderedValue::class.java, ExpandableRenderedValue::class.java)))
                     .intercept(MethodDelegation.to(RenderedValueInterceptor::class.java))

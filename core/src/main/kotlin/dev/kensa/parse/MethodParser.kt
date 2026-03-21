@@ -181,13 +181,13 @@ class MethodParser(
                     it.hasAnnotation<RenderedValue>() ||
                     it.hasAnnotation<ExpandableRenderedValue>() ||
                     it.hasAnnotation<ExpandableSentence>() ||
-                    it.hasAnnotation<NestedSentence>() ||
                     it.hasAnnotation<Emphasise>() ||
                     it.hasAnnotation<Highlight>()
             }
             .map { ElementDescriptor.forMethod(it) }
             .associateBy(ElementDescriptor::name)
 
+    @Suppress("UNCHECKED_CAST")
     private fun Class<*>.prepareProperties(directives: RenderingDirectives): Map<String, ElementDescriptor> =
         if (this.isEnum) {
             val enumClass = this as Class<Enum<*>>

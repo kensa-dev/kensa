@@ -2,7 +2,6 @@ package dev.kensa
 
 import dev.kensa.ActionBlockBuilder.Companion.buildActions
 import dev.kensa.GivensBlockBuilder.Companion.buildGivens
-import dev.kensa.state.Givens
 
 interface SetupStep {
     fun givens(): GivensBlockBuilder = buildGivens()
@@ -15,49 +14,27 @@ fun SetupSteps.and(step: SetupStep): SetupSteps = apply { add(step) }
 
 class GivensHolder {
 
-    val list = mutableListOf<Any>()
-
-    fun add(givens: GivensBuilder) {
-        list.add(givens)
-    }
+    val list = mutableListOf<Action<GivensContext>>()
 
     fun add(action: Action<GivensContext>) {
         list.add(action)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun executeWith(givens: Givens, context: GivensContext) {
-        list.forEach {
-            when (it) {
-                is GivensBuilder -> it.build(givens)
-                is Action<*> -> (it as Action<GivensContext>).execute(context)
-                else -> throw IllegalStateException("Unexpected type in GivensHolder")
-            }
-        }
+    fun executeWith(context: GivensContext) {
+        list.forEach { it.execute(context) }
     }
 }
 
 class ActionsHolder {
 
-    val list = mutableListOf<Any>()
-
-    fun add(actionUnderTest: ActionUnderTest) {
-        list.add(actionUnderTest)
-    }
+    val list = mutableListOf<Action<ActionContext>>()
 
     fun add(action: Action<ActionContext>) {
         list.add(action)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun executeWith(givens: Givens, context: ActionContext) {
-        list.forEach {
-            when (it) {
-                is ActionUnderTest -> it.execute(givens, context.interactions)
-                is Action<*> -> (it as Action<ActionContext>).execute(context)
-                else -> throw IllegalStateException("Unexpected type in ActionUnderTestHolder")
-            }
-        }
+    fun executeWith(context: ActionContext) {
+        list.forEach { it.execute(context) }
     }
 }
 
