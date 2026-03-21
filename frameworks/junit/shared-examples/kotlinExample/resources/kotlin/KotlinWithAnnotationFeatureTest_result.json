@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "3 Ms",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "notes": null,
@@ -16,71 +16,68 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "3 Ms",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some prerequisites"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "When"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some action"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the extracted value equal to"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "aStringValue"
-              }
-            ]
+            {
+              "lineNumber": 38,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
+            },
+            {
+              "lineNumber": 40,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some action"
+                }
+              ]
+            },
+            {
+              "lineNumber": 42,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the extracted value equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -116,73 +113,70 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some prerequisites"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "When"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some action with"
-              },
-              {
-                "types": [
-                  "tk-fv",
-                  "tk-hl"
-                ],
-                "value": "givensViaHighlight"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the extracted value equal to"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "aStringValue"
-              }
-            ]
+            {
+              "lineNumber": 47,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
+            },
+            {
+              "lineNumber": 49,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some action with"
+                },
+                {
+                  "types": [
+                    "tk-fv",
+                    "tk-hl"
+                  ],
+                  "value": "givensViaHighlight"
+                }
+              ]
+            },
+            {
+              "lineNumber": 51,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the extracted value equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -218,79 +212,76 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some prerequisites with"
-              },
-              {
-                "types": [
-                  "tk-sl"
-                ],
-                "value": "noHighlight"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "When"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some action with"
-              },
-              {
-                "types": [
-                  "tk-fv",
-                  "tk-hl"
-                ],
-                "value": "givensViaHighlight"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the extracted value equal to"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "aStringValue"
-              }
-            ]
+            {
+              "lineNumber": 56,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites with"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "noHighlight"
+                }
+              ]
+            },
+            {
+              "lineNumber": 58,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some action with"
+                },
+                {
+                  "types": [
+                    "tk-fv",
+                    "tk-hl"
+                  ],
+                  "value": "givensViaHighlight"
+                }
+              ]
+            },
+            {
+              "lineNumber": 60,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the extracted value equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -326,51 +317,51 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "When"
-              },
-              {
-                "types": [
-                  "has-background-danger",
-                  "has-text-light",
-                  "has-text-weight-bold",
-                  "is-italic",
-                  "is-uppercase",
-                  "tk-wd"
-                ],
-                "value": "some action with emphasis"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the extracted value equal to"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "aStringValue"
-              }
-            ]
+            {
+              "lineNumber": 65,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "has-background-danger",
+                    "has-text-light",
+                    "has-text-weight-bold",
+                    "is-italic",
+                    "is-uppercase",
+                    "tk-wd"
+                  ],
+                  "value": "some action with emphasis"
+                }
+              ]
+            },
+            {
+              "lineNumber": 67,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the extracted value equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -389,7 +380,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithSimpleFunctionSentenceValue",
       "displayName": "Test With Simple Function Sentence Value",
       "notes": null,
@@ -398,31 +389,34 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-mv"
-                ],
-                "value": "myValue"
-              }
-            ]
+            {
+              "lineNumber": 72,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-mv"
+                  ],
+                  "value": "myValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -455,26 +449,29 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-mv"
-                ],
-                "value": "myValue"
-              }
-            ]
+            {
+              "lineNumber": 77,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-mv"
+                  ],
+                  "value": "myValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -507,26 +504,29 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "myFieldThing"
-              }
-            ]
+            {
+              "lineNumber": 82,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "myFieldThing"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -559,26 +559,29 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-pv"
-                ],
-                "value": "foo"
-              }
-            ]
+            {
+              "lineNumber": 88,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-pv"
+                  ],
+                  "value": "foo"
+                }
+              ]
+            }
           ],
           "parameters": [
             {
@@ -604,26 +607,29 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-pv"
-                ],
-                "value": "bar"
-              }
-            ]
+            {
+              "lineNumber": 88,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-pv"
+                  ],
+                  "value": "bar"
+                }
+              ]
+            }
           ],
           "parameters": [
             {
@@ -660,26 +666,29 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-mv"
-                ],
-                "value": "foo-bar"
-              }
-            ]
+            {
+              "lineNumber": 93,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-mv"
+                  ],
+                  "value": "foo-bar"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -712,26 +721,29 @@
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-mv"
-                ],
-                "value": "meh-bar"
-              }
-            ]
+            {
+              "lineNumber": 99,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-mv"
+                  ],
+                  "value": "meh-bar"
+                }
+              ]
+            }
           ],
           "parameters": [
             {
@@ -754,7 +766,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "testWithInfixStyleRenderedValueFunctionWithParameters",
       "displayName": "Test With Infix Style Rendered Value Function With Parameters",
       "notes": null,
@@ -763,43 +775,46 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [
             "givensViaHighlight"
           ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something with"
-              },
-              {
-                "types": [
-                  "tk-sl"
-                ],
-                "value": "prefix"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "then"
-              },
-              {
-                "types": [
-                  "tk-mv"
-                ],
-                "value": "foo-bar"
-              }
-            ]
+            {
+              "lineNumber": 104,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something with"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "prefix"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "then"
+                },
+                {
+                  "types": [
+                    "tk-mv"
+                  ],
+                  "value": "foo-bar"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [

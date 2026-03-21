@@ -51,13 +51,11 @@ internal class JavaMethodParserTest {
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Keyword.asTemplateToken("When"),
                     )
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Keyword.asTemplateToken("Then"),
                         NewLine.asTemplateToken(),
                         Indent.asTemplateToken(),
@@ -206,7 +204,6 @@ internal class JavaMethodParserTest {
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Note.asTemplateToken("Note before When")
                     )
                 ),
@@ -217,7 +214,6 @@ internal class JavaMethodParserTest {
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Note.asTemplateToken("Note before Then")
                     )
                 ),
@@ -259,7 +255,6 @@ internal class JavaMethodParserTest {
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Note.asTemplateToken("Note before When")
                     )
                 ),

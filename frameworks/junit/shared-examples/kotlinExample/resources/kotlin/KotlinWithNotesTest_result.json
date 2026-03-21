@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "16 Ms",
+      "elapsedTime": "",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,159 +16,165 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "16 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-nt"
-                ],
-                "value": "These are notes"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-nt"
-                ],
-                "value": "These are also notes\non two lines"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "When"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "something happens"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-nt"
-                ],
-                "value": "Notes on then"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-nl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-in"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-in"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-in"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "things"
-              },
-              {
-                "types": [
-                  "tk-nt"
-                ],
-                "value": "End of line notes"
-              },
-              {
-                "types": [
-                  "tk-nl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-in"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-in"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-in"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "equal to"
-              },
-              {
-                "types": [
-                  "tk-bo"
-                ],
-                "value": "true"
-              },
-              {
-                "types": [
-                  "tk-nt"
-                ],
-                "value": "More end of line notes"
-              }
-            ]
+            {
+              "lineNumber": 16,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-nt"
+                  ],
+                  "value": "These are notes"
+                }
+              ]
+            },
+            {
+              "lineNumber": 16,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something"
+                }
+              ]
+            },
+            {
+              "lineNumber": 20,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-nt"
+                  ],
+                  "value": "These are also notes\non two lines"
+                }
+              ]
+            },
+            {
+              "lineNumber": 20,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "something happens"
+                }
+              ]
+            },
+            {
+              "lineNumber": 23,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-nt"
+                  ],
+                  "value": "Notes on then"
+                }
+              ]
+            },
+            {
+              "lineNumber": 23,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-nl"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-in"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-in"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-in"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "things"
+                },
+                {
+                  "types": [
+                    "tk-nt"
+                  ],
+                  "value": "End of line notes"
+                },
+                {
+                  "types": [
+                    "tk-nl"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-in"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-in"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-in"
+                  ],
+                  "value": ""
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "equal to"
+                },
+                {
+                  "types": [
+                    "tk-bo"
+                  ],
+                  "value": "true"
+                },
+                {
+                  "types": [
+                    "tk-nt"
+                  ],
+                  "value": "More end of line notes"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],

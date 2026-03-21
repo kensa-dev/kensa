@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "18 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "theTest",
       "displayName": "The Test",
       "notes": null,
@@ -16,35 +16,38 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "18 Ms",
+          "elapsedTime": "2 Ms",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "assert that param get"
-              },
-              {
-                "types": [
-                  "tk-num"
-                ],
-                "value": "0"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "has key"
-              },
-              {
-                "types": [
-                  "tk-sl"
-                ],
-                "value": "a"
-              }
-            ]
+            {
+              "lineNumber": 20,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "assert that param get"
+                },
+                {
+                  "types": [
+                    "tk-num"
+                  ],
+                  "value": "0"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "has key"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "a"
+                }
+              ]
+            }
           ],
           "parameters": [
             {
@@ -63,7 +66,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnSameLineAsParameter",
       "displayName": "The Test With Optional Parameter And Closing Function Brace On Same Line As Parameter",
       "notes": null,
@@ -72,17 +75,20 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "assert that param absent"
-              }
-            ]
+            {
+              "lineNumber": 26,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "assert that param absent"
+                }
+              ]
+            }
           ],
           "parameters": [
             {
@@ -101,7 +107,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnDifferentLineAsParameter",
       "displayName": "The Test With Optional Parameter And Closing Function Brace On Different Line As Parameter",
       "notes": null,
@@ -110,17 +116,20 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "assert that param absent"
-              }
-            ]
+            {
+              "lineNumber": 34,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "assert that param absent"
+                }
+              ]
+            }
           ],
           "parameters": [
             {

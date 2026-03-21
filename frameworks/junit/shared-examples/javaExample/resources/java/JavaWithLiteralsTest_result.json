@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "19 Ms",
+      "elapsedTime": "",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,129 +16,147 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "19 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a literal of"
-              },
-              {
-                "types": [
-                  "tk-sl"
-                ],
-                "value": "aStringValue"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a literal of"
-              },
-              {
-                "types": [
-                  "tk-bo"
-                ],
-                "value": "true"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a literal of"
-              },
-              {
-                "types": [
-                  "tk-num"
-                ],
-                "value": "10"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a literal of"
-              },
-              {
-                "types": [
-                  "tk-null"
-                ],
-                "value": "null"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a literal of"
-              },
-              {
-                "types": [
-                  "tk-cl"
-                ],
-                "value": "a"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a literal of"
-              },
-              {
-                "types": [
-                  "tk-tb"
-                ],
-                "value": "a multiline string"
-              }
-            ]
+            {
+              "lineNumber": 10,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a literal of"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            },
+            {
+              "lineNumber": 11,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a literal of"
+                },
+                {
+                  "types": [
+                    "tk-bo"
+                  ],
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "lineNumber": 12,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a literal of"
+                },
+                {
+                  "types": [
+                    "tk-num"
+                  ],
+                  "value": "10"
+                }
+              ]
+            },
+            {
+              "lineNumber": 13,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a literal of"
+                },
+                {
+                  "types": [
+                    "tk-null"
+                  ],
+                  "value": "null"
+                }
+              ]
+            },
+            {
+              "lineNumber": 14,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a literal of"
+                },
+                {
+                  "types": [
+                    "tk-cl"
+                  ],
+                  "value": "a"
+                }
+              ]
+            },
+            {
+              "lineNumber": 15,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a literal of"
+                },
+                {
+                  "types": [
+                    "tk-tb"
+                  ],
+                  "value": "a multiline string"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],

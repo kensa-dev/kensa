@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "16 Ms",
+      "elapsedTime": "1 Ms",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,31 +16,34 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "16 Ms",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-wd",
-                  "tk-hi"
-                ],
-                "value": "ID-99",
-                "hint": "SystemPrefix: ID"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "of"
-              },
-              {
-                "types": [
-                  "tk-sl"
-                ],
-                "value": "TXN-99"
-              }
-            ]
+            {
+              "lineNumber": 14,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd",
+                    "tk-hi"
+                  ],
+                  "value": "ID-99",
+                  "hint": "SystemPrefix: ID"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "of"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "TXN-99"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],

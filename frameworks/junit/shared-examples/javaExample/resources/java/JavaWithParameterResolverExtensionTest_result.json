@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "theTest",
       "displayName": "The Test",
       "notes": null,
@@ -16,17 +16,20 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "assert that parameter get value is MY_PARAMETER_VALUE"
-              }
-            ]
+            {
+              "lineNumber": 21,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "assert that parameter get value is MY_PARAMETER_VALUE"
+                }
+              ]
+            }
           ],
           "parameters": [
             {

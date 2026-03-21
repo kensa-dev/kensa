@@ -142,39 +142,42 @@ object JsonTransforms {
     }
 
     private fun sentenceAsJson(): (RenderedSentence) -> JsonValue = { sentence: RenderedSentence ->
-        asJsonArray(sentence.tokens) { token: RenderedToken ->
-            jsonObject().apply {
-                add("types", asJsonArray(token.cssClasses))
-                add("value", token.value)
-                token.hint?.let { add("hint", it) }
+        jsonObject().apply {
+            add("lineNumber", sentence.lineNumber)
+            add("tokens", asJsonArray(sentence.tokens) { token: RenderedToken ->
+                jsonObject().apply {
+                    add("types", asJsonArray(token.cssClasses))
+                    add("value", token.value)
+                    token.hint?.let { add("hint", it) }
 
-                when (token) {
-                    is RenderedToken.RenderedExpandableTabularToken -> {
-                        add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
-                        add(
-                            "tokens", Json.array().add(
-                                jsonObject().apply {
-                                    add("type", "table")
-                                    if (token.headers.isNotEmpty()) {
-                                        add("headers", asJsonArray(token.headers))
+                    when (token) {
+                        is RenderedToken.RenderedExpandableTabularToken -> {
+                            add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
+                            add(
+                                "tokens", Json.array().add(
+                                    jsonObject().apply {
+                                        add("type", "table")
+                                        if (token.headers.isNotEmpty()) {
+                                            add("headers", asJsonArray(token.headers))
+                                        }
+                                        add("rows", asJsonArray(token.rows) { row ->
+                                            asJsonArray(row) { cell -> baseTokenJson(cell) }
+                                        })
                                     }
-                                    add("rows", asJsonArray(token.rows) { row ->
-                                        asJsonArray(row) { cell -> baseTokenJson(cell) }
-                                    })
-                                }
-                            ))
-                    }
+                                ))
+                        }
 
-                    is RenderedToken.RenderedExpandableToken -> {
-                        add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
-                        add("tokens", asJsonArray(token.expandableTokens) { tokens ->
-                            asJsonArray(tokens) { t -> baseTokenJson(t) }
-                        })
-                    }
+                        is RenderedToken.RenderedExpandableToken -> {
+                            add("parameterTokens", asJsonArray(token.parameterTokens) { t -> baseTokenJson(t) })
+                            add("tokens", asJsonArray(token.expandableTokens) { tokens ->
+                                asJsonArray(tokens) { t -> baseTokenJson(t) }
+                            })
+                        }
 
-                    else -> {}
+                        else -> {}
+                    }
                 }
-            }
+            })
         }
     }
 

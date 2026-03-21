@@ -26,12 +26,6 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     private var currentExpandableTemplateToken: TemplateToken? = null
     private var currentExpandableLocation: Location? = null
 
-    init {
-        if (startingLocation.lineNumber - previousLocation.lineNumber > 1) {
-            tokens.append("", BlankLine)
-        }
-    }
-
     fun beginExpandableSentence(location: Location, placeholder: String, sentences: List<TemplateSentence>) {
         currentExpandableLocation = location
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
@@ -212,7 +206,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         }
     }
 
-    fun build(): TemplateSentence = TemplateSentence(tokens)
+    fun build(): TemplateSentence = TemplateSentence(tokens, startingLocation.lineNumber)
 
     @OptIn(ExperimentalContracts::class)
     private fun <T : Any> requireForExpandable(value: T?): T {

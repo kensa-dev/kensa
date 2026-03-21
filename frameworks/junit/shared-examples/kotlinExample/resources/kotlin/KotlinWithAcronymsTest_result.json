@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "4 Ms",
+      "elapsedTime": "",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,67 +16,67 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "4 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a method name with"
-              },
-              {
-                "types": [
-                  "tk-ac"
-                ],
-                "value": "FTTP"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "acronym"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "And"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a method name with"
-              },
-              {
-                "types": [
-                  "tk-ac"
-                ],
-                "value": "FUBAR"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "acronym"
-              }
-            ]
+            {
+              "lineNumber": 23,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a method name with"
+                },
+                {
+                  "types": [
+                    "tk-ac"
+                  ],
+                  "value": "FTTP"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "acronym"
+                }
+              ]
+            },
+            {
+              "lineNumber": 25,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "And"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a method name with"
+                },
+                {
+                  "types": [
+                    "tk-ac"
+                  ],
+                  "value": "FUBAR"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "acronym"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],

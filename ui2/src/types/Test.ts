@@ -53,12 +53,17 @@ export interface CustomTabContent {
     mediaType?: string
 }
 
+export interface Sentence {
+    lineNumber: number
+    tokens: Token[]
+}
+
 export interface Invocation {
     state: TestState
     displayName: string
     elapsedTime: string
     highlights: string[]
-    sentences: Token[][]
+    sentences: Sentence[]
     parameters: NameAndValues
     givens: NameAndValues
     capturedInteractions: Interaction[]

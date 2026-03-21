@@ -6,7 +6,6 @@ sealed interface TemplateToken {
 
     enum class Type(val code: String, val isWhitespace: Boolean = false) {
         Acronym("ac"),
-        BlankLine("bl", true),
         BooleanLiteral("bo"),
         CharacterLiteral("cl"),
         Note("nt"),

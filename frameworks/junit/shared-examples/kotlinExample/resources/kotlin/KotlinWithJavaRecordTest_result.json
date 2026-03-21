@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "15 Ms",
+      "elapsedTime": "1 Ms",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,29 +16,32 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "15 Ms",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a java record with value"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "MyRecordValue"
-              }
-            ]
+            {
+              "lineNumber": 15,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a java record with value"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "MyRecordValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],

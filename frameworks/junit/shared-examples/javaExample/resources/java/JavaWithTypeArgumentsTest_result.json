@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "20 Ms",
+      "elapsedTime": "",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "notes": null,
@@ -16,29 +16,32 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "20 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a literal of"
-              },
-              {
-                "types": [
-                  "tk-sl"
-                ],
-                "value": "aStringValue"
-              }
-            ]
+            {
+              "lineNumber": 10,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a literal of"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],

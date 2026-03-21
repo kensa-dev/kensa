@@ -50,7 +50,7 @@ class TestInvocationParser(private val configuration: Configuration) {
         }
 
     private fun renderSentences(source: List<TemplateSentence>, renderer: TokenRenderer): List<RenderedSentence> =
-        source.map { sentence -> RenderedSentence(renderer.render(sentence.tokens)) }
+        source.map { sentence -> RenderedSentence(renderer.render(sentence.tokens), sentence.lineNumber) }
 
     private fun highlightedPropertyValues(fields: Map<String, ElementDescriptor>, testInstance: Any) = fields.values
         .filter(ElementDescriptor::isHighlight)

@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "6 Ms",
+      "elapsedTime": "1 Ms",
       "testMethod": "singleSetupStep",
       "displayName": "Single Setup Step",
       "notes": null,
@@ -16,49 +16,49 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "6 Ms",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a task"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the value equal to"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "aStringValue"
-              }
-            ]
+            {
+              "lineNumber": 29,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a task"
+                }
+              ]
+            },
+            {
+              "lineNumber": 31,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the value equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [
@@ -77,7 +77,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "chainedSetupStep",
       "displayName": "Chained Setup Step",
       "notes": null,
@@ -86,69 +86,72 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "a task and another task"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the value equal to"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "aStringValue"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the value 2 equal to"
-              },
-              {
-                "types": [
-                  "tk-fv"
-                ],
-                "value": "aStringValue2"
-              }
-            ]
+            {
+              "lineNumber": 36,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a task and another task"
+                }
+              ]
+            },
+            {
+              "lineNumber": 38,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the value equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            },
+            {
+              "lineNumber": 39,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the value 2 equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue2"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [

@@ -3,6 +3,8 @@ package dev.kensa.example
 import com.natpryce.hamkrest.equalTo
 import dev.kensa.Colour.BackgroundDanger
 import dev.kensa.Colour.TextLight
+import dev.kensa.RenderedValue
+import dev.kensa.RenderedValueContainer
 import dev.kensa.TextStyle.*
 import dev.kensa.fixture.MyScenario
 import dev.kensa.fixture.MyScenarioHolder
@@ -19,17 +21,17 @@ class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
     @dev.kensa.Highlight
     private val highlightMe = "givensViaHighlight"
 
-    @dev.kensa.RenderedValue
+    @RenderedValue
     private val aValue = "aStringValue"
 
-    @dev.kensa.RenderedValue
+    @RenderedValue
     private val myScenario = MyScenario(aValue)
 
-    @dev.kensa.RenderedValueContainer
+    @RenderedValueContainer
     private val myHolder = MyScenarioHolder(myScenario)
 
-    @dev.kensa.RenderedValue
-    private val myThing = _root_ide_package_.dev.kensa.example.MyThing("myFieldThing")
+    @RenderedValue
+    private val myThing = MyThing("myFieldThing")
 
     @Test
     fun testWithScenario() {
@@ -82,7 +84,7 @@ class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
 
     @ParameterizedTest
     @MethodSource("myThing")
-    fun testWithChainedFunctionSentenceValueParameter(@dev.kensa.RenderedValue value: MyThing) {
+    fun testWithChainedFunctionSentenceValueParameter(@RenderedValue value: MyThing) {
         given(somethingWith(value.value))
     }
 
@@ -93,7 +95,7 @@ class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
 
     @ParameterizedTest
     @ValueSource(strings = ["meh"])
-    fun parameterisedTestWithRenderedValueFunctionWithParameters(@dev.kensa.RenderedValue shouldNotBeRendered: String) {
+    fun parameterisedTestWithRenderedValueFunctionWithParameters(@RenderedValue shouldNotBeRendered: String) {
         given(somethingWith(renderTheReturnValue(shouldNotBeRendered, "bar")))
     }
 
@@ -106,13 +108,13 @@ class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
         return expectedValue
     }
 
-    @dev.kensa.RenderedValue
+    @RenderedValue
     fun renderTheReturnValue(one: String, two: String): String = "$one-$two"
 
-    @dev.kensa.RenderedValue
+    @RenderedValue
     private fun aSimpleSentenceValueFunction() = "myValue"
 
-    @dev.kensa.RenderedValue
+    @RenderedValue
     private fun aSentenceValueFunction() = _root_ide_package_.dev.kensa.example.MyThing("myValue")
 
     private fun somethingWith(value: String): dev.kensa.GivensBuilder = _root_ide_package_.dev.kensa.GivensBuilder { }

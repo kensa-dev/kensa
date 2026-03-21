@@ -167,7 +167,6 @@ internal class KotlinFunctionParserTest {
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Note.asTemplateToken("Note before When")
                     )
                 ),
@@ -178,7 +177,6 @@ internal class KotlinFunctionParserTest {
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Note.asTemplateToken("Note before Then")
                     )
                 ),
@@ -219,7 +217,6 @@ internal class KotlinFunctionParserTest {
                 ),
                 TemplateSentence(
                     listOf(
-                        BlankLine.asTemplateToken(),
                         Note.asTemplateToken("Note before When")
                     )
                 ),

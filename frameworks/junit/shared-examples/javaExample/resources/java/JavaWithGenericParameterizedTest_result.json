@@ -7,7 +7,7 @@
   "issues": [],
   "tests": [
     {
-      "elapsedTime": "3 Ms",
+      "elapsedTime": "1 Ms",
       "testMethod": "theTest",
       "displayName": "The Test",
       "notes": null,
@@ -16,35 +16,38 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "3 Ms",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "assert that param get"
-              },
-              {
-                "types": [
-                  "tk-num"
-                ],
-                "value": "0"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "has key"
-              },
-              {
-                "types": [
-                  "tk-sl"
-                ],
-                "value": "a"
-              }
-            ]
+            {
+              "lineNumber": 24,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "assert that param get"
+                },
+                {
+                  "types": [
+                    "tk-num"
+                  ],
+                  "value": "0"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "has key"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "a"
+                }
+              ]
+            }
           ],
           "parameters": [
             {
