@@ -159,7 +159,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
       "notes": null,
@@ -168,7 +168,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -648,7 +648,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
       "notes": null,
@@ -657,7 +657,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
@@ -805,7 +805,9 @@
       "invocations": [
         {
           "elapsedTime": "1 Ms",
-          "highlights": [],
+          "highlights": [
+            "parent1"
+          ],
           "sentences": [
             {
               "lineNumber": 79,
@@ -1018,7 +1020,8 @@
                       },
                       {
                         "types": [
-                          "tk-pv"
+                          "tk-pv",
+                          "tk-hl"
                         ],
                         "value": "parent1"
                       }
@@ -1098,7 +1101,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "2 Ms",
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
       "notes": null,
@@ -1107,7 +1110,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "2 Ms",
           "highlights": [],
           "sentences": [
             {
@@ -1227,7 +1230,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithExpandableExpressionInInterface",
       "displayName": "Expandable With Expandable Expression In Interface",
       "notes": null,
@@ -1236,7 +1239,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {

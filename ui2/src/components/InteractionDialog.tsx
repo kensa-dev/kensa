@@ -10,9 +10,10 @@ interface InteractionDialogProps {
     isOpen: boolean;
     onClose: () => void;
     isPassed: boolean;
+    highlights?: string[];
 }
 
-export function InteractionDialog({interaction, isOpen, onClose, isPassed}: InteractionDialogProps) {
+export function InteractionDialog({interaction, isOpen, onClose, isPassed, highlights}: InteractionDialogProps) {
     const [isMaximized, setIsMaximized] = React.useState(false)
 
     const hasValidPayload = React.useMemo(() => {
@@ -77,6 +78,7 @@ export function InteractionDialog({interaction, isOpen, onClose, isPassed}: Inte
                     <InteractionContent
                         interaction={interaction}
                         isPassed={isPassed}
+                        highlights={highlights}
                         hideMetadata={isMaximized && hasValidPayload}
                         isMaximized={isMaximized}
                         onToggleMaximize={() => setIsMaximized(!isMaximized)}

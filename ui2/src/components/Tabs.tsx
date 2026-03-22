@@ -185,15 +185,15 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
 
                 <div className={contentBg}>
                     <TabsContent value={Tab.Givens} className="mt-0">
-                        <DataTable data={invocation[Tab.Givens]} testState={testState}/>
+                        <DataTable data={invocation[Tab.Givens]} testState={testState} highlights={invocation.highlights}/>
                     </TabsContent>
 
                     <TabsContent value={Tab.CapturedOutputs} className="mt-0">
-                        <DataTable data={invocation[Tab.CapturedOutputs]} testState={testState}/>
+                        <DataTable data={invocation[Tab.CapturedOutputs]} testState={testState} highlights={invocation.highlights}/>
                     </TabsContent>
 
                     <TabsContent value={Tab.Fixtures} className="mt-0">
-                        <DataTable data={invocation[Tab.Fixtures]} testState={testState}/>
+                        <DataTable data={invocation[Tab.Fixtures]} testState={testState} highlights={invocation.highlights}/>
                     </TabsContent>
 
                     <TabsContent value={Tab.CapturedInteractions} className="mt-0">
@@ -203,6 +203,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                                     key={interaction.id}
                                     interaction={interaction}
                                     isPassed={isPassed}
+                                    highlights={invocation.highlights}
                                     onExpand={(i: Interaction) => setSelectedInteraction(i)}
                                 />
                             ))}
@@ -213,6 +214,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                         <SequenceDiagram
                             sequenceDiagram={invocation[Tab.SequenceDiagram] ?? ""}
                             capturedInteractions={invocation[Tab.CapturedInteractions] ?? []}
+                            highlights={invocation.highlights}
                             testState={testState}
                         />
                     </TabsContent>
@@ -249,6 +251,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                 isOpen={!!selectedInteraction}
                 onClose={() => setSelectedInteraction(null)}
                 isPassed={isPassed}
+                highlights={invocation.highlights}
             />
         </>
     );

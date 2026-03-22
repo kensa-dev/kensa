@@ -26,6 +26,8 @@ class TestInvocationParser(private val configuration: Configuration) {
             val highlightedValues = LinkedHashSet<NamedValue>()
                 .plus(highlightedPropertyValues(parsedMethod.properties, testInvocationContext.instance))
                 .plus(highlightedParameterValues)
+                .plus(testInvocationContext.fixturesAndOutputs.fixtures.highlightedValues())
+                .plus(testInvocationContext.fixturesAndOutputs.outputs.highlightedValues())
 
             val tokenFactory = TokenRenderer(
                 testInvocationContext.instance,

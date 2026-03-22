@@ -159,7 +159,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
       "notes": null,
@@ -168,7 +168,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -648,7 +648,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
       "notes": null,
@@ -657,7 +657,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -805,7 +805,9 @@
       "invocations": [
         {
           "elapsedTime": "",
-          "highlights": [],
+          "highlights": [
+            "parent1"
+          ],
           "sentences": [
             {
               "lineNumber": 79,
@@ -1018,7 +1020,8 @@
                       },
                       {
                         "types": [
-                          "tk-pv"
+                          "tk-pv",
+                          "tk-hl"
                         ],
                         "value": "parent1"
                       }
@@ -1392,7 +1395,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
       "notes": null,
@@ -1447,7 +1450,7 @@
           "displayName": "[1] \"one\""
         },
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {

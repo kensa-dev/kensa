@@ -4,13 +4,21 @@ import dev.kensa.util.NamedValue
 import kotlin.jvm.kotlin
 import kotlin.reflect.KClass
 
-class CapturedOutput<T : Any>(val key: String, val type: KClass<T>)
+class CapturedOutput<T : Any>(val key: String, val type: KClass<T>, val highlighted: Boolean = false)
 
 class CapturedOutputs {
     private val lock = Any()
     private val values: MutableMap<String, Any> = LinkedHashMap()
+    private val highlightedKeys: MutableSet<String> = LinkedHashSet()
 
-    fun values(): Set<NamedValue> = values.entries.map { NamedValue(it.key, it.value) }.toSet()
+    fun values(): Set<NamedValue> = synchronized(lock) { values.entries.map { NamedValue(it.key, it.value) }.toSet() }
+
+    fun highlightedValues(): Set<NamedValue> = synchronized(lock) {
+        values.entries
+            .filter { it.key in highlightedKeys }
+            .map { NamedValue(it.key, it.value) }
+            .toSet()
+    }
 
     fun contains(key: String): Boolean = synchronized(lock) { values.containsKey(key) }
     fun contains(key: CapturedOutput<*>): Boolean = contains(key.key)
@@ -22,11 +30,14 @@ class CapturedOutputs {
     }
 
     fun <T : Any> put(key: CapturedOutput<T>, value: T) {
-        put(key.key, value)
+        synchronized(lock) {
+            values[key.key] = value
+            if (key.highlighted) highlightedKeys.add(key.key)
+        }
     }
 
     operator fun <T : Any> set(key: CapturedOutput<T>, value: T) {
-        put(key.key, value)
+        put(key, value)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -52,7 +63,10 @@ class CapturedOutputs {
     operator fun <T : Any> get(key: CapturedOutput<T>): T = getOrNull(key) ?: throw NoSuchElementException("No captured output for key '${key.key}'")
 }
 
-inline fun <reified T : Any> capturedOutput(key: String) = CapturedOutput(key, T::class)
+inline fun <reified T : Any> capturedOutput(key: String, highlighted: Boolean = false) = CapturedOutput(key, T::class, highlighted)
 
 @JvmName("createCapturedOutput")
 fun <T : Any> createCapturedOutput(key: String, type: Class<T>): CapturedOutput<T> = CapturedOutput(key, type.kotlin)
+
+@JvmName("createCapturedOutput")
+fun <T : Any> createCapturedOutput(key: String, type: Class<T>, highlighted: Boolean): CapturedOutput<T> = CapturedOutput(key, type.kotlin, highlighted)

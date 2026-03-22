@@ -67,6 +67,46 @@ class CapturedOutputsTest {
         }
     }
 
+    @Test
+    fun `highlighted output appears in highlightedValues when put with typed key`() {
+        val capturedOutputs = CapturedOutputs()
+
+        capturedOutputs.put(MyHighlightedOutput, "highlighted-value")
+        capturedOutputs.put(MyStringOutput, "normal-value")
+
+        val values = capturedOutputs.highlightedValues()
+        values.map { it.name } shouldBe listOf("MyHighlightedOutput")
+        values.map { it.value } shouldBe listOf("highlighted-value")
+    }
+
+    @Test
+    fun `highlighted output put via set operator appears in highlightedValues`() {
+        val capturedOutputs = CapturedOutputs()
+
+        capturedOutputs[MyHighlightedOutput] = "highlighted-value"
+
+        capturedOutputs.highlightedValues().map { it.name } shouldBe listOf("MyHighlightedOutput")
+    }
+
+    @Test
+    fun `output put with String key never appears in highlightedValues`() {
+        val capturedOutputs = CapturedOutputs()
+
+        capturedOutputs.put("MyHighlightedOutput", "value")
+
+        capturedOutputs.highlightedValues() shouldBe emptySet()
+    }
+
+    @Test
+    fun `non-highlighted output does not appear in highlightedValues`() {
+        val capturedOutputs = CapturedOutputs()
+
+        capturedOutputs.put(MyStringOutput, "value")
+
+        capturedOutputs.highlightedValues() shouldBe emptySet()
+    }
+
     private val MyStringOutput = capturedOutput<String>("MyStringOutput")
     private val MyIntegerOutput = capturedOutput<Int>("MyIntegerOutput")
+    private val MyHighlightedOutput = capturedOutput<String>("MyHighlightedOutput", highlighted = true)
 }

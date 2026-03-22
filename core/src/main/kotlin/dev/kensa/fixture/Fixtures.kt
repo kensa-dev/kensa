@@ -13,7 +13,14 @@ class Fixtures {
     private val keyToValue = mutableMapOf<String, Any?>()
     private val keyToFixture = mutableMapOf<String, Fixture<*>>()
 
-    fun values(): Set<NamedValue> = keyToValue.entries.map { NamedValue(it.key, it.value) }.toSet()
+    fun values(): Set<NamedValue> = synchronized(lock) { keyToValue.entries.map { NamedValue(it.key, it.value) }.toSet() }
+
+    fun highlightedValues(): Set<NamedValue> = synchronized(lock) {
+        keyToValue.entries
+            .filter { (key, _) -> keyToFixture[key]?.highlighted == true }
+            .map { NamedValue(it.key, it.value) }
+            .toSet()
+    }
 
     /**
      * Gets the value of a fixture by key.

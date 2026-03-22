@@ -2,7 +2,7 @@ import * as React from "react";
 import {ChevronDown, ChevronUp, Copy, Maximize2, Search, WrapText, X} from "lucide-react";
 import hljs from "highlight.js";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
-import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils";
+import {cn, getAllTextNodes, removeSearchHighlights} from "@/lib/utils";
 import {TestState} from "@/types/Test";
 
 interface CustomTabPanelProps {
@@ -48,7 +48,7 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
     const applySearchTo = React.useCallback((root: HTMLElement | null) => {
         if (!root) return;
 
-        removeHighlights(root);
+        removeSearchHighlights(root);
 
         if (!searchQuery || searchQuery.length < 2) {
             setMatchCount(0);
