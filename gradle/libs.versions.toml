@@ -21,7 +21,7 @@ byteBuddy = "1.17.8"
 shadow = "9.3.2"
 
 http4k = "6.23.1.0"
-jackson = "2.21.0"
+jackson = "2.21.2"
 
 [libraries]
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
