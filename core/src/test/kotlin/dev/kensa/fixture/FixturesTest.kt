@@ -12,7 +12,7 @@ class FixturesTest {
     @Test
     fun `should create primary fixture with lazy initialization`() {
         var factoryCallCount = 0
-        val dateFixture = fixture<LocalDate>("date", { factoryCallCount++; LocalDate.of(2023, 1, 1) })
+        val dateFixture = fixture<LocalDate>("date") { factoryCallCount++; LocalDate.of(2023, 1, 1) }
 
         val fixtures = Fixtures()
 
@@ -34,8 +34,8 @@ class FixturesTest {
     @Test
     fun `should create child fixture derived from primary fixture lazily`() {
         var factoryCallCount = 0
-        val dateFixture = fixture<LocalDate>("date", { LocalDate.of(2023, 1, 1) })
-        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture, { date -> factoryCallCount++; date.dayOfWeek })
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture) { date -> factoryCallCount++; date.dayOfWeek }
 
         val fixtures = Fixtures()
 
@@ -56,14 +56,54 @@ class FixturesTest {
 
     @Test
     fun `secondary fixtures can be children of other secondary fixtures`() {
-        val dateFixture = fixture<LocalDate>("date", { LocalDate.of(2023, 1, 1) })
-        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture, { date -> date.dayOfWeek })
-        val dayPlusOneFixture = fixture<DayOfWeek, DayOfWeek>("dayPlusOne", dayFixture, { day -> day.plus(1) })
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture) { date -> date.dayOfWeek }
+        val dayPlusOneFixture = fixture<DayOfWeek, DayOfWeek>("dayPlusOne", dayFixture) { day -> day.plus(1) }
 
         val fixtures = Fixtures()
 
         fixtures[dayFixture] shouldBe SUNDAY
 
         fixtures[dayPlusOneFixture] shouldBe MONDAY
+    }
+
+    @Test
+    fun `highlighted primary fixture value appears in highlightedValues once accessed`() {
+        val highlighted = fixture<LocalDate>("date", highlighted = true) { LocalDate.of(2023, 1, 1) }
+        val notHighlighted = fixture<DayOfWeek>("day") { SUNDAY }
+
+        val fixtures = Fixtures()
+
+        fixtures[highlighted]
+        fixtures[notHighlighted]
+
+        val values = fixtures.highlightedValues()
+        values.map { it.name } shouldBe listOf("date")
+        values.map { it.value } shouldBe listOf(LocalDate.of(2023, 1, 1))
+    }
+
+    @Test
+    fun `highlighted secondary fixture value appears in highlightedValues once accessed`() {
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture, highlighted = true) { date -> date.dayOfWeek }
+
+        val fixtures = Fixtures()
+        fixtures[dayFixture]
+
+        val values = fixtures.highlightedValues()
+        values.map { it.name } shouldBe listOf("day")
+    }
+
+    @Test
+    fun `unaccessed highlighted fixture does not appear in highlightedValues`() {
+        val highlighted = fixture<LocalDate>("date", highlighted = true) { LocalDate.of(2023, 1, 1) }
+
+        val fixtures = Fixtures()
+
+        fixtures.highlightedValues() shouldBe emptySet()
+
+        fixtures[highlighted]
+
+        fixtures.highlightedValues().map { it.name } shouldBe listOf("date")
     }
 }

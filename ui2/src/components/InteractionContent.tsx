@@ -3,7 +3,7 @@ import {ChevronDown, ChevronUp, Copy, ExternalLink, FileJson, Info, Maximize2, S
 import hljs from 'highlight.js';
 import json from 'highlight.js/lib/languages/json';
 import xml from 'highlight.js/lib/languages/xml';
-import {cn, getAllTextNodes, removeHighlights} from "@/lib/utils";
+import {cn, getAllTextNodes, removeHighlightSpans, applyKensaHighlights} from "@/lib/utils";
 import {DataTable} from "@/components/DataTable";
 import {NameAndValues} from "@/types/Test";
 
@@ -35,6 +35,7 @@ type Interaction = {
 type InteractionContentProps = {
     interaction: Interaction;
     isPassed: boolean;
+    highlights?: string[];
     hideMetadata?: boolean;
     onExpand?: () => void;
     isMaximized?: boolean;
@@ -56,6 +57,7 @@ const formatMetadataValue = (v: unknown): string => {
 export const InteractionContent = ({
                                        interaction,
                                        isPassed,
+                                       highlights = [],
                                        hideMetadata,
                                        onExpand,
                                        isMaximized,
@@ -87,8 +89,15 @@ export const InteractionContent = ({
     React.useLayoutEffect(() => {
         const root = codeRef.current;
         if (!root) return;
+        removeHighlightSpans(root, 'kensa-highlight');
+        applyKensaHighlights(root, highlights);
+    }, [highlights, interaction, isWrapped]);
 
-        removeHighlights(root);
+    React.useLayoutEffect(() => {
+        const root = codeRef.current;
+        if (!root) return;
+
+        removeHighlightSpans(root, 'search-highlight');
         if (!searchQuery || searchQuery.length < 2) {
             setMatchCount(0);
             setCurrentIndex(0);
@@ -206,7 +215,7 @@ export const InteractionContent = ({
                     <div className="overflow-y-auto p-4 custom-scrollbar">
                         {activeGroup ? (
                             <div className="ml-3">
-                                <DataTable data={activeGroupTableData} testState={isPassed ? "Passed" : "Failed"}/>
+                                <DataTable data={activeGroupTableData} testState={isPassed ? "Passed" : "Failed"} highlights={highlights}/>
                             </div>
                         ) : null}
                     </div>

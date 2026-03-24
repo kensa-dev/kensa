@@ -308,7 +308,8 @@ const styles: Record<string, string> = {
     'tk-num': 'font-semibold text-foreground',
     'tk-bo': 'font-semibold text-foreground/80',
     'tk-null': 'text-muted-foreground/70 italic line-through decoration-muted-foreground/30',
-    'tk-pph': 'text-foreground tracking-tight'
+    'tk-pph': 'text-foreground tracking-tight',
+    'tk-hl': 'bg-yellow-200/80 dark:bg-yellow-400/30 text-foreground px-0.5 rounded-sm'
 };
 const getMappedCls = (types: string[]) => types.map((t: string) => styles[t] || '').join(' ');
 

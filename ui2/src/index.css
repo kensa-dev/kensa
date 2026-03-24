@@ -75,6 +75,19 @@
   }
 }
 
+@layer utilities {
+  .kensa-highlight {
+    background-color: rgb(254 240 138 / 0.85);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+  .dark .kensa-highlight {
+    background-color: rgb(250 204 21 / 0.55);
+    color: rgb(0 0 0 / 0.85);
+  }
+}
+
 @layer base {
   html {
     font-size: 17px;

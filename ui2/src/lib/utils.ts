@@ -96,16 +96,51 @@ export function getAllTextNodes(root: Node): Text[] {
     return textNodes;
 }
 
-export function removeHighlights(root: HTMLElement) {
-    const marks = root.querySelectorAll('.search-highlight');
-    marks.forEach(mark => {
+export function buildHighlightRegex(highlights: string[]): RegExp {
+    const escaped = highlights.map(h => h.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
+    return new RegExp(`(${escaped.join('|')})`, 'g');
+}
+
+export function removeHighlightSpans(root: HTMLElement, cls: string) {
+    root.querySelectorAll(`.${cls}`).forEach(mark => {
         const parent = mark.parentNode;
         if (parent) {
-            while (mark.firstChild) {
-                parent.insertBefore(mark.firstChild, mark);
-            }
+            while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
             parent.removeChild(mark);
             parent.normalize();
         }
+    });
+}
+
+export function applyKensaHighlights(root: HTMLElement, highlights: string[]) {
+    if (highlights.length === 0) return;
+
+    const regExp = buildHighlightRegex(highlights);
+
+    getAllTextNodes(root).forEach(node => {
+        const text = node.textContent ?? '';
+        if (!regExp.test(text)) return;
+        regExp.lastIndex = 0;
+
+        const parent = node.parentNode;
+        if (!parent) return;
+
+        const frag = document.createDocumentFragment();
+        let lastIndex = 0;
+        let result: RegExpExecArray | null;
+        while ((result = regExp.exec(text)) !== null) {
+            if (result.index > lastIndex) {
+                frag.appendChild(document.createTextNode(text.slice(lastIndex, result.index)));
+            }
+            const mark = document.createElement('span');
+            mark.className = 'kensa-highlight';
+            mark.textContent = result[0];
+            frag.appendChild(mark);
+            lastIndex = result.index + result[0].length;
+        }
+        if (lastIndex < text.length) {
+            frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        parent.replaceChild(frag, node);
     });
 }

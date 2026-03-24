@@ -7,10 +7,11 @@ import { Interaction } from '@/types/Test';
 interface InteractionCardProps {
     interaction: Interaction;
     isPassed: boolean;
+    highlights?: string[];
     onExpand: (interaction: Interaction) => void;
 }
 
-export const InteractionCard = ({ interaction, isPassed, onExpand }: InteractionCardProps) => {
+export const InteractionCard = ({ interaction, isPassed, highlights, onExpand }: InteractionCardProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
@@ -35,6 +36,7 @@ export const InteractionCard = ({ interaction, isPassed, onExpand }: Interaction
                     <InteractionContent
                         interaction={interaction}
                         isPassed={isPassed}
+                        highlights={highlights}
                         onExpand={() => onExpand(interaction)}
                     />
                 </div>

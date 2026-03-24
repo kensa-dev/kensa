@@ -800,7 +800,9 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "highlights": [],
+          "highlights": [
+            "parent1"
+          ],
           "sentences": [
             {
               "lineNumber": 79,
@@ -1013,7 +1015,8 @@
                       },
                       {
                         "types": [
-                          "tk-pv"
+                          "tk-pv",
+                          "tk-hl"
                         ],
                         "value": "parent1"
                       }
@@ -1075,7 +1078,11 @@
             }
           ],
           "parameters": [],
-          "givens": [],
+          "givens": [
+            {
+              "KotlinStringFixture": "parent1"
+            }
+          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [

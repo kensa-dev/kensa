@@ -8,6 +8,7 @@ import "./SequenceDiagram.css";
 interface SequenceDiagramProps {
     sequenceDiagram: string;
     capturedInteractions: Interaction[];
+    highlights?: string[];
     testState?: TestState;
     className?: string;
     maxHeight?: number;
@@ -26,6 +27,7 @@ const forAllCombinations = (items: string[], cb: (a: string, b: string) => void)
 export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                                                                     sequenceDiagram,
                                                                     capturedInteractions,
+                                                                    highlights,
                                                                     testState,
                                                                     className,
                                                                     maxHeight = 700,
@@ -313,6 +315,7 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                 isOpen={!!interaction}
                 onClose={() => setInteraction(null)}
                 isPassed={isPassed}
+                highlights={highlights}
             />
         </>
     );

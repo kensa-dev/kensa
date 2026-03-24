@@ -1,4 +1,4 @@
-package dev.kensa.fixture
+ package dev.kensa.fixture
 
 /**
  * A type-safe key for a fixture.
@@ -8,6 +8,7 @@ package dev.kensa.fixture
  */
 sealed interface Fixture<T> {
     val key: String
+    val highlighted: Boolean
 
     fun createValue(fixtures: Fixtures): T
 }
@@ -31,7 +32,8 @@ sealed interface Parents {
  */
 class PrimaryFixture<T>(
     override val key: String,
-    val factory: () -> T
+    val factory: () -> T,
+    override val highlighted: Boolean = false
 ) : Fixture<T> {
     override fun createValue(fixtures: Fixtures): T = factory()
 }
@@ -47,7 +49,8 @@ class PrimaryFixture<T>(
 class SecondaryFixture<T>(
     override val key: String,
     private val factory: SecondaryFixtureFactory<T>,
-    private val parents: Parents
+    private val parents: Parents,
+    override val highlighted: Boolean = false
 ) : Fixture<T> {
     fun isDependentOf(fixture: Fixture<*>): Boolean =
         when (parents) {
@@ -66,7 +69,7 @@ class SecondaryFixture<T>(
  * @param factory Factory function to create the fixture value
  * @return A new parent fixture
  */
-inline fun <reified T> fixture(key: String, noinline factory: () -> T): PrimaryFixture<T> = PrimaryFixture(key, factory)
+inline fun <reified T> fixture(key: String, highlighted: Boolean = false, noinline factory: () -> T): PrimaryFixture<T> = PrimaryFixture(key, factory, highlighted)
 
 /**
  * Creates a secondary fixture with a type-safe key.
@@ -76,7 +79,7 @@ inline fun <reified T> fixture(key: String, noinline factory: () -> T): PrimaryF
  * @param factory Function to transform the parent fixture value into the secondary fixture value
  * @return A new secondary fixture
  */
-inline fun <reified T, P1> fixture(key: String, parentFixture: Fixture<P1>, noinline factory: (P1) -> T): SecondaryFixture<T> = SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture]) }, Parents.One(parentFixture))
+inline fun <reified T, P1> fixture(key: String, parentFixture: Fixture<P1>, highlighted: Boolean = false, noinline factory: (P1) -> T): SecondaryFixture<T> = SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture]) }, Parents.One(parentFixture), highlighted)
 
 /**
  * Creates a secondary fixture with a type-safe key.
@@ -87,8 +90,8 @@ inline fun <reified T, P1> fixture(key: String, parentFixture: Fixture<P1>, noin
  * @param factory Function to transform the parent fixture values into the secondary fixture value
  * @return A new secondary fixture
  */
-inline fun <reified T, P1, P2> fixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, noinline factory: (P1, P2) -> T): SecondaryFixture<T> =
-    SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2]) }, Parents.Two(parentFixture1, parentFixture2))
+inline fun <reified T, P1, P2> fixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, highlighted: Boolean = false, noinline factory: (P1, P2) -> T): SecondaryFixture<T> =
+    SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2]) }, Parents.Two(parentFixture1, parentFixture2), highlighted)
 
 /**
  * Creates a secondary fixture with a type-safe key.
@@ -100,8 +103,8 @@ inline fun <reified T, P1, P2> fixture(key: String, parentFixture1: Fixture<P1>,
  * @param factory Function to transform the parent fixture values into the secondary fixture value
  * @return A new secondary fixture
  */
-inline fun <reified T, P1, P2, P3> fixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, parentFixture3: Fixture<P3>, noinline factory: (P1, P2, P3) -> T): SecondaryFixture<T> =
-    SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2], fixtures[parentFixture3]) }, Parents.Three(parentFixture1, parentFixture2, parentFixture3))
+inline fun <reified T, P1, P2, P3> fixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, parentFixture3: Fixture<P3>, highlighted: Boolean = false, noinline factory: (P1, P2, P3) -> T): SecondaryFixture<T> =
+    SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2], fixtures[parentFixture3]) }, Parents.Three(parentFixture1, parentFixture2, parentFixture3), highlighted)
 
 /**
  * Non-inline version of the fixture function for Java interoperability.
@@ -112,6 +115,9 @@ inline fun <reified T, P1, P2, P3> fixture(key: String, parentFixture1: Fixture<
  */
 @JvmName("createFixture")
 fun <T> createFixture(key: String, factory: () -> T): PrimaryFixture<T> = PrimaryFixture(key, factory)
+
+@JvmName("createFixture")
+fun <T> createFixture(key: String, highlighted: Boolean, factory: () -> T): PrimaryFixture<T> = PrimaryFixture(key, factory, highlighted)
 
 /**
  * Non-inline version of the fixture function for Java interoperability.
@@ -124,6 +130,9 @@ fun <T> createFixture(key: String, factory: () -> T): PrimaryFixture<T> = Primar
 @JvmName("createFixture")
 fun <T, P1> createFixture(key: String, parentFixture: Fixture<P1>, factory: (P1) -> T): SecondaryFixture<T> = SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture]) }, Parents.One(parentFixture))
 
+@JvmName("createFixture")
+fun <T, P1> createFixture(key: String, parentFixture: Fixture<P1>, highlighted: Boolean, factory: (P1) -> T): SecondaryFixture<T> = SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture]) }, Parents.One(parentFixture), highlighted)
+
 /**
  * Non-inline version of the fixture function for Java interoperability.
  *
@@ -135,6 +144,9 @@ fun <T, P1> createFixture(key: String, parentFixture: Fixture<P1>, factory: (P1)
  */
 @JvmName("createFixture")
 fun <T, P1, P2> createFixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, factory: (P1, P2) -> T): SecondaryFixture<T> = SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2]) }, Parents.Two(parentFixture1, parentFixture2))
+
+@JvmName("createFixture")
+fun <T, P1, P2> createFixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, highlighted: Boolean, factory: (P1, P2) -> T): SecondaryFixture<T> = SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2]) }, Parents.Two(parentFixture1, parentFixture2), highlighted)
 
 /**
  * Non-inline version of the fixture function for Java interoperability.
@@ -149,3 +161,7 @@ fun <T, P1, P2> createFixture(key: String, parentFixture1: Fixture<P1>, parentFi
 @JvmName("createFixture")
 fun <T, P1, P2, P3> createFixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, parentFixture3: Fixture<P3>, factory: (P1, P2, P3) -> T): SecondaryFixture<T> =
     SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2], fixtures[parentFixture3]) }, Parents.Three(parentFixture1, parentFixture2, parentFixture3))
+
+@JvmName("createFixture")
+fun <T, P1, P2, P3> createFixture(key: String, parentFixture1: Fixture<P1>, parentFixture2: Fixture<P2>, parentFixture3: Fixture<P3>, highlighted: Boolean, factory: (P1, P2, P3) -> T): SecondaryFixture<T> =
+    SecondaryFixture(key, { fixtures -> factory(fixtures[parentFixture1], fixtures[parentFixture2], fixtures[parentFixture3]) }, Parents.Three(parentFixture1, parentFixture2, parentFixture3), highlighted)
