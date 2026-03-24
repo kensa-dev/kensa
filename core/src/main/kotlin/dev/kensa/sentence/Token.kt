@@ -1,7 +1,5 @@
 package dev.kensa.sentence
 
-import dev.kensa.parse.EmphasisDescriptor
-
 sealed interface TemplateToken {
 
     enum class Type(val code: String, val isWhitespace: Boolean = false) {
@@ -33,27 +31,23 @@ sealed interface TemplateToken {
     }
 
     val template: String
-    val emphasis: EmphasisDescriptor
     val types: Set<Type>
 
     fun hasType(type: Type) = types.contains(type)
 
     data class SimpleTemplateToken(
         override val template: String,
-        override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
         override val types: Set<Type>,
     ) : TemplateToken
 
     data class RenderedValueToken(
         override val template: String,
-        override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
     ) : TemplateToken {
         override val types: Set<Type> = setOf(Type.MethodValue)
     }
 
     data class ExpandableTemplateToken(
         override val template: String,
-        override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
         override val types: Set<Type>,
         val name: String,
         val expandableTokens: List<List<TemplateToken>>
@@ -63,7 +57,6 @@ sealed interface TemplateToken {
 
     data class TabularTemplateToken(
         override val template: String,
-        override val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default,
         override val types: Set<Type>,
         val name: String,
         val rows: List<List<TemplateToken>>,

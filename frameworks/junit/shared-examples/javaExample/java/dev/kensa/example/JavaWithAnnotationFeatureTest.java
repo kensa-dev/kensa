@@ -5,9 +5,6 @@ import dev.kensa.fixture.MyScenario;
 import dev.kensa.hamcrest.WithHamcrest;
 import org.junit.jupiter.api.Test;
 
-import static dev.kensa.Colour.BackgroundDanger;
-import static dev.kensa.Colour.TextLight;
-import static dev.kensa.TextStyle.*;
 import static org.hamcrest.CoreMatchers.is;
 
 public class JavaWithAnnotationFeatureTest extends JavaExampleTest implements WithHamcrest {
@@ -35,13 +32,6 @@ public class JavaWithAnnotationFeatureTest extends JavaExampleTest implements Wi
         given(somePrerequisitesWith("noHighlight"));
 
         whenever(someActionWith(highlightMe));
-
-        then(theExtractedValue(), is(aValue));
-    }
-
-    @Test
-    void testWithEmphasis() {
-        whenever(someActionWithEmphasis());
 
         then(theExtractedValue(), is(aValue));
     }
@@ -76,12 +66,6 @@ public class JavaWithAnnotationFeatureTest extends JavaExampleTest implements Wi
     }
 
     private Action<ActionContext> someActionWith(String value) {
-        return (context) -> {
-        };
-    }
-
-    @Emphasise(textStyles = {TextWeightBold, Italic, Uppercase}, textColour = TextLight, backgroundColor = BackgroundDanger)
-    private Action<ActionContext> someActionWithEmphasis() {
         return (context) -> {
         };
     }

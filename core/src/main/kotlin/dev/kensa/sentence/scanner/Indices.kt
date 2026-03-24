@@ -1,6 +1,5 @@
 package dev.kensa.sentence.scanner
 
-import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.TemplateToken.Type
 import java.util.*
 
@@ -14,8 +13,8 @@ class Indices : Iterable<Index> {
         }
     }
 
-    fun put(type: Type, start: Int, end: Int, emphasisDescriptor: EmphasisDescriptor? = null) {
-        indices.add(Index(type, start, end, emphasisDescriptor))
+    fun put(type: Type, start: Int, end: Int) {
+        indices.add(Index(type, start, end))
         var lastIndex: Index? = null
         val iterator = indices.iterator()
         while (iterator.hasNext()) {

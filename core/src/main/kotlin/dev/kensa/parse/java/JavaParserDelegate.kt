@@ -27,7 +27,6 @@ class JavaParserDelegate(
     override fun Class<*>.findMethodDeclarations(): MethodDeclarations {
         val testMethods = mutableListOf<MethodDeclarationContext>()
         val expandableSentenceMethods = mutableListOf<MethodDeclarationContext>()
-        val emphasisedMethods = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
         val sourceStream = sourceCode.sourceStreamFor(this)
@@ -54,7 +53,6 @@ class JavaParserDelegate(
                         cbd.classMemberDeclaration()?.methodDeclaration()?.let { md ->
                             testMethods.takeIf { isClassTest(md) }?.add(JavaMethodDeclarationContext(md))
                             expandableSentenceMethods.takeIf { md.isAnnotatedAsExpandableSentence() }?.add(JavaMethodDeclarationContext(md))
-                            emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaMethodDeclarationContext(md))
                         }
                     }
 
@@ -63,7 +61,6 @@ class JavaParserDelegate(
                         imd.interfaceMethodDeclaration()?.let { md ->
                             testMethods.takeIf { isInterfaceTest(md) }?.add(JavaInterfaceDeclarationContext(md))
                             expandableSentenceMethods.takeIf { md.isAnnotatedAsExpandableSentence() }?.add(JavaInterfaceDeclarationContext(md))
-                            emphasisedMethods.takeIf { md.isAnnotatedAsEmphasised() }?.add(JavaInterfaceDeclarationContext(md))
                         }
                     }
 
@@ -71,7 +68,7 @@ class JavaParserDelegate(
             }
         }
 
-        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testMethods, expandableSentenceMethods, emphasisedMethods)))
+        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testMethods, expandableSentenceMethods)))
     }
 
     override fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters =
@@ -95,24 +92,10 @@ class JavaParserDelegate(
             } ?: false
         }
 
-    private fun Java20Parser.MethodDeclarationContext.isAnnotatedAsEmphasised() =
-        methodModifier().any { mm ->
-            mm.annotation()?.normalAnnotation()?.typeName()?.text?.let {
-                ParserDelegate.emphasisedMethodAnnotationNames.contains(it)
-            } ?: false
-        }
-
     private fun Java20Parser.InterfaceMethodDeclarationContext.isAnnotatedAsExpandableSentence() =
         interfaceMethodModifier().any { mm ->
             mm.annotation()?.markerAnnotation()?.typeName()?.text?.let {
                 ParserDelegate.expandableSentenceAnnotationNames.contains(it)
-            } ?: false
-        }
-
-    private fun Java20Parser.InterfaceMethodDeclarationContext.isAnnotatedAsEmphasised() =
-        interfaceMethodModifier().any { mm ->
-            mm.annotation()?.normalAnnotation()?.typeName()?.text?.let {
-                ParserDelegate.emphasisedMethodAnnotationNames.contains(it)
             } ?: false
         }
 

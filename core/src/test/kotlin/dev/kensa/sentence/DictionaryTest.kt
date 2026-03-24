@@ -1,6 +1,5 @@
 package dev.kensa.sentence
 
-import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.sentence.Acronym.Companion.of
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -17,7 +16,6 @@ import java.util.stream.Stream
 
 internal class DictionaryTest {
     private lateinit var dictionary: Dictionary
-    private val defaultEmphasis = EmphasisDescriptor.Default
 
     @BeforeEach
     fun setUp() {
@@ -71,20 +69,18 @@ internal class DictionaryTest {
         indices shouldHaveSize 1
         indices[0].start shouldBe 9  // Start index of "cat"
         indices[0].end shouldBe 12  // End index of "cat"
-        indices[0].emphasisDescriptor shouldBe defaultEmphasis
     }
-    
+
     @Test
     fun `indexProtectedPhrases finds plural form of protected phrase with regular plural`() {
         dictionary.putProtectedPhrases(ProtectedPhrase("cat"))
-        
+
         val sentence = "Ihavetwocatsathome"
         val indices = dictionary.indexProtectedPhrases(sentence)
 
         indices shouldHaveSize 1
         indices[0].start shouldBe 8  // Start index of "cats"
         indices[0].end shouldBe 12  // End index of "cats" (exclusive end index)
-        indices[0].emphasisDescriptor shouldBe defaultEmphasis
     }
 
     @Test
@@ -98,20 +94,18 @@ internal class DictionaryTest {
         indices shouldHaveSize 1
         indices[0].start shouldBe 8
         indices[0].end shouldBe 11
-        indices[0].emphasisDescriptor shouldBe defaultEmphasis
     }
 
     @Test
     fun `indexProtectedPhrases finds plural form of protected phrase ending in y`() {
         dictionary.putProtectedPhrases(ProtectedPhrase("city"))
-        
+
         val sentence = "There are many cities in the world"
         val indices = dictionary.indexProtectedPhrases(sentence)
-        
+
         indices shouldHaveSize 1
         indices[0].start shouldBe 15  // Start index of "cities"
         indices[0].end shouldBe 21  // End index of "cities" (exclusive end index)
-        indices[0].emphasisDescriptor shouldBe defaultEmphasis
     }
     
     @Test
@@ -191,19 +185,15 @@ internal class DictionaryTest {
         
         sortedIndices[0].start shouldBe 7   // Start index of "cats"
         sortedIndices[0].end shouldBe 11  // End index of "cats" (exclusive end index)
-        sortedIndices[0].emphasisDescriptor shouldBe defaultEmphasis
 
         sortedIndices[1].start shouldBe 16   // Start index of "dogs"
         sortedIndices[1].end shouldBe 20  // End index of "dogs" (exclusive end index)
-        sortedIndices[1].emphasisDescriptor shouldBe defaultEmphasis
 
         sortedIndices[2].start shouldBe 24   // Start index of "cat"
         sortedIndices[2].end shouldBe 27  // End index of "cat" (exclusive end index)
-        sortedIndices[2].emphasisDescriptor shouldBe defaultEmphasis
-        
+
         sortedIndices[3].start shouldBe 34   // Start index of "dog"
         sortedIndices[3].end shouldBe 37  // End index of "dog" (exclusive end index)
-        sortedIndices[3].emphasisDescriptor shouldBe defaultEmphasis
     }
 
     companion object {

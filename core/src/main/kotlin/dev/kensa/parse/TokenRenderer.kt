@@ -48,25 +48,18 @@ class TokenRenderer(
     private fun List<TemplateToken>.squash() = ArrayList<TemplateToken>().apply {
         var currentTokenTypes: Set<Type> = emptySet()
         var currentValue = ""
-        var currentEmphasis = EmphasisDescriptor.Default
 
         fun finishCurrentWord() {
             if (currentTokenTypes.contains(Word)) {
-                add(TemplateToken.SimpleTemplateToken(currentValue, emphasis = currentEmphasis, currentTokenTypes))
+                add(TemplateToken.SimpleTemplateToken(currentValue, currentTokenTypes))
                 currentValue = ""
-                currentEmphasis = EmphasisDescriptor.Default
             }
         }
 
         this@squash.forEach { token ->
             if (token.hasType(Word)) {
                 currentValue = if (currentTokenTypes.contains(Word)) {
-                    if (currentEmphasis == token.emphasis) {
-                        "$currentValue ${token.template}"
-                    } else {
-                        finishCurrentWord()
-                        token.template
-                    }
+                    "$currentValue ${token.template}"
                 } else {
                     token.template
                 }
@@ -75,7 +68,6 @@ class TokenRenderer(
                 add(token)
             }
             currentTokenTypes = token.types
-            currentEmphasis = token.emphasis
         }
         finishCurrentWord()
     }
@@ -87,20 +79,20 @@ class TokenRenderer(
         }
         return RenderedValueToken(
             renderers.renderValue(returnValue),
-            (types.map { it.asCss() } + emphasis.asCss()).toSortedSet()
+            types.map { it.asCss() }.toSortedSet()
         )
     }
 
     private fun TemplateToken.asRenderedValue() =
         RenderedValueToken(
             template,
-            (types.map { it.asCss() } + emphasis.asCss()).toSortedSet()
+            types.map { it.asCss() }.toSortedSet()
         )
 
     private fun ExpandableTemplateToken.asExpandable() =
         RenderedExpandableToken(
             template,
-            (types.map { it.asCss() } + emphasis.asCss()).toSortedSet(),
+            types.map { it.asCss() }.toSortedSet(),
             name = name,
             parameterTokens = render(parameterTokens),
             expandableTokens = when (val invocation = expandableSentenceInvocationContext().nextInvocationFor(name)) {
@@ -130,7 +122,7 @@ class TokenRenderer(
 
         return RenderedToken.RenderedExpandableTabularToken(
             template,
-            (types.map { it.asCss() } + emphasis.asCss()).toSortedSet(),
+            types.map { it.asCss() }.toSortedSet(),
             name = name,
             parameterTokens = render(parameterTokens),
             rows = renderedRows,
@@ -149,7 +141,7 @@ class TokenRenderer(
 
     private fun TemplateToken.asRenderedValueToken(getIt: (String, String) -> Any?) =
         template.split(":").let { (name, path) ->
-            RenderedValueToken(renderers.renderValue(getIt(name, path)), (types.map { it.asCss() } + emphasis.asCss()).toSortedSet())
+            RenderedValueToken(renderers.renderValue(getIt(name, path)), types.map { it.asCss() }.toSortedSet())
         }
 
     private fun TemplateToken.asFieldValue(): RenderedToken =

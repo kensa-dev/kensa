@@ -74,19 +74,6 @@ annotation class KensaTab(
 annotation class Notes(val value: String)
 
 /**
- * Annotation used to specify emphasis in the test output of the attached component.
- *
- * Choos from a selection of the helpers found in the [Bulma CSS library](https://bulma.io/documentation/helpers/).
- *
- * @property textStyles Array of text styles to apply. Default is [TextStyle.TextWeightNormal].
- * @property textColour Colour of the text. Default is [Colour.Default].
- * @property backgroundColor Background colour for the annotation. Default is [Colour.Default].
- */
-@Retention(RUNTIME)
-@Target(FUNCTION, FIELD, VALUE_PARAMETER)
-annotation class Emphasise(val textStyles: Array<TextStyle> = [TextStyle.TextWeightNormal], val textColour: Colour = Colour.Default, val backgroundColor: Colour = Colour.Default)
-
-/**
  * Annotation for specifying that the value of a function (return value), field, parameter
  * or property should be highlighted throughout all the test output.
  *

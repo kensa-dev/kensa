@@ -11,7 +11,6 @@ class ParserCache {
     private val properties = ConcurrentHashMap<Class<*>, Map<String, ElementDescriptor>>()
     private val parameters = ConcurrentHashMap<Method, MethodParameters>()
     private val nestedMethods = ConcurrentHashMap<Class<*>, Map<String, ParsedNestedMethod>>()
-    private val emphasisedMethods = ConcurrentHashMap<Class<*>, Map<String, EmphasisDescriptor>>()
     private val methods = ConcurrentHashMap<Class<*>, Map<String, MethodElementDescriptor>>()
     private val renderingDirectives = ConcurrentHashMap<Class<*>, RenderingDirectives>()
 
@@ -29,9 +28,6 @@ class ParserCache {
 
     fun getOrPutNestedMethods(clazz: Class<*>, provider: () -> Map<String, ParsedNestedMethod>): Map<String, ParsedNestedMethod> =
         nestedMethods.computeIfAbsent(clazz) { provider() }
-
-    fun getOrPutEmphasisedMethods(clazz: Class<*>, provider: () -> Map<String, EmphasisDescriptor>): Map<String, EmphasisDescriptor> =
-        emphasisedMethods.computeIfAbsent(clazz) { provider() }
 
     fun getOrPutMethods(clazz: Class<*>, provider: () -> Map<String, MethodElementDescriptor>): Map<String, MethodElementDescriptor> =
         methods.computeIfAbsent(clazz) { provider() }

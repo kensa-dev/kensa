@@ -45,7 +45,7 @@ sealed class LocatedEvent(val location: Location) : Event() {
         }
     }
 
-    class Identifier(location: Location, val name: String, val emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) : LocatedEvent(location)
+    class Identifier(location: Location, val name: String) : LocatedEvent(location)
 
     class Operator(location: Location, val text: String) : LocatedEvent(location)
     class Parameter(location: Location, val name: String) : LocatedEvent(location)

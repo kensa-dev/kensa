@@ -22,7 +22,7 @@ class TokenScanner(private val dictionary: Dictionary) {
 
     private fun scanForProtectedPhrases(string: String, indices: Indices) {
         dictionary.indexProtectedPhrases(string).forEach {
-            indices.put(ProtectedPhrase, it.start, it.end , it.emphasisDescriptor)
+            indices.put(ProtectedPhrase, it.start, it.end)
         }
     }
 
@@ -71,7 +71,7 @@ class TokenScanner(private val dictionary: Dictionary) {
         val word = strings.first()
 
         dictionary.findKeywordOrNull(word)?.also {
-            indices.put(Keyword, string.indexOf(word), string.indexOf(word) + word.length, it.emphasisDescriptor)
+            indices.put(Keyword, string.indexOf(word), string.indexOf(word) + word.length)
         }
     }
 

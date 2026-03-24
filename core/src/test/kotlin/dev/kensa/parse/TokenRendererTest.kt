@@ -5,7 +5,6 @@ import dev.kensa.Highlight
 import dev.kensa.RenderedHintStrategy.HintFromProperty
 import dev.kensa.RenderedValueStrategy.UseIdentifierName
 import dev.kensa.RenderingDirective
-import dev.kensa.TextStyle.Italic
 import dev.kensa.example.TheTestClass
 import dev.kensa.example.Wrapper
 import dev.kensa.fixture.FixtureContainer
@@ -105,33 +104,10 @@ class TokenRendererTest {
         }
 
         @Test
-        fun squashesMultipleWordTemplateTokensIntoSingleRenderedTokenAndHonoursEmphasis() {
-            val emphasis = EmphasisDescriptor(setOf(Italic))
-
-            val templates = listOf(
-                Word.asTemplateToken("Word1"),
-                Word.asTemplateToken("Word2"),
-                Word.asTemplateToken("Word3", emphasis),
-                Word.asTemplateToken("Word4", emphasis)
-            )
-
-            val expected = listOf(
-                aRenderedValueOf("Word1 Word2", setOf("tk-wd")),
-                aRenderedValueOf("Word3 Word4", setOf("is-italic", "tk-wd"))
-            )
-
-            val renderedTokens = renderer.render(templates)
-
-            renderedTokens shouldContainExactly expected
-        }
-
-        @Test
         fun squashesMultipleTemplateTokensContainingWordsAndOtherTypes() {
-            val emphasis = EmphasisDescriptor(setOf(Italic))
-
             val expected = listOf(
                 aRenderedValueOf("P1", setOf("tk-id")),
-                aRenderedValueOf("Word1 Word2", setOf("is-italic", "tk-wd")),
+                aRenderedValueOf("Word1 Word2", setOf("tk-wd")),
                 aRenderedValueOf("L1", setOf("tk-sl")),
                 aRenderedValueOf("", setOf("tk-null")),
                 aRenderedValueOf("K1", setOf("tk-kw")),
@@ -147,12 +123,12 @@ class TokenRendererTest {
             val templates =
                 listOf(
                     Identifier.asTemplateToken("P1"),
-                    Word.asTemplateToken("Word1", emphasis),
-                    Word.asTemplateToken("Word2", emphasis),
+                    Word.asTemplateToken("Word1"),
+                    Word.asTemplateToken("Word2"),
                     StringLiteral.asTemplateToken("L1"),
                     NullLiteral.asTemplateToken(),
                     Keyword.asTemplateToken("K1"),
-                    StringLiteral.asTemplateToken("LA1", emphasis = EmphasisDescriptor.Default, Acronym),
+                    StringLiteral.asTemplateToken("LA1", Acronym),
                     NewLine.asTemplateToken(),
                     Acronym.asTemplateToken("FOO"),
                     Keyword.asTemplateToken("K2"),

@@ -18,7 +18,6 @@ interface ParserDelegate {
 
     companion object {
         val expandableSentenceAnnotationNames = listOf("NestedSentence", "dev.kensa.NestedSentence", "ExpandableSentence", "dev.kensa.ExpandableSentence")
-        val emphasisedMethodAnnotationNames = listOf("Emphasise", "dev.kensa.Emphasise")
     }
 }
 

@@ -15,8 +15,7 @@ class ParseContext(
     private val properties: Map<String, ElementDescriptor>,
     private val methods: Map<String, ElementDescriptor.MethodElementDescriptor>,
     private val parameters: Map<String, ElementDescriptor> = emptyMap(),
-    private val nestedMethods: Map<String, ParsedNestedMethod> = emptyMap(),
-    private val emphasisedMethods: Map<String, EmphasisDescriptor> = emptyMap()
+    private val nestedMethods: Map<String, ParsedNestedMethod> = emptyMap()
 ) {
 
     private val expandableRenderedValueMethodNames = methods.filterValues { it.isExpandableRenderedValue }.keys
@@ -32,10 +31,9 @@ class ParseContext(
     private val outputsByKeyPattern = """^outputs\("([a-zA-Z0-9_]+)"\)(\.(.+))?$""".toRegex()
     private val chainedCallPattern = """^(\w+)(\(\))?(\.(.+))?$""".toRegex()
 
-    private fun emphasis(name: String) = emphasisedMethods[name] ?: EmphasisDescriptor.Default
     private fun nestedSentences(name: String) = nestedMethods[name]?.sentences ?: error("No nested method found with name [$name]")
 
-    internal fun ParseTree.asIdentifier() = Identifier(location, text, emphasis(text))
+    internal fun ParseTree.asIdentifier() = Identifier(location, text)
     internal fun ParseTree.asExpandableSentence() = takeIf { expandableMethodNames.contains(text) }?.let { ExpandableSentence(location, text, nestedSentences(text)) }
     internal fun ParseTree.asExpandableValue() = takeIf { expandableRenderedValueMethodNames.contains(text) }?.let {
         val md = methods[text]!!
@@ -49,7 +47,7 @@ class ParseContext(
     private fun ParseTree.asOutputsByName() = outputsByNamePattern.matchEntire(text)?.let { PathExpression.OutputsByNameExpression(location, it.groupValues[2], it.groupValues[4]) }
     private fun ParseTree.asOutputsByKey() = outputsByKeyPattern.matchEntire(text)?.let { PathExpression.OutputsByKeyExpression(location, it.groupValues[1], it.groupValues[2]) }
 
-    fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, nestedMethods, emphasisedMethods)
+    fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, nestedMethods)
 
     internal fun ExpandableSentence.asExpandableSentenceWithArguments() = ExpandableSentenceWithArguments(location, name, sentences)
     internal fun ExpandableValue.asExpandableValueWithArguments() = ExpandableValueWithArguments(location, name, style, headers)

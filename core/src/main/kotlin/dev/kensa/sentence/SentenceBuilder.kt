@@ -2,7 +2,6 @@ package dev.kensa.sentence
 
 import dev.kensa.RenderedValueStyle
 import dev.kensa.RenderedValueStyle.Tabular
-import dev.kensa.parse.EmphasisDescriptor
 import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent
 import dev.kensa.parse.LocatedEvent.*
@@ -32,7 +31,6 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
         val templateToken = ExpandableTemplateToken(
             scannedPlaceholder(placeholder),
-            EmphasisDescriptor.Default,
             setOf(Expandable),
             name = placeholder,
             expandableTokens = sentences.map { it.tokens }
@@ -60,6 +58,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
                 expandableTokens = emptyList()
             )
         }
+
         pushExpandable(location, token)
     }
 
@@ -94,19 +93,19 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
                 is OutputsByNameExpression -> event.asSentenceToken(OutputsValueByName)
                 is StringLiteral -> {
                     if (dictionary.isAcronym(event.value)) {
-                        SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(StringLiteral, Type.Acronym))
+                        SimpleTemplateToken(event.value, setOf(StringLiteral, Type.Acronym))
                     } else {
-                        SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(StringLiteral))
+                        SimpleTemplateToken(event.value, setOf(StringLiteral))
                     }
                 }
 
-                is Identifier -> SimpleTemplateToken(event.name, event.emphasis, setOf(Identifier))
-                is Operator -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Operator))
-                is NullLiteral -> SimpleTemplateToken("null", EmphasisDescriptor.Default, setOf(NullLiteral))
-                is NumberLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(NumberLiteral))
-                is CharacterLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(CharacterLiteral))
-                is BooleanLiteral -> SimpleTemplateToken(event.value, EmphasisDescriptor.Default, setOf(BooleanLiteral))
-                is Note -> SimpleTemplateToken(event.text, EmphasisDescriptor.Default, setOf(Note))
+                is Identifier -> SimpleTemplateToken(event.name, setOf(Identifier))
+                is Operator -> SimpleTemplateToken(event.text, setOf(Operator))
+                is NullLiteral -> SimpleTemplateToken("null", setOf(NullLiteral))
+                is NumberLiteral -> SimpleTemplateToken(event.value, setOf(NumberLiteral))
+                is CharacterLiteral -> SimpleTemplateToken(event.value, setOf(CharacterLiteral))
+                is BooleanLiteral -> SimpleTemplateToken(event.value, setOf(BooleanLiteral))
+                is Note -> SimpleTemplateToken(event.text, setOf(Note))
 
                 else -> null
             }
@@ -150,7 +149,6 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
                 val last = tokens[lastIndex]
                 val merged = SimpleTemplateToken(
                     template = last.template + "\n" + event.text,
-                    emphasis = last.emphasis,
                     types = last.types
                 )
                 tokens[lastIndex] = merged
@@ -165,22 +163,22 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
     fun appendFixturesValue(location: Location, name: String, path: String) {
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(FixturesValue)))
+        tokens.add(SimpleTemplateToken("$name:$path", types = setOf(FixturesValue)))
     }
 
     fun appendOutputsByNameValue(location: Location, name: String, path: String) {
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(OutputsValueByName)))
+        tokens.add(SimpleTemplateToken("$name:$path", types = setOf(OutputsValueByName)))
     }
 
     fun appendOutputsByKeyValue(location: Location, name: String, path: String) {
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        tokens.add(SimpleTemplateToken("$name:$path", EmphasisDescriptor.Default, types = setOf(OutputsValueByKey)))
+        tokens.add(SimpleTemplateToken("$name:$path", types = setOf(OutputsValueByKey)))
     }
 
     fun append(location: Location, event: RenderedValue) {
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        tokens.add(RenderedValueToken(event.name, EmphasisDescriptor.Default))
+        tokens.add(RenderedValueToken(event.name))
     }
 
     fun append(event: ChainedCallExpression) {
@@ -202,7 +200,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
         val (scanned, indices) = scanner.scan(event.name, isFirstInSentence())
         indices.forEach { index: Index ->
-            tokens.append(valueFor(index, scanned.substring(index.start, index.end)), index.type, emphasis = index.emphasis ?: event.emphasis)
+            tokens.append(valueFor(index, scanned.substring(index.start, index.end)), index.type)
         }
     }
 
@@ -253,13 +251,13 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
     private fun appendNamedValue(event: LocatedEvent, name: String, tokenType: Type) {
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
-        tokens.add(SimpleTemplateToken("$name:", EmphasisDescriptor.Default, types = setOf(tokenType)))
+        tokens.add(SimpleTemplateToken("$name:", types = setOf(tokenType)))
     }
 
-    private fun PathExpression.asSentenceToken(tokenType: Type) = SimpleTemplateToken("${name}:${path}", EmphasisDescriptor.Default, types = setOf(tokenType))
+    private fun PathExpression.asSentenceToken(tokenType: Type) = SimpleTemplateToken("${name}:${path}", types = setOf(tokenType))
 
-    private fun MutableList<TemplateToken>.append(value: String, vararg tokenTypes: Type, emphasis: EmphasisDescriptor = EmphasisDescriptor.Default) {
-        add(SimpleTemplateToken(value, emphasis = emphasis, types = setOf(*tokenTypes)))
+    private fun MutableList<TemplateToken>.append(value: String, vararg tokenTypes: Type) {
+        add(SimpleTemplateToken(value, types = setOf(*tokenTypes)))
     }
 
     companion object {

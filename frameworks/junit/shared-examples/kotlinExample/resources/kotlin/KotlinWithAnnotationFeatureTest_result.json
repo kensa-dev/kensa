@@ -22,7 +22,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 35,
+              "lineNumber": 32,
               "tokens": [
                 {
                   "types": [
@@ -39,7 +39,7 @@
               ]
             },
             {
-              "lineNumber": 37,
+              "lineNumber": 34,
               "tokens": [
                 {
                   "types": [
@@ -56,7 +56,7 @@
               ]
             },
             {
-              "lineNumber": 39,
+              "lineNumber": 36,
               "tokens": [
                 {
                   "types": [
@@ -111,7 +111,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 44,
+              "lineNumber": 41,
               "tokens": [
                 {
                   "types": [
@@ -128,7 +128,7 @@
               ]
             },
             {
-              "lineNumber": 46,
+              "lineNumber": 43,
               "tokens": [
                 {
                   "types": [
@@ -152,7 +152,7 @@
               ]
             },
             {
-              "lineNumber": 48,
+              "lineNumber": 45,
               "tokens": [
                 {
                   "types": [
@@ -207,7 +207,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 53,
+              "lineNumber": 50,
               "tokens": [
                 {
                   "types": [
@@ -230,7 +230,7 @@
               ]
             },
             {
-              "lineNumber": 55,
+              "lineNumber": 52,
               "tokens": [
                 {
                   "types": [
@@ -254,7 +254,7 @@
               ]
             },
             {
-              "lineNumber": 57,
+              "lineNumber": 54,
               "tokens": [
                 {
                   "types": [
@@ -294,83 +294,6 @@
       ]
     },
     {
-      "elapsedTime": "",
-      "testMethod": "testWithEmphasis",
-      "displayName": "Test With Emphasis",
-      "notes": null,
-      "issues": [],
-      "state": "Passed",
-      "autoOpenTab": "None",
-      "invocations": [
-        {
-          "elapsedTime": "",
-          "highlights": [
-            "givensViaHighlight"
-          ],
-          "sentences": [
-            {
-              "lineNumber": 62,
-              "tokens": [
-                {
-                  "types": [
-                    "tk-kw"
-                  ],
-                  "value": "When"
-                },
-                {
-                  "types": [
-                    "has-background-danger",
-                    "has-text-light",
-                    "has-text-weight-bold",
-                    "is-italic",
-                    "is-uppercase",
-                    "tk-wd"
-                  ],
-                  "value": "some action with emphasis"
-                }
-              ]
-            },
-            {
-              "lineNumber": 64,
-              "tokens": [
-                {
-                  "types": [
-                    "tk-kw"
-                  ],
-                  "value": "Then"
-                },
-                {
-                  "types": [
-                    "tk-wd"
-                  ],
-                  "value": "the extracted value equal to"
-                },
-                {
-                  "types": [
-                    "tk-fv"
-                  ],
-                  "value": "aStringValue"
-                }
-              ]
-            }
-          ],
-          "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
-          "capturedInteractions": [],
-          "capturedOutputs": [],
-          "fixtures": [],
-          "sequenceDiagram": null,
-          "state": "Passed",
-          "executionException": {},
-          "displayName": "testWithEmphasis()"
-        }
-      ]
-    },
-    {
       "elapsedTime": "1 Ms",
       "testMethod": "testWithSimpleFunctionSentenceValue",
       "displayName": "Test With Simple Function Sentence Value",
@@ -386,7 +309,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 69,
+              "lineNumber": 59,
               "tokens": [
                 {
                   "types": [
@@ -441,7 +364,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 74,
+              "lineNumber": 64,
               "tokens": [
                 {
                   "types": [
@@ -496,7 +419,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 79,
+              "lineNumber": 69,
               "tokens": [
                 {
                   "types": [
@@ -551,7 +474,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 85,
+              "lineNumber": 75,
               "tokens": [
                 {
                   "types": [
@@ -599,7 +522,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 85,
+              "lineNumber": 75,
               "tokens": [
                 {
                   "types": [
@@ -658,7 +581,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 90,
+              "lineNumber": 80,
               "tokens": [
                 {
                   "types": [
@@ -713,7 +636,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 96,
+              "lineNumber": 86,
               "tokens": [
                 {
                   "types": [
@@ -772,7 +695,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 101,
+              "lineNumber": 91,
               "tokens": [
                 {
                   "types": [

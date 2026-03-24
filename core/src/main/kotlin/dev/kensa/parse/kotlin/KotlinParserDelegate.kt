@@ -1,7 +1,6 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.*
-import dev.kensa.parse.ParserDelegate.Companion.emphasisedMethodAnnotationNames
 import dev.kensa.parse.ParserDelegate.Companion.expandableSentenceAnnotationNames
 import dev.kensa.util.SourceCode
 import dev.kensa.util.isKotlinClass
@@ -31,7 +30,6 @@ class KotlinParserDelegate(
     override fun Class<out Any>.findMethodDeclarations(): MethodDeclarations {
         val testFunctions = mutableListOf<MethodDeclarationContext>()
         val expandableSentenceFunctions = mutableListOf<MethodDeclarationContext>()
-        val emphasisedFunctions = mutableListOf<MethodDeclarationContext>()
 
         // TODO : Need to test with nested classes as this probably won't work...
         val sourceStream = sourceCode.sourceStreamFor(this)
@@ -46,11 +44,11 @@ class KotlinParserDelegate(
             }
 
             forEach {
-                assignDeclarations(testFunctions, expandableSentenceFunctions, emphasisedFunctions)(it)
+                assignDeclarations(testFunctions, expandableSentenceFunctions)(it)
             }
         }
 
-        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testFunctions, expandableSentenceFunctions, emphasisedFunctions)))
+        return MethodDeclarations(mapOf(this to ClassDeclarations(imports, testFunctions, expandableSentenceFunctions)))
     }
 
     override fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters {
@@ -74,12 +72,10 @@ class KotlinParserDelegate(
 
     private fun assignDeclarations(
         testFunctions: MutableList<MethodDeclarationContext>,
-        expandableSentenceFunctions: MutableList<MethodDeclarationContext>,
-        emphasisedFunctions: MutableList<MethodDeclarationContext>
+        expandableSentenceFunctions: MutableList<MethodDeclarationContext>
     ): (KotlinParser.FunctionDeclarationContext) -> Unit = { fd ->
         testFunctions.takeIf { isTest(fd) }?.add(KotlinMethodDeclarationContext(fd))
         expandableSentenceFunctions.takeIf { fd.isAnnotatedAsExpandableSentence() }?.add(KotlinMethodDeclarationContext(fd))
-        emphasisedFunctions.takeIf { fd.isAnnotatedAsEmphasised() }?.add(KotlinMethodDeclarationContext(fd))
     }
 
     private fun CharStream.compilationUnit(): KotlinParser.KotlinFileContext =
@@ -90,8 +86,6 @@ class KotlinParserDelegate(
         }.kotlinFile()
 
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsExpandableSentence(): Boolean = findAnnotationNames().any { name -> expandableSentenceAnnotationNames.contains(name) }
-
-    private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsEmphasised(): Boolean = findAnnotationNames().any { name -> emphasisedMethodAnnotationNames.contains(name) }
 
     companion object {
         fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> {

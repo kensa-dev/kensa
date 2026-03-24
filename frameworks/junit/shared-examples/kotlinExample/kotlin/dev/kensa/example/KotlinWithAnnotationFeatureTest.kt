@@ -2,9 +2,6 @@ package dev.kensa.example
 
 import com.natpryce.hamkrest.equalTo
 import dev.kensa.*
-import dev.kensa.Colour.BackgroundDanger
-import dev.kensa.Colour.TextLight
-import dev.kensa.TextStyle.*
 import dev.kensa.fixture.MyScenario
 import dev.kensa.fixture.MyScenarioHolder
 import dev.kensa.hamkrest.WithHamkrest
@@ -15,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource
 
 class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
 
-    @dev.kensa.Highlight
+    @Highlight
     private val highlightMe = "givensViaHighlight"
 
     @RenderedValue
@@ -53,13 +50,6 @@ class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
         given(somePrerequisitesWith("noHighlight"))
 
         whenever(someActionWith(highlightMe))
-
-        then(theExtractedValue(), equalTo(aValue))
-    }
-
-    @Test
-    fun testWithEmphasis() {
-        whenever(someActionWithEmphasis())
 
         then(theExtractedValue(), equalTo(aValue))
     }
@@ -124,9 +114,6 @@ class KotlinWithAnnotationFeatureTest : KotlinExampleTest(), WithHamkrest {
 
     private fun someAction() = Action<ActionContext> {}
     private fun someActionWith(value: String) = Action<ActionContext> {}
-
-    @dev.kensa.Emphasise(textStyles = [TextWeightBold, Italic, Uppercase], textColour = TextLight, backgroundColor = BackgroundDanger)
-    private fun someActionWithEmphasis() = Action<ActionContext> {}
 
     companion object {
         @JvmStatic

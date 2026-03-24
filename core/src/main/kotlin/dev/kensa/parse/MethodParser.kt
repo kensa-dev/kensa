@@ -13,15 +13,13 @@ import kotlin.reflect.KClass
 class ClassDeclarations(
     val imports: Imports,
     val testMethods: List<MethodDeclarationContext> = emptyList(),
-    val nestedMethods: List<MethodDeclarationContext> = emptyList(),
-    val emphasisedMethods: List<MethodDeclarationContext> = emptyList()
+    val nestedMethods: List<MethodDeclarationContext> = emptyList()
 ) {
     operator fun plus(other: ClassDeclarations): ClassDeclarations =
         ClassDeclarations(
             imports + other.imports,
             testMethods + other.testMethods,
-            nestedMethods + other.nestedMethods,
-            emphasisedMethods + other.emphasisedMethods
+            nestedMethods + other.nestedMethods
         )
 }
 
@@ -42,9 +40,6 @@ class MethodDeclarations(val declarationsByClass: Map<Class<*>, ClassDeclaration
 
     val nestedMethods: List<MethodDeclarationContext>
         get() = declarationsByClass.values.flatMap { it.nestedMethods }
-
-    val emphasisedMethods: List<MethodDeclarationContext>
-        get() = declarationsByClass.values.flatMap { it.emphasisedMethods }
 
     fun findTestMethodDeclaration(method: Method): Pair<Int, MethodDeclarationContext> {
         val declarations = declarationsByClass[method.declaringClass]
@@ -92,16 +87,13 @@ class MethodParser(
                     method.prepareParameters(testMethodDeclaration.parameterNamesAndTypes)
                 }
 
-                val emphasisedMethods = cache.getOrPutEmphasisedMethods(testClass) {
-                    prepareEmphasisedMethods(testClass, methodDeclarations.emphasisedMethods)
-                }
                 val methods = cache.getOrPutMethods(testClass) {
                     relatedClasses.fold(mutableMapOf()) { acc, clazz ->
                         acc.apply { putAll(clazz.prepareMethods()) }
                     }
                 }
                 val nestedMethods = testClass.prepareNestedMethods(methodDeclarations, ParseContext(properties, methods))
-                val testMethodSentences = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods, emphasisedMethods))
+                val testMethodSentences = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods))
 
                 ParsedMethod(
                     indexInSource,
@@ -165,15 +157,6 @@ class MethodParser(
             sentences
         }
 
-    private fun prepareEmphasisedMethods(testClass: Class<*>, emphasisedMethodDeclarations: List<MethodDeclarationContext>): Map<String, EmphasisDescriptor> =
-        emphasisedMethodDeclarations
-            .map { dc ->
-                testClass.findMethod(dc.name).findAnnotation<Emphasise>()!!.run {
-                    Pair(dc.name, EmphasisDescriptor(textStyles.toSet(), textColour, backgroundColor))
-                }
-            }
-            .associateBy({ it.first }, { it.second })
-
     private fun Class<*>.prepareMethods(): Map<String, MethodElementDescriptor> =
         allMethods
             .filter {
@@ -182,7 +165,6 @@ class MethodParser(
                     it.hasAnnotation<ExpandableRenderedValue>() ||
                     it.hasAnnotation<ExpandableSentence>() ||
                     it.hasAnnotation<NestedSentence>() ||
-                    it.hasAnnotation<Emphasise>() ||
                     it.hasAnnotation<Highlight>()
             }
             .map { ElementDescriptor.forMethod(it) }

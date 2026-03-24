@@ -66,7 +66,7 @@ class Dictionary {
                     val endExclusive = match.range.last + 1
                     val existing = matchesByStartIndex[start]
                     if (existing == null || existing.end < endExclusive) {
-                        matchesByStartIndex[start] = ProtectedPhraseMatch(start, endExclusive, protectedPhrase.emphasisDescriptor)
+                        matchesByStartIndex[start] = ProtectedPhraseMatch(start, endExclusive)
                     }
                 }
             }

@@ -22,7 +22,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 26,
+              "lineNumber": 23,
               "tokens": [
                 {
                   "types": [
@@ -39,7 +39,7 @@
               ]
             },
             {
-              "lineNumber": 28,
+              "lineNumber": 25,
               "tokens": [
                 {
                   "types": [
@@ -56,7 +56,7 @@
               ]
             },
             {
-              "lineNumber": 30,
+              "lineNumber": 27,
               "tokens": [
                 {
                   "types": [
@@ -111,7 +111,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 35,
+              "lineNumber": 32,
               "tokens": [
                 {
                   "types": [
@@ -134,7 +134,7 @@
               ]
             },
             {
-              "lineNumber": 37,
+              "lineNumber": 34,
               "tokens": [
                 {
                   "types": [
@@ -158,7 +158,7 @@
               ]
             },
             {
-              "lineNumber": 39,
+              "lineNumber": 36,
               "tokens": [
                 {
                   "types": [
@@ -199,83 +199,6 @@
     },
     {
       "elapsedTime": "",
-      "testMethod": "testWithEmphasis",
-      "displayName": "Test With Emphasis",
-      "notes": null,
-      "issues": [],
-      "state": "Passed",
-      "autoOpenTab": "None",
-      "invocations": [
-        {
-          "elapsedTime": "",
-          "highlights": [
-            "givensViaHighlight"
-          ],
-          "sentences": [
-            {
-              "lineNumber": 44,
-              "tokens": [
-                {
-                  "types": [
-                    "tk-kw"
-                  ],
-                  "value": "When"
-                },
-                {
-                  "types": [
-                    "has-background-danger",
-                    "has-text-light",
-                    "has-text-weight-bold",
-                    "is-italic",
-                    "is-uppercase",
-                    "tk-wd"
-                  ],
-                  "value": "some action with emphasis"
-                }
-              ]
-            },
-            {
-              "lineNumber": 46,
-              "tokens": [
-                {
-                  "types": [
-                    "tk-kw"
-                  ],
-                  "value": "Then"
-                },
-                {
-                  "types": [
-                    "tk-wd"
-                  ],
-                  "value": "the extracted value is"
-                },
-                {
-                  "types": [
-                    "tk-fv"
-                  ],
-                  "value": "aStringValue"
-                }
-              ]
-            }
-          ],
-          "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
-          "capturedInteractions": [],
-          "capturedOutputs": [],
-          "fixtures": [],
-          "sequenceDiagram": null,
-          "state": "Passed",
-          "executionException": {},
-          "displayName": "testWithEmphasis()"
-        }
-      ]
-    },
-    {
-      "elapsedTime": "",
       "testMethod": "testWithRenderedValueFunctionWithParameters",
       "displayName": "Test With Rendered Value Function With Parameters",
       "notes": null,
@@ -290,7 +213,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 51,
+              "lineNumber": 41,
               "tokens": [
                 {
                   "types": [
