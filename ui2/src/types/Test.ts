@@ -3,7 +3,7 @@ import {TabType} from "@/constants"
 export type NameAndValue = Record<string, string>
 export type NameAndValues = NameAndValue[]
 
-export type TestState = "Passed" | "Failed" | "Disabled"
+export type TestState = "Passed" | "Failed" | "Disabled" | "Not Executed"
 
 export interface TableData {
     type: 'table'
@@ -90,7 +90,7 @@ export interface TestDetail {
     displayName: string
     state: TestState
     notes: string | null
-    minimumUniquePackageName: string
+    packageName: string
     issues: string[]
     tests: Test[]
 }

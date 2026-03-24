@@ -4,10 +4,11 @@ import dev.kensa.*
 import dev.kensa.state.TestInvocationFactory
 import dev.kensa.state.TestMethodContainer
 import dev.kensa.state.TestState
-import dev.kensa.util.*
+import dev.kensa.util.derivedTestName
+import dev.kensa.util.findAnnotation
+import dev.kensa.util.unCamel
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
-import java.util.LinkedHashMap
 
 class TestContainerFactory(
     private val initialStateFor: (AnnotatedElement) -> TestState,
@@ -17,7 +18,7 @@ class TestContainerFactory(
     private val configuration: Configuration
 ) {
 
-    fun createFor(testClass: Class<*>, displayName: String, commonBasePackage: String = ""): TestContainer =
+    fun createFor(testClass: Class<*>, displayName: String): TestContainer =
         testClass.run {
             TestContainer(
                 this,
@@ -25,7 +26,6 @@ class TestContainerFactory(
                 createMethodContainers(),
                 notes(),
                 issues(),
-                deriveMinimumUniquePackageName(commonBasePackage),
             )
         }
 
@@ -54,17 +54,4 @@ class TestContainerFactory(
     private fun AnnotatedElement.notes(): String? = findAnnotation<Notes>()?.value
 
     private fun AnnotatedElement.issues(): List<String> = findAnnotation<Issue>()?.value?.toList() ?: emptyList()
-
-    private fun <T> Class<T>.deriveMinimumUniquePackageName(commonBasePackage: String): String =
-        commonBasePackage
-            .takeIf { it.isNotBlank() and packageName.startsWith(it) }
-            ?.let { packageName.replaceFirst(it, "") }
-            ?.removeLeadingDots()
-            ?: packageName
-
-    private fun String.removeLeadingDots(): String = replace(greedyDotRegex, "")
-
-    companion object {
-        private val greedyDotRegex = Regex("^\\.+")
-    }
 }

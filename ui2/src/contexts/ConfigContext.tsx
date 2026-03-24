@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Section } from '@/constants';
+import {Section} from '@/constants';
 
 export interface KensaConfig {
     titleText: string;
     issueTrackerUrl: string;
     acronyms: Record<string, string>;
-    packageDisplayMode: string;
+    packageDisplay: string;
+    packageDisplayRoot?: string;
     sectionOrder: string[];
     alwaysExpandNotes: boolean;
     kensaVersion?: string;
@@ -17,7 +18,7 @@ export const DEFAULT_CONFIG: KensaConfig = {
     titleText: "Kensa",
     issueTrackerUrl: "",
     acronyms: {},
-    packageDisplayMode: "ShowFullPackage",
+    packageDisplay: "HideCommonPackages",
     sectionOrder: [Section.Tabs, Section.Sentences, Section.Exception],
     alwaysExpandNotes: false
 };

@@ -85,7 +85,6 @@ dependencies {
     implementation(libs.junit6JupiterParams)
     implementation(libs.junit6JupiterApi)
     implementation(libs.junit6JupiterEngine)
-    // TODO - Remove when package stuff not reliant on JUnit
     implementation(libs.junit6PlatformLauncher)
 
     testRuntimeOnly(sourceSets["javaExample"].output)
@@ -109,6 +108,7 @@ dependencies {
     "testSupportApi"(libs.junit6JupiterParams)
     "testSupportApi"(libs.junit6PlatformTestKit)
     "testSupportApi"(libs.junit6PlatformEngine)
+    "testSupportApi"(libs.junit6PlatformLauncher)
 
     "javaTestImplementation"(project(":framework-junit6")) {
         capabilities {

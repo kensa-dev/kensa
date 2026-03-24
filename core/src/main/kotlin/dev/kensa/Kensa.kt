@@ -11,7 +11,6 @@ import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.Keyword
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.state.SetupStrategy
-import dev.kensa.state.TestInvocation
 import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.atn.PredictionMode
 import java.net.URI
@@ -80,6 +79,7 @@ class KensaConfigurator(private val configuration: Configuration) {
 
     fun withFlattenOutputPackages(value: Boolean): KensaConfigurator = apply { configuration.flattenOutputPackages = value }
     fun withPackageDisplayMode(packageDisplay: PackageDisplay): KensaConfigurator = apply { configuration.packageDisplay = packageDisplay }
+    fun withPackageDisplayRoot(root: String): KensaConfigurator = apply { configuration.packageDisplayRoot = root }
 
     fun withSourceLocations(vararg locations: Path): KensaConfigurator = apply { configuration.sourceLocations = locations.toList() }
 }
@@ -140,6 +140,7 @@ class Configuration {
     var autoOpenTab: Tab = Tab.None
     var autoExpandNotes: Boolean = false
     var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
+    var packageDisplayRoot: String? = null
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
     var titleText: String = "Index"
 

@@ -1,34 +1,27 @@
 package dev.kensa.junit
 
-import dev.kensa.util.findCommonPackage
+import dev.kensa.context.KensaLifecycleManager
+import dev.kensa.util.hasAnnotation
+import org.junit.jupiter.api.Disabled
 import org.junit.platform.engine.support.descriptor.ClassSource
 import org.junit.platform.launcher.TestExecutionListener
 import org.junit.platform.launcher.TestIdentifier
 import org.junit.platform.launcher.TestPlan
 
-/**
- * Shares data between the Launcher's TestExecutionListener and
- * the KensaExtension.
- */
-object TestPlanDetails {
-    var commonBasePackage: String = ""
-}
-
 class KensaTestExecutionListener : TestExecutionListener {
+
     override fun testPlanExecutionStarted(testPlan: TestPlan) {
-        testPlan.also {
-            TestPlanDetails.commonBasePackage = determineCommonBasePackageFor(it)
-        }
+        KensaLifecycleManager.initialise(junit6Descriptor)
     }
 
-    private fun determineCommonBasePackageFor(testPlan: TestPlan): String =
-        testPlan
-            .roots
-            .flatMap(testPlan::getChildren)
-            .filter(TestIdentifier::isContainer)
-            .filter { it.source.isPresent }
-            .map { it.source.get() }
-            .filterIsInstance<ClassSource>()
-            .mapNotNull { it.className.substringBeforeLast('.').ifEmpty { null } }
-            .let { packages -> if (packages.isEmpty()) "" else findCommonPackage(packages) }
+    override fun executionSkipped(identifier: TestIdentifier, reason: String) {
+        val source = identifier.source.orElse(null) as? ClassSource ?: return
+        val testClass = runCatching { Class.forName(source.className) }.getOrNull() ?: return
+        if (!testClass.hasAnnotation<Disabled>()) return
+        KensaLifecycleManager.current()?.skipClass(testClass, identifier.displayName)
+    }
+
+    override fun testPlanExecutionFinished(testPlan: TestPlan) {
+        KensaLifecycleManager.current()?.writeAllResults()
+    }
 }

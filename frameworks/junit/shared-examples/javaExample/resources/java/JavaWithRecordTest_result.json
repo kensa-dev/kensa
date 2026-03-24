@@ -3,8 +3,8 @@
   "displayName": "Java With Record Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "example",
   "issues": [],
+  "packageName": "dev.kensa.example",
   "tests": [
     {
       "elapsedTime": "",

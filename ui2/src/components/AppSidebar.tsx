@@ -693,6 +693,7 @@ interface RecursiveMenuItemProps {
 }
 
 const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById, testMethodMap, matchingMethodsMap}: RecursiveMenuItemProps) {
+    const {packageDisplay, packageDisplayRoot} = useConfig();
     const isSelected = selectedId === node.id;
 
     const iconTone =
@@ -700,7 +701,9 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
             ? "text-failure"
             : node.state === "Passed"
                 ? "text-success"
-                : "text-muted-foreground/70";
+                : node.state === "Disabled" && node.type === "test"
+                    ? "text-disabled opacity-70"
+                    : "text-muted-foreground/70";
 
     const childCounts = node.id ? stateCountsById.get(node.id) ?? null : null;
 
@@ -710,7 +713,7 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                 node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
                 iconTone={iconTone} childCounts={childCounts}
                 labelClassName="text-[13px] font-bold text-foreground"
-                children={buildTree(node.children || [])}
+                children={buildTree(node.children || [], packageDisplay, packageDisplayRoot)}
                 testMethodMap={testMethodMap}
                 matchingMethodsMap={matchingMethodsMap}
             />

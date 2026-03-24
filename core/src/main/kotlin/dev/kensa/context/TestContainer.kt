@@ -2,7 +2,7 @@ package dev.kensa.context
 
 import dev.kensa.state.TestMethodContainer
 import dev.kensa.state.TestState
-import dev.kensa.state.TestState.NotExecuted
+import dev.kensa.state.TestState.*
 import java.lang.reflect.Method
 import java.util.*
 
@@ -12,16 +12,20 @@ class TestContainer(
     val methodContainers: Map<Method, TestMethodContainer>,
     val notes: String?,
     val issues: List<String>,
-    val minimumUniquePackageName: String
 ) {
 
     val orderedMethodContainers: List<TestMethodContainer> by lazy { methodContainers.values.sortedBy { it.indexInSource } }
 
     val state: TestState
-        get() = methodContainers.values
-            .fold(NotExecuted) { state, invocationData ->
-                state.overallStateFrom(invocationData.state)
+        get() {
+            val states = methodContainers.values.map { it.state }
+            return when {
+                states.any { it == Failed } -> Failed
+                states.any { it == Passed } -> Passed
+                states.all { it == Disabled } -> Disabled
+                else -> NotExecuted
             }
+        }
 
     fun <T> transform(transformer: (TestContainer) -> T): T = transformer(this)
 

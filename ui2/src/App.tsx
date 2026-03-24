@@ -1,27 +1,19 @@
-import {useState, useEffect, useRef, useMemo} from 'react';
-import {Beaker, Loader2, Moon, Sun, PanelLeft} from 'lucide-react';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import {Beaker, Loader2, Moon, PanelLeft, Sun} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar';
-import {SidebarProvider, SidebarInset} from "@/components/ui/sidebar";
+import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import {cn, loadJson, useNavigateWithSearch} from "@/lib/utils";
+import {cn, isNative, loadJson, useNavigateWithSearch} from "@/lib/utils";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
 import {useLocation, useSearchParams} from 'react-router-dom';
-import {isNative} from '@/lib/utils';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
 import {TestDetail} from "@/types/Test";
-import { IssueList } from './components/IssueList';
-import {
-    CommandDialog,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command"
+import {IssueList} from './components/IssueList';
+import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from "@/components/ui/command"
 import {Badge} from "@/components/ui/badge";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
-import { TestContainer } from './components/TestContainer';
+import {TestContainer} from './components/TestContainer';
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -381,7 +373,9 @@ const App = () => {
                                             ? "bg-emerald-500/10 border-emerald-500/30"
                                             : selectedIndex?.state === "Failed"
                                                 ? "bg-rose-500/10 border-rose-500/30"
-                                                : "bg-background/80 border-border"
+                                                : selectedIndex?.state === "Disabled"
+                                                    ? "bg-disabled/10 border-disabled/30"
+                                                    : "bg-background/80 border-border"
                                     )}
                                 >
                                     <div className="flex items-center gap-2">
