@@ -2,7 +2,6 @@ package dev.kensa.output
 
 import com.eclipsesource.json.Json
 import dev.kensa.Configuration
-import dev.kensa.Section
 import dev.kensa.Section.Tabs
 import dev.kensa.UiMode
 import dev.kensa.context.TestContainer
@@ -84,7 +83,8 @@ class ResultWriter(private val configuration: Configuration) {
                 .add("issueTrackerUrl", issueTrackerUrl.toString())
                 .add("acronyms", acronymsAsJson(dictionary.acronyms))
                 .add("flattenPackages", flattenOutputPackages)
-                .add("packageDisplayMode", packageDisplay.name)
+                .add("packageDisplay", packageDisplay.name)
+                .add("packageDisplayRoot", packageDisplayRoot)
                 .add("kensaVersion", kensaVersion)
                 .add("generatedAt", Instant.now().toString())
                 .add("sectionOrder", Json.array().apply {

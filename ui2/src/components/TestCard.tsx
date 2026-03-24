@@ -1,27 +1,30 @@
 import * as React from 'react';
-import { CheckCircle2, XCircle, CircleMinus, ChevronDown, ChevronRight } from 'lucide-react';
-import { cn } from "@/lib/utils";
-import { SectionRenderer } from './SectionRenderer';
-import { InvocationCard } from "@/components/InvocationCard";
-import { IssueBadge } from './IssueBadge';
+import {CheckCircle2, ChevronDown, ChevronRight, CircleMinus, XCircle} from 'lucide-react';
+import {cn} from "@/lib/utils";
+import {SectionRenderer} from './SectionRenderer';
+import {InvocationCard} from "@/components/InvocationCard";
+import {IssueBadge} from './IssueBadge';
 import {Invocation, Test, TestState} from "@/types/Test";
 
 const cardBorder: Record<TestState, string> = {
     Passed: "border-success/40",
     Failed: "border-failure/40",
     Disabled: "border-disabled/35",
+    "Not Executed": "border-border",
 };
 
 const headerBg: Record<TestState, string> = {
     Passed: "bg-success/[0.09] hover:bg-success/[0.14]",
     Failed: "bg-failure/[0.09] hover:bg-failure/[0.14]",
     Disabled: "bg-disabled/[0.09] hover:bg-disabled/[0.14]",
+    "Not Executed": "bg-muted/50",
 };
 
 const iconColor: Record<TestState, string> = {
     Passed: "text-success",
     Failed: "text-failure",
     Disabled: "text-disabled",
+    "Not Executed": "text-muted-foreground",
 };
 
 const StateIcon = ({ state, size = 16 }: { state: TestState; size?: number }) => {
@@ -35,6 +38,7 @@ const bodyBg: Record<TestState, string> = {
     Passed: "bg-success/[0.04] dark:bg-success/[0.08]",
     Failed: "bg-failure/[0.04] dark:bg-failure/[0.08]",
     Disabled: "bg-disabled/[0.04] dark:bg-disabled/[0.06]",
+    "Not Executed": "bg-muted/30",
 };
 
 interface TestCardProps {

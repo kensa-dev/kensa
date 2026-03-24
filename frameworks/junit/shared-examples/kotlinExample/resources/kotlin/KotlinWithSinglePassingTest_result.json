@@ -3,8 +3,8 @@
   "displayName": "Kotlin With Single Passing Test",
   "state": "Passed",
   "notes": null,
-  "minimumUniquePackageName": "example",
   "issues": [],
+  "packageName": "dev.kensa.example",
   "tests": [
     {
       "elapsedTime": "1 Ms",

@@ -17,11 +17,9 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.junit.platform.engine.TestExecutionResult
-import org.junit.platform.testkit.engine.EngineExecutionResults
+import org.junit.platform.launcher.listeners.TestExecutionSummary
 import kotlin.io.path.Path
 import kotlin.io.path.readText
-import kotlin.jvm.optionals.getOrNull
 
 internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
 
@@ -171,22 +169,14 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
 
     }
 
-    private fun EngineExecutionResults.verifyZeroFailures() {
-        val testEvents = testEvents()
-        val failCount = testEvents.failed().count()
-
+    private fun TestExecutionSummary.verifyZeroFailures() {
+        val failCount = totalFailureCount
         if (failCount > 0) {
-            val firstEvent = testEvents.failed().list().first()
-            val firstThrowable = firstEvent.getRequiredPayload(TestExecutionResult::class.java).throwable.getOrNull()
-
-            throw AssertionError(failureMessage(failCount, firstThrowable))
+            val firstThrowable = failures.firstOrNull()?.exception
+            throw AssertionError(
+                if (failCount == 1L) "There was 1 unexpected failure: ${firstThrowable?.message ?: "Unknown error"}"
+                else "There were $failCount unexpected failures, the first of which was: ${firstThrowable?.message ?: "Unknown error"}"
+            )
         }
     }
-
-    fun failureMessage(failCount: Long, firstThrowable: Throwable?): String =
-        if (failCount == 1L) {
-            "There was 1 unexpected failure: ${firstThrowable?.message ?: "Unknown error"}"
-        } else {
-            "There were $failCount unexpected failures, the first of which was: ${firstThrowable?.message ?: "Unknown error"}"
-        }
 }

@@ -6,6 +6,7 @@ const rowHover: Record<TestState, string> = {
     Passed: "hover:bg-success/10",
     Failed: "hover:bg-failure/10",
     Disabled: "hover:bg-disabled/10",
+    "Not Executed": "hover:bg-muted/10",
 };
 
 interface DataTableProps {

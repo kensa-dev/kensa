@@ -1,8 +1,18 @@
 package dev.kensa.junit
 
+import dev.kensa.context.FrameworkDescriptor
 import dev.kensa.parse.java.Java20Parser
 import dev.kensa.parse.kotlin.KotlinParser
 import dev.kensa.parse.kotlin.KotlinParserDelegate.Companion.findAnnotationNames
+import dev.kensa.state.TestState.NotExecuted
+import dev.kensa.util.findAnnotation
+import dev.kensa.util.findTestMethods
+import dev.kensa.util.hasAnnotation
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import dev.kensa.state.TestState.Disabled as DisabledState
 
 private val testAnnotationNames = listOf("Test", "org.junit.jupiter.api.Test", "ParameterizedTest", "org.junit.jupiter.params.ParameterizedTest")
 
@@ -24,3 +34,12 @@ fun Java20Parser.AnnotationContext?.hasTestAnnotation(): Boolean =
 val isKotlinTest: (KotlinParser.FunctionDeclarationContext) -> Boolean = { context ->
     context.findAnnotationNames().any { name -> testAnnotationNames.contains(name) }
 }
+
+val junit5Descriptor = FrameworkDescriptor(
+    initialStateFor = { md -> if (md.hasAnnotation<Disabled>()) DisabledState else NotExecuted },
+    displayNameFor = { md -> md.findAnnotation<DisplayName>()?.value },
+    findTestMethods = { cs -> cs.findTestMethods { it.hasAnnotation<Test>() || it.hasAnnotation<ParameterizedTest>() } },
+    isJavaClassTest = isJavaClassTest,
+    isJavaInterfaceTest = isJavaInterfaceTest,
+    isKotlinTest = isKotlinTest,
+)
