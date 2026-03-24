@@ -760,6 +760,7 @@ internal class KotlinFunctionParserTest {
         }
     }
 
+    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     @Nested
     inner class Parameters {
         @Test

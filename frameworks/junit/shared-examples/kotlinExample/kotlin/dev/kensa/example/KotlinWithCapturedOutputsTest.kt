@@ -1,11 +1,7 @@
 package dev.kensa.example
 
 import com.natpryce.hamkrest.equalTo
-import dev.kensa.Action
-import dev.kensa.ActionContext
-import dev.kensa.GivensContext
-import dev.kensa.RenderedValue
-import dev.kensa.StateCollector
+import dev.kensa.*
 import dev.kensa.example.KotlinCapturedOutputs.StringOutput
 import dev.kensa.example.MoreKotlinCapturedOutputs.BooleanOutput
 import dev.kensa.hamkrest.WithHamkrest

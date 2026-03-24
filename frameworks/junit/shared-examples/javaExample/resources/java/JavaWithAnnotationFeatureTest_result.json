@@ -82,9 +82,6 @@
           "parameters": [],
           "givens": [
             {
-              "foo": "bar"
-            },
-            {
               "highlightMe": "givensViaHighlight"
             }
           ],
@@ -186,9 +183,6 @@
           ],
           "parameters": [],
           "givens": [
-            {
-              "key_noHighlight": "noHighlight"
-            },
             {
               "highlightMe": "givensViaHighlight"
             }
@@ -321,9 +315,6 @@
           ],
           "parameters": [],
           "givens": [
-            {
-              "key_foo-bar": "foo-bar"
-            },
             {
               "highlightMe": "givensViaHighlight"
             }

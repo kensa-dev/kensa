@@ -2,34 +2,52 @@ package dev.kensa.hamcrest
 
 import dev.kensa.StateCollector
 import dev.kensa.StateExtractor
-import dev.kensa.context.TestContext
 import dev.kensa.context.TestContextHolder.testContext
 import org.hamcrest.Matcher
-import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
+import java.time.Duration
 
 interface WithHamcrest {
 
-    fun <T> then(extractor: StateExtractor<T?>, matcher: Matcher<in T?>) {
-        testContext().then(extractor, matcher)
+    @Deprecated("Use StateCollector instead of StateExtractor", ReplaceWith("then(extractor as StateCollector<T>, matcher)"))
+    fun <T> then(extractor: StateExtractor<T>, matcher: Matcher<in T>) {
+        assertThat(testContext().run { extractor.execute(interactions) }, matcher)
     }
 
-    fun <T> and(extractor: StateExtractor<T?>, matcher: Matcher<in T?>) {
+    @Deprecated("Use StateCollector instead of StateExtractor", ReplaceWith("and(extractor as StateCollector<T>, matcher)"))
+    fun <T> and(extractor: StateExtractor<T>, matcher: Matcher<in T>) {
         then(extractor, matcher)
     }
 
-    fun <T> then(collector: StateCollector<T?>, matcher: Matcher<in T?>) {
-        testContext().then(collector, matcher)
+    fun <T> then(extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        HamcrestThen.then(testContext(), extractor, matcher)
     }
 
-    fun <T> and(collector: StateCollector<T?>, matcher: Matcher<in T?>) {
-        then(collector, matcher)
+    fun <T> and(extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        then(extractor, matcher)
     }
-}
 
-private fun <T> TestContext.then(extractor: StateExtractor<T?>, matcher: Matcher<in T?>) {
-    MatcherAssert.assertThat(extractor.execute(interactions), matcher)
-}
+    fun <T> thenContinually(extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        HamcrestThen.thenContinually(testContext(), extractor, matcher)
+    }
 
-private fun <T> TestContext.then(collector: StateCollector<T?>, matcher: Matcher<in T?>) {
-    MatcherAssert.assertThat(collector.execute(collectorContext), matcher)
+    fun <T> thenContinually(duration: Duration, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        HamcrestThen.thenContinually(duration, testContext(), extractor, matcher)
+    }
+
+    fun <T> thenEventually(extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        HamcrestThen.thenEventually(testContext(), extractor, matcher)
+    }
+
+    fun <T> andEventually(extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        thenEventually(extractor, matcher)
+    }
+
+    fun <T> thenEventually(duration: Duration, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        HamcrestThen.thenEventually(duration, testContext(), extractor, matcher)
+    }
+
+    fun <T> thenEventually(initialDelay: Duration, duration: Duration, interval: Duration, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        HamcrestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, matcher)
+    }
 }

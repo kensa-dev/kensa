@@ -1,6 +1,7 @@
 package dev.kensa.example
 
-import dev.kensa.ActionUnderTest
+import dev.kensa.Action
+import dev.kensa.ActionContext
 
 class KotlinWithWhenever {
 
@@ -8,6 +9,6 @@ class KotlinWithWhenever {
         whenever(someActionIsPerformed())
     }
 
-    private fun whenever(action: ActionUnderTest) = Unit
-    private fun someActionIsPerformed() = ActionUnderTest { _, _ -> }
+    private fun whenever(action: Action<ActionContext>) = Unit
+    private fun someActionIsPerformed() = Action<ActionContext> { }
 }

@@ -1,12 +1,7 @@
 package dev.kensa.example
 
 import com.natpryce.hamkrest.equalTo
-import dev.kensa.Action
-import dev.kensa.ActionContext
-import dev.kensa.GivensContext
-import dev.kensa.ExpandableSentence
-import dev.kensa.RenderedValue
-import dev.kensa.StateCollector
+import dev.kensa.*
 import dev.kensa.fixture.FixtureRegistry.registerFixtures
 import dev.kensa.fixture.KotlinTestFixtures
 import dev.kensa.fixture.KotlinTestFixtures.ChildStringFixture

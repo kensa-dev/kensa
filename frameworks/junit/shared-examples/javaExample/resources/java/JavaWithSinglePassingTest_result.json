@@ -20,7 +20,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 20,
+              "lineNumber": 17,
               "tokens": [
                 {
                   "types": [
@@ -37,7 +37,7 @@
               ]
             },
             {
-              "lineNumber": 22,
+              "lineNumber": 19,
               "tokens": [
                 {
                   "types": [
@@ -54,7 +54,7 @@
               ]
             },
             {
-              "lineNumber": 24,
+              "lineNumber": 21,
               "tokens": [
                 {
                   "types": [
@@ -78,11 +78,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

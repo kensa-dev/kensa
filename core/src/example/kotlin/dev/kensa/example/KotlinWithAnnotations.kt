@@ -1,8 +1,9 @@
 package dev.kensa.example
 
+import dev.kensa.Action
 import dev.kensa.DummyAssert.Companion.assertThat
 import dev.kensa.ExpandableSentence
-import dev.kensa.GivensBuilder
+import dev.kensa.GivensContext
 import dev.kensa.Highlight
 import dev.kensa.RenderedValue
 import dev.kensa.SomeBuilder.Companion.someBuilder
@@ -35,7 +36,7 @@ class KotlinWithAnnotations {
     }
 
     @ExpandableSentence
-    private fun nested1(): GivensBuilder {
+    private fun nested1(): Action<GivensContext> {
         return someBuilder()
             .withSomething()
             .build()

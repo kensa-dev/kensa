@@ -56,35 +56,33 @@ public class JavaWithAnnotationFeatureTest extends JavaExampleTest implements Wi
         return String.format("%s-%s", one, two);
     }
 
-    private StateExtractor<String> theExtractedValue() {
-        return interactions -> aValue;
+    private StateCollector<String> theExtractedValue() {
+        return context -> aValue;
     }
 
-    private GivensBuilder somePrerequisites() {
-        return (givens) -> givens.put("foo", "bar");
-    }
-
-    private GivensBuilder somePrerequisitesWith(String... values) {
-        return (givens) -> {
-            for (String value : values) {
-                givens.put("key_" + value, value);
-            }
+    private Action<GivensContext> somePrerequisites() {
+        return (context) -> {
         };
     }
 
-    private ActionUnderTest someAction() {
-        return (givens, interactions) -> {
+    private Action<GivensContext> somePrerequisitesWith(String... values) {
+        return (context) -> {
         };
     }
 
-    private ActionUnderTest someActionWith(String value) {
-        return (givens, interactions) -> {
+    private Action<ActionContext> someAction() {
+        return (context) -> {
+        };
+    }
+
+    private Action<ActionContext> someActionWith(String value) {
+        return (context) -> {
         };
     }
 
     @Emphasise(textStyles = {TextWeightBold, Italic, Uppercase}, textColour = TextLight, backgroundColor = BackgroundDanger)
-    private ActionUnderTest someActionWithEmphasis() {
-        return (givens, interactions) -> {
+    private Action<ActionContext> someActionWithEmphasis() {
+        return (context) -> {
         };
     }
 }

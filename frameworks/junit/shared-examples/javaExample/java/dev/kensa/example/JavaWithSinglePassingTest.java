@@ -1,9 +1,6 @@
 package dev.kensa.example;
 
-import dev.kensa.ActionUnderTest;
-import dev.kensa.GivensBuilder;
-import dev.kensa.RenderedValue;
-import dev.kensa.StateExtractor;
+import dev.kensa.*;
 import dev.kensa.hamcrest.WithHamcrest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -25,16 +22,16 @@ public class JavaWithSinglePassingTest extends JavaExampleTest implements WithHa
     }
 
     @NotNull
-    private StateExtractor<String> theExtractedValue() {
-        return interactions -> aValue;
+    private StateCollector<String> theExtractedValue() {
+        return context -> aValue;
     }
 
-    private GivensBuilder somePrerequisites() {
-        return (givens) -> givens.put("foo", "bar");
+    private Action<GivensContext> somePrerequisites() {
+        return (context) -> {};
     }
 
-    private ActionUnderTest someAction() {
-        return (givens, interactions) -> {
+    private Action<ActionContext> someAction() {
+        return (context) -> {
         };
     }
 }

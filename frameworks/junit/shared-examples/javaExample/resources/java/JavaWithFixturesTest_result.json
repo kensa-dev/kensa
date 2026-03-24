@@ -20,7 +20,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 29,
+              "lineNumber": 30,
               "tokens": [
                 {
                   "types": [
@@ -37,7 +37,7 @@
               ]
             },
             {
-              "lineNumber": 31,
+              "lineNumber": 32,
               "tokens": [
                 {
                   "types": [
@@ -60,7 +60,7 @@
               ]
             },
             {
-              "lineNumber": 32,
+              "lineNumber": 33,
               "tokens": [
                 {
                   "types": [
@@ -84,11 +84,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "parent1"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -120,7 +116,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 37,
+              "lineNumber": 38,
               "tokens": [
                 {
                   "types": [
@@ -137,7 +133,7 @@
               ]
             },
             {
-              "lineNumber": 39,
+              "lineNumber": 40,
               "tokens": [
                 {
                   "types": [
@@ -160,7 +156,7 @@
               ]
             },
             {
-              "lineNumber": 40,
+              "lineNumber": 41,
               "tokens": [
                 {
                   "types": [
@@ -196,11 +192,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "parent2"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -232,7 +224,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 45,
+              "lineNumber": 46,
               "tokens": [
                 {
                   "types": [

@@ -40,19 +40,7 @@
                         "types": [
                           "tk-wd"
                         ],
-                        "value": "givens givens put"
-                      },
-                      {
-                        "types": [
-                          "tk-sl"
-                        ],
-                        "value": "foo"
-                      },
-                      {
-                        "types": [
-                          "tk-sl"
-                        ],
-                        "value": "bar"
+                        "value": "context"
                       }
                     ]
                   ]
@@ -125,11 +113,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -174,19 +158,7 @@
                         "types": [
                           "tk-wd"
                         ],
-                        "value": "givens givens put"
-                      },
-                      {
-                        "types": [
-                          "tk-sl"
-                        ],
-                        "value": "foo"
-                      },
-                      {
-                        "types": [
-                          "tk-sl"
-                        ],
-                        "value": "bar"
+                        "value": "context"
                       }
                     ]
                   ]
@@ -277,11 +249,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -326,19 +294,7 @@
                         "types": [
                           "tk-wd"
                         ],
-                        "value": "givens givens put"
-                      },
-                      {
-                        "types": [
-                          "tk-sl"
-                        ],
-                        "value": "foo"
-                      },
-                      {
-                        "types": [
-                          "tk-sl"
-                        ],
-                        "value": "bar"
+                        "value": "context"
                       }
                     ]
                   ]
@@ -423,11 +379,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "foo": "bar"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

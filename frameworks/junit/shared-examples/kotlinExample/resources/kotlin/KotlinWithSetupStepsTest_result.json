@@ -20,7 +20,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 29,
+              "lineNumber": 28,
               "tokens": [
                 {
                   "types": [
@@ -37,7 +37,7 @@
               ]
             },
             {
-              "lineNumber": 31,
+              "lineNumber": 30,
               "tokens": [
                 {
                   "types": [
@@ -61,11 +61,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "key": "aStringValue"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -90,7 +86,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 36,
+              "lineNumber": 35,
               "tokens": [
                 {
                   "types": [
@@ -107,7 +103,7 @@
               ]
             },
             {
-              "lineNumber": 38,
+              "lineNumber": 37,
               "tokens": [
                 {
                   "types": [
@@ -130,7 +126,7 @@
               ]
             },
             {
-              "lineNumber": 39,
+              "lineNumber": 38,
               "tokens": [
                 {
                   "types": [
@@ -154,14 +150,7 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "key": "aStringValue"
-            },
-            {
-              "key2": "aStringValue2"
-            }
-          ],
+          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

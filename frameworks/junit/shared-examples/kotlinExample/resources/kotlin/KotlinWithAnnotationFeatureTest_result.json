@@ -22,7 +22,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 38,
+              "lineNumber": 35,
               "tokens": [
                 {
                   "types": [
@@ -39,7 +39,7 @@
               ]
             },
             {
-              "lineNumber": 40,
+              "lineNumber": 37,
               "tokens": [
                 {
                   "types": [
@@ -56,7 +56,7 @@
               ]
             },
             {
-              "lineNumber": 42,
+              "lineNumber": 39,
               "tokens": [
                 {
                   "types": [
@@ -81,9 +81,6 @@
           ],
           "parameters": [],
           "givens": [
-            {
-              "foo": "bar"
-            },
             {
               "highlightMe": "givensViaHighlight"
             }
@@ -114,7 +111,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 47,
+              "lineNumber": 44,
               "tokens": [
                 {
                   "types": [
@@ -131,7 +128,7 @@
               ]
             },
             {
-              "lineNumber": 49,
+              "lineNumber": 46,
               "tokens": [
                 {
                   "types": [
@@ -155,7 +152,7 @@
               ]
             },
             {
-              "lineNumber": 51,
+              "lineNumber": 48,
               "tokens": [
                 {
                   "types": [
@@ -180,9 +177,6 @@
           ],
           "parameters": [],
           "givens": [
-            {
-              "foo": "bar"
-            },
             {
               "highlightMe": "givensViaHighlight"
             }
@@ -213,7 +207,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 56,
+              "lineNumber": 53,
               "tokens": [
                 {
                   "types": [
@@ -236,7 +230,7 @@
               ]
             },
             {
-              "lineNumber": 58,
+              "lineNumber": 55,
               "tokens": [
                 {
                   "types": [
@@ -260,7 +254,7 @@
               ]
             },
             {
-              "lineNumber": 60,
+              "lineNumber": 57,
               "tokens": [
                 {
                   "types": [
@@ -285,9 +279,6 @@
           ],
           "parameters": [],
           "givens": [
-            {
-              "key_noHighlight": "noHighlight"
-            },
             {
               "highlightMe": "givensViaHighlight"
             }
@@ -318,7 +309,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 65,
+              "lineNumber": 62,
               "tokens": [
                 {
                   "types": [
@@ -340,7 +331,7 @@
               ]
             },
             {
-              "lineNumber": 67,
+              "lineNumber": 64,
               "tokens": [
                 {
                   "types": [
@@ -395,7 +386,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 72,
+              "lineNumber": 69,
               "tokens": [
                 {
                   "types": [
@@ -450,7 +441,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 77,
+              "lineNumber": 74,
               "tokens": [
                 {
                   "types": [
@@ -505,7 +496,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 82,
+              "lineNumber": 79,
               "tokens": [
                 {
                   "types": [
@@ -560,7 +551,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 88,
+              "lineNumber": 85,
               "tokens": [
                 {
                   "types": [
@@ -608,7 +599,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 88,
+              "lineNumber": 85,
               "tokens": [
                 {
                   "types": [
@@ -667,7 +658,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 93,
+              "lineNumber": 90,
               "tokens": [
                 {
                   "types": [
@@ -722,7 +713,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 99,
+              "lineNumber": 96,
               "tokens": [
                 {
                   "types": [
@@ -781,7 +772,7 @@
           ],
           "sentences": [
             {
-              "lineNumber": 104,
+              "lineNumber": 101,
               "tokens": [
                 {
                   "types": [

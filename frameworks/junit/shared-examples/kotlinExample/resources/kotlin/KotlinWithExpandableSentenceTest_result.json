@@ -7,7 +7,6 @@
   "packageName": "dev.kensa.example",
   "tests": [
     {
-      "elapsedTime": "",
       "testMethod": "simpleExpandable",
       "displayName": "Simple Expandable",
       "notes": null,
@@ -16,11 +15,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
               "lineNumber": 39,
+              "lineNumber": 34,
               "tokens": [
                 {
                   "types": [
@@ -38,6 +37,7 @@
             },
             {
               "lineNumber": 41,
+              "lineNumber": 36,
               "tokens": [
                 {
                   "types": [
@@ -72,6 +72,7 @@
             },
             {
               "lineNumber": 42,
+              "lineNumber": 37,
               "tokens": [
                 {
                   "types": [
@@ -125,6 +126,7 @@
             },
             {
               "lineNumber": 44,
+              "lineNumber": 39,
               "tokens": [
                 {
                   "types": [
@@ -160,7 +162,6 @@
       ]
     },
     {
-      "elapsedTime": "",
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
       "notes": null,
@@ -169,11 +170,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
               "lineNumber": 49,
+              "lineNumber": 44,
               "tokens": [
                 {
                   "types": [
@@ -343,6 +344,7 @@
             },
             {
               "lineNumber": 56,
+              "lineNumber": 51,
               "tokens": [
                 {
                   "types": [
@@ -434,6 +436,7 @@
             },
             {
               "lineNumber": 57,
+              "lineNumber": 52,
               "tokens": [
                 {
                   "types": [
@@ -615,6 +618,7 @@
             },
             {
               "lineNumber": 64,
+              "lineNumber": 59,
               "tokens": [
                 {
                   "types": [
@@ -650,7 +654,6 @@
       ]
     },
     {
-      "elapsedTime": "",
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
       "notes": null,
@@ -659,11 +662,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
               "lineNumber": 69,
+              "lineNumber": 64,
               "tokens": [
                 {
                   "types": [
@@ -681,6 +684,7 @@
             },
             {
               "lineNumber": 71,
+              "lineNumber": 66,
               "tokens": [
                 {
                   "types": [
@@ -722,6 +726,7 @@
             },
             {
               "lineNumber": 72,
+              "lineNumber": 67,
               "tokens": [
                 {
                   "types": [
@@ -763,6 +768,7 @@
             },
             {
               "lineNumber": 74,
+              "lineNumber": 69,
               "tokens": [
                 {
                   "types": [
@@ -798,7 +804,6 @@
       ]
     },
     {
-      "elapsedTime": "",
       "testMethod": "expandableWithFixtureAndScenarioParameters",
       "displayName": "Expandable With Fixture And Scenario Parameters",
       "notes": null,
@@ -807,13 +812,13 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
           "highlights": [
             "parent1"
           ],
           "sentences": [
             {
               "lineNumber": 79,
+              "lineNumber": 74,
               "tokens": [
                 {
                   "types": [
@@ -831,6 +836,7 @@
             },
             {
               "lineNumber": 81,
+              "lineNumber": 76,
               "tokens": [
                 {
                   "types": [
@@ -1063,6 +1069,7 @@
             },
             {
               "lineNumber": 89,
+              "lineNumber": 84,
               "tokens": [
                 {
                   "types": [
@@ -1109,7 +1116,6 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
       "notes": null,
@@ -1118,11 +1124,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
               "lineNumber": 94,
+              "lineNumber": 89,
               "tokens": [
                 {
                   "types": [
@@ -1151,6 +1157,7 @@
             },
             {
               "lineNumber": 96,
+              "lineNumber": 91,
               "tokens": [
                 {
                   "types": [
@@ -1204,6 +1211,7 @@
             },
             {
               "lineNumber": 98,
+              "lineNumber": 93,
               "tokens": [
                 {
                   "types": [
@@ -1239,7 +1247,6 @@
       ]
     },
     {
-      "elapsedTime": "",
       "testMethod": "expandableWithExpandableExpressionInInterface",
       "displayName": "Expandable With Expandable Expression In Interface",
       "notes": null,
@@ -1248,11 +1255,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
               "lineNumber": 103,
+              "lineNumber": 98,
               "tokens": [
                 {
                   "types": [
@@ -1281,6 +1288,7 @@
             },
             {
               "lineNumber": 105,
+              "lineNumber": 100,
               "tokens": [
                 {
                   "types": [
@@ -1370,6 +1378,7 @@
             },
             {
               "lineNumber": 107,
+              "lineNumber": 102,
               "tokens": [
                 {
                   "types": [
@@ -1405,7 +1414,6 @@
       ]
     },
     {
-      "elapsedTime": "",
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
       "notes": null,
@@ -1414,11 +1422,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
               "lineNumber": 113,
+              "lineNumber": 108,
               "tokens": [
                 {
                   "types": [
@@ -1461,11 +1469,11 @@
           "displayName": "[1] \"one\""
         },
         {
-          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
               "lineNumber": 113,
+              "lineNumber": 108,
               "tokens": [
                 {
                   "types": [

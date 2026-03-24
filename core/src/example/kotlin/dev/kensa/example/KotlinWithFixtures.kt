@@ -1,8 +1,9 @@
 package dev.kensa.example
 
-import dev.kensa.ActionUnderTest
+import dev.kensa.Action
+import dev.kensa.ActionContext
 import dev.kensa.DummyAssert.Companion.assertThat
-import dev.kensa.StateExtractor
+import dev.kensa.StateCollector
 
 class KotlinWithFixtures {
 
@@ -36,9 +37,8 @@ class KotlinWithFixtures {
 
     private fun fixtures(name: String) = ""
 
-    private fun theExtractedValue() = StateExtractor { "" }
-    private fun theExtractedCharacter() = StateExtractor { 'c' }
+    private fun theExtractedValue() = StateCollector { "" }
+    private fun theExtractedCharacter() = StateCollector { 'c' }
 
-    private fun actionWith(value: String) = ActionUnderTest { _, _->
-    }
+    private fun actionWith(value: String) = Action<ActionContext> {}
 }

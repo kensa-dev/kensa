@@ -1,24 +1,49 @@
 package dev.kensa.hamcrest
 
-import dev.kensa.StateExtractor
+import dev.kensa.StateCollector
 import dev.kensa.context.TestContext
 import org.awaitility.kotlin.await
 import org.hamcrest.Matcher
-import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
 import java.time.Duration
-import java.time.temporal.ChronoUnit
-import java.time.temporal.ChronoUnit.SECONDS
 
 object HamcrestThen {
+
     @JvmStatic
-    fun <T> then(context: TestContext, extractor: StateExtractor<T>, matcher: Matcher<in T>) {
-        MatcherAssert.assertThat(extractor.execute(context.interactions), matcher)
+    fun <T> then(context: TestContext, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        assertThat(extractor.execute(context.collectorContext), matcher)
     }
 
     @JvmStatic
-    @JvmOverloads
-    fun <T> thenEventually(timeout: Long = 10, timeUnit: ChronoUnit = SECONDS, context: TestContext, extractor: StateExtractor<T>, matcher: Matcher<in T>) {
-        await.atMost(Duration.of(timeout, timeUnit)).untilAsserted { MatcherAssert.assertThat(extractor.execute(context.interactions), matcher) }
-        MatcherAssert.assertThat(extractor.execute(context.interactions), matcher)
+    fun <T> thenContinually(context: TestContext, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        thenContinually(Duration.ofSeconds(10), context, extractor, matcher)
+    }
+
+    @JvmStatic
+    fun <T> thenContinually(duration: Duration, context: TestContext, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        val end = System.nanoTime() + duration.toNanos()
+        while (System.nanoTime() < end) {
+            assertThat(extractor.execute(context.collectorContext), matcher)
+            Thread.sleep(25)
+        }
+    }
+
+    @JvmStatic
+    fun <T> thenEventually(context: TestContext, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        thenEventually(Duration.ZERO, Duration.ofSeconds(10), Duration.ofMillis(25), context, extractor, matcher)
+    }
+
+    @JvmStatic
+    fun <T> thenEventually(duration: Duration, context: TestContext, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        thenEventually(Duration.ZERO, duration, Duration.ofMillis(25), context, extractor, matcher)
+    }
+
+    @JvmStatic
+    fun <T> thenEventually(initialDelay: Duration, duration: Duration, interval: Duration, context: TestContext, extractor: StateCollector<T>, matcher: Matcher<in T>) {
+        await
+            .pollDelay(initialDelay)
+            .pollInterval(interval)
+            .atMost(duration)
+            .untilAsserted { assertThat(extractor.execute(context.collectorContext), matcher) }
     }
 }

@@ -1,6 +1,7 @@
 package dev.kensa.example;
 
-import dev.kensa.GivensBuilder;
+import dev.kensa.Action;
+import dev.kensa.GivensContext;
 import org.junit.jupiter.api.Test;
 
 public class JavaWithTypeArgumentsTest extends JavaExampleTest {
@@ -10,8 +11,8 @@ public class JavaWithTypeArgumentsTest extends JavaExampleTest {
         given(this.<String>aLiteralOf("aStringValue"));
     }
 
-    private <T> GivensBuilder aLiteralOf(T aValue) {
-        return (givens) -> {
+    private <T> Action<GivensContext> aLiteralOf(T aValue) {
+        return (context) -> {
         };
     }
 }
