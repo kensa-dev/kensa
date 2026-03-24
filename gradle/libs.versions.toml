@@ -12,6 +12,7 @@ junit6 = "6.0.3"
 assertJ = "3.27.7"
 hamcrest = "3.0"
 hamkrest = "1.8.0.1"
+testng = "7.10.2"
 awaitility = "4.3.0"
 minimalJson = "0.9.5"
 antlr = "4.13.2"
@@ -32,6 +33,7 @@ antlrRuntime = { module = "org.antlr:antlr4-runtime", version.ref = "antlr" }
 assertJCore = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
 hamcrestCore = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrest" }
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
+testng = { module = "org.testng:testng", version.ref = "testng" }
 awaitilityKotlin = { module = "org.awaitility:awaitility-kotlin", version.ref = "awaitility" }
 minimalJson = { module = "com.eclipsesource.minimal-json:minimal-json", version.ref = "minimalJson" }
 plantuml = { module = "net.sourceforge.plantuml:plantuml", version.ref = "plantUml" }
