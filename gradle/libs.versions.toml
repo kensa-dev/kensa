@@ -42,6 +42,8 @@ pebble = { module = "io.pebbletemplates:pebble", version.ref = "pebble" }
 kotestBom = { module = "io.kotest:kotest-bom", version.ref = "kotest" }
 kotestAssertionsCoreJvm = { module = "io.kotest:kotest-assertions-core-jvm" }
 kotestAssertionsJson = { module = "io.kotest:kotest-assertions-json" }
+kotestFrameworkEngine = { module = "io.kotest:kotest-framework-engine-jvm"}
+kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5-jvm"}
 
 junit5Bom = { module = "org.junit:junit-bom", version.ref = "junit5" }
 junit5JupiterParams = { module = "org.junit.jupiter:junit-jupiter-params" }
