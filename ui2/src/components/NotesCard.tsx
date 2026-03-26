@@ -120,16 +120,64 @@ function renderInlineNodes(nodes: InlineNode[], keyPrefix = '', onTestLink?: OnT
     });
 }
 
+// Detect markdown table: every non-empty line starts with '|'
+function isTable(paragraph: string): boolean {
+    const lines = paragraph.trim().split('\n').filter(l => l.trim().length > 0);
+    return lines.length >= 2 && lines.every(l => l.trim().startsWith('|'));
+}
+
+function renderTable(paragraph: string, blockIndex: number, onTestLink?: OnTestLink): React.ReactNode {
+    const lines = paragraph.trim().split('\n').filter(l => l.trim().length > 0);
+    const parseRow = (line: string) =>
+        line.trim().replace(/^\||\|$/g, '').split('|').map(cell => cell.trim());
+
+    const isSeparator = (line: string) => /^[\s|:\-]+$/.test(line);
+
+    const headers = parseRow(lines[0]);
+    const dataLines = lines.slice(1).filter(l => !isSeparator(l));
+
+    return (
+        <div key={blockIndex} className={cn("overflow-x-auto", blockIndex > 0 && "mt-2")}>
+            <table className="text-sm w-full border-collapse">
+                <thead>
+                    <tr>
+                        {headers.map((h, i) => (
+                            <th key={i} className="text-left px-3 py-1.5 font-semibold text-foreground/70 border-b border-amber-300/40 whitespace-nowrap">
+                                {renderInlineNodes(parseInline(h), `th-${blockIndex}-${i}`, onTestLink)}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {dataLines.map((line, ri) => (
+                        <tr key={ri} className="even:bg-amber-100/30 dark:even:bg-amber-900/10">
+                            {parseRow(line).map((cell, ci) => (
+                                <td key={ci} className="px-3 py-1 text-foreground/80 border-b border-amber-200/30 dark:border-amber-800/20">
+                                    {renderInlineNodes(parseInline(cell), `td-${blockIndex}-${ri}-${ci}`, onTestLink)}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
 // Split on blank lines → paragraphs; render each paragraph's inline markdown.
 function renderParagraphs(text: string, onTestLink?: OnTestLink): React.ReactNode {
     return text
         .split(/\n\n+/)
         .filter(p => p.trim().length > 0)
-        .map((paragraph, i) => (
-            <p key={i} className={cn("text-sm leading-relaxed text-foreground/80", i > 0 && "mt-2")}>
-                {renderInlineNodes(parseInline(paragraph.trim()), '', onTestLink)}
-            </p>
-        ));
+        .map((paragraph, i) =>
+            isTable(paragraph)
+                ? renderTable(paragraph, i, onTestLink)
+                : (
+                    <p key={i} className={cn("text-sm leading-relaxed text-foreground/80", i > 0 && "mt-2")}>
+                        {renderInlineNodes(parseInline(paragraph.trim()), '', onTestLink)}
+                    </p>
+                )
+        );
 }
 
 // ---------------------------------------------------------------------------
