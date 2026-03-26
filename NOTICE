@@ -1,0 +1,39 @@
+Kensa
+Copyright 2024 Kensa Contributors
+
+This product includes software developed by third parties.
+
+---
+
+ANTLR 4 Runtime (antlr4-runtime 4.13.2)
+Copyright (c) 2012-2022 The ANTLR Project
+Licensed under the BSD 3-Clause License
+https://github.com/antlr/antlr4
+
+---
+
+minimal-json (0.9.5)
+Copyright (c) 2013, 2014 EclipseSource
+Licensed under the MIT License
+https://github.com/ralfstx/minimal-json
+
+---
+
+Byte Buddy (byte-buddy 1.17.8)
+Copyright (c) 2014 - Present Rafael Winterhalter
+Licensed under the Apache License, Version 2.0
+https://bytebuddy.net/
+
+---
+
+PlantUML (1.2026.2)
+Copyright (c) 2009-2024 Arnaud Roques
+Licensed under the MIT License (and optionally EPL, LGPL, or Apache 2.0)
+https://plantuml.com/
+
+---
+
+Pebble Templates (pebble 3.2.4)
+Copyright (c) 2013 by Mitchell Bösecke
+Licensed under the BSD 3-Clause License
+https://pebbletemplates.io/
