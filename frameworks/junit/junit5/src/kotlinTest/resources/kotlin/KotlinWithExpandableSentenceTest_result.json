@@ -9,7 +9,6 @@
     {
       "testMethod": "simpleExpandable",
       "displayName": "Simple Expandable",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -160,7 +159,6 @@
     {
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -648,7 +646,6 @@
     {
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -794,7 +791,6 @@
     {
       "testMethod": "expandableWithFixtureAndScenarioParameters",
       "displayName": "Expandable With Fixture And Scenario Parameters",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -1103,7 +1099,6 @@
     {
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -1231,7 +1226,6 @@
     {
       "testMethod": "expandableWithExpandableExpressionInInterface",
       "displayName": "Expandable With Expandable Expression In Interface",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -1395,7 +1389,6 @@
     {
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
