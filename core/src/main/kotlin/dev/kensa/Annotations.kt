@@ -70,7 +70,7 @@ annotation class KensaTab(
 )
 
 @Retention(RUNTIME)
-@Target(CLASS, FUNCTION)
+@Target(CLASS)
 annotation class Notes(val value: String)
 
 /**

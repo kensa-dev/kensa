@@ -79,7 +79,6 @@ object JsonTransforms {
                     .add("elapsedTime", totalElapsed.format())
                     .add("testMethod", testMethodContainer.method.name)
                     .add("displayName", testMethodContainer.displayName)
-                    .add("notes", testMethodContainer.notes)
                     .add("issues", asJsonArray(testMethodContainer.issues))
                     .add("state", testMethodContainer.state.description)
                     .add("autoOpenTab", testMethodContainer.autoOpenTab.name)

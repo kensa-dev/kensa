@@ -10,7 +10,6 @@
       "elapsedTime": "",
       "testMethod": "myTest1",
       "displayName": "My Named Test 1",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -35,7 +34,6 @@
       "elapsedTime": "",
       "testMethod": "test1",
       "displayName": "Test 1",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -60,7 +58,6 @@
       "elapsedTime": "",
       "testMethod": "test 1",
       "displayName": "test 1",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -85,7 +82,6 @@
       "elapsedTime": "1 Ms",
       "testMethod": "Test 1",
       "displayName": "Test 1",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -108,9 +104,8 @@
     },
     {
       "elapsedTime": "",
-      "testMethod": "Test 1 🤡",
-      "displayName": "Test 1 🤡",
-      "notes": null,
+      "testMethod": "Test 1 \ud83e\udd21",
+      "displayName": "Test 1 \ud83e\udd21",
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -127,15 +122,14 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "Test 1 🤡()"
+          "displayName": "Test 1 \ud83e\udd21()"
         }
       ]
     },
     {
       "elapsedTime": "",
-      "testMethod": "Test 1 🤡😱",
-      "displayName": "Test 1 🤡😱",
-      "notes": null,
+      "testMethod": "Test 1 \ud83e\udd21\ud83d\ude31",
+      "displayName": "Test 1 \ud83e\udd21\ud83d\ude31",
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -182,7 +176,7 @@
           "sentences": [],
           "parameters": [
             {
-              "value": "three 3️⃣"
+              "value": "three 3\ufe0f\u20e3"
             }
           ],
           "givens": [],
@@ -192,7 +186,7 @@
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "[3] \"three 3️⃣\""
+          "displayName": "[3] \"three 3\ufe0f\u20e3\""
         }
       ]
     }

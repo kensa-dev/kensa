@@ -66,6 +66,18 @@ class IdProvider : InvocationIdentifierProvider {
     sourceId = "appLog",
     visibility = KensaTabVisibility.Always
 )
+@Notes("""
+      Tests the **robot adoption service** — covers availability checks and adoption requests.                                                                                                                                                               
+                                                                                                                                                                                                                                                             
+      Robots start in `Available` or `Adopted` state. Attempting to adopt an already-adopted                                                                                                                                                                 
+      robot returns __400 Bad Request__. The *available* pool is seeded fresh before each test.                                                                                                                                                              
+                                                                                                                                                                                                                                                             
+      See the [adoption API docs](http://localhost:8080/docs) for full contract details.                                                                                                                                                                     
+      ~~Legacy adoption flow~~ was removed in v2 — these tests cover the new PATCH endpoint only.
+                                                                                                                                                                  
+      See [canCheckAvailabilityOfRobots](#canCheckAvailabilityOfRobots) for the availability contract,                                                                                                                                                       
+      and [canNotAdoptAnUnavailableRobot](#canNotAdoptAnUnavailableRobot) for the rejection case.      
+  """)
 class AdoptionServiceTest : KensaTest, WithKotest {
 
     /**

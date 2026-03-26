@@ -10,7 +10,6 @@
       "elapsedTime": "",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -40,7 +39,7 @@
                   "types": [
                     "tk-sl"
                   ],
-                  "value": "£100.00"
+                  "value": "\u00a3100.00"
                 }
               ]
             }

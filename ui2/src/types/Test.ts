@@ -78,7 +78,6 @@ export interface Test {
     elapsedTime: string
     testMethod: string
     displayName: string
-    notes: string | null
     issues: string[]
     state: TestState
     autoOpenTab?: TabType

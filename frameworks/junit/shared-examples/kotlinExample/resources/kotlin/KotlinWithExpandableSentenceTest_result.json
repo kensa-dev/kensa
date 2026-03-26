@@ -9,7 +9,6 @@
     {
       "testMethod": "simpleExpandable",
       "displayName": "Simple Expandable",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -18,7 +17,6 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 39,
               "lineNumber": 34,
               "tokens": [
                 {
@@ -36,7 +34,6 @@
               ]
             },
             {
-              "lineNumber": 41,
               "lineNumber": 36,
               "tokens": [
                 {
@@ -71,7 +68,6 @@
               ]
             },
             {
-              "lineNumber": 42,
               "lineNumber": 37,
               "tokens": [
                 {
@@ -125,7 +121,6 @@
               ]
             },
             {
-              "lineNumber": 44,
               "lineNumber": 39,
               "tokens": [
                 {
@@ -164,7 +159,6 @@
     {
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -173,7 +167,6 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 49,
               "lineNumber": 44,
               "tokens": [
                 {
@@ -343,7 +336,6 @@
               ]
             },
             {
-              "lineNumber": 56,
               "lineNumber": 51,
               "tokens": [
                 {
@@ -435,7 +427,6 @@
               ]
             },
             {
-              "lineNumber": 57,
               "lineNumber": 52,
               "tokens": [
                 {
@@ -617,7 +608,6 @@
               ]
             },
             {
-              "lineNumber": 64,
               "lineNumber": 59,
               "tokens": [
                 {
@@ -656,7 +646,6 @@
     {
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -665,7 +654,6 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 69,
               "lineNumber": 64,
               "tokens": [
                 {
@@ -683,7 +671,6 @@
               ]
             },
             {
-              "lineNumber": 71,
               "lineNumber": 66,
               "tokens": [
                 {
@@ -725,7 +712,6 @@
               ]
             },
             {
-              "lineNumber": 72,
               "lineNumber": 67,
               "tokens": [
                 {
@@ -767,7 +753,6 @@
               ]
             },
             {
-              "lineNumber": 74,
               "lineNumber": 69,
               "tokens": [
                 {
@@ -806,7 +791,6 @@
     {
       "testMethod": "expandableWithFixtureAndScenarioParameters",
       "displayName": "Expandable With Fixture And Scenario Parameters",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -817,7 +801,6 @@
           ],
           "sentences": [
             {
-              "lineNumber": 79,
               "lineNumber": 74,
               "tokens": [
                 {
@@ -835,7 +818,6 @@
               ]
             },
             {
-              "lineNumber": 81,
               "lineNumber": 76,
               "tokens": [
                 {
@@ -1068,7 +1050,6 @@
               ]
             },
             {
-              "lineNumber": 89,
               "lineNumber": 84,
               "tokens": [
                 {
@@ -1118,7 +1099,6 @@
     {
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -1127,7 +1107,6 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 94,
               "lineNumber": 89,
               "tokens": [
                 {
@@ -1156,7 +1135,6 @@
               ]
             },
             {
-              "lineNumber": 96,
               "lineNumber": 91,
               "tokens": [
                 {
@@ -1210,7 +1188,6 @@
               ]
             },
             {
-              "lineNumber": 98,
               "lineNumber": 93,
               "tokens": [
                 {
@@ -1249,7 +1226,6 @@
     {
       "testMethod": "expandableWithExpandableExpressionInInterface",
       "displayName": "Expandable With Expandable Expression In Interface",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -1258,7 +1234,6 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 103,
               "lineNumber": 98,
               "tokens": [
                 {
@@ -1287,7 +1262,6 @@
               ]
             },
             {
-              "lineNumber": 105,
               "lineNumber": 100,
               "tokens": [
                 {
@@ -1377,7 +1351,6 @@
               ]
             },
             {
-              "lineNumber": 107,
               "lineNumber": 102,
               "tokens": [
                 {
@@ -1416,7 +1389,6 @@
     {
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
-      "notes": null,
       "issues": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -1425,7 +1397,6 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 113,
               "lineNumber": 108,
               "tokens": [
                 {
@@ -1472,7 +1443,6 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 113,
               "lineNumber": 108,
               "tokens": [
                 {

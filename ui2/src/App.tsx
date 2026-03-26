@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Beaker, Loader2, Moon, PanelLeft, Sun} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar';
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
@@ -14,6 +14,7 @@ import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, Co
 import {Badge} from "@/components/ui/badge";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
 import {TestContainer} from './components/TestContainer';
+import {NotesCard} from './components/NotesCard';
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -250,6 +251,32 @@ const App = () => {
         return tests;
     }, [indices, environment]);
 
+    const handleTestLink = useCallback((ref: string) => {
+        const dotIndex = ref.lastIndexOf('.');
+        if (dotIndex === -1) {
+            // No dot — could be a method in the current suite, or a class name
+            const matchedSuite = allTests.find(t => t.testClass.split('.').pop() === ref);
+            if (matchedSuite) {
+                navigate(`/test/${matchedSuite.id}`);
+            } else {
+                setTestToExpand(ref);
+            }
+        } else {
+            // ClassName.methodName — navigate to suite and expand method
+            const className = ref.slice(0, dotIndex);
+            const methodName = ref.slice(dotIndex + 1);
+            const matchedSuite = allTests.find(t => t.testClass.split('.').pop() === className);
+            if (matchedSuite) {
+                if (selectedIndex?.id === matchedSuite.id) {
+                    setTestToExpand(methodName);
+                } else {
+                    pendingTestToExpandRef.current = { testId: matchedSuite.id, method: methodName };
+                    navigate(`/test/${matchedSuite.id}`);
+                }
+            }
+        }
+    }, [allTests, selectedIndex, navigate]);
+
     const filteredCommandTests = useMemo(() => {
         if (!commandQuery) return allTests;
         const search = commandQuery.toLowerCase();
@@ -456,16 +483,21 @@ const App = () => {
                                                         <p>Loading result details...</p>
                                                     </div>
                                                 ) : testDetail ? (
-                                                    <TestContainer
-                                                        key={`${selectedIndex?.id}-${testToExpand}-${searchQuery}`}
-                                                        tests={testDetail.tests}
-                                                        testClass={testDetail.testClass}
-                                                        testToExpand={testToExpand}
-                                                        matchingMethods={matchingMethods}
-                                                        onClearFilter={() => {
-                                                            setMatchingMethods([]);
-                                                        }}
-                                                    />
+                                                    <div className="space-y-4">
+                                                        {testDetail.notes && (
+                                                            <NotesCard notes={testDetail.notes} onTestLink={handleTestLink} />
+                                                        )}
+                                                        <TestContainer
+                                                            key={`${selectedIndex?.id}-${testToExpand}-${searchQuery}`}
+                                                            tests={testDetail.tests}
+                                                            testClass={testDetail.testClass}
+                                                            testToExpand={testToExpand}
+                                                            matchingMethods={matchingMethods}
+                                                            onClearFilter={() => {
+                                                                setMatchingMethods([]);
+                                                            }}
+                                                        />
+                                                    </div>
                                                 ) : null}
                                             </div>
                                         </div>

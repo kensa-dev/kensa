@@ -39,7 +39,6 @@ class TestContainerFactory(
             testInvocationFactory,
             this,
             deriveDisplayName { derivedTestName(configuration.dictionary.protectedPhraseValues) },
-            notes(),
             issues(),
             initialState(),
             autoOpenTab(autoOpenTab)
