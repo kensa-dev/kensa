@@ -122,7 +122,6 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         val tempVar = builder.scope.createTemporaryVariableDeclaration(
             startOffset = builder.startOffset,
             endOffset = builder.endOffset,
-            origin = IrDeclarationOrigin.IR_TEMPORARY_VARIABLE,
             nameHint = "result",
             irType = fn.returnType
         )
