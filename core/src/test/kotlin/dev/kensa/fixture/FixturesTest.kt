@@ -68,6 +68,80 @@ class FixturesTest {
     }
 
     @Test
+    fun `values only contains accessed fixtures`() {
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture) { date -> date.dayOfWeek }
+
+        val fixtures = Fixtures()
+        fixtures[dateFixture]
+
+        fixtures.values().map { it.name } shouldBe listOf("date")
+    }
+
+    @Test
+    fun `values returns fixtures in parent-before-child order`() {
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture) { date -> date.dayOfWeek }
+        val dayPlusOneFixture = fixture<DayOfWeek, DayOfWeek>("dayPlusOne", dayFixture) { day -> day.plus(1) }
+
+        val fixtures = Fixtures()
+        fixtures[dayPlusOneFixture]
+
+        fixtures.values().map { it.name } shouldBe listOf("date", "day", "dayPlusOne")
+    }
+
+    @Test
+    fun `specs returns empty parents for primary fixture`() {
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+
+        val fixtures = Fixtures()
+        fixtures[dateFixture]
+
+        fixtures.specs() shouldBe listOf(FixtureSpec("date", emptyList()))
+    }
+
+    @Test
+    fun `specs returns parent keys for secondary fixture`() {
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture) { date -> date.dayOfWeek }
+
+        val fixtures = Fixtures()
+        fixtures[dayFixture]
+
+        fixtures.specs() shouldBe listOf(
+            FixtureSpec("date", emptyList()),
+            FixtureSpec("day", listOf("date"))
+        )
+    }
+
+    @Test
+    fun `specs returns parent keys for secondary fixture with two parents`() {
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek>("day") { SUNDAY }
+        val combinedFixture = fixture<String, LocalDate, DayOfWeek>("combined", dateFixture, dayFixture) { date, day -> "$date-$day" }
+
+        val fixtures = Fixtures()
+        fixtures[combinedFixture]
+
+        fixtures.specs() shouldBe listOf(
+            FixtureSpec("date", emptyList()),
+            FixtureSpec("day", emptyList()),
+            FixtureSpec("combined", listOf("date", "day"))
+        )
+    }
+
+    @Test
+    fun `specs only contains accessed fixtures`() {
+        val dateFixture = fixture<LocalDate>("date") { LocalDate.of(2023, 1, 1) }
+        val dayFixture = fixture<DayOfWeek, LocalDate>("day", dateFixture) { date -> date.dayOfWeek }
+
+        val fixtures = Fixtures()
+        fixtures[dateFixture]
+
+        fixtures.specs() shouldBe listOf(FixtureSpec("date", emptyList()))
+    }
+
+    @Test
     fun `highlighted primary fixture value appears in highlightedValues once accessed`() {
         val highlighted = fixture<LocalDate>("date", highlighted = true) { LocalDate.of(2023, 1, 1) }
         val notHighlighted = fixture<DayOfWeek>("day") { SUNDAY }

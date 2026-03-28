@@ -15,11 +15,12 @@ class Fixtures {
     private val keyToValue = mutableMapOf<String, Any?>()
     private val keyToFixture = mutableMapOf<String, Fixture<*>>()
 
-    fun values(): Set<NamedValue> = synchronized(lock) { keyToValue.entries.map { NamedValue(it.key, it.value) }.toSet() }
+    fun values(): List<NamedValue> = synchronized(lock) { keyToValue.entries.map { NamedValue(it.key, it.value) } }
 
     fun specs(): List<FixtureSpec> = synchronized(lock) {
-        keyToFixture.values.map { fixture ->
-            FixtureSpec(fixture.key, if (fixture is SecondaryFixture<*>) fixture.parentKeys() else emptyList())
+        keyToValue.keys.map { key ->
+            val fixture = keyToFixture[key]
+            FixtureSpec(key, if (fixture is SecondaryFixture<*>) fixture.parentKeys() else emptyList())
         }
     }
 

@@ -270,7 +270,7 @@
               "JavaPublicFixture": "222"
             }
           ],
-          "fixtureSpecs":[{"key":"JavaPublicFixture","parents":["JavaPrivateFixture"]},{"key":"JavaPrivateFixture","parents":[]}],
+          "fixtureSpecs":[{"key":"JavaPrivateFixture","parents":[]},{"key":"JavaPublicFixture","parents":["JavaPrivateFixture"]}],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

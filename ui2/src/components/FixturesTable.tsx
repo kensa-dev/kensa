@@ -9,6 +9,34 @@ const rowHover: Record<TestState, string> = {
     "Not Executed": "hover:bg-muted/10",
 };
 
+function groupByFamily(fixtures: NameAndValues, specs: FixtureSpec[]): NameAndValues {
+    const fixtureMap = new Map(fixtures.map(row => [Object.keys(row)[0], row]));
+    const specMap = new Map(specs.map(s => [s.key, s]));
+
+    const childrenOf = new Map<string, string[]>();
+    for (const spec of specs) {
+        for (const parent of spec.parents) {
+            if (!childrenOf.has(parent)) childrenOf.set(parent, []);
+            childrenOf.get(parent)!.push(spec.key);
+        }
+    }
+
+    const result: NameAndValues = [];
+    const emitted = new Set<string>();
+
+    const tryEmit = (key: string) => {
+        if (emitted.has(key) || !fixtureMap.has(key)) return;
+        const spec = specMap.get(key);
+        if (spec?.parents.some(p => fixtureMap.has(p) && !emitted.has(p))) return;
+        emitted.add(key);
+        result.push(fixtureMap.get(key)!);
+        for (const child of (childrenOf.get(key) ?? [])) tryEmit(child);
+    };
+
+    for (const [key] of fixtureMap) tryEmit(key);
+    return result;
+}
+
 function getDepth(key: string, specs: FixtureSpec[], visited = new Set<string>()): number {
     if (visited.has(key)) return 0;
     const spec = specs.find(s => s.key === key);
@@ -43,6 +71,7 @@ interface FixturesTableProps {
 
 export const FixturesTable = ({fixtures, fixtureSpecs, testState, highlights = []}: FixturesTableProps) => {
     const hasHierarchy = fixtureSpecs.some(s => s.parents.length > 0);
+    const ordered = hasHierarchy ? groupByFamily(fixtures, fixtureSpecs) : fixtures;
 
     return (
         <Table className="text-[14px] table-fixed">
@@ -59,7 +88,7 @@ export const FixturesTable = ({fixtures, fixtureSpecs, testState, highlights = [
             </TableHeader>
 
             <TableBody className="divide-y divide-border/40 [&_tr:last-child]:border-b-0">
-                {fixtures.map((row, i) => {
+                {ordered.map((row, i) => {
                     const [key, val] = Object.entries(row)[0];
                     const depth = hasHierarchy ? getDepth(key, fixtureSpecs) : 0;
 
