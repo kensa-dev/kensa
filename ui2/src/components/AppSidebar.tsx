@@ -486,7 +486,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                 <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                                     {pickerType === 'state' ? "Select State" : "Select Issue"}
                                 </div>
-                                <div className="max-h-[200px] overflow-y-auto">
+                                <div ref={pickerListRef} className="max-h-[200px] overflow-y-auto">
                                     {pickerItems.length === 0 ? (
                                         <div className="px-2 py-1.5 text-xs text-muted-foreground">No matches found.</div>
                                     ) : (
