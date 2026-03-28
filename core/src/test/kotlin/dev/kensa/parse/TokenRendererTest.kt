@@ -266,8 +266,8 @@ class TokenRendererTest {
             )
 
             val expected = listOf(
-                aRenderedValueOf("***fixture1Value***", setOf("tk-fv")),
-                aRenderedValueOf("***fixture2Value***", setOf("tk-fv"))
+                aRenderedValueOf("***fixture1Value***", setOf("tk-fx")),
+                aRenderedValueOf("***fixture2Value***", setOf("tk-fx"))
             )
 
             val renderedTokens = renderer.render(templates)

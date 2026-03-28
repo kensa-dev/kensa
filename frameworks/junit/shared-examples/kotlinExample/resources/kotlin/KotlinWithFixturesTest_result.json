@@ -53,7 +53,7 @@
               },
               {
                 "types": [
-                  "tk-fv"
+                  "tk-fx"
                 ],
                 "value": "parent1"
               }
@@ -73,7 +73,7 @@
               },
               {
                 "types": [
-                  "tk-fv"
+                  "tk-fx"
                 ],
                 "value": "false"
               }
@@ -95,6 +95,7 @@
               "KotlinBooleanFixture": "false"
             }
           ],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -149,7 +150,7 @@
               },
               {
                 "types": [
-                  "tk-fv"
+                  "tk-fx"
                 ],
                 "value": "parent2"
               }
@@ -169,7 +170,7 @@
               },
               {
                 "types": [
-                  "tk-fv"
+                  "tk-fx"
                 ],
                 "value": "parent2_child1"
               },
@@ -181,7 +182,7 @@
               },
               {
                 "types": [
-                  "tk-fv"
+                  "tk-fx"
                 ],
                 "value": "parent2"
               }
@@ -203,6 +204,7 @@
               "KotlinChildStringFixture": "parent2_child1"
             }
           ],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -237,7 +239,7 @@
               },
               {
                 "types": [
-                  "tk-fv"
+                  "tk-fx"
                 ],
                 "value": "23"
               }
@@ -252,6 +254,7 @@
               "KotlinIntegerFixture": "23"
             }
           ],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -286,7 +289,7 @@
               },
               {
                 "types": [
-                  "tk-fv"
+                  "tk-fx"
                 ],
                 "value": "222"
               }
@@ -304,6 +307,7 @@
               "KotlinPublicFixture": "222"
             }
           ],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -356,6 +360,7 @@
               "KotlinBooleanFixture": "false"
             }
           ],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

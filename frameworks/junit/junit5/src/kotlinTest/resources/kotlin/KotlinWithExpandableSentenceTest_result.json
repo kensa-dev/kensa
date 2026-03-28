@@ -149,6 +149,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -636,6 +637,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -781,6 +783,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -948,7 +951,7 @@
                     },
                     {
                       "types": [
-                        "tk-fv"
+                        "tk-fx"
                       ],
                       "value": "parent1"
                     },
@@ -996,7 +999,7 @@
                     },
                     {
                       "types": [
-                        "tk-fv"
+                        "tk-fx"
                       ],
                       "value": "parent1_child1"
                     }
@@ -1089,6 +1092,7 @@
               "KotlinChildStringFixture": "parent1_child1"
             }
           ],
+          "fixtureSpecs":[{"key":"KotlinStringFixture","parents":[]},{"key":"KotlinChildStringFixture","parents":["KotlinStringFixture"]}],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1216,6 +1220,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1379,6 +1384,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1434,6 +1440,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1480,6 +1487,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

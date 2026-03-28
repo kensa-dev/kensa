@@ -8,6 +8,7 @@ import {SequenceDiagram} from "@/components/SequenceDiagram";
 import {loadText} from "@/lib/utils";
 import {CustomTabPanel} from "@/components/CustomTabPanel";
 import {DataTable} from "@/components/DataTable";
+import {FixturesTable} from "@/components/FixturesTable";
 import {Tabs as ShadcnTabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 type TabValue = typeof Tab[keyof typeof Tab];
@@ -193,7 +194,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                     </TabsContent>
 
                     <TabsContent value={Tab.Fixtures} className="mt-0">
-                        <DataTable data={invocation[Tab.Fixtures]} testState={testState} highlights={invocation.highlights}/>
+                        <FixturesTable fixtures={invocation[Tab.Fixtures]} fixtureSpecs={invocation.fixtureSpecs} testState={testState} highlights={invocation.highlights}/>
                     </TabsContent>
 
                     <TabsContent value={Tab.CapturedInteractions} className="mt-0">

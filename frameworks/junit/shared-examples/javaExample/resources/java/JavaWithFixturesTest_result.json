@@ -52,7 +52,7 @@
                 },
                 {
                   "types": [
-                    "tk-fv"
+                    "tk-fx"
                   ],
                   "value": "parent1"
                 }
@@ -75,7 +75,7 @@
                 },
                 {
                   "types": [
-                    "tk-fv"
+                    "tk-fx"
                   ],
                   "value": "true"
                 }
@@ -94,6 +94,7 @@
               "JavaBooleanFixture": "true"
             }
           ],
+          "fixtureSpecs":[{"key":"JavaStringFixture","parents":[]},{"key":"JavaBooleanFixture","parents":[]}],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -147,7 +148,7 @@
                 },
                 {
                   "types": [
-                    "tk-fv"
+                    "tk-fx"
                   ],
                   "value": "parent2"
                 }
@@ -170,7 +171,7 @@
                 },
                 {
                   "types": [
-                    "tk-fv"
+                    "tk-fx"
                   ],
                   "value": "parent2_child1"
                 },
@@ -182,7 +183,7 @@
                 },
                 {
                   "types": [
-                    "tk-fv"
+                    "tk-fx"
                   ],
                   "value": "parent2"
                 }
@@ -201,6 +202,7 @@
               "JavaChildStringFixture": "parent2_child1"
             }
           ],
+          "fixtureSpecs":[{"key":"JavaStringFixture","parents":[]},{"key":"JavaChildStringFixture","parents":["JavaStringFixture"]}],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -237,7 +239,7 @@
                 },
                 {
                   "types": [
-                    "tk-fv"
+                    "tk-fx"
                   ],
                   "value": "222"
                 },
@@ -268,6 +270,7 @@
               "JavaPublicFixture": "222"
             }
           ],
+          "fixtureSpecs":[{"key":"JavaPublicFixture","parents":["JavaPrivateFixture"]},{"key":"JavaPrivateFixture","parents":[]}],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

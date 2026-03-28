@@ -6,6 +6,7 @@ import com.eclipsesource.json.JsonValue
 import com.eclipsesource.json.WriterConfig.MINIMAL
 import dev.kensa.KensaException
 import dev.kensa.context.TestContainer
+import dev.kensa.fixture.FixtureSpec
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.RenderedToken
@@ -61,6 +62,7 @@ object JsonTransforms {
                             .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
                             .add("capturedOutputs", asJsonArray(i.outputNamesAndValues, nvAsJson(renderers)))
                             .add("fixtures", asJsonArray(i.fixturesNamesAndValues, nvAsJson(renderers)))
+                            .add("fixtureSpecs", asJsonArray(i.fixtures.specs(), fixtureSpecAsJson()))
                             .add("sequenceDiagram", i.sequenceDiagram?.toString())
                             .add("state", i.state.description)
                             .add("executionException", executionExceptionFrom(i))
@@ -92,6 +94,12 @@ object JsonTransforms {
             .add("label", t.label)
             .add("file", t.file)
             .add("mediaType", t.mediaType)
+    }
+
+    private fun fixtureSpecAsJson(): (FixtureSpec) -> JsonValue = { spec ->
+        jsonObject()
+            .add("key", spec.key)
+            .add("parents", asJsonArray(spec.parents))
     }
 
     fun <T, R, V> ((T) -> R).andThen(other: (R) -> V): ((T) -> V) = { other(this(it)) }

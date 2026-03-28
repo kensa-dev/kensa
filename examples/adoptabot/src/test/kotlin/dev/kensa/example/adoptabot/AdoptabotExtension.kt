@@ -3,6 +3,10 @@ package dev.kensa.example.adoptabot
 import dev.kensa.Kensa.konfigure
 import dev.kensa.Tab
 import dev.kensa.UiMode
+import dev.kensa.example.adoptabot.AdoptionStatus.Available
+import dev.kensa.fixture.FixtureContainer
+import dev.kensa.fixture.FixtureRegistry.registerFixtures
+import dev.kensa.fixture.fixture
 import dev.kensa.junit.KensaExtension
 import dev.kensa.withRenderers
 import org.http4k.client.OkHttp
@@ -29,11 +33,13 @@ import kotlin.io.path.Path
 class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
 
     init {
+        registerFixtures(AdoptabotFixtures)
         konfigure {
             titleText = "Adoptabot Acceptance Tests"
             uiMode = UiMode.Modern
             outputDir = Path("${System.getProperty("user.dir")}/build/kensa-output")
             autoOpenTab = Tab.SequenceDiagram
+            sourceLocations = listOf(Path("src/test/kotlin"))
             withRenderers {
                 interactionRenderer(ResponseRenderer)
             }
@@ -46,7 +52,7 @@ class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
     override fun beforeAll(context: ExtensionContext) {
         val rootStore = context.root.getStore(ExtensionContext.Namespace.GLOBAL)
 
-        rootStore.getOrComputeIfAbsent("ADOPTABOT_SERVER_HOLDER") {
+        rootStore.computeIfAbsent("ADOPTABOT_SERVER_HOLDER") {
             server.start()
             this
         }
@@ -85,5 +91,20 @@ class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
                 return socket.localPort
             }
         }
+    }
+}
+
+private val adoptableRobots = listOf(
+    Robot("1", "Bolt", Available),
+    Robot("2", "Chip", Available),
+    Robot("5", "Gizmo", Available),
+    Robot("6", "Cogs", Available),
+)
+
+object AdoptabotFixtures : FixtureContainer {
+    val SelectedRobotFx = fixture("SelectedRobot") { adoptableRobots.random().name }
+    val AdoptionPathFx = fixture("AdoptionPath", SelectedRobotFx) { name ->
+        val robot = adoptableRobots.first { it.name == name }
+        "/adopt/${robot.id}"
     }
 }

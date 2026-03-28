@@ -64,6 +64,7 @@ public class JavaWithFixturesTest extends JavaExampleTest implements WithHamcres
 }
 
 class JavaTestFixtures implements FixtureContainer {
+    private JavaTestFixtures() {}
     private static final List<String> STRING_FIXTURES = new ArrayList<>(List.of("parent1", "parent2"));
     private static final List<String> CHILD_STRING_FIXTURES = new ArrayList<>(List.of("child1", "childe2"));
 

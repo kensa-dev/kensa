@@ -180,6 +180,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
+          "fixtureSpecs":[],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

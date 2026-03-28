@@ -4,6 +4,7 @@ import { FailureMessage } from './FailureMessage';
 import { Section } from '@/constants';
 import {useContext} from "react";
 import {ConfigContext} from "@/contexts/ConfigContext";
+import {FixtureHighlightProvider} from "@/contexts/FixtureHighlightContext";
 import {Invocation, Sentence as SentenceType, TestState} from "@/types/Test";
 import {isMajorKeyword} from "@/components/Token";
 import {Separator} from "@/components/ui/separator";
@@ -74,20 +75,22 @@ export const SectionRenderer = ({ invocation, testState, autoOpenTab }: SectionR
 
                         let lastMajorKw = '';
                         return (
-                            <div key={idx} className="my-4 space-y-0">
-                                {sentences.map(({ tokens, lineNumber }, sIdx) => {
-                                    const kw = tokens.find(t => t.types?.includes('tk-kw'))?.value ?? '';
-                                    const isMajor = isMajorKeyword(kw);
-                                    if (isMajor) lastMajorKw = kw.toLowerCase().trim();
-                                    const inherited = isMajor ? undefined : lastMajorKw;
-                                    return (
-                                        <div key={sIdx}>
-                                            {separatorAt.has(sIdx) && <Separator className="my-2 opacity-30" />}
-                                            <Sentence sentence={tokens} lineNumber={lineNumber} failingLine={failingLine} inheritedKeyword={inherited} />
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                            <FixtureHighlightProvider key={idx} fixtureSpecs={invocation.fixtureSpecs} fixtures={invocation.fixtures}>
+                                <div className="my-4 space-y-0">
+                                    {sentences.map(({ tokens, lineNumber }, sIdx) => {
+                                        const kw = tokens.find(t => t.types?.includes('tk-kw'))?.value ?? '';
+                                        const isMajor = isMajorKeyword(kw);
+                                        if (isMajor) lastMajorKw = kw.toLowerCase().trim();
+                                        const inherited = isMajor ? undefined : lastMajorKw;
+                                        return (
+                                            <div key={sIdx}>
+                                                {separatorAt.has(sIdx) && <Separator className="my-2 opacity-30" />}
+                                                <Sentence sentence={tokens} lineNumber={lineNumber} failingLine={failingLine} inheritedKeyword={inherited} />
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </FixtureHighlightProvider>
                         );
                     }
 

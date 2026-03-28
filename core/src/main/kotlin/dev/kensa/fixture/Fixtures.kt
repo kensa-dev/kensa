@@ -2,6 +2,8 @@ package dev.kensa.fixture
 
 import dev.kensa.util.NamedValue
 
+data class FixtureSpec(val key: String, val parents: List<String>)
+
 /**
  * A type-safe map for managing test fixtures.
  * Fixtures are created lazily when first accessed.
@@ -14,6 +16,12 @@ class Fixtures {
     private val keyToFixture = mutableMapOf<String, Fixture<*>>()
 
     fun values(): Set<NamedValue> = synchronized(lock) { keyToValue.entries.map { NamedValue(it.key, it.value) }.toSet() }
+
+    fun specs(): List<FixtureSpec> = synchronized(lock) {
+        keyToFixture.values.map { fixture ->
+            FixtureSpec(fixture.key, if (fixture is SecondaryFixture<*>) fixture.parentKeys() else emptyList())
+        }
+    }
 
     fun highlightedValues(): Set<NamedValue> = synchronized(lock) {
         keyToValue.entries

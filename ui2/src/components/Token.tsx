@@ -2,6 +2,7 @@ import * as React from 'react';
 import {cn} from "@/lib/utils";
 import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/hover-card";
 import {useConfig} from '@/contexts/ConfigContext';
+import {useFixtureHighlight} from '@/contexts/FixtureHighlightContext';
 import Sentence from "@/components/Sentence";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
@@ -284,6 +285,43 @@ const NoteToken = ({value}: NoteTokenProps) => {
     );
 };
 
+const FixtureToken = ({value}: { value: string }) => {
+    const {selected, setSelected, fixtureSpecs, fixtures} = useFixtureHighlight();
+
+    const keyForValue = (v: string) => {
+        const entry = fixtures.find(nv => Object.values(nv)[0] === v);
+        return entry ? Object.keys(entry)[0] : undefined;
+    };
+
+    const isSelected = selected === value;
+
+    const isRelated = !isSelected && selected !== undefined && (() => {
+        const selectedKey = keyForValue(selected);
+        const thisKey = keyForValue(value);
+        if (!selectedKey || !thisKey) return false;
+        const selectedSpec = fixtureSpecs.find(s => s.key === selectedKey);
+        const thisSpec = fixtureSpecs.find(s => s.key === thisKey);
+        if (!selectedSpec || !thisSpec) return false;
+        return thisSpec.parents.includes(selectedKey) || selectedSpec.parents.includes(thisKey);
+    })();
+
+    return (
+        <span
+            className={cn(
+                'text-foreground font-medium px-0.5 py-0.5 rounded border cursor-pointer',
+                isSelected
+                    ? 'bg-yellow-400/60 border-yellow-400/60'
+                    : isRelated
+                        ? 'bg-yellow-400/20 border-yellow-300/40 hover:bg-yellow-400/40'
+                        : 'bg-muted/20 border-border/15 hover:bg-yellow-400/30 hover:border-yellow-300/40'
+            )}
+            onClick={() => setSelected(isSelected ? undefined : value)}
+        >
+            {value}
+        </span>
+    );
+};
+
 export const keywordColors: Record<string, string> = {
     'given': 'text-sky-600 dark:text-sky-400',
     'when':  'text-amber-600 dark:text-amber-400',
@@ -304,6 +342,7 @@ const styles: Record<string, string> = {
     'tk-id': 'text-foreground',
     'tk-sl': 'text-foreground/90 italic',
     'tk-fv': 'text-foreground bg-muted/20 px-0.5 py-0.5 rounded border border-border/15',
+    'tk-fx': 'text-foreground bg-muted/20 px-0.5 py-0.5 rounded border border-border/15',
     'tk-pv': 'text-foreground bg-muted/20 px-0.5 py-0.5 rounded border border-border/15',
     'tk-num': 'font-semibold text-foreground',
     'tk-bo': 'font-semibold text-foreground/80',
@@ -328,6 +367,7 @@ export const Token = ({token, inheritedKeyword}: TokenProps) => {
     if (types.includes("tk-ac")) return <InfoToken value={value} tooltipContent={value ? acronyms[value] : null} tokenCls={tokenCls}/>;
     if (types.includes("tk-hi")) return <InfoToken value={value} tooltipContent={hint ? hint : null} tokenCls={tokenCls}/>;
     if (types.includes("tk-nt")) return <NoteToken value={value}/>;
+    if (types.includes("tk-fx")) return <FixtureToken value={value}/>;
     if (types.includes("tk-tb")) return <div className="my-2 p-4 bg-muted/30 rounded-lg text-[11px] whitespace-pre-wrap leading-relaxed">{value}</div>;
 
     return <span className={cn(getMappedCls(types), "inline")}>{value}</span>;

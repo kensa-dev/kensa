@@ -58,6 +58,11 @@ export interface Sentence {
     tokens: Token[]
 }
 
+export interface FixtureSpec {
+    key: string
+    parents: string[]
+}
+
 export interface Invocation {
     state: TestState
     displayName: string
@@ -69,6 +74,7 @@ export interface Invocation {
     capturedInteractions: Interaction[]
     capturedOutputs: NameAndValues
     fixtures: NameAndValues
+    fixtureSpecs: FixtureSpec[]
     sequenceDiagram?: string
     executionException: Record<string, string>
     customTabContents?: CustomTabContent[]

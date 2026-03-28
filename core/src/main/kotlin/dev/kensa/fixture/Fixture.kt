@@ -59,6 +59,13 @@ class SecondaryFixture<T>(
             is Parents.Three<*, *, *> -> parents.parent1 == fixture || parents.parent2 == fixture || parents.parent3 == fixture
         }
 
+    fun parentKeys(): List<String> =
+        when (parents) {
+            is Parents.One<*> -> listOf(parents.parent1.key)
+            is Parents.Two<*, *> -> listOf(parents.parent1.key, parents.parent2.key)
+            is Parents.Three<*, *, *> -> listOf(parents.parent1.key, parents.parent2.key, parents.parent3.key)
+        }
+
     override fun createValue(fixtures: Fixtures): T = factory(fixtures)
 }
 

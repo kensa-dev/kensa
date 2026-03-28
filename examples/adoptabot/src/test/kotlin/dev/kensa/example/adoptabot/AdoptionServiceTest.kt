@@ -6,6 +6,8 @@ import dev.kensa.*
 import dev.kensa.Kensa.konfigure
 import dev.kensa.example.adoptabot.AdoptabotExtension.Companion.client
 import dev.kensa.example.adoptabot.AdoptabotExtension.Companion.port
+import dev.kensa.example.adoptabot.AdoptabotFixtures.AdoptionPathFx
+import dev.kensa.example.adoptabot.AdoptabotFixtures.SelectedRobotFx
 import dev.kensa.example.adoptabot.AdoptabotParty.AdoptionService
 import dev.kensa.example.adoptabot.AdoptabotParty.Client
 import dev.kensa.example.adoptabot.AdoptionStatus.Adopted
@@ -137,8 +139,9 @@ class AdoptionServiceTest : KensaTest, WithKotest {
     @Test
     fun canAdoptAnAvailableRobot() {
         given(someAvailableRobotsExist())
+        and(theChosenRobotIs(fixtures(SelectedRobotFx)))
 
-        whenever(aClientRequestsToAdopt(holder.chosenAvailableRobot))
+        whenever(aClientRequestsToAdoptAt(fixtures(AdoptionPathFx)))
 
         then(theResponse(), shouldHaveStatus(OK))
     }
@@ -189,6 +192,27 @@ class AdoptionServiceTest : KensaTest, WithKotest {
      * 
      * @return An action that sets up some available robots
      */
+    private fun theChosenRobotIs(name: String) = Action<GivensContext> { }
+
+    private fun aClientRequestsToAdoptAt(path: String) = Action<ActionContext> { (_, interactions) ->
+        val request = Request(PATCH, "http://localhost:$port$path")
+
+        interactions.capture(
+            from(Client)
+                .to(AdoptionService)
+                .with(request.uri.toString(), "Adoption Request")
+        )
+
+        holder.response = client(request)
+
+        interactions.capture(
+            from(AdoptionService)
+                .to(Client)
+                .with(holder.response, "Adoption Response")
+                .with(Attributes.of("language", Json))
+        )
+    }
+
     private fun someAvailableRobotsExist() = Action<GivensContext> {
         robots = ArrayList(allRobots)
     }
