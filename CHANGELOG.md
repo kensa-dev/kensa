@@ -1,5 +1,28 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.1
+  - Fixture table — parent/child highlighting, hierarchy display, corrected ordering & family grouping. Thanks to Jamie Redding!
+  - Fixtures can now be specified as highlighted
+  - Claude Code Skill
+  - Modern UI overhaul — IBM Plex fonts, larger base size, GWT keyword colour-coding, styled notes, section separators
+  - @Notes annotation — class-level markdown notes rendered above test list; supports bold/italic/links & tables, internal cross-suite navigation (#ClassName.methodName)
+  - Clickable package breadcrumbs — clicking a package segment updates the search query
+  - Sentence line numbers — exceptions/failures now highlighted in the report
+  - Keyboard scrolling — issue/state picker list scrolls with arrow keys
+  - URL entry — entering the app with a query URL now selects the first matching test
+  - Protected phrases honoured in test display names
+  - Custom tabs — HTML content can use secure allow-same-origin iframe
+  - Dependency pruning — antlr4 → antlr4-runtime (saves ~7MB); kotlinCompilerEmbeddable marked compileOnly; PlantUML JAR shadowed; assertion libs promoted to api() scope
+  - Kotlin 2.3.20 — includes fix for downstream compiler plugin errors
+  - Kotest 6.1 — version bump + test fix
+  - Gradle 9.4.1
+  - Experimental Kotest and TestNG support (tests pending)
+  - Report date & Kensa version shown in the modern UI
+  - Disabled tests & package display fixes
+  - JUnit 6 BOM no longer leaks into assertion dependencies — Tim W
+  - Sequence diagram CSS tweaks (light & dark mode improvements)
+  - Hamcrest/Hamkrest modules aligned with Kotest module structure
+
 ### v0.6.0
   - Experimental support for JUnit 6
     * Breaking dependency change: Now need to specify junit dependency as either `dev.kensa:kensa-framework-junit5` or `dev.kensa:kensa-framework-junit6` 
