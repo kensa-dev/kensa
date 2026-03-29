@@ -39,6 +39,10 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
         },
+        gtag: {
+          trackingID: 'G-XBGTKEJ8KH',
+          anonymizeIP: true,
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
