@@ -5,7 +5,7 @@
   - Fixtures can now be specified as highlighted
   - Claude Code Skill
   - Modern UI overhaul — IBM Plex fonts, larger base size, GWT keyword colour-coding, styled notes, section separators
-  - @Notes annotation — class-level markdown notes rendered above test list; supports bold/italic/links & tables, internal cross-suite navigation (#ClassName.methodName)
+  - Notes annotation — class-level markdown notes rendered above test list; supports bold/italic/links & tables, internal cross-suite navigation (#ClassName.methodName)
   - Clickable package breadcrumbs — clicking a package segment updates the search query
   - Sentence line numbers — exceptions/failures now highlighted in the report
   - Keyboard scrolling — issue/state picker list scrolls with arrow keys
