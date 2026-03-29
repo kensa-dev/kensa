@@ -137,7 +137,7 @@ Kensa.configure()
 Then open `index.html` in a browser, or use the Kensa CLI to serve them:
 
 ```bash
-kensa serve build/kensa
+kensa --dir build/kensa
 ```
 
 ---
