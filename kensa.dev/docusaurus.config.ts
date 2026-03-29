@@ -109,6 +109,7 @@ const config: Config = {
             { label: 'Releases', href: 'https://github.com/kensa-dev/kensa/releases' },
             { label: 'Issues', href: 'https://github.com/kensa-dev/kensa/issues' },
             { label: 'Maven Central', href: 'https://central.sonatype.com/search?q=dev.kensa' },
+            { label: 'Privacy', to: '/privacy' },
           ],
         },
       ],
