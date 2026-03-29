@@ -11,70 +11,56 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
     {
-        title: 'BDD Testing Made Simple',
+        title: 'No Gherkin. Just code.',
         Svg: require('@site/static/img/testing.svg').default,
         description: (
-            <>
-                Kensa allows you to write tests in natural language, simplifying BDD testing for Kotlin and Java developers without requiring additional text descriptions.
-            </>
+            <>Write Given–When–Then tests directly in Kotlin or Java. No feature files, no step definitions to maintain.</>
         ),
     },
     {
-        title: 'Integrated Framework Support',
+        title: 'Works with your framework',
         Svg: require('@site/static/img/coding.svg').default,
         description: (
-            <>
-                Seamlessly integrate with popular frameworks like <strong>JUnit5</strong> (available now), with <strong>TestNG</strong> and <strong>Kotest</strong> support coming soon.
-            </>
+            <>Supports <strong>JUnit 5</strong>, <strong>Kotest</strong>, and <strong>TestNG</strong>. Auto-registered via ServiceLoader — add the dependency and you're done.</>
         ),
     },
     {
-        title: 'Rich HTML Test Output',
+        title: 'Living HTML reports',
         Svg: require('@site/static/img/html.svg').default,
         description: (
-            <>
-                Write Kotlin or Java tests in your own fluent, readable style, and Kensa will generate interactive documentation directly from the source code, enriched with variable and fixture values for added clarity.
-            </>
+            <>Every test run produces an interactive HTML report with test sentences, captured values, and fixture state — generated from source code, not annotations.</>
         ),
     },
     {
-        title: 'Interactive Sequence Diagrams',
+        title: 'Sequence diagrams included',
         Svg: require('@site/static/img/work-flow.svg').default,
         description: (
-            <>
-                Capture interactions from your tests and display them as embedded sequence diagrams to provide a visual representation of test workflows.
-            </>
+            <>Capture interactions between components in your tests. Kensa renders them as sequence diagrams embedded directly in the report.</>
         ),
     },
     {
-        title: 'Flexible Matcher Support',
+        title: 'Your assertion library',
         Svg: require('@site/static/img/checked.svg').default,
         description: (
-            <>
-                Use your preferred assertion library, including <strong>Hamcrest</strong>, <strong>HamKrest</strong>, <strong>Kotest</strong>, or <strong>AssertJ</strong>, for greater flexibility in designing tests.
-            </>
+            <>Use <strong>AssertJ</strong>, <strong>Hamcrest</strong>, <strong>HamKrest</strong>, or <strong>Kotest</strong> matchers. Mix them freely within a project.</>
         ),
     },
     {
-        title: 'Field & Variable Tracking',
+        title: 'Values in the report',
         Svg: require('@site/static/img/code.svg').default,
         description: (
-            <>
-                Effortlessly capture and display the values of variables or fields directly in the HTML report, offering unparalleled test insights.
-            </>
+            <>Annotate fields with <code>@RenderedValue</code> and their values appear in the report automatically — no logging, no boilerplate.</>
         ),
     },
 ];
 
 function Feature({ title, Svg, description }: FeatureItem) {
     return (
-        <div className={clsx('col col--4')}>
-            <div className="text--center">
+        <div className={clsx('col col--4', styles.featureCol)}>
+            <div className={styles.featureCard}>
                 <Svg className={styles.featureSvg} role="img" />
-            </div>
-            <div className="text--center padding-horiz--md">
-                <Heading as="h3">{title}</Heading>
-                <p>{description}</p>
+                <Heading as="h3" className={styles.featureTitle}>{title}</Heading>
+                <p className={styles.featureDesc}>{description}</p>
             </div>
         </div>
     );

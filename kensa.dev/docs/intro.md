@@ -42,7 +42,7 @@ Kensa is a modern BDD testing framework for Kotlin and Java that simplifies beha
 - **Expressive Syntax** - Use a fluent, readable syntax that follows the Given-When-Then pattern
 - **Rich HTML Reports** - Generate comprehensive reports directly from your test code
 - **Sequence Diagrams** - Automatically generate sequence diagrams to visualize interactions
-- **Framework Integration** - Seamlessly integrate with JUnit5. TestNG and Kotest coming soon!
+- **Framework Integration** - Seamlessly integrate with JUnit 5, Kotest, and TestNG
 - **Flexible Assertions** - Use your preferred assertion library (Hamcrest, HamKrest, Kotest, AssertJ)
 - **Variable Tracking** - Capture and display relevant variables in your reports
 

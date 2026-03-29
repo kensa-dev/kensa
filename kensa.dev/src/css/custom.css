@@ -1,10 +1,5 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #2e8555;
   --ifm-color-primary-dark: #29784c;
@@ -13,18 +8,140 @@
   --ifm-color-primary-light: #33925d;
   --ifm-color-primary-lighter: #359962;
   --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-code-font-size: 93%;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #3cad6e;
+  --ifm-color-primary-dark: #35a064;
+  --ifm-color-primary-darker: #309660;
+  --ifm-color-primary-darkest: #277a4f;
+  --ifm-color-primary-light: #43ba78;
+  --ifm-color-primary-lighter: #4dc07e;
+  --ifm-color-primary-lightest: #66ca91;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--ifm-font-family-monospace);
+  font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+
+.footer {
+  --footer-bg: #0d1f16;
+  --footer-border: rgba(62, 173, 110, 0.18);
+  --footer-text: rgba(255, 255, 255, 0.55);
+  --footer-heading: rgba(255, 255, 255, 0.35);
+  --footer-link: rgba(255, 255, 255, 0.7);
+  --footer-link-hover: #3cad6e;
+
+  background: var(--footer-bg);
+  border-top: 1px solid var(--footer-border);
+  padding: 3rem 0 2rem;
+}
+
+/* Logo area — sits above the link columns via Docusaurus's .footer__logo */
+.footer__logo {
+  margin-bottom: 0.25rem;
+}
+
+/* The brand name rendered next to/below the logo by the 'logo.href' setup */
+.footer__title {
+  font-size: 0.6875rem;          /* 11px */
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--footer-heading);
+  margin-bottom: 1rem;
+}
+
+/* Column headings ("Learn", "Project") */
+.footer__col .footer__title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--footer-heading);
+  margin-bottom: 0.875rem;
+}
+
+/* Individual links */
+.footer__link-item {
+  color: var(--footer-link);
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.footer__link-item:hover {
+  color: var(--footer-link-hover);
+  text-decoration: none;
+}
+
+/* Spacing between stacked links */
+.footer__items .footer__item {
+  margin-bottom: 0.65rem;
+}
+
+/* Separator dot between links (Docusaurus puts · between inline links; hide it) */
+.footer__link-separator {
+  display: none;
+}
+
+/* Bottom bar: copyright */
+.footer__bottom {
+  border-top: 1px solid var(--footer-border);
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  text-align: center;
+}
+
+.footer__copyright {
+  font-size: 0.8125rem;
+  color: var(--footer-text);
+  letter-spacing: 0.01em;
+}
+
+/* Centre the link columns */
+.footer__links {
+  max-width: 500px;
+  margin: 0 auto;
+  gap: 4rem;
+  flex-wrap: nowrap;
+}
+
+/* Inner container — match site's max-width and horizontal padding */
+.footer > .container {
+  max-width: var(--ifm-container-width, 1280px);
+}
+
+/* Logo column: give it a bit more breathing room on the right */
+.footer__col:first-child {
+  padding-right: 3rem;
+}
+
+/* Responsive: stack single-column on small screens */
+@media (max-width: 768px) {
+  .footer {
+    padding: 2rem 0 1.5rem;
+  }
+
+  .footer__col:first-child {
+    padding-right: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .footer__bottom {
+    margin-top: 1.5rem;
+  }
 }

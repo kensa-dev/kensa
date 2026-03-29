@@ -1,37 +1,94 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .heroBanner {
-  padding: 4rem 0;
+  padding: 3rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+/* Subtle dot-grid texture over the hero background */
+.heroBanner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.heroTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.heroLogo {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: inherit;
+}
+
+.tagline {
+  font-size: 1.15rem;
+  max-width: 560px;
+  margin: 0;
+  opacity: 0.92;
+  line-height: 1.6;
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
 }
 
-:root {
-  --logo-fill: black; /* Default text fill for light theme */
+.githubButton {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: inherit;
 }
 
-[data-theme='dark'] {
-  --logo-fill: white; /* Text fill for dark theme */
+.githubButton:hover {
+  border-color: rgba(255, 255, 255, 0.85);
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.invertLogo {
-  width: 100px;
-  height: 100px;
-  fill: var(--logo-fill); /* Apply dynamic fill color */
+@media screen and (max-width: 768px) {
+  .heroBanner {
+    padding: 2rem 1rem;
+  }
+
+  .title {
+    font-size: 2.25rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+  }
 }

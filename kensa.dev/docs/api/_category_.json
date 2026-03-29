@@ -1,0 +1,8 @@
+{
+  "label": "API Documentation",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Detailed documentation of Kensa's API."
+  }
+}

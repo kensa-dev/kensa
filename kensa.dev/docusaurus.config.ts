@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Kensa',
   tagline: 'BDD Testing for Kotlin & Java',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/Logo.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -30,8 +30,7 @@ const config: Config = {
     locales: ['en'],
   },
 
-  customFields: {
-  },
+  themes: ['@saucelabs/theme-github-codeblock'],
 
   presets: [
     [
@@ -49,7 +48,7 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/report-example.png',
     navbar: {
       title: 'Kensa',
       logo: {
@@ -61,31 +60,19 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Documentation',
-        },
-        {
-          type: 'doc',
-          docId: 'quickstart/java-quickstart',
-          position: 'left',
-          label: 'Java Quickstart',
+          label: 'Docs',
         },
         {
           type: 'doc',
           docId: 'quickstart/kotlin-quickstart',
           position: 'left',
-          label: 'Kotlin Quickstart',
+          label: 'Quickstart',
         },
         {
           type: 'doc',
           docId: 'api/overview',
           position: 'left',
           label: 'API',
-        },
-        {
-          type: 'doc',
-          docId: 'examples/microservices-example',
-          position: 'left',
-          label: 'Examples',
         },
         {
           href: 'https://github.com/kensa-dev/kensa',
@@ -96,7 +83,32 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      copyright: `Copyright © ${new Date().getFullYear()} All rights reserved.`,
+      logo: {
+        alt: 'Kensa',
+        src: 'img/Logo.svg',
+        width: 36,
+        height: 36,
+      },
+      links: [
+        {
+          title: 'Learn',
+          items: [
+            { label: 'Quickstart', to: '/docs/quickstart/kotlin-quickstart' },
+            { label: 'Documentation', to: '/docs/intro' },
+            { label: 'API Reference', to: '/docs/api/overview' },
+          ],
+        },
+        {
+          title: 'Project',
+          items: [
+            { label: 'GitHub', href: 'https://github.com/kensa-dev/kensa' },
+            { label: 'Releases', href: 'https://github.com/kensa-dev/kensa/releases' },
+            { label: 'Issues', href: 'https://github.com/kensa-dev/kensa/issues' },
+            { label: 'Maven Central', href: 'https://central.sonatype.com/search?q=dev.kensa' },
+          ],
+        },
+      ],
+      copyright: `© ${new Date().getFullYear()} Kensa — BDD Testing for Kotlin &amp; Java`,
     },
     prism: {
       theme: prismThemes.github,
