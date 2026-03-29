@@ -60,3 +60,7 @@ create-release-note:
 .PHONY: build-cli
 build-cli:
 	cd cli && go mod tidy && mkdir -p build/bin && go build -o build/bin/kensa cmd/kensa/main.go
+
+.PHONY: package-skill
+package-skill:
+	cd skills && zip -r ../kensa-test.skill kensa-test/

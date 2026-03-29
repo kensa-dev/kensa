@@ -2,65 +2,70 @@
 
 ![Latest Release](https://img.shields.io/github/v/release/kensa-dev/kensa)
 
-Check out the [documentation](https://kensa.dev) (soon!)
+**Kensa** is a BDD testing framework for Kotlin and Java. Write Given-When-Then tests directly in code — no Gherkin files, no step definitions. Kensa parses your test source at runtime to produce rich HTML reports and sequence diagrams.
 
-# Introduction to BDD with Kensa
+Check out the [documentation](https://kensa.dev) for quickstarts, API reference, and examples.
 
-## What is Behavior-Driven Development (BDD)?
+| Write this… | …get this |
+|---|---|
+| ![Kensa test written in Kotlin](kensa.dev/static/img/code-example.png) | ![Kensa generated HTML report with sequence diagram](kensa.dev/static/img/report-example.png) |
 
-Behavior-Driven Development (BDD) is an agile software development methodology that encourages collaboration between developers, QA, and non-technical or business participants in a software project. It extends Test-Driven Development (TDD) by writing test cases in a natural language that non-programmers can read.
+## Features
 
-BDD focuses on:
+- **Code-first BDD** — Given-When-Then structure in plain Kotlin/Java; no external DSL files
+- **HTML reports** — generated directly from test source, always in sync with the code
+- **Sequence diagrams** — visualise interactions between actors captured during test execution
+- **Framework support** — JUnit 5, Kotest, TestNG
+- **Assertion libraries** — Kotest, AssertJ, Hamcrest, HamKrest
 
-- **Defining behaviour in a shared language** - Creating a ubiquitous language that all team members can understand
-- **Documenting examples** - Using concrete examples to illustrate the expected behaviour
-- **Automating validation** - Converting examples into automated tests
+## Getting Started
 
-The core of BDD is the ability to express tests in a language that both technical and non-technical stakeholders can understand, while still being executable as automated tests.
+Add the dependency for your test framework:
 
-## Why BDD is Beneficial
+```kotlin
+// build.gradle.kts
+dependencies {
+    testImplementation("dev.kensa:kensa-junit:<version>")   // JUnit 5
+    // or
+    testImplementation("dev.kensa:kensa-kotest:<version>")  // Kotest runner
 
-BDD offers numerous advantages for software development teams:
+    // Assertions bridge (pick one or more)
+    testImplementation("dev.kensa:kensa-kotest:<version>")
+    testImplementation("dev.kensa:kensa-assertj:<version>")
+}
+```
 
-1. **Improved Communication** - BDD bridges the gap between technical and non-technical team members by using a common language to describe system behaviour.
+Find the latest version on the [releases page](https://github.com/kensa-dev/kensa/releases).
 
-2. **Living Documentation** - Tests serve as documentation that is always up-to-date because it's executable and verified with each build.
+See the [Kotlin quickstart](https://kensa.dev/docs/quickstart/kotlin-quickstart) or [Java quickstart](https://kensa.dev/docs/quickstart/java-quickstart) for a full setup walkthrough.
 
-3. **Focus on User Value** - By describing behaviour from the user's perspective, teams stay focused on delivering features that provide real value.
+## Tooling
 
-4. **Reduced Rework** - Clear specifications from the beginning help avoid misunderstandings that lead to rework.
+### CLI — serve reports locally
 
-5. **Higher Quality Code** - Writing tests before implementation leads to better design and more maintainable code.
+Every release ships pre-built binaries for macOS (Intel + Apple Silicon), Linux, and Windows.
+Download `kensa-<os>-<arch>` from the [latest release](https://github.com/kensa-dev/kensa/releases/latest), then:
 
-6. **Faster Feedback** - Automated tests provide immediate feedback on whether the system behaves as expected.
+```bash
+kensa serve <path-to-report-dir>
+```
 
-## Introducing Kensa
+This starts a local HTTP server and opens your HTML reports in the browser.
 
-Kensa is a modern BDD testing framework for Kotlin and Java that simplifies behaviour-driven development. Unlike traditional BDD frameworks that require separate text files for specifications, Kensa allows you to write your tests directly in your code using a natural, fluent syntax.
+### Claude Code skill — AI-assisted test review
 
-### Key Features of Kensa
+Every release also ships `kensa-test.skill`, a [Claude Code](https://claude.ai/code) skill that reviews Kensa tests for idiomatic style, fluency violations, and best-practice patterns.
 
-- **Native Language Support** - Write tests in Kotlin or Java without the need for external DSL files
-- **Expressive Syntax** - Use your own fluent, readable syntax following the Given-When-Then pattern
-- **Rich HTML Output** - Generate interactive documentation illustrating the functionality under test 
-- **Sequence Diagrams** - Automatically generate sequence diagrams to visualize interactions between components
-- **Framework Integration** - Seamlessly integrate with JUnit5. TestNG and Kotest coming soon!
-- **Flexible Assertions** - Use your preferred assertion library (Hamcrest, HamKrest, Kotest, AssertJ)
-- **Variable/Scenario Tracking** - Choose to capture and display the values of fields and scenario values directly in your test output
+Install it once:
 
-### How Kensa Differs from Traditional BDD Frameworks
+```bash
+claude plugin install kensa-test.skill
+```
 
-Traditional BDD frameworks like Cucumber require you to:
-1. Write feature files in Gherkin syntax
-2. Implement step definitions that map to the Gherkin statements
-3. Maintain the mapping between the two
+Then invoke it in any Claude Code session:
 
-Kensa simplifies this process by:
-1. Writing tests directly in your code using a natural, fluent syntax
-2. Automatically generating documentation from your code
-3. Eliminating the need to maintain separate feature files
+```
+/kensa-test review this test
+```
 
-This approach reduces overhead while still providing the benefits of BDD, making it easier to adopt and maintain over time.
-
-In the following sections, we'll show you how to get started with Kensa and demonstrate its capabilities through practical examples.
-
+The skill checks for fluent English in rendered test bodies, correct use of Fixtures and CapturedOutputs, semantic assertion naming, composable setup toolboxes, and the typed context/mixin pattern for multi-stub tests.

@@ -32,6 +32,8 @@ jobs:
           GOOS=windows GOARCH=arm64 go build -o build/bin/kensa-windows-arm64.exe cmd/kensa/main.go
           cd ..
           echo "${GIT_TAG_NAME}" > cli/build/bin/version.txt
+      - name: Package Claude skill
+        run: cd skills && zip -r ../kensa-test.skill kensa-test/
       - uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -48,3 +50,4 @@ jobs:
             cli/build/bin/kensa-windows-amd64.exe
             cli/build/bin/kensa-windows-arm64.exe
             cli/build/bin/version.txt
+            kensa-test.skill
