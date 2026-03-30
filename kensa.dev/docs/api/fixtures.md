@@ -9,6 +9,10 @@ import TabItem from '@theme/TabItem';
 
 Kensa Fixtures are collections of type-safe, lazily-created test data values. Each test invocation has its own discreet set of Fixtures. They are shared across `given`, `whenever`, and `then` steps via the context objects.
 
+:::tip Full example
+The code on this page is taken from [clearwave-kensa-example](https://github.com/kensa-dev/clearwave-kensa-example) — a complete working project that demonstrates fixtures, captured outputs, sequence diagrams, and async assertions.
+:::
+
 ---
 
 ## Defining Fixtures
@@ -16,37 +20,30 @@ Kensa Fixtures are collections of type-safe, lazily-created test data values. Ea
 Fixtures must be defined inside a `FixtureContainer` object. This can be an instance of a Java class or a Kotlin object.
 They carry a string key which must be unique — and a factory that creates the value.
 
-Fixtures can depend on up to three other fixtures, the factory for dependent fixtures will receive the resolved parent values at creation time.
+Fixtures can depend on up to three other fixtures; the factory for dependent fixtures will receive the resolved parent values at creation time.
 
-It is best to define fixtures statically by public properties, which you can then use when referencing them in tests.
+It is best to define fixtures as static/public properties, which you can then import by name in your tests.
 
 ### Primary Fixtures
 
 A primary fixture has no dependencies — its factory takes no arguments.
 
-<Tabs groupId="lang">
+The key design principle is **granularity**: define one fixture per meaningful field rather than one fixture per domain object. This lets each field appear by name in the rendered report wherever it is referenced in the test body.
+
+<Tabs>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-object MyFixtures : FixtureContainer {
-    // Simple fixture
-    val CustomerId = fixture("CustomerId") { "cust-${UUID.randomUUID()}" }
-    
-    // Highlighted in the report
-    val OrderId = fixture("OrderId", highlighted = true) { someRandomOrderId() }
-}
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L12-L65
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
-class MyFixtures implements FixtureContainer {
-    private MyFixtures() {}
+Java tests access fixtures via static aliases that delegate to the `FixtureContainer` singleton. Import them statically for idiomatic `SCREAMING_SNAKE_CASE` usage in test code.
 
-    public static final PrimaryFixture<String> CUSTOMER_ID = createFixture("CustomerId", () -> "cust-" + UUID.randomUUID());
-    public static final PrimaryFixture<String> ORDER_ID = createFixture("CustomerId", true, () -> someRandomOrderId());
-}
+```java reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/support/JavaTelecomsFixtures.java#L14-L47
 ```
 
 </TabItem>
@@ -56,35 +53,67 @@ class MyFixtures implements FixtureContainer {
 
 A secondary fixture depends on one or more parent fixtures. Its factory receives the resolved parent values.
 
-<Tabs groupId="lang">
+**2 parents:**
+
+<Tabs>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Depends on one parent
-val customer = fixture("customer", CustomerId) { id ->
-    Customer(id, "Jane Smith")
-}
-
-// Depends on two parents
-val order = fixture("order", CustomerId, OrderId) { custId, ordId ->
-    Order(ordId, custId, listOf(Product("widget")))
-}
-
-// Up to three parents are supported
-val shipment = fixture("shipment", Customer, Order, WarehouseId) { cust, ord, whId ->
-    Shipment(cust, ord, whId)
-}
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L66-L68
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-static final Fixture<Customer> CUSTOMER = createFixture("customer", CUSTOMER_ID,
-    id -> new Customer(id, "Jane Smith"));
+createFixture("Appointment Slot", appointmentDate, appointmentTimeSlot,
+    (date, slot) -> new AppointmentSlot(date, slot))
+```
 
-static final Fixture<Order> ORDER = createFixture("order", CUSTOMER_ID, ORDER_ID,
-    (custId, ordId) -> new Order(ordId, custId, List.of(new Product("widget"))));
+</TabItem>
+</Tabs>
+
+**3 parents — composite object built from individual field fixtures:**
+
+<Tabs>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L47-L49
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+createFixture("Voice Profile", voiceDownloadSpeed, voiceUploadSpeed, voiceSupplier,
+    (dl, ul, sup) -> new LineProfile("FTTP", dl, ul, "Full Fibre 900 with Voice", sup))
+```
+
+</TabItem>
+</Tabs>
+
+**More than 3 parents** — construct a `SecondaryFixture` directly; its factory lambda receives the full `Fixtures` map:
+
+<Tabs>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L28-L39
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+new SecondaryFixture<>(
+    "Service Address",
+    fixtures -> new ServiceAddress(
+        fixtures.get(postcode), fixtures.get(addressLine1),
+        fixtures.get(town), fixtures.get(county)
+    ),
+    Parents.Three.of(postcode, addressLine1, town)
+)
 ```
 
 </TabItem>
@@ -94,54 +123,86 @@ static final Fixture<Order> ORDER = createFixture("order", CUSTOMER_ID, ORDER_ID
 
 ## Using Fixtures in Tests
 
-Access fixtures through the context passed to each step. Fixture values are created lazily — the factory runs the first time `fixtures[key]` is called.
+### In `given` and `whenever` actions
 
-<Tabs groupId="lang">
+Access fixtures through the context destructured in each action lambda:
+
+<Tabs>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-class OrderTest : KensaTest, WithKotest {
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L104-L113
+```
 
-    private val customerId = fixture("customer id") { "cust-123" }
-    private val customer = fixture("customer", customerId) { id -> Customer(id, "Jane Smith") }
-
-    @Test
-    fun `places an order successfully`() {
-        given {
-            fixtures[customer]  // creates customer (and customerId) lazily
-        }
-        whenever { ctx ->
-            val c = ctx.fixtures[customer]
-            ctx.outputs.put("response", orderService.placeOrder(c))
-        }
-        then({ ctx -> ctx.outputs["response"] }) {
-            it.statusCode shouldBe 201
-        }
-    }
-}
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L125-L137
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
-class OrderTest implements KensaTest, WithAssertJ {
+```java reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L100-L111
+```
 
-    static final Fixture<String> CUSTOMER_ID = createFixture("customer id", () -> "cust-123");
-    static final Fixture<Customer> CUSTOMER = createFixture("customer", CUSTOMER_ID,
-        id -> new Customer(id, "Jane Smith"));
+```java reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/OrderServiceJavaTest.java#L113-L157
+```
 
-    @Test
-    void placesAnOrderSuccessfully() {
-        given(ctx -> ctx.getFixtures().get(CUSTOMER));  // lazy creation
-        whenever(ctx -> {
-            Customer c = ctx.getFixtures().get(CUSTOMER);
-            ctx.getOutputs().put("response", orderService.placeOrder(c));
-        });
-        then(ctx -> ctx.getOutputs().get("response"),
-            response -> assertThat(response.statusCode()).isEqualTo(201));
-    }
-}
+</TabItem>
+</Tabs>
+
+### In the test body — the key rendering pattern
+
+The most important place to use fixture references is **directly in the test body**, passed as named arguments into assertion helpers. Kensa parses the test source code and when it sees `fixtures[voiceDownloadSpeed]` (Kotlin) or `fixtures(VOICE_DOWNLOAD_SPEED)` (Java) in the sentence it substitutes the fixture's display name — *Voice Download Speed* — rather than the raw value `900`. This makes reports self-documenting.
+
+<Tabs>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L51-L62
+```
+
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L65-L77
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L48-L58
+```
+
+```java reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/OrderServiceJavaTest.java#L54-L65
+```
+
+</TabItem>
+</Tabs>
+
+The assertion helpers simply accept the fixture values as ordinary parameters — they have no special knowledge of Kensa:
+
+<Tabs>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L172-L184
+```
+
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L194-L206
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L178-L197
+```
+
+```java reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/OrderServiceJavaTest.java#L190-L211
 ```
 
 </TabItem>
@@ -181,28 +242,27 @@ createFixture(String key, Fixture<P1> parent1, Fixture<P2> parent2, BiFunction<P
 | Method / operator | Description |
 |-------------------|-------------|
 | `fixtures[fixture]` | Get (and lazily create) the fixture value |
-| `fixtures.values()` | All fixture values as `Set<NamedValue>` |
+| `fixtures.values()` | All fixture values as `List<NamedValue>` |
 | `fixtures.highlightedValues()` | Only highlighted fixture values |
 
 ---
 
 ## Highlighting
 
-Set `highlighted = true` on any fixture to have its value appear prominently in the report.
+Set `highlighted = true` on any fixture to have its value appear prominently in the report. This is useful for correlation IDs and other values that should stand out across all interactions.
 
-<Tabs groupId="lang">
+<Tabs>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-val transactionId = fixture("transaction id", highlighted = true) { "txn-${UUID.randomUUID()}" }
+```kotlin reference
+https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L14-L15
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-static final Fixture<String> TRANSACTION_ID = createFixture("transaction id", true,
-    () -> "txn-" + UUID.randomUUID());
+createFixture("Tracking Id", /* highlighted = */ true, TrackingId::new)
 ```
 
 </TabItem>
