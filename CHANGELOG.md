@@ -1,8 +1,12 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.4
+  - Adding overloads for fixtures when using function references.
+  - Allowing inline notes to be rendered inside Kotlin tests that are expression functions.
+
 ### v0.6.3
   - Fixing issue where legacy tests would not render due to changes in the json format.
-  - 
+
 ### v0.6.2
   - Relocating more PlantUml classes which were causing `VerifyError` in some applications that also use PlantUML.
 
