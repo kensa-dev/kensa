@@ -123,6 +123,8 @@ tasks {
             attributes(mapOf("Implementation-Version" to rootProject.version))
         }
         relocate("net.sourceforge.plantuml", "dev.kensa.internal.plantuml")
+        relocate("net.atmp", "dev.kensa.internal.atmp")
+        relocate("com.plantuml", "dev.kensa.internal.com.plantuml")
         dependsOn(":ui:viteBuild", ":ui2:viteBuild")
         from(project(":antlr").sourceSets["main"].output)
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
