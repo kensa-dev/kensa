@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.3
+  - Fixing issue where legacy tests would not render due to changes in the json format.
+  - 
 ### v0.6.2
   - Relocating more PlantUml classes which were causing `VerifyError` in some applications that also use PlantUML.
 
