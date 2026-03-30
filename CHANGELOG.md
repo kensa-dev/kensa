@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.2
+  - Relocating more PlantUml classes which were causing `VerifyError` in some applications that also use PlantUML.
+
 ### v0.6.1
   - Fixture table — parent/child highlighting, hierarchy display, corrected ordering & family grouping. Thanks to Jamie Redding!
   - Fixtures can now be specified as highlighted
