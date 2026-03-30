@@ -67,6 +67,11 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
             on<EnterExpression> { currentState, _ ->
                 ExpressionFn(currentState)
             }
+            on<Note> { currentState, event ->
+                beginOrContinueNoteSentence(event.location)
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<ChainedCallExpression> { currentState, _ ->
                 ExpressionFn(currentState)
             }
@@ -74,6 +79,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 currentState.parentState
             }
             on<EnterStatement> { currentState, event ->
+                finishNoteSentence()
                 beginSentence(false, event.location)
                 InStatement(currentState)
             }
