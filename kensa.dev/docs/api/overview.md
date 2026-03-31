@@ -14,6 +14,7 @@ Kensa's public API is organised around a few core concepts. Start here, then div
 | [Fixtures](./fixtures) | Type-safe, lazily-created test data shared across `given`, `whenever`, and `then` |
 | [Captured Outputs](./outputs) | Store and retrieve values produced during the action under test |
 | [Annotations](./annotations) | Control what appears in the HTML report — rendered values, notes, issues, and more |
+| [Interaction Renderers](./interaction-renderers) | Custom renderers for values exchanged between actors in sequence diagrams |
 
 ## DSL at a Glance
 
