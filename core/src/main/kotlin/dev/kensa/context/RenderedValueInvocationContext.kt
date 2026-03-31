@@ -12,12 +12,15 @@ class RenderedValueInvocationContext {
         }
     }
 
-    fun nextInvocationFor(name: String): RenderedValueInvocation =
-        if (invocations.keys.find { it.name == name } == null)
-            NoRenderedValueInvocation
-        else {
-            RealRenderedValueInvocation(invocations.keys.find { it.name == name }?.let { invocations.getValue(it).removeFirst() })
-        }
+    fun nextInvocationFor(name: String): RenderedValueInvocation {
+        val list = invocations.entries
+            .find { it.key.name == name }
+            ?.value
+            ?.takeIf { it.isNotEmpty() }
+            ?: return NoRenderedValueInvocation
+
+        return RealRenderedValueInvocation(list.removeFirst())
+    }
 }
 
 sealed interface RenderedValueInvocation {
