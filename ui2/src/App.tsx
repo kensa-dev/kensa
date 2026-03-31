@@ -112,6 +112,8 @@ const App = () => {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const isMod = e.metaKey || e.ctrlKey;
+            const tag = (e.target as HTMLElement)?.tagName;
+            const isEditable = tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable;
 
             if (isMod && e.key === "k") {
                 e.preventDefault();
@@ -119,9 +121,8 @@ const App = () => {
                 return;
             }
 
-            if (isMod && e.key === "f") {
+            if (!isEditable && !isMod && e.key === "/") {
                 e.preventDefault();
-                e.stopPropagation();
 
                 if (isSidebarCollapsed) {
                     sidebarRef.current?.expand();

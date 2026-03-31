@@ -470,7 +470,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                         }}
                                     />
                                     <KbdGroup className="pointer-events-none absolute right-1.5 top-2 hidden select-none sm:flex">
-                                        <Kbd>⌘+F</Kbd>
+                                        <Kbd>/</Kbd>
                                         <Kbd>⌘+K</Kbd>
                                     </KbdGroup>
                                 </div>
