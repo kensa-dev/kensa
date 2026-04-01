@@ -17,7 +17,7 @@ awaitility = "4.3.0"
 minimalJson = "0.9.5"
 antlr = "4.13.2"
 nexusPublish = "2.0.0"
-byteBuddy = "1.17.8"
+byteBuddy = "1.18.8"
 shadow = "9.4.0"
 
 http4k = "6.23.1.0"
