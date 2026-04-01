@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+description: How to define and use Kensa Fixtures — type-safe, lazily-created test data shared across given, whenever, and then steps, with support for dependent fixtures and highlighted values.
 ---
 
 import Tabs from '@theme/Tabs';

@@ -39,6 +39,10 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
         },
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+        },
         gtag: {
           trackingID: 'G-XBGTKEJ8KH',
           anonymizeIP: true,

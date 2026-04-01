@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: Step-by-step guide to adding Kensa to a Kotlin project with JUnit 5, writing your first Given-When-Then test, and viewing the generated HTML report.
 ---
 
 # Quickstart — Kotlin & JUnit 5

@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: An introduction to Behaviour-Driven Development and how Kensa simplifies BDD for Kotlin and Java by letting you write Given-When-Then tests directly in code.
 ---
 
 # Introduction to BDD with Kensa

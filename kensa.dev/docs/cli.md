@@ -1,5 +1,6 @@
 ---
 sidebar_position: 4
+description: The Kensa CLI is a lightweight Go binary that serves HTML test reports over HTTP, with auto-download via a shell wrapper script.
 ---
 
 # CLI

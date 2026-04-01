@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: Overview of Kensa's public API covering the Given-When-Then DSL, framework integrations (JUnit 5, Kotest, TestNG), and assertion library mixins.
 ---
 
 # API Overview

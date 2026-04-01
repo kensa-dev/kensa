@@ -1,5 +1,6 @@
 ---
 sidebar_position: 4
+description: How to use CapturedOutputs to store and retrieve values produced during the whenever step, with typed and string keys, and highlighting support.
 ---
 
 import Tabs from '@theme/Tabs';

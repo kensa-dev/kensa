@@ -1,5 +1,6 @@
 ---
 sidebar_position: 6
+description: How to implement and register InteractionRenderer to control how exchanged values appear in Kensa's Captured Interactions tab and sequence diagrams.
 ---
 
 import Tabs from '@theme/Tabs';
