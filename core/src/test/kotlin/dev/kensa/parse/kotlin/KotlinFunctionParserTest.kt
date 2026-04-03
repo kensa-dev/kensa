@@ -758,6 +758,19 @@ internal class KotlinFunctionParserTest {
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
             }
         }
+
+        @Test
+        internal fun `finds expandable sentence methods from Sources-annotated class`() {
+            val functionName = "testWithExpandableSentenceFromSource"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithExpandableSentenceFromSources::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            parsedMethod.nestedMethods
+                .shouldHaveSize(1)
+                .keys.first().shouldBe("nestedFromSource")
+        }
     }
 
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")

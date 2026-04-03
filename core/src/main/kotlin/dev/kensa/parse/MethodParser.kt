@@ -92,7 +92,9 @@ class MethodParser(
                         acc.apply { putAll(clazz.prepareMethods()) }
                     }
                 }
-                val nestedMethods = testClass.prepareNestedMethods(methodDeclarations, ParseContext(properties, methods))
+                val nestedMethods = relatedClasses.fold(emptyMap<String, ParsedNestedMethod>()) { acc, clazz ->
+                    acc + clazz.prepareNestedMethods(methodDeclarations, ParseContext(properties, methods))
+                }
                 val testMethodSentences = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods))
 
                 ParsedMethod(
