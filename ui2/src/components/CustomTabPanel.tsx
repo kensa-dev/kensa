@@ -22,14 +22,52 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                                                                   maxHeight = 700,
                                                               }) => {
     if (mediaType === 'text/html') {
+        const [expandedImage, setExpandedImage] = React.useState<{ src: string; alt: string } | null>(null);
+
+        React.useEffect(() => {
+            const handler = (e: MessageEvent) => {
+                if (e.data?.type === 'kensa-expand-image') {
+                    setExpandedImage({src: e.data.src, alt: e.data.alt ?? ''});
+                }
+            };
+            window.addEventListener('message', handler);
+            return () => window.removeEventListener('message', handler);
+        }, []);
+
+        const iframeRef = React.useRef<HTMLIFrameElement>(null);
+        const sizeIframe = () => {
+            const doc = iframeRef.current?.contentDocument;
+            if (doc?.body) {
+                iframeRef.current!.style.height = (doc.documentElement.scrollHeight + 16) + 'px';
+            }
+        };
+
         return (
-            <iframe
-                srcDoc={content}
-                sandbox="allow-same-origin"
-                className="w-full border-0"
-                style={{minHeight: 200}}
-                title="tab content"
-            />
+            <>
+                <iframe
+                    ref={iframeRef}
+                    srcDoc={content}
+                    sandbox="allow-scripts allow-same-origin"
+                    className="w-full border-0"
+                    style={{minHeight: 200}}
+                    title="tab content"
+                    onLoad={sizeIframe}
+                />
+                <Dialog open={!!expandedImage} onOpenChange={(open) => { if (!open) setExpandedImage(null); }}>
+                    <DialogContent
+                        className="fixed flex items-center justify-center gap-0 p-4 overflow-hidden outline-none [&>button]:hidden border-none bg-black/90 max-w-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl"
+                        onClick={() => setExpandedImage(null)}
+                    >
+                        {expandedImage && (
+                            <img
+                                src={expandedImage.src}
+                                alt={expandedImage.alt}
+                                className="max-w-full max-h-full object-contain"
+                            />
+                        )}
+                    </DialogContent>
+                </Dialog>
+            </>
         );
     }
     const isPassed = testState === "Passed";
