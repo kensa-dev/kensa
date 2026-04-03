@@ -58,4 +58,16 @@ object LogPatterns {
      */
     fun idFieldAnySeparator(fieldName: String): Regex =
         Regex("^\\s*${Regex.escape(fieldName.trim())}\\s*[^\\w\\s]+\\s*(.+?)\\s*$")
+
+    /** Matches lines starting with an ISO-8601 date-time: `2026-02-02T12:34:56Z` or `...+01:00` */
+    val iso8601Timestamp: Regex = Regex("""^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})?.*""")
+
+    /** Matches lines starting with an ISO-8601 date-time with milliseconds: `2026-02-02T12:34:56.123Z` */
+    val iso8601TimestampMillis: Regex = Regex("""^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+.*""")
+
+    /** Matches lines starting with a Logback-style timestamp: `2026-02-02 12:34:56,123` */
+    val logbackTimestamp: Regex = Regex("""^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+.*""")
+
+    /** Matches lines starting with a time-only prefix: `12:34:56.123` */
+    val timeOnlyTimestamp: Regex = Regex("""^\d{2}:\d{2}:\d{2}(\.\d+)?.*""")
 }

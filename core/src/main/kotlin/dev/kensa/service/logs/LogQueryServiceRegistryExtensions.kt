@@ -20,3 +20,13 @@ fun LogQueryServiceRegistry.indexedFile(id: String, path: Path, idPattern: Regex
         )
     }
 }
+
+fun LogQueryServiceRegistry.indexedFile(id: String, path: Path, idPattern: Regex, delimiterPattern: Regex) {
+    register(id) { sourceId ->
+        IndexedLogFileQueryService(
+            source = FileSource(sourceId, path),
+            idPattern,
+            delimiterPattern
+        )
+    }
+}

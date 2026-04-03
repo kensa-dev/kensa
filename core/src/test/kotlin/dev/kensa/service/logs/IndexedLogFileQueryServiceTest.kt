@@ -184,6 +184,39 @@ class IndexedLogFileQueryServiceTest {
         all.map { it.identifier }.toSet() shouldBe setOf("a", "b")
     }
 
+    @Test
+    fun `timestamp-prefixed lines can be used as delimiters via regex`() {
+        val log = tempDir.resolve("ts.log")
+        log.writeText(
+            """
+               2026-02-02T12:34:56Z BEGIN
+                id: ts1
+                payload-one
+               2026-02-02T12:35:00Z BEGIN
+               2026-02-02T12:36:00Z BEGIN
+                id: ts2
+                payload-two
+               2026-02-02T12:37:00Z BEGIN
+            """.trimIndent(),
+            UTF_8
+        )
+
+        val service = IndexedLogFileQueryService(
+            source = FileSource(id = "A", path = log),
+            idPattern = ID_PATTERN,
+            delimiterRegex = LogPatterns.iso8601Timestamp
+        )
+
+        service.query("A", "ts1").should { records ->
+            records shouldHaveSize 1
+            records.single().text shouldContain "payload-one"
+        }
+        service.query("A", "ts2").should { records ->
+            records shouldHaveSize 1
+            records.single().text shouldContain "payload-two"
+        }
+    }
+
     private companion object {
         private const val DELIMITER = "---BLOCK---"
         private val ID_PATTERN = LogPatterns.idField("id")

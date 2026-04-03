@@ -7,10 +7,11 @@ import kotlin.io.path.notExists
 class IndexedLogFileQueryService(
     private val source: FileSource,
     private val idPattern: Regex,
-    delimiterLine: String
+    private val delimiterRegex: Regex,
 ) : LogQueryService {
 
-    private val delimiterRegex: Regex = LogPatterns.delimiterPrefix(delimiterLine)
+    constructor(source: FileSource, idPattern: Regex, delimiterLine: String) :
+            this(source, idPattern, LogPatterns.delimiterPrefix(delimiterLine))
 
     private val index: Map<String, List<LogRecord>> by lazy { buildIndex() }
 

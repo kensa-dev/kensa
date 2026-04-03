@@ -6,13 +6,14 @@ import dev.kensa.service.logs.LogRecord
 class DockerCliLogQueryService(
     private val sources: List<DockerSource>,
     private val idPattern: Regex,
+    private val delimiterRegex: Regex,
     private val runner: DockerLogsRunner = ProcessDockerLogsRunner(),
-    delimiterLine: String,
 ) : LogQueryService {
 
-    data class DockerSource(val id: String, val container: String)
+    constructor(sources: List<DockerSource>, idPattern: Regex, delimiterLine: String, runner: DockerLogsRunner = ProcessDockerLogsRunner()) :
+            this(sources, idPattern, Regex("^\\s*${Regex.escape(delimiterLine.trim())}.*$"), runner)
 
-    private val delimiterRegex: Regex = Regex("^\\s*${Regex.escape(delimiterLine.trim())}.*$")
+    data class DockerSource(val id: String, val container: String)
 
     private val index: Map<String, Map<String, List<LogRecord>>> by lazy { buildIndex() }
 

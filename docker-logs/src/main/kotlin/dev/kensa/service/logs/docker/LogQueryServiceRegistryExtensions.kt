@@ -16,3 +16,18 @@ fun LogQueryServiceRegistry.dockerCli(
         )
     }
 }
+
+fun LogQueryServiceRegistry.dockerCli(
+    id: String,
+    container: String,
+    idPattern: Regex,
+    delimiterPattern: Regex,
+) {
+    register(id) { sourceId ->
+        DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = sourceId, container = container)),
+            idPattern = idPattern,
+            delimiterRegex = delimiterPattern,
+        )
+    }
+}

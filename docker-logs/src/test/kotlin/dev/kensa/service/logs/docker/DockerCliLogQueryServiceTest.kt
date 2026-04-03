@@ -200,6 +200,32 @@ class DockerCliLogQueryServiceTest {
         service.queryAll("missing").shouldBeEmpty()
     }
 
+    @Test
+    fun `timestamp-prefixed lines can be used as delimiters via regex`() {
+        val fakeRunner = DockerLogsRunner { _ ->
+            sequenceOf(
+                "2026-02-02T12:34:56Z BEGIN",
+                "TrackingId: AAA",
+                "Payload: one",
+                "2026-02-02T12:35:00Z BEGIN",
+                "2026-02-02T12:36:00Z BEGIN",
+                "TrackingId: BBB",
+                "Payload: two",
+                "2026-02-02T12:37:00Z BEGIN"
+            )
+        }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")),
+            idPattern = ID_PATTERN,
+            delimiterRegex = LogPatterns.iso8601Timestamp,
+            runner = fakeRunner
+        )
+
+        service.query("app", "AAA").shouldHaveSize(1).first().text.shouldContain("Payload: one")
+        service.query("app", "BBB").shouldHaveSize(1).first().text.shouldContain("Payload: two")
+    }
+
     private companion object {
         private const val DELIMITER = "***********"
         private val ID_PATTERN = LogPatterns.idField("TrackingId")
