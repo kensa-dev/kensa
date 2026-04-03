@@ -650,6 +650,14 @@ interface CollapsibleMenuNodeProps {
 
 function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconTone, childCounts, labelClassName, children, testMethodMap, matchingMethodsMap}: CollapsibleMenuNodeProps) {
     const [open, setOpen] = React.useState(true);
+    const sortedChildren = React.useMemo(() =>
+        [...children].sort((a, b) => {
+            const aFolder = a.type !== 'test';
+            const bFolder = b.type !== 'test';
+            return aFolder === bFolder ? 0 : aFolder ? -1 : 1;
+        }),
+        [children]
+    );
 
     return (
         <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
@@ -673,7 +681,7 @@ function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconT
 
                 <CollapsibleContent>
                     <SidebarMenuSub className="ml-3 border-l border-border/50 pl-2 py-0">
-                        {children.map((child) => (
+                        {sortedChildren.map((child) => (
                             <RecursiveMenuItem key={child.id} node={child} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById} testMethodMap={testMethodMap} matchingMethodsMap={matchingMethodsMap}/>
                         ))}
                     </SidebarMenuSub>
@@ -750,7 +758,10 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                     node.state === 'Disabled' && !isSelected && "text-disabled opacity-70"
                 )}
             >
-                <Diamond className={cn("h-3.5 w-3.5 shrink-0", iconTone)}/>
+                <Diamond className={cn(
+                    "h-3 w-3 shrink-0",
+                    isSelected ? "fill-current" : "",
+                    iconTone)}/>
                 <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
                 {childCounts && <StateBadges counts={childCounts}/>}
             </SidebarMenuButton>
