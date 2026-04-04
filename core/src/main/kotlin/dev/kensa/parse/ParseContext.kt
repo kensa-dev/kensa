@@ -26,7 +26,7 @@ class ParseContext(
     private val expandableMethodNames = nestedMethods.keys
 
     private val singleCallWithArgumentsPattern = """^(?:(?<receiver>\w+)\.)?(?<function>\w+)\(.*\)$""".toRegex()
-    private val fixturesPattern = """^fixtures[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
+    private val fixturesPattern = """^fixtures[\[({](?:(\w+)\.)?(\w+)[\])}](\.(.+))?$""".toRegex()
     private val outputsByNamePattern = """^outputs[\[(](?:(\w+)\.)?(\w+)[])](\.(.+))?$""".toRegex()
     private val outputsByKeyPattern = """^outputs\("([a-zA-Z0-9_]+)"\)(\.(.+))?$""".toRegex()
     private val chainedCallPattern = """^(\w+)(\(\))?(\.(.+))?$""".toRegex()

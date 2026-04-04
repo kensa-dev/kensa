@@ -1,0 +1,74 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithFixtureSuiteTest",
+  "displayName": "Kotlin With Fixture Suite Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "can access fixtures from a suite using block syntax",
+      "displayName": "can access fixtures from a suite using block syntax",
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [
+            "parent5"
+          ],
+          "sentences": [
+            {
+              "lineNumber": 24,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the string fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "parent5"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "KotlinStringFixture": "parent5"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [
+            {
+              "KotlinStringFixture": "parent5"
+            }
+          ],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinStringFixture",
+              "parents": []
+            }
+          ],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "can access fixtures from a suite using block syntax()"
+        }
+      ]
+    }
+  ]
+}

@@ -112,7 +112,7 @@ class MethodParser(
         }
 
     private fun sentenceBuilder(): (Boolean, Location, Location) -> SentenceBuilder =
-        { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, previousLocation, configuration.dictionary, configuration.tabSize) }
+        { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, configuration.dictionary, configuration.tabSize) }
 
     private fun Class<*>.prepareNestedMethods(methodDeclarations: MethodDeclarations, parseContext: ParseContext): Map<String, ParsedNestedMethod> =
         cache.getOrPutNestedMethods(this) {

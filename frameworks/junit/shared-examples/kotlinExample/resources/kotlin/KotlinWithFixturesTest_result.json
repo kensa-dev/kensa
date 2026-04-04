@@ -3,11 +3,11 @@
   "displayName": "Kotlin With Fixtures Test",
   "state": "Passed",
   "notes": null,
-  "issues": [],
   "packageName": "dev.kensa.example",
+  "issues": [],
   "tests": [
     {
-      "elapsedTime": "17 Ms",
+      "elapsedTime": "",
       "testMethod": "test1",
       "displayName": "Test 1",
       "issues": [],
@@ -15,183 +15,79 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "17 Ms",
-          "highlights": [],
+          "elapsedTime": "",
+          "highlights": [
+            "parent2"
+          ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some prerequisites"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the string fixture equal to"
-              },
-              {
-                "types": [
-                  "tk-fx"
-                ],
-                "value": "parent1"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the boolean fixture equal to"
-              },
-              {
-                "types": [
-                  "tk-fx"
-                ],
-                "value": "false"
-              }
-            ]
-          ],
-          "parameters": [],
-          "givens": [
             {
-              "foo": "parent1"
-            }
-          ],
-          "capturedInteractions": [],
-          "capturedOutputs": [],
-          "fixtures": [
-            {
-              "KotlinStringFixture": "parent1"
+              "lineNumber": 28,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
             },
             {
-              "KotlinBooleanFixture": "false"
+              "lineNumber": 30,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the string fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "parent2"
+                }
+              ]
+            },
+            {
+              "lineNumber": 31,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the boolean fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "false"
+                }
+              ]
             }
-          ],
-          "fixtureSpecs":[],
-          "sequenceDiagram": null,
-          "state": "Passed",
-          "executionException": {},
-          "displayName": "test1()"
-        }
-      ]
-    },
-    {
-      "elapsedTime": "3 Ms",
-      "testMethod": "test2",
-      "displayName": "Test 2",
-      "issues": [],
-      "state": "Passed",
-      "autoOpenTab": "None",
-      "invocations": [
-        {
-          "elapsedTime": "3 Ms",
-          "highlights": [],
-          "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Given"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "some prerequisites"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-bl"
-                ],
-                "value": ""
-              },
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the string fixture equal to"
-              },
-              {
-                "types": [
-                  "tk-fx"
-                ],
-                "value": "parent2"
-              }
-            ],
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the fixture"
-              },
-              {
-                "types": [
-                  "tk-fx"
-                ],
-                "value": "parent2_child1"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "starts with"
-              },
-              {
-                "types": [
-                  "tk-fx"
-                ],
-                "value": "parent2"
-              }
-            ]
           ],
           "parameters": [],
           "givens": [
             {
-              "foo": "parent2"
+              "KotlinStringFixture": "parent2"
             }
           ],
           "capturedInteractions": [],
@@ -201,10 +97,144 @@
               "KotlinStringFixture": "parent2"
             },
             {
-              "KotlinChildStringFixture": "parent2_child1"
+              "KotlinBooleanFixture": "false"
             }
           ],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinStringFixture",
+              "parents": []
+            },
+            {
+              "key": "KotlinBooleanFixture",
+              "parents": []
+            }
+          ],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test1()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "2 Ms",
+      "testMethod": "test2",
+      "displayName": "Test 2",
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "2 Ms",
+          "highlights": [
+            "parent3"
+          ],
+          "sentences": [
+            {
+              "lineNumber": 36,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
+            },
+            {
+              "lineNumber": 38,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the string fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "parent3"
+                }
+              ]
+            },
+            {
+              "lineNumber": 39,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the fixture"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "parent3_child2"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "starts with"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "parent3"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "givens": [
+            {
+              "KotlinStringFixture": "parent3"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [
+            {
+              "KotlinStringFixture": "parent3"
+            },
+            {
+              "KotlinChildStringFixture": "parent3_child2"
+            }
+          ],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinStringFixture",
+              "parents": []
+            },
+            {
+              "key": "KotlinChildStringFixture",
+              "parents": [
+                "KotlinStringFixture"
+              ]
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -224,26 +254,29 @@
           "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the integer fixture equal to"
-              },
-              {
-                "types": [
-                  "tk-fx"
-                ],
-                "value": "23"
-              }
-            ]
+            {
+              "lineNumber": 44,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the integer fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "23"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],
@@ -254,7 +287,12 @@
               "KotlinIntegerFixture": "23"
             }
           ],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinIntegerFixture",
+              "parents": []
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -263,7 +301,7 @@
       ]
     },
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "test4",
       "displayName": "Test 4",
       "issues": [],
@@ -271,29 +309,32 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the private sourced fixture equal to"
-              },
-              {
-                "types": [
-                  "tk-fx"
-                ],
-                "value": "222"
-              }
-            ]
+            {
+              "lineNumber": 49,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the private sourced fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "222"
+                }
+              ]
+            }
           ],
           "parameters": [],
           "givens": [],
@@ -307,7 +348,18 @@
               "KotlinPublicFixture": "222"
             }
           ],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinPrivateFixture",
+              "parents": []
+            },
+            {
+              "key": "KotlinPublicFixture",
+              "parents": [
+                "KotlinPrivateFixture"
+              ]
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -325,42 +377,60 @@
       "invocations": [
         {
           "elapsedTime": "1 Ms",
-          "highlights": [],
+          "highlights": [
+            "parent4"
+          ],
           "sentences": [
-            [
-              {
-                "types": [
-                  "tk-kw"
-                ],
-                "value": "Then"
-              },
-              {
-                "types": [
-                  "tk-wd"
-                ],
-                "value": "the concatenated fixtures equal to"
-              },
-              {
-                "types": [
-                  "tk-mv"
-                ],
-                "value": "parent3-false"
-              }
-            ]
+            {
+              "lineNumber": 54,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the concatenated fixtures equal to"
+                },
+                {
+                  "types": [
+                    "tk-mv"
+                  ],
+                  "value": "parent4-false"
+                }
+              ]
+            }
           ],
           "parameters": [],
-          "givens": [],
+          "givens": [
+            {
+              "KotlinStringFixture": "parent4"
+            }
+          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
             {
-              "KotlinStringFixture": "parent3"
+              "KotlinStringFixture": "parent4"
             },
             {
               "KotlinBooleanFixture": "false"
             }
           ],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinStringFixture",
+              "parents": []
+            },
+            {
+              "key": "KotlinBooleanFixture",
+              "parents": []
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

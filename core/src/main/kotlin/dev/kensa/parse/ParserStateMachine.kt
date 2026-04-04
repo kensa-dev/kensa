@@ -184,6 +184,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, 
                 InFixturesExpression(currentState)
             }
             ignoreAll(
+                any<EnterLambda>(),
+                any<ExitLambda>(),
+                any<EnterStatement>(),
+                any<ExitStatement>(),
                 any<EnterValueArguments>(),
                 any<ExitValueArguments>(),
                 any<EnterValueArgument>(),

@@ -88,6 +88,18 @@ class FixtureRegistryTest {
         }.shouldHaveMessage("Duplicate fixture (field/property) name: DuplicateNameFixture. A fixture with this name is already registered with key: FirstKey")
     }
 
+    @Test
+    fun `should register all sub-container fixtures when registering a FixtureSuite`() {
+        registerFixtures(TestFixtureSuite)
+
+        lookupFixture<String>("SuiteFixtureA").shouldNotBeNull().should {
+            it.key shouldBe "SuiteA"
+        }
+        lookupFixture<Int>("SuiteFixtureB").shouldNotBeNull().should {
+            it.key shouldBe "SuiteB"
+        }
+    }
+
     @Suppress("unused")
     class TestFixtureContainer {
         companion object : FixtureContainer {
@@ -118,5 +130,19 @@ class FixtureRegistryTest {
     @Suppress("unused")
     object FixtureContainerWithDuplicateProperty1 : FixtureContainer {
         val DuplicateNameFixture = fixture<String>("SecondKey") { "Second Value" }
+    }
+
+    @Suppress("unused")
+    object SuiteContainerA : FixtureContainer {
+        val SuiteFixtureA = fixture<String>("SuiteA") { "ValueA" }
+    }
+
+    @Suppress("unused")
+    object SuiteContainerB : FixtureContainer {
+        val SuiteFixtureB = fixture<Int>("SuiteB") { 42 }
+    }
+
+    object TestFixtureSuite : FixtureSuite {
+        override val containers = listOf(SuiteContainerA, SuiteContainerB)
     }
 }

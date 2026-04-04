@@ -43,6 +43,7 @@ object FixtureRegistry {
             if (containerClass.isKotlinClass) {
                 val kClass = containerClass.kotlin
                 if (kClass.isKotlinObject) {
+                    (kClass.objectInstance as? FixtureSuite)?.containers?.forEach { register(it.javaClass) }
                     kClass.registerFixtureProperties()
                 }
             } else {

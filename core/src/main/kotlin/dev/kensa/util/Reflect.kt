@@ -152,7 +152,7 @@ fun Class<*>.findMethod(name: String, vararg paramTypes: Class<*>) =
 
 fun String.toClassOrNull(): Class<*>? = try {
     Class.forName(this)
-} catch (e: Exception) {
+} catch (e: Throwable) {
     null
 }
 
