@@ -14,22 +14,20 @@ import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
 import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateSentence
 
-class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location, Location) -> SentenceBuilder) {
+class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) -> SentenceBuilder) {
 
     private val _sentences: MutableList<TemplateSentence> = ArrayList()
     val sentences: List<TemplateSentence>
         get() = _sentences
 
     private lateinit var sentenceBuilder: SentenceBuilder
-    private var lastSentenceEndLocation: Location? = null
 
     private fun beginSentence(isNoteSentence: Boolean, location: Location) {
-        sentenceBuilder = createSentenceBuilder(isNoteSentence, location, lastSentenceEndLocation ?: location)
+        sentenceBuilder = createSentenceBuilder(isNoteSentence, location)
     }
 
     private fun finishSentence() {
         _sentences += sentenceBuilder.build()
-        lastSentenceEndLocation = sentenceBuilder.lastLocation
     }
 
     private fun beginOrContinueNoteSentence(location: Location) {

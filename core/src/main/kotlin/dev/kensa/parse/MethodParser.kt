@@ -35,12 +35,6 @@ class MethodDeclarations(val declarationsByClass: Map<Class<*>, ClassDeclaration
         return MethodDeclarations(map)
     }
 
-    val allTestMethods: List<MethodDeclarationContext>
-        get() = declarationsByClass.values.flatMap { it.testMethods }
-
-    val nestedMethods: List<MethodDeclarationContext>
-        get() = declarationsByClass.values.flatMap { it.nestedMethods }
-
     fun findTestMethodDeclaration(method: Method): Pair<Int, MethodDeclarationContext> {
         val declarations = declarationsByClass[method.declaringClass]
             ?: throw KensaException("Did not find declaration for class [${method.declaringClass.name}]")
@@ -111,8 +105,8 @@ class MethodParser(
             NestedInvocationContextHolder.expandableSentenceInvocationContext().update(it.nestedMethods)
         }
 
-    private fun sentenceBuilder(): (Boolean, Location, Location) -> SentenceBuilder =
-        { isCommentSentence, location, previousLocation -> SentenceBuilder(isCommentSentence, location, configuration.dictionary, configuration.tabSize) }
+    private fun sentenceBuilder(): (Boolean, Location) -> SentenceBuilder =
+        { isCommentSentence, location -> SentenceBuilder(isCommentSentence, location, configuration.dictionary, configuration.tabSize) }
 
     private fun Class<*>.prepareNestedMethods(methodDeclarations: MethodDeclarations, parseContext: ParseContext): Map<String, ParsedNestedMethod> =
         cache.getOrPutNestedMethods(this) {
