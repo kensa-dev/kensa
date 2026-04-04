@@ -1,5 +1,16 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.5
+  - Fix issue where failed tests using ExpandableSentence or ExpandableRenderedValue would not render correctly.
+  - CMD-F binding in Modern UI removed as it was conflicting with default browser search. Replaced with '/' to focus search field.
+  - Modern UI test explorer now orders packages before tests. 
+  - (Experimental) Custom tabs now support image rendering (for upcoming UI testing functionality).
+  - Allow regex to be passed to `IndexedLogFileQueryService` to enable log delimiter lines to more easily matched
+  - Regression - ExpandableSentence defined via Sources annotation were not recognised properly.
+  - Add 'FixtureSuite' and `WithFixtureSuite` alongside new fixture rendering capability using `fixtures { MyFixtureFx }` in tests. Intended to reduce
+    the number of import boilerplate in tests that use a large number of fixtures. (Thanks to Ryan Taplin for the suggestion)
+  - Improve recognition of `EpandableSentence` that use lambda parameters. 
+
 ### v0.6.4
   - Adding overloads for fixtures when using function references.
   - Allowing inline notes to be rendered inside Kotlin tests that are expression functions.
