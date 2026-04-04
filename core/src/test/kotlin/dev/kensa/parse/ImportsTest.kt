@@ -114,6 +114,29 @@ class ImportsTest {
     }
 
     @Test
+    fun `matches kotlin lambda types to FunctionN`() {
+        emptyImports.match(arrayOf(Function0::class.java), listOf("() -> Unit")) shouldBe true
+        emptyImports.match(arrayOf(Function1::class.java), listOf("(String) -> Boolean")) shouldBe true
+        emptyImports.match(arrayOf(Function2::class.java), listOf("(String, Int) -> Boolean")) shouldBe true
+    }
+
+    @Test
+    fun `matches kotlin lambda types with generic return types`() {
+        emptyImports.match(arrayOf(Function0::class.java), listOf("() -> Matcher<*>")) shouldBe true
+        emptyImports.match(arrayOf(Function1::class.java), listOf("(String) -> List<Int>")) shouldBe true
+    }
+
+    @Test
+    fun `matches kotlin lambda with lambda parameter`() {
+        emptyImports.match(arrayOf(Function1::class.java), listOf("((Int) -> Boolean) -> Unit")) shouldBe true
+    }
+
+    @Test
+    fun `does not match non-lambda source types as FunctionN`() {
+        emptyImports.match(arrayOf(Function0::class.java), listOf("String")) shouldBe false
+    }
+
+    @Test
     fun `plus operator combines imports`() {
         val imports1 = Imports(setOf(String::class.java), emptySet(), declaringClass)
         val imports2 = Imports(setOf(Int::class.java), emptySet(), declaringClass)

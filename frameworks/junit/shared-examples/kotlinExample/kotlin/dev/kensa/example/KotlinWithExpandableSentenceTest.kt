@@ -85,6 +85,15 @@ class KotlinWithExpandableSentenceTest : KotlinExampleTest(), WithHamkrest, Inte
     }
 
     @Test
+    fun expandableWithLambdaParameter() {
+        given(somePrerequisites())
+
+        wheneverWithLambda { someActionNoParameters() }
+
+        then(theExtractedValue(), equalTo(aValue))
+    }
+
+    @Test
     fun expandableWithExpandableExpression() {
         givenSomePrerequisites()
 
@@ -116,6 +125,11 @@ class KotlinWithExpandableSentenceTest : KotlinExampleTest(), WithHamkrest, Inte
     @ExpandableSentence
     private fun wheneverSomeActionWith(@RenderedValue aScenarioOf: MyScenario) {
         whenever(someAction(aScenarioOf))
+    }
+
+    @ExpandableSentence
+    private fun wheneverWithLambda(block: () -> Unit) {
+        block()
     }
 
     private fun myLambdaBlock(block: () -> Unit) = block()

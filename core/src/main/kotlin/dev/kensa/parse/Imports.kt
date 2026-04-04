@@ -14,18 +14,20 @@ class Imports(
     fun match(methodParameterTypes: Array<Class<*>>, sourceParameterTypes: List<String>): Boolean {
         if (methodParameterTypes.size != sourceParameterTypes.size) return false
 
-        return methodParameterTypes.zip(sourceParameterTypes).all { (methodType, sourceType) ->
+        return methodParameterTypes.zip(sourceParameterTypes).all { (parameterType, sourceType) ->
             val sourceNoGenerics = sourceType.substringBefore('<')
             val simpleSourceName = sourceNoGenerics.substringAfterLast('.')
 
             when {
-                methodType.isFullyQualifiedMatch(sourceNoGenerics) -> true
+                parameterType.isFullyQualifiedMatch(sourceNoGenerics) -> true
 
-                methodType.isEquivalentToKotlin(simpleSourceName) -> true
+                parameterType.isEquivalentToKotlin(simpleSourceName) -> true
 
-                methodType.simpleName == simpleSourceName && methodType.isInContext() -> true
+                parameterType.simpleName == simpleSourceName && parameterType.isInContext() -> true
 
-                isImportedNestedMatch(methodType, sourceNoGenerics) -> true
+                isImportedNestedMatch(parameterType, sourceNoGenerics) -> true
+
+                isFunctionTypeMatch(parameterType, sourceType) -> true
 
                 else -> false
             }
@@ -64,6 +66,33 @@ class Imports(
 
         val nestedPath = sourceName.substringAfter('.').replace('.', '$')
         return methodType.name == "${importedParent.name}$$nestedPath"
+    }
+
+    private fun isFunctionTypeMatch(methodType: Class<*>, sourceType: String): Boolean {
+        val paramCount = parseFunctionTypeParamCount(sourceType) ?: return false
+        return methodType.name == "kotlin.jvm.functions.Function$paramCount"
+    }
+
+    private fun parseFunctionTypeParamCount(sourceType: String): Int? {
+        if (!sourceType.startsWith('(')) return null
+        var depth = 0
+        var commaCount = 0
+        var hasContent = false
+        for (c in sourceType) {
+            when (c) {
+                '(' -> depth++
+                ')' -> {
+                    depth--
+                    if (depth == 0) {
+                        val rest = sourceType.substringAfter(')').trimStart()
+                        return if (rest.startsWith("->")) (if (hasContent) commaCount + 1 else 0) else null
+                    }
+                }
+                ',' -> if (depth == 1) { commaCount++; hasContent = true }
+                else -> if (depth == 1 && !c.isWhitespace()) hasContent = true
+            }
+        }
+        return null
     }
 
     private fun Class<*>.isEquivalentToKotlin(simpleName: String): Boolean =

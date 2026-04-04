@@ -3,10 +3,11 @@
   "displayName": "Kotlin With Expandable Sentence Test",
   "state": "Passed",
   "notes": null,
-  "issues": [],
   "packageName": "dev.kensa.example",
+  "issues": [],
   "tests": [
     {
+      "elapsedTime": "",
       "testMethod": "simpleExpandable",
       "displayName": "Simple Expandable",
       "issues": [],
@@ -14,6 +15,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -149,7 +151,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -158,6 +160,7 @@
       ]
     },
     {
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
       "issues": [],
@@ -165,6 +168,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
@@ -637,7 +641,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -646,6 +650,7 @@
       ]
     },
     {
+      "elapsedTime": "",
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
       "issues": [],
@@ -653,6 +658,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -783,7 +789,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -792,6 +798,7 @@
       ]
     },
     {
+      "elapsedTime": "",
       "testMethod": "expandableWithFixtureAndScenarioParameters",
       "displayName": "Expandable With Fixture And Scenario Parameters",
       "issues": [],
@@ -799,6 +806,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "",
           "highlights": [
             "parent1"
           ],
@@ -1092,7 +1100,18 @@
               "KotlinChildStringFixture": "parent1_child1"
             }
           ],
-          "fixtureSpecs":[{"key":"KotlinStringFixture","parents":[]},{"key":"KotlinChildStringFixture","parents":["KotlinStringFixture"]}],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinStringFixture",
+              "parents": []
+            },
+            {
+              "key": "KotlinChildStringFixture",
+              "parents": [
+                "KotlinStringFixture"
+              ]
+            }
+          ],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1101,6 +1120,118 @@
       ]
     },
     {
+      "elapsedTime": "3 Ms",
+      "testMethod": "expandableWithLambdaParameter",
+      "displayName": "Expandable With Lambda Parameter",
+      "issues": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "3 Ms",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 89,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
+            },
+            {
+              "lineNumber": 91,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-ex"
+                  ],
+                  "value": "when With Lambda",
+                  "parameterTokens": [],
+                  "tokens": [
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "block"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "types": [
+                    "tk-ex"
+                  ],
+                  "value": "some Action No Parameters",
+                  "parameterTokens": [],
+                  "tokens": [
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "some other action"
+                      },
+                      {
+                        "types": [
+                          "tk-sl"
+                        ],
+                        "value": "anAction"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "lineNumber": 93,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the extracted value equal to"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "givens": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "expandableWithLambdaParameter()"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
       "issues": [],
@@ -1108,10 +1239,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 89,
+              "lineNumber": 98,
               "tokens": [
                 {
                   "types": [
@@ -1139,7 +1271,7 @@
               ]
             },
             {
-              "lineNumber": 91,
+              "lineNumber": 100,
               "tokens": [
                 {
                   "types": [
@@ -1192,7 +1324,7 @@
               ]
             },
             {
-              "lineNumber": 93,
+              "lineNumber": 102,
               "tokens": [
                 {
                   "types": [
@@ -1220,7 +1352,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1229,6 +1361,7 @@
       ]
     },
     {
+      "elapsedTime": "1 Ms",
       "testMethod": "expandableWithExpandableExpressionInInterface",
       "displayName": "Expandable With Expandable Expression In Interface",
       "issues": [],
@@ -1236,10 +1369,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 98,
+              "lineNumber": 107,
               "tokens": [
                 {
                   "types": [
@@ -1267,7 +1401,7 @@
               ]
             },
             {
-              "lineNumber": 100,
+              "lineNumber": 109,
               "tokens": [
                 {
                   "types": [
@@ -1356,7 +1490,7 @@
               ]
             },
             {
-              "lineNumber": 102,
+              "lineNumber": 111,
               "tokens": [
                 {
                   "types": [
@@ -1384,7 +1518,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
@@ -1393,6 +1527,7 @@
       ]
     },
     {
+      "elapsedTime": "1 Ms",
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
       "issues": [],
@@ -1400,10 +1535,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 108,
+              "lineNumber": 117,
               "tokens": [
                 {
                   "types": [
@@ -1440,17 +1576,18 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "[1] one"
         },
         {
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 108,
+              "lineNumber": 117,
               "tokens": [
                 {
                   "types": [
@@ -1487,7 +1624,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},
