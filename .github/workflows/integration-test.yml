@@ -17,7 +17,7 @@ jobs:
           repository: kensa-dev/clearwave-kensa-example
           path: clearwave-kensa-example
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
