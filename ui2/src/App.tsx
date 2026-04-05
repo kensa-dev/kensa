@@ -99,12 +99,16 @@ const App = () => {
                     testClass: node.testClass,
                     state: node.state
                 });
+                const method = searchParams.get('method');
+                if (method) {
+                    pendingTestToExpandRef.current = { testId: node.id, method };
+                }
                 return;
             }
         }
         setSelectedIndex(null);
         setTestDetail(null);
-    }, [location.pathname, indices]);
+    }, [location.pathname, location.search, indices]);
 
     const sidebarRef = useRef<ImperativePanelHandle>(null);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
