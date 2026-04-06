@@ -6,6 +6,7 @@ import dev.kensa.RenderingDirectives
 import dev.kensa.Sources
 import java.lang.System.err
 import java.lang.reflect.AnnotatedElement
+import java.util.concurrent.atomic.AtomicBoolean
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -92,13 +93,26 @@ internal fun Method.actualDeclaringClass(): Class<*> {
     return findMatchingMethodsInHierarchy()?.declaringClass ?: declaringClass
 }
 
+private val contextParameterWarningLogged = AtomicBoolean(false)
+
 @OptIn(ExperimentalContextParameters::class)
 fun Method.findSyntheticKotlinReceivers(): List<Pair<String, String>> =
     kotlinFunction?.let { fn ->
         buildList {
-            fn.contextParameters.forEachIndexed { idx, p ->
-                val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
-                add("context$${idx + 1}" to t)
+            try {
+                fn.contextParameters.forEachIndexed { idx, p ->
+                    val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
+                    add("context$${idx + 1}" to t)
+                }
+            } catch (_: NoSuchMethodError) {
+                if (contextParameterWarningLogged.compareAndSet(false, true)) {
+                    err.println(
+                        "Kensa: kotlin-reflect 2.2+ is required for context parameter support but " +
+                        "an older version is on the runtime classpath. " +
+                        "Add 'resolutionStrategy.force(\"org.jetbrains.kotlin:kotlin-reflect:<your-kotlin-version>\")' " +
+                        "to your build to fix this."
+                    )
+                }
             }
             fn.extensionReceiverParameter?.let { p ->
                 val t = (p.type.classifier as? KClass<*>)?.java?.name ?: "java.lang.Object"
