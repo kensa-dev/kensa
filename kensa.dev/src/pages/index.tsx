@@ -5,6 +5,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageShowcase from '@site/src/components/HomepageShowcase';
+import HomepagePlugin from '@site/src/components/HomepagePlugin';
 
 import styles from './index.module.css';
 
@@ -72,6 +73,7 @@ export default function Home(): ReactNode {
             <main>
                 <HomepageShowcase />
                 <HomepageFeatures />
+                <HomepagePlugin />
             </main>
         </Layout>
     );

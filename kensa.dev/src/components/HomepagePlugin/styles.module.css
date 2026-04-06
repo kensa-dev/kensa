@@ -1,0 +1,151 @@
+.pluginSection {
+  padding: 3rem 0 3.5rem;
+  background: var(--ifm-background-surface-color);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.pluginInner {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+/* ── Left: copy ─────────────────────────────────────────── */
+
+.pluginCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.ideLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.9rem;
+}
+
+.ideIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--ifm-color-primary);
+}
+
+.pluginHeading {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.9rem;
+  line-height: 1.2;
+  color: var(--ifm-heading-color);
+}
+
+.pluginDesc {
+  font-size: 0.97rem;
+  line-height: 1.7;
+  color: var(--ifm-color-emphasis-700);
+  margin: 0 0 1.1rem;
+  max-width: 42ch;
+}
+
+.pluginFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pluginFeatures li {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.pluginFeatures li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+}
+
+.pluginCta {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  border-bottom: 2px solid var(--ifm-color-primary-lightest);
+  padding-bottom: 1px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.pluginCta:hover {
+  color: var(--ifm-color-primary-dark);
+  border-bottom-color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+/* ── Right: embed ───────────────────────────────────────── */
+
+.pluginEmbed {
+  flex-shrink: 0;
+}
+
+
+.embedFrame iframe {
+  display: block;
+  border: none;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media screen and (max-width: 900px) {
+  .pluginInner {
+    flex-direction: column;
+    gap: 2.5rem;
+    align-items: flex-start;
+  }
+
+  .pluginHeading {
+    font-size: 1.6rem;
+  }
+
+  .pluginDesc {
+    max-width: none;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .pluginEmbed {
+    width: 100%;
+  }
+
+  .embedFrame {
+    width: 100%;
+  }
+
+  .embedFrame iframe {
+    width: 100%;
+    min-height: 319px;
+  }
+}
+
+/* ── Dark mode ──────────────────────────────────────────── */
+
+[data-theme='dark'] .pluginSection {
+  background: var(--ifm-background-surface-color);
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
