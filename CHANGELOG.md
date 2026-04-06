@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.6
+  - Synchronising with IntelliJ plugin. Allow the plugin to expand individual tests when clicking on the gutter icon. 
+
 ### v0.6.5
   - Fix issue where failed tests using ExpandableSentence or ExpandableRenderedValue would not render correctly.
   - CMD-F binding in Modern UI removed as it was conflicting with default browser search. Replaced with '/' to focus search field.
