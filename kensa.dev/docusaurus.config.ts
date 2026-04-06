@@ -19,6 +19,8 @@ const config: Config = {
   organizationName: 'kensa-dev',
   projectName: 'kensa',
 
+  trailingSlash: false,
+
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
