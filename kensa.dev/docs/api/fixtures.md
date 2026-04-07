@@ -211,6 +211,64 @@ https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com
 
 ---
 
+## Grouping Fixtures with `WithFixturesSuite`
+
+When many tests share a large `FixtureContainer`, importing every fixture individually creates noise. `WithFixturesSuite` lets you declare one shared interface per container; test classes implement that interface and gain scoped, IDE-assisted block access to all its fixtures.
+
+:::note
+`WithFixturesSuite` is a Kotlin-only feature. Java tests access fixtures via static imports directly.
+:::
+
+**Without `WithFixturesSuite`** — each test file imports fixtures individually:
+
+```kotlin
+import dev.kensa.fixture.TelecomsFixtures.AccountNumber
+import dev.kensa.fixture.TelecomsFixtures.LineProfile
+import dev.kensa.fixture.TelecomsFixtures.AppointmentSlot
+// ... one import per fixture
+
+class FeasibilityServiceTest : KensaTest(), WithHamkrest {
+    @Test
+    fun `can check feasibility`() {
+        then(theAccountNumber(), equalTo(fixtures[AccountNumber]))
+    }
+}
+```
+
+**With `WithFixturesSuite`** — one shared interface, block syntax in tests:
+
+Step 1 — declare the interface once (e.g. in a shared support file):
+
+```kotlin
+interface WithTelecomsFixtures : WithFixturesSuite<TelecomsFixtures> {
+    override val fixturesObject get() = TelecomsFixtures
+}
+```
+
+Step 2 — implement it in test classes; access fixtures via a block lambda:
+
+```kotlin
+class FeasibilityServiceTest : KensaTest(), WithTelecomsFixtures, WithHamkrest {
+    @Test
+    fun `can check feasibility`() {
+        then(theAccountNumber(), equalTo(fixtures { AccountNumber }))
+    }
+
+    private fun theAccountNumber() = StateCollector { fixtures { AccountNumber } }
+}
+```
+
+The block lambda (`fixtures { AccountNumber }`) is scoped to the `FixtureContainer` type, so the IDE offers autocomplete over exactly those fixtures — nothing more.
+
+### `WithFixturesSuite` API
+
+| Member | Description |
+|--------|-------------|
+| `val fixturesObject: F` | Override to return the `FixtureContainer` singleton |
+| `fun <T> fixtures(block: F.() -> Fixture<T>): T` | Retrieves (lazily creates) a fixture via a scoped block |
+
+---
+
 ## Fixture API Reference
 
 ### `fixture()` factory (Kotlin)
