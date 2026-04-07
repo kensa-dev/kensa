@@ -86,7 +86,7 @@ const config: Config = {
         },
         {
           href: 'https://github.com/kensa-dev/kensa',
-          label: 'GitHub',
+          label: '⭐ Star',
           position: 'right',
         },
       ],

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-description: Overview of Kensa's public API covering the Given-When-Then DSL, framework integrations (JUnit 5, Kotest, TestNG), and assertion library mixins.
+description: Overview of Kensa's public API covering the Given-When-Then DSL, framework integrations (JUnit 5 & 6, Kotest, TestNG), and assertion library mixins.
 ---
 
 # API Overview
@@ -33,7 +33,7 @@ All framework integrations expose the same DSL via `KensaTest`:
 
 | Framework | Artifact | Registration |
 |-----------|----------|-------------|
-| JUnit 5 | `kensa-junit` | Automatic via ServiceLoader |
+| JUnit 5 & 6 | `kensa-junit` | Implement `KensaTest` interface |
 | Kotest | `kensa-kotest` | Manual — add `KensaKotestListener` in `ProjectConfig` |
 | TestNG | `kensa-testng` | Automatic via ServiceLoader |
 

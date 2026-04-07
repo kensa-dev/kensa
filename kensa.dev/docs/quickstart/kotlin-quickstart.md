@@ -22,7 +22,7 @@ dependencies {
 
 Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
 
-Kensa registers itself automatically via the JUnit Platform `ServiceLoader` — no `@ExtendWith` needed.
+Implement `KensaTest` in your test class to get the Given–When–Then DSL. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface. The lifecycle listener is registered via the JUnit Platform `ServiceLoader`.
 
 ## 2. Write a Test
 
