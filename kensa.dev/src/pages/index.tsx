@@ -41,7 +41,7 @@ function HomepageHeader() {
                             alt="Java 17+"
                         />
                         <img
-                            src="https://img.shields.io/badge/JUnit%205%20%7C%20Kotest%20%7C%20TestNG-supported-2e8555?style=flat-square"
+                            src="https://img.shields.io/badge/JUnit%205%2F6%20%7C%20Kotest%20%7C%20TestNG-supported-2e8555?style=flat-square"
                             alt="Framework support"
                         />
                     </div>
