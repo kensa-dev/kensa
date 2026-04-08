@@ -20,7 +20,8 @@ class TestInvocation(
     interactions: CapturedInteractions,
     givens: Givens,
     val outputs: CapturedOutputs,
-    val fixtures: Fixtures
+    val fixtures: Fixtures,
+    val parseException: Exception? = null,
 ) {
     val sentences: List<RenderedSentence> = parsedInvocation.sentences
     val parameters: Collection<NamedValue> = parsedInvocation.namedParameterValues

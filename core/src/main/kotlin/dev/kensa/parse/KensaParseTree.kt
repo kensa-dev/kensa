@@ -18,6 +18,8 @@ interface MethodDeclarationContext {
     val body: ParseTree
     val parameterNamesAndTypes: List<Pair<String, String>>
     val parameterTypes: List<String> get() = parameterNamesAndTypes.map { it.second }
+    val startLine: Int
+    val endLine: Int
 }
 
 class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDeclarationContext) : MethodDeclarationContext {
@@ -32,6 +34,9 @@ class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDecl
     override val parameterNamesAndTypes: List<Pair<String, String>> by lazy {
         delegate.methodHeader().parameterNamesAndTypes()
     }
+
+    override val startLine: Int get() = delegate.start.line
+    override val endLine: Int get() = delegate.stop?.line ?: delegate.start.line
 }
 
 class JavaInterfaceDeclarationContext(private val delegate: Java20Parser.InterfaceMethodDeclarationContext) : MethodDeclarationContext {
@@ -44,6 +49,9 @@ class JavaInterfaceDeclarationContext(private val delegate: Java20Parser.Interfa
     override val parameterNamesAndTypes: List<Pair<String, String>> by lazy {
         delegate.methodHeader().parameterNamesAndTypes()
     }
+
+    override val startLine: Int get() = delegate.start.line
+    override val endLine: Int get() = delegate.stop?.line ?: delegate.start.line
 }
 
 class KotlinMethodDeclarationContext(private val delegate: KotlinParser.FunctionDeclarationContext) : MethodDeclarationContext {
@@ -61,4 +69,7 @@ class KotlinMethodDeclarationContext(private val delegate: KotlinParser.Function
             .map { it.simpleIdentifier().text to it.type().text.trim().trimEnd('?') }
             .toList()
     }
+
+    override val startLine: Int get() = delegate.start.line
+    override val endLine: Int get() = delegate.stop?.line ?: delegate.start.line
 }

@@ -1,7 +1,9 @@
 package dev.kensa.state
 
+import dev.kensa.SuppressParseErrors
 import dev.kensa.Tab
 import dev.kensa.context.TestContext
+import dev.kensa.util.hasAnnotation
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
@@ -32,17 +34,19 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
     }
 
     fun endTestInvocation(testContext: TestContext, testId: UUID, executionException: Throwable?, endTimeMs: Long) {
-        invocations.add(
-            invocationContexts.getValue(testId).let { invocationContext ->
-                testInvocationFactory.create(
-                    (endTimeMs - invocationContext.startTimeMs).milliseconds,
-                    testContext,
-                    invocationContext,
-                    executionException,
-                    invocationContext.displayName
-                )
-            }
-        )
+        val invocation = invocationContexts.getValue(testId).let { invocationContext ->
+            testInvocationFactory.create(
+                (endTimeMs - invocationContext.startTimeMs).milliseconds,
+                testContext,
+                invocationContext,
+                executionException,
+                invocationContext.displayName
+            )
+        }
+        invocations.add(invocation)
+        if (invocation.parseException != null && !method.hasAnnotation<SuppressParseErrors>() && !method.declaringClass.hasAnnotation<SuppressParseErrors>()) {
+            throw invocation.parseException
+        }
     }
 
     val state: TestState
