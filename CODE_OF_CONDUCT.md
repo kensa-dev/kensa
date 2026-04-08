@@ -1,5 +1,9 @@
-# Contributor Code of Conduct
+## Code of Conduct
 
-This project adheres to No Code of Conduct.  We are all adults.  We accept anyone's contributions.  Nothing else matters.
+We expect contributors and users to behave like responsible adults.
 
-For more information please visit the [No Code of Conduct](https://github.com/domgetter/NCoC) homepage.
+- Be civil and respectful.
+- Stay technical and on-topic.
+- Do not engage in harassment, spam, or political activism in this project.
+
+Violations will be handled case-by-case by the maintainers.
