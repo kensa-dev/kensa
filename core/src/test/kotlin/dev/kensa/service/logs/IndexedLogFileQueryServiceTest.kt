@@ -1,7 +1,9 @@
 package dev.kensa.service.logs
 
+import dev.kensa.service.logs.LogPatterns.idField
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -15,6 +17,52 @@ class IndexedLogFileQueryServiceTest {
 
     @TempDir
     lateinit var tempDir: Path
+
+    @Test
+    fun `can build index correctly when id is part of delimiter line`() {
+        val log = tempDir.resolve("a.log")
+        log.writeText(
+            """
+               2026-04-07 09:41:27,675 ID: abc
+               hello
+               2026-04-07 09:41:27,674 ID: def
+               foopy
+               2026-04-07 09:41:27,673 ID: abc
+               bye
+            """.trimIndent(),
+            UTF_8
+        )
+
+        val service = IndexedLogFileQueryService(
+            source = FileSource(id = "A", path = log),
+            idPattern = Regex(".+ ID: (.+)"),
+            delimiterRegex = LogPatterns.logbackTimestamp
+        )
+
+        service.query("A", "abc").shouldHaveSize(2)
+    }
+
+    @Test
+    fun `can build index correctly when matching id lines are consecutive`() {
+        val log = tempDir.resolve("a.log")
+        log.writeText(
+            """
+               2026-04-07 09:41:27,675 ID: abc
+               hello
+               2026-04-07 09:41:27,673 ID: abc
+               bye
+            """.trimIndent(),
+            UTF_8
+        )
+
+        val service = IndexedLogFileQueryService(
+            source = FileSource(id = "A", path = log),
+            idPattern = Regex(".+ ID: (.+)"),
+            delimiterRegex = LogPatterns.logbackTimestamp
+        )
+
+        service.query("A", "abc").shouldHaveSize(2)
+    }
 
     @Test
     fun `query returns empty list when identifier not present`() {

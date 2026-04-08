@@ -1,5 +1,6 @@
 package dev.kensa.service.logs.docker
 
+import dev.kensa.service.logs.LogPatterns
 import dev.kensa.service.logs.LogQueryService
 import dev.kensa.service.logs.LogRecord
 
@@ -11,7 +12,7 @@ class DockerCliLogQueryService(
 ) : LogQueryService {
 
     constructor(sources: List<DockerSource>, idPattern: Regex, delimiterLine: String, runner: DockerLogsRunner = ProcessDockerLogsRunner()) :
-            this(sources, idPattern, Regex("^\\s*${Regex.escape(delimiterLine.trim())}.*$"), runner)
+            this(sources, idPattern, LogPatterns.delimiterPrefix(delimiterLine), runner)
 
     data class DockerSource(val id: String, val container: String)
 
@@ -48,10 +49,9 @@ class DockerCliLogQueryService(
 
                         for (line in lines) {
                             if (delimiterRegex.matches(line)) {
-                                if (isInBlock) flushBlock() else {
-                                    isInBlock = true
-                                    appendLine(line)
-                                }
+                                if (isInBlock) flushBlock()
+                                isInBlock = true
+                                appendLine(line)
                                 continue
                             }
 

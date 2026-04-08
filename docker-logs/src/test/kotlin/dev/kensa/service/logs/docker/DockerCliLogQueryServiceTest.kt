@@ -12,6 +12,50 @@ import org.junit.jupiter.api.Test
 class DockerCliLogQueryServiceTest {
 
     @Test
+    fun `can build index correctly when id is part of delimiter line`() {
+        val fakeRunner = DockerLogsRunner { _ ->
+            sequenceOf(
+                "2026-04-07 09:41:27,675 TrackingId: AAA",
+                "Payload: one",
+                "2026-04-07 09:41:27,674 TrackingId: BBB",
+                "Payload: two",
+                "2026-04-07 09:41:27,673 TrackingId: AAA",
+                "Payload: three",
+            )
+        }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")),
+            idPattern = Regex(".+ TrackingId: (.+)"),
+            delimiterRegex = LogPatterns.logbackTimestamp,
+            runner = fakeRunner
+        )
+
+        service.query("app", "AAA").shouldHaveSize(2)
+    }
+
+    @Test
+    fun `can build index correctly when matching id lines are consecutive`() {
+        val fakeRunner = DockerLogsRunner { _ ->
+            sequenceOf(
+                "2026-04-07 09:41:27,675 TrackingId: AAA",
+                "Payload: one",
+                "2026-04-07 09:41:27,673 TrackingId: AAA",
+                "Payload: two",
+            )
+        }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(DockerCliLogQueryService.DockerSource(id = "app", container = "app-container")),
+            idPattern = Regex(".+ TrackingId: (.+)"),
+            delimiterRegex = LogPatterns.logbackTimestamp,
+            runner = fakeRunner
+        )
+
+        service.query("app", "AAA").shouldHaveSize(2)
+    }
+
+    @Test
     fun `indexes blocks by TrackingId and preserves sourceId`() {
         val fakeRunner = DockerLogsRunner { _ ->
             sequenceOf(

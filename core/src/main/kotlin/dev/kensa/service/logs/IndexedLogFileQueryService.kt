@@ -11,7 +11,7 @@ class IndexedLogFileQueryService(
 ) : LogQueryService {
 
     constructor(source: FileSource, idPattern: Regex, delimiterLine: String) :
-            this(source, idPattern, LogPatterns.delimiterPrefix(delimiterLine))
+        this(source, idPattern, LogPatterns.delimiterPrefix(delimiterLine))
 
     private val index: Map<String, List<LogRecord>> by lazy { buildIndex() }
 
@@ -46,10 +46,9 @@ class IndexedLogFileQueryService(
 
                 for (line in lines) {
                     if (delimiterRegex.matches(line)) {
-                        if (isInBlock) flushBlock() else {
-                            isInBlock = true
-                            buf.appendLine(line)
-                        }
+                        if (isInBlock) flushBlock()
+                        isInBlock = true
+                        buf.appendLine(line)
                         continue
                     }
 
