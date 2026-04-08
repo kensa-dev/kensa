@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
 
 :root {
   --ifm-color-primary: #2e8555;
@@ -11,6 +11,12 @@
   --ifm-code-font-size: 93%;
   --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
+  --kensa-accent: #e8a430;
+  --kensa-font-display: 'Plus Jakarta Sans', sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: var(--kensa-font-display);
 }
 
 [data-theme='dark'] {

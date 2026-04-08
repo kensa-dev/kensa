@@ -1,18 +1,40 @@
+@keyframes meshDrift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes ctaGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 133, 85, 0); }
+  50%       { box-shadow: 0 0 28px 6px rgba(46, 133, 85, 0.28); }
+}
+
 .heroBanner {
   padding: 3rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    #1a3d2b 0%,
+    #2e8555 35%,
+    #1f5c3f 55%,
+    #0d2a1c 80%,
+    #245c40 100%
+  );
+  background-size: 400% 400%;
+  animation: meshDrift 18s ease infinite;
 }
 
-/* Subtle dot-grid texture over the hero background */
+/* Grain overlay */
 .heroBanner::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
   pointer-events: none;
+  opacity: 0.6;
 }
 
 .heroInner {
@@ -66,6 +88,10 @@
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-top: 0.25rem;
+}
+
+.ctaPrimary {
+  animation: ctaGlow 3s ease-in-out 1s 3;
 }
 
 .githubButton {

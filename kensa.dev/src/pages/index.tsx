@@ -47,7 +47,7 @@ function HomepageHeader() {
                     </div>
                     <div className={styles.buttons}>
                         <Link
-                            className="button button--secondary button--lg"
+                            className={clsx('button button--secondary button--lg', styles.ctaPrimary)}
                             to="/docs/quickstart/kotlin-quickstart">
                             Get Started
                         </Link>

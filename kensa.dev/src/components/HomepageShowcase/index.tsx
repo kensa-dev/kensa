@@ -29,6 +29,11 @@ export default function HomepageShowcase(): ReactNode {
         <section className={styles.showcase}>
             <div className="container">
                 <p className={styles.eyebrow}>See it in action</p>
+                <p className={styles.liveLink}>
+                    <a href="https://kensa-dev.github.io/clearwave-kensa-example" target="_blank" rel="noopener noreferrer">
+                        Browse the live Clearwave report →
+                    </a>
+                </p>
                 <div className={styles.columns}>
                     <div className={styles.column}>
                         <p className={styles.label}>Write this&hellip;</p>

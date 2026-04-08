@@ -3,18 +3,39 @@
   width: 100%;
 }
 
-.featureCol {
-  padding: 0.75rem;
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+/* First two features span 2 columns */
+.bentoGrid > :nth-child(1),
+.bentoGrid > :nth-child(2) {
+  grid-column: span 2;
 }
 
 .featureCard {
-  padding: 1.25rem 1.25rem 1.25rem 1rem;
+  padding: 1.5rem 1.5rem 1.5rem 1.25rem;
   border-left: 3px solid var(--ifm-color-primary-lightest);
   height: 100%;
+  transition: border-left-color 0.15s ease;
 }
 
 .featureCard:hover {
-  border-left-color: var(--ifm-color-primary);
+  border-left-color: var(--kensa-accent, var(--ifm-color-primary));
+}
+
+/* Larger icon + title for the two hero features */
+.bentoGrid > :nth-child(1) .featureSvg,
+.bentoGrid > :nth-child(2) .featureSvg {
+  height: 48px;
+  width: 48px;
+}
+
+.bentoGrid > :nth-child(1) .featureTitle,
+.bentoGrid > :nth-child(2) .featureTitle {
+  font-size: 1.15rem;
 }
 
 .featureSvg {
@@ -37,4 +58,15 @@
   line-height: 1.6;
   color: var(--ifm-color-emphasis-700);
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .bentoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bentoGrid > :nth-child(1),
+  .bentoGrid > :nth-child(2) {
+    grid-column: span 1;
+  }
 }

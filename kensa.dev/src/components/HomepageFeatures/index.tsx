@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
@@ -35,7 +34,7 @@ const FeatureList: FeatureItem[] = [
         title: 'Sequence diagrams included',
         Svg: require('@site/static/img/work-flow.svg').default,
         description: (
-            <>Capture interactions between components in your tests. Kensa renders them as sequence diagrams embedded directly in the report.</>
+            <>Capture interactions between components in your tests. Kensa renders them as interactive sequence diagrams — drill down into any interaction to inspect the full payload, headers, and metadata.</>
         ),
     },
     {
@@ -56,12 +55,10 @@ const FeatureList: FeatureItem[] = [
 
 function Feature({ title, Svg, description }: FeatureItem) {
     return (
-        <div className={clsx('col col--4', styles.featureCol)}>
-            <div className={styles.featureCard}>
-                <Svg className={styles.featureSvg} role="img" />
-                <Heading as="h3" className={styles.featureTitle}>{title}</Heading>
-                <p className={styles.featureDesc}>{description}</p>
-            </div>
+        <div className={styles.featureCard}>
+            <Svg className={styles.featureSvg} role="img" />
+            <Heading as="h3" className={styles.featureTitle}>{title}</Heading>
+            <p className={styles.featureDesc}>{description}</p>
         </div>
     );
 }
@@ -70,7 +67,7 @@ export default function HomepageFeatures(): ReactNode {
     return (
         <section className={styles.features}>
             <div className="container">
-                <div className="row">
+                <div className={styles.bentoGrid}>
                     {FeatureList.map((props, idx) => (
                         <Feature key={idx} {...props} />
                     ))}

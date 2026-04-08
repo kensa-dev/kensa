@@ -10,7 +10,13 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: var(--ifm-color-primary);
+    color: var(--kensa-accent);
+    margin: 0 0 0.5rem;
+}
+
+.liveLink {
+    text-align: center;
+    font-size: 0.9rem;
     margin: 0 0 1.75rem;
 }
 
@@ -118,10 +124,10 @@
 
 .arrow {
     font-size: 1.75rem;
-    color: var(--ifm-color-primary);
+    color: var(--kensa-accent);
     flex-shrink: 0;
     margin-top: 2.5rem;
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 @media screen and (max-width: 768px) {
