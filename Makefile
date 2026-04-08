@@ -16,8 +16,7 @@ build-ci:
 
 .PHONY: tag-if-release
 tag-if-release:
-	$(eval COMMITTED_FILES:=$(shell git diff-tree --no-commit-id --name-only -r HEAD))
-	@if [[ "$(COMMITTED_FILES)" =~ (^| )version\.txt( |$$) ]]; then\
+	@if git diff-tree --no-commit-id --name-only -r HEAD | grep -qx "version.txt"; then\
 		$(eval VERSION:=$(shell cat version.txt))\
 		echo "New version $(VERSION) was committed - creating tag.";\
 		git config user.name github-actions;\
