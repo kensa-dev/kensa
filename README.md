@@ -4,7 +4,7 @@
 
 **Kensa** is a BDD testing framework for Kotlin and Java. Write Given-When-Then tests directly in code — no Gherkin files, no step definitions. Kensa parses your test source at runtime to produce rich HTML reports and sequence diagrams.
 
-Check out the [documentation](https://kensa.dev) for quickstarts, API reference, and examples.
+Check out the [documentation](https://kensa.dev) for quickstarts, API reference, and examples. See the [roadmap](https://kensa.dev/docs/roadmap) for what's coming in v0.7 and v0.8.
 
 | Write this… | …get this |
 |---|---|

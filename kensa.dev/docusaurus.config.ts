@@ -34,6 +34,8 @@ const config: Config = {
 
   themes: ['@saucelabs/theme-github-codeblock'],
 
+  clientModules: [require.resolve('./src/clientModules/githubStars.ts')],
+
   presets: [
     [
       'classic',
@@ -93,6 +95,12 @@ const config: Config = {
           to: '/blog',
           label: 'Blog',
           position: 'left',
+        },
+        {
+          type: 'doc',
+          docId: 'roadmap',
+          position: 'left',
+          label: 'Roadmap',
         },
         {
           href: 'https://github.com/kensa-dev/kensa',
