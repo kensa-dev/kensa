@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkensa_dev=self.webpackChunkkensa_dev||[]).push([["631"],{8313(a){a.exports=JSON.parse('{"tag":{"label":"bdd","permalink":"/blog/tags/bdd","allTagsPath":"/blog/tags","count":1,"unlisted":false},"listMetadata":{"permalink":"/blog/tags/bdd","page":1,"postsPerPage":10,"totalPages":1,"totalCount":1,"blogDescription":"Blog","blogTitle":"Blog"}}')}}]);
