@@ -1,5 +1,9 @@
 <h2 class="github">Changelog</h2>
 
+### v0.6.7
+  - Add annotation `SuppressParseErrors` to allow temporary bypass of parsing errors. Also added instructional sentences in test output.
+  - Fix an issue where log indices were not indexed correctly for consecutive log lines.
+
 ### v0.6.6
   - Synchronising with IntelliJ plugin. Allow the plugin to expand individual tests when clicking on the gutter icon. 
 
