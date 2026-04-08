@@ -41,6 +41,11 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
         },
+        blog: {
+          showReadingTime: true,
+          blogSidebarTitle: 'All posts',
+          blogSidebarCount: 'ALL',
+        },
         sitemap: {
           changefreq: 'weekly',
           priority: 0.5,
@@ -83,6 +88,11 @@ const config: Config = {
           docId: 'api/overview',
           position: 'left',
           label: 'API',
+        },
+        {
+          to: '/blog',
+          label: 'Blog',
+          position: 'left',
         },
         {
           href: 'https://github.com/kensa-dev/kensa',

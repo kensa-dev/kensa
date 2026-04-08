@@ -1,0 +1,69 @@
+---
+slug: introducing-kensa
+title: "Introducing Kensa: BDD for Kotlin and Java Without the Gherkin Tax"
+authors:
+  - name: Paul Brooks
+    title: Creator of Kensa
+    url: https://github.com/kensa-dev
+tags: [kotlin, java, bdd, testing, junit, kotest]
+---
+
+If you've ever set up Cucumber on a JVM project, you know the overhead: feature files, step definitions, the glue code that ties them together, and the constant friction of keeping all three in sync as your codebase evolves. The promise — shared, readable specifications — rarely survives contact with a real team.
+
+**Kensa takes a different approach.** Write your Given-When-Then tests directly in Kotlin or Java. No Gherkin. No step definitions. No separate files to maintain.
+
+<!-- truncate -->
+
+## How It Works
+
+Kensa parses your test source code at runtime, extracts the sentence structure of each test method, and substitutes actual captured values for variable names. The result is living HTML documentation generated directly from your tests — not from a separate spec file that may or may not reflect what your code actually does.
+
+Here's a test from the [Clearwave example](https://github.com/kensa-dev/clearwave-kensa-example) — a fictional telecoms service that checks broadband feasibility across two supplier networks:
+
+```kotlin
+@Test
+fun `address is serviceable by both suppliers`() {
+    given(bothSuppliersAreServiceable())
+
+    whenever(aFeasibilityCheckIsRequestedForTheServiceAddress())
+
+    then(theFeasibilityResult(), shouldReturnServiceableResultWith(
+        profileCount = 3,
+        fastestDownloadSpeed = fixtures[voiceDownloadSpeed],
+        fastestSupplier = fixtures[voiceSupplier],
+    ))
+}
+```
+
+The test *is* the specification. The report shows the test sentences with real values substituted in — `fastestDownloadSpeed` and `fastestSupplier` in the report reflect what actually ran, captured from the fixture values.
+
+![Kensa report showing the feasibility test with sequence diagram](/img/clearwave-screen-1.png)
+
+## What You Get
+
+- **HTML reports** with the test sentences, captured state, and a full interaction log
+- **Sequence diagrams** auto-generated from the interactions your tests record
+- **Inspectable payloads** — click any interaction to see the full request/response
+
+![JSON interaction detail showing the feasibility check response](/img/clearwave-screen-2.png)
+- **Framework integration** — JUnit 5 & 6, Kotest, and TestNG are all supported
+- **Assertion library flexibility** — Hamcrest, AssertJ, Kotest assertions, or HamKrest
+- **A Kotlin compiler plugin** for `@RenderedValue` and `@ExpandableSentence` — capture values in reports without boilerplate
+- **An IntelliJ plugin** for navigating reports from the IDE
+
+## Getting Started
+
+Add the dependency and extend `KensaTest`:
+
+```kotlin
+// build.gradle.kts
+testImplementation("dev.kensa:kensa-junit:0.6.6")
+```
+
+The [Kotlin Quickstart](/docs/quickstart/kotlin-quickstart) walks through a complete example in a few minutes.
+
+## See It In Action
+
+The [Clearwave example repo](https://github.com/kensa-dev/clearwave-kensa-example) is a self-contained project showing a more complete scenario — async order processing across multiple suppliers, with sequence diagrams auto-generated from the interaction captures. You can browse the [live Kensa report](https://kensa-dev.github.io/clearwave-kensa-example) to see what the output looks like.
+
+Kensa itself is open source on [GitHub](https://github.com/kensa-dev/kensa). Feedback and contributions welcome.
