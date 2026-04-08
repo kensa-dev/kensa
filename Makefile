@@ -43,11 +43,7 @@ publish-to-sonatype:
 .PHONY: publish-to-sonatype-snapshot
 publish-to-sonatype-snapshot:
 	./gradlew --build-cache --no-daemon publishToSonatype \
-		-Psign=true \
 		-PreleaseVersion="$${GIT_TAG_NAME}" \
-		-PsigningKeyId="$${SIGNING_KEY_ID}" \
-		-PsigningKey="$${SIGNING_KEY}" \
-		-PsigningPassword="$${SIGNING_PASSWORD}" \
 		-PnexusUsername="$${NEXUS_USERNAME}" \
 		-PnexusPassword="$${NEXUS_PASSWORD}"
 
