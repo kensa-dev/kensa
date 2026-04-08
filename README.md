@@ -95,3 +95,7 @@ Then invoke it in any Claude Code session:
 ```
 
 The skill checks for fluent English in rendered test bodies, correct use of Fixtures and CapturedOutputs, semantic assertion naming, composable setup toolboxes, and the typed context/mixin pattern for multi-stub tests.
+
+## Community
+
+Questions, ideas, and feedback welcome in [GitHub Discussions](https://github.com/kensa-dev/kensa/discussions).

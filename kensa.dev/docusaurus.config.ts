@@ -130,6 +130,7 @@ const config: Config = {
           title: 'Project',
           items: [
             { label: 'GitHub', href: 'https://github.com/kensa-dev/kensa' },
+            { label: 'Discussions', href: 'https://github.com/kensa-dev/kensa/discussions' },
             { label: 'Releases', href: 'https://github.com/kensa-dev/kensa/releases' },
             { label: 'Issues', href: 'https://github.com/kensa-dev/kensa/issues' },
             { label: 'Maven Central', href: 'https://central.sonatype.com/search?q=dev.kensa' },
