@@ -118,21 +118,23 @@ subprojects {
     }
 }
 
+val publishSnapshot = project.hasProperty("publishSnapshot")
+
 jreleaser {
     gitRootSearch.set(true)
     signing {
-        active.set(Active.RELEASE)
+        active.set(if (publishSnapshot) Active.NEVER else Active.ALWAYS)
         armored.set(true)
     }
     deploy {
         maven {
             mavenCentral.create("sonatype") {
-                active.set(Active.RELEASE)
+                active.set(if (publishSnapshot) Active.NEVER else Active.ALWAYS)
                 url.set("https://central.sonatype.com/api/v1/publisher")
                 stagingRepositories.add(layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
             }
             nexus2.create("snapshots") {
-                active.set(Active.SNAPSHOT)
+                active.set(if (publishSnapshot) Active.ALWAYS else Active.NEVER)
                 url.set("https://ossrh-staging-api.central.sonatype.com/service/local")
                 snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots/")
                 closeRepository.set(false)

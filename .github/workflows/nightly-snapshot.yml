@@ -21,7 +21,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: 'gradle'
+      - uses: gradle/actions/setup-gradle@v6
       - name: Read snapshot version
         id: version
         run: echo "snapshot=$(cat snapshot-version.txt)-SNAPSHOT" >> $GITHUB_OUTPUT

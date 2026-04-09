@@ -40,7 +40,8 @@ publish-to-sonatype-snapshot:
 	./gradlew --build-cache --no-daemon publish \
 		-PreleaseVersion="$${GIT_TAG_NAME}"
 	./gradlew --build-cache --no-daemon jreleaserDeploy \
-		-PreleaseVersion="$${GIT_TAG_NAME}"
+		-PreleaseVersion="$${GIT_TAG_NAME}" \
+		-PpublishSnapshot
 
 .PHONY: create-release-note
 create-release-note:
