@@ -30,21 +30,17 @@ tag-if-release:
 
 .PHONY: publish-to-sonatype
 publish-to-sonatype:
-	./gradlew --build-cache --no-daemon publishToSonatype closeAndReleaseSonatypeStagingRepository\
-		-Psign=true \
-		-PreleaseVersion="$${GIT_TAG_NAME}" \
-		-PsigningKeyId="$${SIGNING_KEY_ID}" \
-		-PsigningKey="$${SIGNING_KEY}" \
-		-PsigningPassword="$${SIGNING_PASSWORD}" \
-		-PnexusUsername="$${NEXUS_USERNAME}" \
-		-PnexusPassword="$${NEXUS_PASSWORD}"
+	./gradlew --build-cache --no-daemon publish \
+		-PreleaseVersion="$${GIT_TAG_NAME}"
+	./gradlew --build-cache --no-daemon jreleaserDeploy \
+		-PreleaseVersion="$${GIT_TAG_NAME}"
 
 .PHONY: publish-to-sonatype-snapshot
 publish-to-sonatype-snapshot:
-	./gradlew --build-cache --no-daemon publishToSonatype \
-		-PreleaseVersion="$${GIT_TAG_NAME}" \
-		-PnexusUsername="$${NEXUS_USERNAME}" \
-		-PnexusPassword="$${NEXUS_PASSWORD}"
+	./gradlew --build-cache --no-daemon publish \
+		-PreleaseVersion="$${GIT_TAG_NAME}"
+	./gradlew --build-cache --no-daemon jreleaserDeploy \
+		-PreleaseVersion="$${GIT_TAG_NAME}"
 
 .PHONY: create-release-note
 create-release-note:

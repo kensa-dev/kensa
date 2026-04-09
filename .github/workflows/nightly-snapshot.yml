@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-  NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+  JRELEASER_NEXUS2_SNAPSHOTS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+  JRELEASER_NEXUS2_SNAPSHOTS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
 jobs:
   PublishSnapshot:

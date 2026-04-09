@@ -3,7 +3,6 @@ import org.gradle.api.publish.maven.MavenPublication
 plugins {
     `java-platform`
     `maven-publish`
-    signing
 }
 
 dependencies {
@@ -49,14 +48,9 @@ publishing {
             }
         }
     }
-}
-
-if (project.findProperty("sign") == "true") {
-    signing {
-        val signingKeyId: String? by project
-        val signingKey: String? by project
-        val signingPassword: String? by project
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(publishing.publications["bomPublication"])
+    repositories {
+        maven {
+            url = uri(rootProject.layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
+        }
     }
 }
