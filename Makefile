@@ -31,16 +31,17 @@ tag-if-release:
 .PHONY: publish-to-sonatype
 publish-to-sonatype:
 	./gradlew --build-cache --no-daemon publish \
-		-PreleaseVersion="$${GIT_TAG_NAME}"
+		-PreleaseVersion="${RELEASE_VERSION}"
 	./gradlew --build-cache --no-daemon jreleaserDeploy \
-		-PreleaseVersion="$${GIT_TAG_NAME}"
+		-PreleaseVersion="${RELEASE_VERSION}"
 
 .PHONY: publish-to-sonatype-snapshot
 publish-to-sonatype-snapshot:
 	./gradlew --build-cache --no-daemon publish \
-		-PreleaseVersion="$${GIT_TAG_NAME}"
+		-PreleaseVersion="${RELEASE_VERSION}" \
+		-PpublishSnapshot
 	./gradlew --build-cache --no-daemon jreleaserDeploy \
-		-PreleaseVersion="$${GIT_TAG_NAME}" \
+		-PreleaseVersion="${RELEASE_VERSION}" \
 		-PpublishSnapshot
 
 .PHONY: create-release-note
