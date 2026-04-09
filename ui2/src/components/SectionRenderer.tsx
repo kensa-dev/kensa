@@ -8,20 +8,7 @@ import {FixtureHighlightProvider} from "@/contexts/FixtureHighlightContext";
 import {Invocation, Sentence as SentenceType, TestState} from "@/types/Test";
 import {isMajorKeyword} from "@/components/Token";
 import {Separator} from "@/components/ui/separator";
-
-const STDLIB_SKIP = /\s+at (java\.|kotlin\.|org\.junit\.|dev\.kensa\.(parse|state|context|output|sentence|render|junit|kotest|testng))/;
-
-function getFailingLine(stackTrace: string, sentenceLines: Set<number>): number | undefined {
-    for (const line of stackTrace.split('\n')) {
-        if (!line.includes('\tat ') || STDLIB_SKIP.test(line)) continue;
-        const m = line.match(/:(\d+)\)$/);
-        if (m) {
-            const n = parseInt(m[1]);
-            if (sentenceLines.has(n)) return n;
-        }
-    }
-    return undefined;
-}
+import { getFailingLine } from '@/util/stackTrace';
 
 interface SectionRendererProps {
     invocation: Invocation;
