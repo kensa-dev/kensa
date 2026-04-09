@@ -38,11 +38,9 @@ publish-to-sonatype:
 .PHONY: publish-to-sonatype-snapshot
 publish-to-sonatype-snapshot:
 	./gradlew --build-cache --no-daemon publish \
-		-PreleaseVersion="${RELEASE_VERSION}" \
-		-PpublishSnapshot
+		-PreleaseVersion="${RELEASE_VERSION}"
 	./gradlew --build-cache --no-daemon jreleaserDeploy \
-		-PreleaseVersion="${RELEASE_VERSION}" \
-		-PpublishSnapshot
+		-PreleaseVersion="${RELEASE_VERSION}"
 
 .PHONY: create-release-note
 create-release-note:

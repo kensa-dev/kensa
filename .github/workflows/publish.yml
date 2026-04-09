@@ -36,8 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ endsWith(github.ref_name, '-SNAPSHOT') }}
     env:
-      JRELEASER_DEPLOY_MAVEN_NEXUS2_SNAPSHOTS_ACTIVE: ALWAYS
-      JRELEASER_DEPLOY_MAVEN_MAVENCENTRAL_SONATYPE_ACTIVE: NEVER
       JRELEASER_SIGNING_ACTIVE: NEVER
     steps:
       - uses: actions/checkout@v6
