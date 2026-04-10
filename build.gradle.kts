@@ -121,7 +121,7 @@ subprojects {
 jreleaser {
     gitRootSearch.set(true)
     signing {
-        active.set(Active.ALWAYS)
+        active.set(Active.RELEASE)
         armored.set(true)
     }
     deploy {
