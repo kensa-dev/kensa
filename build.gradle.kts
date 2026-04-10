@@ -136,6 +136,7 @@ jreleaser {
                 snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots/")
                 applyMavenCentralRules.set(true)
                 snapshotSupported.set(true)
+                sign.set(false)
                 closeRepository.set(true)
                 releaseRepository.set(true)
                 stagingRepositories.add(layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
