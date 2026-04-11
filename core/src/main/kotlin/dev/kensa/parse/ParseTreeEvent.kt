@@ -19,7 +19,6 @@ sealed class Event {
 
     class MultilineString(val value: String) : Event()
 
-    object Terminal : Event()
     object EnterValueArgument : Event()
     object ExitValueArgument : Event()
     object EnterValueArguments : Event()

@@ -124,8 +124,6 @@ class JavaMethodBodyParser(
                     StringLiteral -> stateMachine.apply(asStringLiteral())
                     TextBlock -> stateMachine.apply(asMultilineString())
                     NullLiteral -> stateMachine.apply(asNullLiteral())
-
-                    else -> stateMachine.apply(Terminal)
                 }
             }
         }

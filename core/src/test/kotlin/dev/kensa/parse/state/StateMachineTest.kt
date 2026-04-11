@@ -103,4 +103,43 @@ internal class StateMachineTest {
     internal fun `throws on illegal transitions`() {
         shouldThrowExactly<IllegalStateException> { stateMachine.apply(Event4) }
     }
+
+    @Test
+    internal fun `ignoreUnknown stays in state for unrecognised events`() {
+        val sm = aStateMachine<State, Event> {
+            initialState = State1
+
+            state<State1> {
+                on<Event1>(transitionTo(State2))
+                ignoreUnknown()
+            }
+
+            state<State2> { }
+        }
+
+        sm.state shouldBe State1
+        sm.apply(Event4)  // Event4 is unknown in State1 — should stay
+        sm.state shouldBe State1
+        sm.apply(Event1)  // known transition
+        sm.state shouldBe State2
+    }
+
+    @Test
+    internal fun `ignoreUnknown in one state does not suppress errors in other states`() {
+        val sm = aStateMachine<State, Event> {
+            initialState = State1
+
+            state<State1> {
+                on<Event1>(transitionTo(State2))
+                ignoreUnknown()
+            }
+
+            state<State2> { }
+        }
+
+        sm.apply(Event1)
+        sm.state shouldBe State2
+
+        shouldThrowExactly<IllegalStateException> { sm.apply(Event4) }
+    }
 }

@@ -183,8 +183,6 @@ class KotlinFunctionBodyParser(
                     MultiLineStrText -> stateMachine.apply(asMultilineString())
                     DoubleLiteral, FloatLiteral, HexLiteral, LongLiteral, IntegerLiteral, RealLiteral, UnsignedLiteral -> stateMachine.apply(asNumberLiteral())
                     NullLiteral -> stateMachine.apply(asNullLiteral())
-
-                    else -> stateMachine.apply(Terminal)
                 }
             }
         }

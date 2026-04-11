@@ -2,18 +2,20 @@ package dev.kensa.parse.state
 
 import kotlin.reflect.KClass
 
-class StateMachine<STATE : Any, EVENT : Any>(initialState: STATE, private val transitions: Map<Matcher<STATE>, Set<StateMachineBuilder<STATE, EVENT>.Transition<EVENT, STATE>>>) {
+class StateMachine<STATE : Any, EVENT : Any>(
+    initialState: STATE,
+    private val transitions: Map<Matcher<STATE>, Set<StateMachineBuilder<STATE, EVENT>.Transition<EVENT, STATE>>>,
+    private val unknownHandlers: Map<Matcher<STATE>, (STATE, EVENT) -> STATE> = emptyMap()
+) {
 
     var state: STATE = initialState
 
     fun apply(event: EVENT) {
-        val value = transitions.entries.firstOrNull { entry ->
-            entry.key.matches(state)
-        }?.value
-        state = value
+        val entry = transitions.entries.firstOrNull { it.key.matches(state) }
+        state = entry?.value
             ?.firstOrNull { it.matcher.matches(event) }
             ?.transitionFunc?.invoke(state, event)
-//                ?.also { println("Event $event applied :: State is now $it") }
+            ?: unknownHandlers.entries.firstOrNull { it.key.matches(state) }?.value?.invoke(state, event)
             ?: error("No transition for state ${state::class} -> event ${event::class}")
     }
 }
@@ -44,10 +46,16 @@ class StateMachineBuilder<STATE : Any, EVENT : Any> {
 
     var initialState: STATE? = null
     private val transitions: MutableMap<Matcher<STATE>, Set<Transition<EVENT, STATE>>> = LinkedHashMap()
+    private val unknownHandlers: MutableMap<Matcher<STATE>, (STATE, EVENT) -> STATE> = LinkedHashMap()
 
     fun <S : STATE> state(matcher: Matcher<S>, init: TransitionsBuilder<S>.() -> Unit) {
         @Suppress("UNCHECKED_CAST")
-        transitions[matcher as Matcher<STATE>] = TransitionsBuilder<S>().apply(init).build() as Set<Transition<EVENT, STATE>>
+        val builder = TransitionsBuilder<S>().apply(init)
+        transitions[matcher as Matcher<STATE>] = builder.build() as Set<Transition<EVENT, STATE>>
+        builder.unknownEventHandler?.let { handler ->
+            @Suppress("UNCHECKED_CAST")
+            unknownHandlers[matcher as Matcher<STATE>] = handler as (STATE, EVENT) -> STATE
+        }
     }
 
     inline fun <reified S : STATE> state(noinline init: TransitionsBuilder<S>.() -> Unit) {
@@ -58,7 +66,7 @@ class StateMachineBuilder<STATE : Any, EVENT : Any> {
         state(Matcher.eq(state), init)
     }
 
-    fun build() = StateMachine(requireNotNull(initialState, { "An initial state must be provided" }), transitions)
+    fun build() = StateMachine(requireNotNull(initialState, { "An initial state must be provided" }), transitions, unknownHandlers)
 
     companion object {
         fun <STATE : Any, EVENT : Any> aStateMachine(init: StateMachineBuilder<STATE, EVENT>.() -> Unit): StateMachine<STATE, EVENT> {
@@ -71,6 +79,11 @@ class StateMachineBuilder<STATE : Any, EVENT : Any> {
     inner class TransitionsBuilder<S : STATE> {
 
         private val transitions = LinkedHashSet<Transition<EVENT, S>>()
+        internal var unknownEventHandler: ((S, EVENT) -> STATE)? = null
+
+        fun ignoreUnknown() {
+            unknownEventHandler = { s, _ -> s }
+        }
 
         fun <E : EVENT> on(matcher: Matcher<E>, transition: (S, E) -> STATE) {
             @Suppress("UNCHECKED_CAST")
