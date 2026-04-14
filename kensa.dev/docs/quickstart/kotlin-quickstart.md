@@ -22,6 +22,20 @@ dependencies {
 
 Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
 
+:::important Kotlin compiler option required
+
+Kensa uses explicit backing fields (`-Xexplicit-backing-fields`), which is a pre-release Kotlin feature. This causes the compiled bytecode to be stamped as pre-release, so any project compiling against Kensa must suppress the version check. Add `-Xskip-prerelease-check` to your Kotlin compile task, otherwise you will see errors of the form _"Class 'dev.kensa.X' was compiled by a pre-release version of Kotlin and cannot be loaded by this version of the compiler"_:
+
+```kotlin title="build.gradle.kts"
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        freeCompilerArgs.add("-Xskip-prerelease-check")
+    }
+}
+```
+
+:::
+
 Implement `KensaTest` in your test class to get the Given–When–Then DSL. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface. The lifecycle listener is registered via the JUnit Platform `ServiceLoader`.
 
 ## 2. Write a Test
