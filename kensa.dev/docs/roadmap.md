@@ -5,7 +5,7 @@ description: Upcoming changes planned for Kensa 0.7.x and 0.8.x.
 
 # Roadmap
 
-:::warning Breaking Changes
+:::warning[Breaking Changes]
 Both releases contain breaking changes. Review the notes below before upgrading.
 :::
 

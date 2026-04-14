@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 Kensa Fixtures are collections of type-safe, lazily-created test data values. Each test invocation has its own discreet set of Fixtures. They are shared across `given`, `whenever`, and `then` steps via the context objects.
 
-:::tip Full example
+:::tip[Full example]
 The code on this page is taken from [clearwave-kensa-example](https://github.com/kensa-dev/clearwave-kensa-example) — a complete working project that demonstrates fixtures, captured outputs, sequence diagrams, and async assertions.
 :::
 
