@@ -4,6 +4,7 @@ import dev.kensa.KensaException
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.misc.Interval
+import java.io.File
 import java.net.URI
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -73,17 +74,8 @@ class SourceCode(private val sourceLocations: () -> List<Path> = { emptyList() }
     private fun Class<*>.tryRegisterSourcesJar(): Boolean {
         try {
             val location = protectionDomain?.codeSource?.location?.toURI() ?: return false
-
             if (location.path.endsWith(".jar")) {
-                val path = Paths.get(location)
-                val sourceJarPaths = listOf(
-                    path.toString().replace(".jar", "-sources.jar"),
-                    path.toString().replace(".jar", "-src.jar"),
-                    // Derive a possible 'fat' jar name without the classifier containing all sources
-                    path.toString().replace(Regex("-[^/-]+-[^/-]+\\.jar$"), "-sources.jar")
-                ).map { Path(it) }
-
-                sourceJarPaths.find { it.exists() }?.let {
+                Paths.get(location).findSourcesJar()?.let {
                     discoveredLocations.add(it)
                     return true
                 }
@@ -109,4 +101,35 @@ class SourceCode(private val sourceLocations: () -> List<Path> = { emptyList() }
         } else {
             toPath()
         }
+
+    companion object {
+        private val sourcesSuffixes = listOf("-sources.jar", "-src.jar")
+
+        internal fun Path.findSourcesJar(): Path? = when {
+            isLocalMavenJar() -> findMavenSourcesJar()
+            else -> findGradleSourcesJar()
+        }
+
+        // Gradle files-2.1 layout: .../version/<hash>/artifact.jar
+        // Sources jar is in a sibling hash-named subdirectory under the version dir
+        private fun Path.findGradleSourcesJar() = parent?.parent?.takeIf { it.exists() }
+            ?.toFile()
+            ?.walkTopDown()
+            ?.maxDepth(2)
+            ?.firstOrNull { file -> file.isFile && sourcesSuffixes.any { file.name.endsWith(it) } }
+            ?.toPath()
+
+        // Maven .m2 layout: .../group/artifact/version/artifact-version.jar
+        // Sources jar is a sibling in the same directory
+        private fun Path.isLocalMavenJar(): Boolean {
+            val parentName = parent?.fileName?.toString() ?: return false
+            val jarName = fileName.toString().removeSuffix(".jar")
+            return jarName.endsWith("-$parentName") || toString().contains("${System.getProperty("user.home")}${File.separator}.m2")
+        }
+
+        private fun Path.findMavenSourcesJar() = sourcesSuffixes
+            .map { suffix -> parent.resolve(fileName.toString().replace(".jar", suffix)) }
+            .firstOrNull { it.exists() }
+
+    }
 }
