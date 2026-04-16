@@ -7,7 +7,7 @@ interface Service {
     fun call(args: Array<Any>)
 }
 
-class NestedSentences(private val service: Service) {
+class ExpandableSentences(private val service: Service) {
     @ExpandableSentence
     fun foo(bar: String) {
         service.call(arrayOf(bar))

@@ -45,11 +45,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "KotlinStringFixture": "parent5"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [

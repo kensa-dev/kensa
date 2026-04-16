@@ -3,11 +3,10 @@
   "displayName": "Java With Single Passing Test",
   "state": "Passed",
   "notes": null,
-  "issues": [],
   "packageName": "dev.kensa.example",
+  "issues": [],
   "tests": [
     {
-      "elapsedTime": "",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "issues": [],
@@ -15,7 +14,6 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -77,11 +75,10 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "state": "Passed",
           "executionException": {},

@@ -58,7 +58,6 @@ object JsonTransforms {
                             .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
                             .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
                             .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
-                            .add("givens", asJsonArray(i.givens, givensEntryAsJson(renderers)))
                             .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
                             .add("capturedOutputs", asJsonArray(i.outputNamesAndValues, nvAsJson(renderers)))
                             .add("fixtures", asJsonArray(i.fixturesNamesAndValues, nvAsJson(renderers)))
@@ -205,8 +204,6 @@ object JsonTransforms {
         sequence.mapNotNull(transformer)
             .forEach { add(it) }
     }
-
-    private fun givensEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue = { entry: KensaMap.Entry -> jsonObject().add(entry.key, renderers.renderValue(entry.value)) }
 
     private fun interactionEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue? = { entry ->
         entry.takeUnless {

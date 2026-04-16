@@ -8,7 +8,6 @@ import dev.kensa.fixture.Fixtures
 import dev.kensa.kotest.KotestThen.thenEventually
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import dev.kensa.state.SetupStrategy
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.Matcher
@@ -36,7 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalCoroutinesApi::class)
 class KotestThenTest {
 
-    private val testContext = TestContext(Givens(), CapturedInteractions(SetupStrategy.Ignored), Fixtures(), CapturedOutputs())
+    private val testContext = TestContext(CapturedInteractions(SetupStrategy.Ignored), Fixtures(), CapturedOutputs())
     private val stateCollector = mock<StateCollector<String>>()
 
     @AfterEach
@@ -62,7 +61,7 @@ class KotestThenTest {
 
             var onMatchCallCount: Int = 0
 
-            val spec = object : CollectingThenSpec<String> {
+            val spec = object : ThenSpec<String> {
                 override val collector: StateCollector<String> = stateCollector
                 override val matcher: Matcher<String> = be("result")
                 override val onMatch: CollectorContext.(String) -> Unit = { onMatchCallCount++; throw IllegalStateException("onMatch throws") }
@@ -86,7 +85,7 @@ class KotestThenTest {
 
             var onMatchCallCount: Int = 0
 
-            val spec = object : CollectingThenSpec<String> {
+            val spec = object : ThenSpec<String> {
                 override val collector: StateCollector<String> = stateCollector
                 override val matcher: Matcher<String> = be("result")
                 override val onMatch: CollectorContext.(String) -> Unit = { onMatchCallCount++; throw IllegalStateException("onMatch throws") }
@@ -131,7 +130,7 @@ class KotestThenTest {
         pollCount shouldBeLessThanOrEqual 7
     }
 
-    class Dummy(private val spec: CollectingThenSpec<String>) : WithKotest {
+    class Dummy(private val spec: ThenSpec<String>) : WithKotest {
         fun runThenEventually() {
             thenEventually(5.seconds, spec)
         }

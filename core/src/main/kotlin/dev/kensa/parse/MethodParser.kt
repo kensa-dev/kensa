@@ -157,10 +157,8 @@ class MethodParser(
         allMethods
             .filter {
                 it.hasAnnotation<RenderedValue>() ||
-                    it.hasAnnotation<RenderedValue>() ||
                     it.hasAnnotation<ExpandableRenderedValue>() ||
                     it.hasAnnotation<ExpandableSentence>() ||
-                    it.hasAnnotation<NestedSentence>() ||
                     it.hasAnnotation<Highlight>()
             }
             .map { ElementDescriptor.forMethod(it) }

@@ -79,11 +79,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -181,11 +176,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -236,11 +226,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

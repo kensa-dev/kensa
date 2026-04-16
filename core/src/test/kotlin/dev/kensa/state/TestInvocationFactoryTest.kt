@@ -32,7 +32,6 @@ class TestInvocationFactoryTest {
         val context = TestInvocationContext(instance, method, emptyArray(), "display", 0L, Fixtures(), CapturedOutputs())
         val testContext = mock<TestContext> {
             on { interactions } doReturn mock()
-            on { givens } doReturn mock()
             on { outputs } doReturn mock()
             on { fixtures } doReturn mock()
         }
@@ -59,7 +58,6 @@ class TestInvocationFactoryTest {
         val context = TestInvocationContext(instance, method, emptyArray(), "display", 0L, Fixtures(), CapturedOutputs())
         val testContext = mock<TestContext> {
             on { interactions } doReturn mock()
-            on { givens } doReturn mock()
             on { outputs } doReturn mock()
             on { fixtures } doReturn mock()
         }

@@ -7,7 +7,7 @@
   "packageName": "dev.kensa.example",
   "tests": [
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "",
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "issues": [],
@@ -15,7 +15,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
@@ -43,7 +43,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

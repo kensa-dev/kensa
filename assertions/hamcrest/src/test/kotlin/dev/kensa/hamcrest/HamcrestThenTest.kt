@@ -6,7 +6,6 @@ import dev.kensa.context.TestContextHolder
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.state.CapturedInteractions
-import dev.kensa.state.Givens
 import dev.kensa.state.SetupStrategy
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -24,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class HamcrestThenTest {
 
-    private val testContext = TestContext(Givens(), CapturedInteractions(SetupStrategy.Ignored), Fixtures(), CapturedOutputs())
+    private val testContext = TestContext(CapturedInteractions(SetupStrategy.Ignored), Fixtures(), CapturedOutputs())
     private val stateCollector = mock<StateCollector<String>>()
 
     @AfterEach

@@ -28,7 +28,6 @@ import org.jetbrains.kotlin.name.Name
 @OptIn(UnsafeDuringIrConstructionAPI::class)
 class KensaIrGenerationExtension(private val messageCollector: MessageCollector, private val debugEnabled: Boolean) : IrGenerationExtension {
 
-    private val nestedSentenceFqName = FqName("dev.kensa.NestedSentence")
     private val expandableSentenceFqName = FqName("dev.kensa.ExpandableSentence")
     private val renderedValueFqName = FqName("dev.kensa.RenderedValue")
     private val expandableRenderedValueFqName = FqName("dev.kensa.ExpandableRenderedValue")
@@ -74,7 +73,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         }
 
         logInfo("Kensa IR generation completed.")
-        logInfo(" - Processed $expandableSentenceCount functions with @ExpandableSentence/@NestedSentence annotation")
+        logInfo(" - Processed $expandableSentenceCount functions with @ExpandableSentence annotation")
         logInfo(" - Processed $renderedValueCount functions with @RenderedValue/@ExpandableRenderedValue annotation")
     }
 
@@ -167,7 +166,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         pluginContext: IrPluginContext,
         arrayOf: IrSimpleFunctionSymbol
     ): Boolean {
-        val hasAnnotation = fn.annotations.hasAnnotation(nestedSentenceFqName) || fn.annotations.hasAnnotation(expandableSentenceFqName)
+        val hasAnnotation = fn.annotations.hasAnnotation(expandableSentenceFqName)
         if (!hasAnnotation) return false
         val body = fn.body ?: return false
 

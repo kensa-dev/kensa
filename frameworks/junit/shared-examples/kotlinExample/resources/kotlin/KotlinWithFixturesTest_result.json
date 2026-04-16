@@ -85,11 +85,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "KotlinStringFixture": "parent2"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -208,11 +203,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "KotlinStringFixture": "parent3"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -279,7 +269,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -337,7 +326,6 @@
             }
           ],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -406,11 +394,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "KotlinStringFixture": "parent4"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [

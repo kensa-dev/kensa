@@ -19,7 +19,6 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -44,7 +43,6 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -69,7 +67,6 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -94,7 +91,6 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -119,7 +115,6 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -148,7 +143,6 @@
               "value": "one"
             }
           ],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -167,7 +161,6 @@
               "value": "two"
             }
           ],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -186,7 +179,6 @@
               "value": "three 3\ufe0f\u20e3"
             }
           ],
-          "givens": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

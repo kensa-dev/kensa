@@ -10,8 +10,7 @@ class KotlinWithInterface : KotlinInterface {
     @field:RenderedValue
     private val field2: String? = null
 
-    @field:Highlight
-    @field:RenderedValue
+    @field:[Highlight RenderedValue]
     private val field3: String? = null
 
     fun simpleTest() {

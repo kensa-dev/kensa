@@ -79,11 +79,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -175,11 +170,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -277,11 +267,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -332,11 +317,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -387,11 +367,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -442,11 +417,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -501,11 +471,6 @@
               "value": "MyThing"
             }
           ],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -548,11 +513,6 @@
           "parameters": [
             {
               "value": "MyThing"
-            }
-          ],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
             }
           ],
           "capturedInteractions": [],
@@ -605,11 +565,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -662,11 +617,6 @@
           "parameters": [
             {
               "shouldNotBeRendered": "meh"
-            }
-          ],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
             }
           ],
           "capturedInteractions": [],
@@ -731,11 +681,6 @@
             }
           ],
           "parameters": [],
-          "givens": [
-            {
-              "highlightMe": "givensViaHighlight"
-            }
-          ],
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

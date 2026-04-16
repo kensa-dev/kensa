@@ -156,7 +156,6 @@ internal class KensaMapTest {
         @JvmStatic
         fun mapInstances(): Stream<out KensaMap<*>?> {
             return Stream.of(
-                Givens(),
                 CapturedInteractions(SetupStrategy.Ignored)
             )
         }

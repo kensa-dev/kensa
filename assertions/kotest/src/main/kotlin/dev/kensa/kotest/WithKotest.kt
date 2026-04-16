@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.seconds
 
 interface WithKotest {
 
-    fun <T> then(spec: CollectingThenSpec<T>) {
+    fun <T> then(spec: ThenSpec<T>) {
         with(spec) {
             KotestThen.then(testContext(), collector) {
                 invokeMatcher(this, matcher)
@@ -22,7 +22,7 @@ interface WithKotest {
         }
     }
 
-    fun <T> and(spec: CollectingThenSpec<T>): Unit = then(spec)
+    fun <T> and(spec: ThenSpec<T>): Unit = then(spec)
 
     fun <T> then(extractor: StateCollector<T>, block: T.() -> Unit) {
         KotestThen.then(testContext(), extractor, block)
@@ -40,10 +40,10 @@ interface WithKotest {
         then(extractor, match)
     }
 
-    fun <T> thenEventually(spec: CollectingThenSpec<T>): Unit = thenEventually(10.seconds, spec)
-    fun <T> andEventually(spec: CollectingThenSpec<T>): Unit = thenEventually(10.seconds, spec)
+    fun <T> thenEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
+    fun <T> andEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
 
-    fun <T> thenEventually(duration: Duration, spec: CollectingThenSpec<T>) {
+    fun <T> thenEventually(duration: Duration, spec: ThenSpec<T>) {
         runBlocking {
             with(spec) {
                 KotestThen.thenEventually(duration, testContext(), collector) {
