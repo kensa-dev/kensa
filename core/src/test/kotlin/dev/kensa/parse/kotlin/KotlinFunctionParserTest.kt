@@ -887,6 +887,156 @@ internal class KotlinFunctionParserTest {
         }
     }
 
+    @Nested
+    inner class ReplaceSentence {
+
+        @Test
+        fun `replaces sentence with plain words`() {
+            val sentences = parseMethod("replacedWithPlainWords")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("a"),
+                Word.asTemplateToken("simple"),
+                Word.asTemplateToken("replacement"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with field interpolation`() {
+            val sentences = parseMethod("replacedWithFieldInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("tracking"),
+                Word.asTemplateToken("id"),
+                Word.asTemplateToken("is"),
+                FieldValue.asTemplateToken("trackingId:"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with fixtures interpolation`() {
+            val sentences = parseMethod("replacedWithFixturesInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("order"),
+                FixturesValue.asTemplateToken("trackingId:"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("pending"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with chained fixtures interpolation`() {
+            val sentences = parseMethod("replacedWithChainedFixturesInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("order"),
+                FixturesValue.asTemplateToken("trackingId:value"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("pending"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with outputs-by-key interpolation`() {
+            val sentences = parseMethod("replacedWithOutputsByKeyInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("result"),
+                OutputsValueByKey.asTemplateToken("trackingKey:value"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("received"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with outputs-by-name interpolation`() {
+            val sentences = parseMethod("replacedWithOutputsByNameInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("result"),
+                OutputsValueByName.asTemplateToken("trackingName:value"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("received"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with multiple interpolations`() {
+            val sentences = parseMethod("replacedWithMultipleInterpolations")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                FieldValue.asTemplateToken("trackingId:"),
+                Word.asTemplateToken("and"),
+                FixturesValue.asTemplateToken("orderId:"),
+                Word.asTemplateToken("are"),
+                Word.asTemplateToken("both"),
+                Word.asTemplateToken("valid"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces multiple statements independently`() {
+            val sentences = parseMethod("replacedMultipleStatements")
+            sentences.shouldHaveSize(2)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("network"),
+                Word.asTemplateToken("will"),
+                Word.asTemplateToken("complete"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("order"),
+            )).tokens
+            sentences[1].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Then"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("result"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("confirmed"),
+            )).tokens
+        }
+
+        @Test
+        fun `does not affect subsequent statements`() {
+            val sentences = parseMethod("replacedAndSubsequentStatementsUnaffected")
+            sentences.shouldHaveSize(2)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("open"),
+                Word.asTemplateToken("network"),
+                Word.asTemplateToken("will"),
+                Word.asTemplateToken("complete"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("order"),
+                FixturesValue.asTemplateToken("trackingId:"),
+            )).tokens
+            sentences[1].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("When"),
+                Word.asTemplateToken("do"),
+                Word.asTemplateToken("something"),
+            )).tokens
+        }
+
+        private fun parseMethod(methodName: String): List<TemplateSentence> {
+            val parser = createParserFor(aFunctionNamed(methodName))
+            val method = KotlinWithReplaceSentence::class.java.findMethod(methodName)
+            return parser.parse(method).sentences
+        }
+    }
+
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }
 
     private fun createParserFor(isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean): MethodParser =

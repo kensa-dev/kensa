@@ -11,6 +11,7 @@ export interface Index {
     issues?: string[];
     children?: Indices;
     testMethod?: string;
+    hasErrors?: boolean;
 }
 
 export type Indices = Index[]

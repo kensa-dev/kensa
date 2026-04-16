@@ -9,7 +9,8 @@ data class ParsedMethod(
     val sentences: List<TemplateSentence>,
     val nestedMethods: Map<String, ParsedNestedMethod>,
     val properties: Map<String, ElementDescriptor>,
-    val methods: Map<String, ElementDescriptor>
+    val methods: Map<String, ElementDescriptor>,
+    val parseErrors: List<ParseError> = emptyList()
 )
 
 data class ParsedNestedMethod(

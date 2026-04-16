@@ -233,21 +233,6 @@ annotation class Sources(vararg val value: KClass<*>)
 annotation class ParameterizedTestDescription
 
 /**
- * Suppresses build failure when Kensa cannot parse a test method.
- *
- * Normally a parse failure marks the invocation as Failed and re-throws the exception so the build
- * fails. Annotate the test method or its class with this annotation to downgrade that to a warning:
- * the report will still show the error sentences, but the build will not fail due to the parse error.
- *
- * You can usually work around any failures by refactoring your test code. If you believe the syntax would be
- * a good addition to Kensa please use this as a temporary workaround while the underlying parser issue is fixed.
- * Please report the issue at https://github.com/kensa-dev/kensa/issues.
- */
-@Retention(RUNTIME)
-@Target(FUNCTION, CLASS)
-annotation class SuppressParseErrors
-
-/**
  * Specifies which [dev.kensa.Tab] to automatically open in the test output UI.
  */
 @Retention(RUNTIME)

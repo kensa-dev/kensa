@@ -2,6 +2,7 @@ package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.*
 import dev.kensa.parse.ParserDelegate.Companion.expandableSentenceAnnotationNames
+import dev.kensa.parse.ReplaceSentenceHintParser
 import dev.kensa.util.SourceCode
 import dev.kensa.util.isKotlinClass
 import org.antlr.v4.runtime.CharStream
@@ -22,7 +23,7 @@ class KotlinParserDelegate(
     override fun Class<*>.isParsable(): Boolean = isKotlinClass
 
     override fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
-        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext), dc.body)
+        ParseTreeWalker().walk(KotlinFunctionBodyParser(stateMachine, parseContext, ReplaceSentenceHintParser(parseContext)), dc.body)
     }
 
     override fun Class<*>.toSimpleName(): (Class<*>) -> String = { it.kotlin.simpleName ?: throw IllegalArgumentException("Types must have names") }

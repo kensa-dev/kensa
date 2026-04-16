@@ -2,16 +2,17 @@ import * as React from 'react';
 import {ChevronDown, ChevronRight} from 'lucide-react';
 import {cn} from "@/lib/utils";
 import {SectionRenderer} from './SectionRenderer';
-import {Invocation, NameAndValue} from "@/types/Test";
+import {Invocation, NameAndValue, ParseError} from "@/types/Test";
 
 interface InvocationCardProps {
     invocation: Invocation;
+    parseErrors?: ParseError[];
     autoOpenTab?: string;
     isLast: boolean;
     initialExpanded?: boolean;
 }
 
-export const InvocationCard = ({invocation, autoOpenTab, isLast, initialExpanded}: InvocationCardProps) => {
+export const InvocationCard = ({invocation, parseErrors, autoOpenTab, isLast, initialExpanded}: InvocationCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState<boolean>(() => {
         if (initialExpanded !== undefined) return initialExpanded;
         return invocation.state === 'Failed';
@@ -66,6 +67,7 @@ export const InvocationCard = ({invocation, autoOpenTab, isLast, initialExpanded
                         invocation={invocation}
                         testState={invocation.state}
                         autoOpenTab={autoOpenTab}
+                        parseErrors={parseErrors}
                     />
                 </div>
             )}

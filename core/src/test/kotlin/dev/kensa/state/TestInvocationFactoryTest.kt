@@ -1,13 +1,12 @@
 package dev.kensa.state
 
+import dev.kensa.KensaException
 import dev.kensa.context.TestContext
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
-import dev.kensa.parse.MethodParser
-import dev.kensa.parse.ParsedInvocation
-import dev.kensa.parse.TestInvocationParser
+import dev.kensa.parse.*
 import dev.kensa.render.diagram.SequenceDiagramFactory
-import dev.kensa.state.TestState.Failed
+import dev.kensa.state.TestState.Passed
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -38,17 +37,16 @@ class TestInvocationFactoryTest {
         whenever(diagramFactory.create(any())).thenReturn(null)
 
         val cause = RuntimeException("root cause detail")
-        whenever(invocationParser.parse(any(), any())).thenThrow(RuntimeException("parse failed", cause))
+        whenever(invocationParser.parse(any(), any())).thenThrow(KensaException("parse failed", RuntimeException("parse failed", cause)))
 
-        val invocation = factory.create(10.milliseconds, testContext, context, null, "display")
+        val (invocation) = factory.create(10.milliseconds, testContext, context, null, "display")
 
-        invocation.state shouldBe Failed
-        invocation.sentences.shouldHaveSize(6)
+        invocation.state shouldBe Passed
+        invocation.sentences.shouldHaveSize(5)
         invocation.sentences[0].tokens[0].value shouldContain "unable to parse"
-        invocation.sentences[1].tokens[0].value shouldContain "SuppressParseErrors"
-        invocation.sentences[2].tokens[0].value shouldContain "https://github.com/kensa-dev/kensa/issues"
-        invocation.sentences[4].tokens[0].value shouldContain "parse failed"
-        invocation.sentences[4].tokens[0].value shouldContain "root cause detail"
+        invocation.sentences[1].tokens[0].value shouldContain "https://github.com/kensa-dev/kensa/issues"
+        invocation.sentences[3].tokens[0].value shouldContain "parse failed"
+        invocation.sentences[3].tokens[0].value shouldContain "root cause detail"
     }
 
     @Test
@@ -72,9 +70,11 @@ class TestInvocationFactoryTest {
             on { name } doReturn method.name
         }
 
-        whenever(invocationParser.parse(any(), any())).thenReturn(parsedInvocation)
+        val parsedMethod = ParsedMethod(0, method.name, MethodParameters(emptyMap()), emptyList(), emptyMap(), emptyMap(), emptyMap())
+        whenever(invocationParser.parse(any(), any())).thenReturn(parsedInvocation to emptyList<RenderError>())
+        whenever(parser.parse(any())).thenReturn(parsedMethod)
 
-        val invocation = factory.create(10.milliseconds, testContext, context, null, "display")
+        val (invocation) = factory.create(10.milliseconds, testContext, context, null, "display")
 
         invocation.sentences shouldBe emptyList()
     }

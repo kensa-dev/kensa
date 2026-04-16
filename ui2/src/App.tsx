@@ -15,6 +15,7 @@ import {Badge} from "@/components/ui/badge";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
 import {TestContainer} from './components/TestContainer';
 import {NotesCard} from './components/NotesCard';
+import {TooltipProvider} from "@/components/ui/tooltip";
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -294,6 +295,7 @@ const App = () => {
 
     return (
         <ConfigContext.Provider value={config}>
+            <TooltipProvider>
             <SidebarProvider>
                 <CommandDialog open={open} onOpenChange={setOpen}>
                     <CommandInput
@@ -518,6 +520,7 @@ const App = () => {
                     </ResizablePanelGroup>
                 </div>
             </SidebarProvider>
+            </TooltipProvider>
         </ConfigContext.Provider>
     );
 };

@@ -8,6 +8,7 @@ import dev.kensa.context.RenderedValueInvocationContextHolder.renderedValueInvoc
 import dev.kensa.parse.ElementDescriptor.*
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedToken
+import dev.kensa.sentence.RenderedToken.ErrorToken
 import dev.kensa.sentence.RenderedToken.RenderedExpandableToken
 import dev.kensa.sentence.RenderedToken.RenderedValueToken
 import dev.kensa.sentence.TemplateToken
@@ -31,6 +32,7 @@ class TokenRenderer(
     fun render(tokens: List<TemplateToken>): List<RenderedToken> =
         tokens.squash().map { token ->
             when {
+                token is TemplateToken.ErrorTemplateToken -> ErrorToken(token.message)
                 token is TemplateToken.RenderedValueToken -> token.asRenderedValueToken()
                 token.hasType(FieldValue) -> token.asFieldValue()
                 token.hasType(MethodValue) -> token.asMethodValue()

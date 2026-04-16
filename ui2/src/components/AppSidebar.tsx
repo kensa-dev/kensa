@@ -1,7 +1,7 @@
 import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
-import {ChevronRight, Diamond, Folder, FolderOpen, Globe, Search, X} from "lucide-react"
+import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, Search, X} from "lucide-react"
 import {buildTree} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
@@ -763,6 +763,9 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                     isSelected ? "fill-current" : "",
                     iconTone)}/>
                 <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
+                {node.hasErrors && (
+                    <AlertTriangle className="h-[14px] w-[14px] shrink-0 text-amber-500 dark:text-amber-400" aria-label="Has parse/render errors" />
+                )}
                 {childCounts && <StateBadges counts={childCounts}/>}
             </SidebarMenuButton>
         </SidebarMenuItem>

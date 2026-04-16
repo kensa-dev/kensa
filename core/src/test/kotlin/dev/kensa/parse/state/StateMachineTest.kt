@@ -142,4 +142,13 @@ internal class StateMachineTest {
 
         shouldThrowExactly<IllegalStateException> { sm.apply(Event4) }
     }
+
+    @Test
+    internal fun `resetState forces state to given value`() {
+        stateMachine.apply(Event2)
+        stateMachine.state shouldBe State2
+
+        stateMachine.resetState(State1)
+        stateMachine.state shouldBe State1
+    }
 }

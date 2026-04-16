@@ -2,6 +2,7 @@ package dev.kensa.parse.java
 
 import dev.kensa.KensaException
 import dev.kensa.parse.*
+import dev.kensa.parse.ReplaceSentenceHintParser
 import dev.kensa.parse.java.Java20Parser.ClassDeclarationContext
 import dev.kensa.parse.java.Java20Parser.InterfaceDeclarationContext
 import dev.kensa.util.SourceCode
@@ -100,6 +101,6 @@ class JavaParserDelegate(
         }
 
     override fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
-        ParseTreeWalker().walk(JavaMethodBodyParser(stateMachine, parseContext), dc.body)
+        ParseTreeWalker().walk(JavaMethodBodyParser(stateMachine, parseContext, ReplaceSentenceHintParser(parseContext)), dc.body)
     }
 }

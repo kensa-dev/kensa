@@ -104,6 +104,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                                     <InvocationCard
                                         key={invIdx}
                                         invocation={invocation}
+                                        parseErrors={test.parseErrors}
                                         autoOpenTab={test.autoOpenTab}
                                         isLast={invIdx === test.invocations.length - 1}
                                         initialExpanded={initialExpandedInvocation >= 0 ? invIdx === initialExpandedInvocation : invocation.state === 'Failed'}
@@ -117,6 +118,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                                         invocation={invocation}
                                         testState={invocation.state}
                                         autoOpenTab={test.autoOpenTab}
+                                        parseErrors={test.parseErrors}
                                     />
                                 </div>
                             );

@@ -10,6 +10,10 @@ class StateMachine<STATE : Any, EVENT : Any>(
 
     var state: STATE = initialState
 
+    fun resetState(newState: STATE) {
+        state = newState
+    }
+
     fun apply(event: EVENT) {
         val entry = transitions.entries.firstOrNull { it.key.matches(state) }
         state = entry?.value

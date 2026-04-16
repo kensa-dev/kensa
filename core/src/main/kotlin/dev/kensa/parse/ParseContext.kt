@@ -87,10 +87,38 @@ class ParseContext(
         return callTypeFor(firstGroup) != null
     }
 
+    internal fun asEventFromExpression(expr: String, location: Location): LocatedEvent {
+        fixturesPattern.matchEntire(expr)?.let {
+            return FixturesExpression(location, it.groupValues[1], it.groupValues[2])
+        }
+        outputsByNamePattern.matchEntire(expr)?.let {
+            return PathExpression.OutputsByNameExpression(location, it.groupValues[1], it.groupValues[2])
+        }
+        outputsByKeyPattern.matchEntire(expr)?.let {
+            return PathExpression.OutputsByKeyExpression(location, it.groupValues[1], it.groupValues[2])
+        }
+        singleCallWithArgumentsPattern.matchEntire(expr)?.let { matchResult ->
+            val fn = matchResult.groups["function"]?.value
+            if (fn in renderedValueMethodNames) return RenderedValue(location, fn!!)
+        }
+        chainedCallPattern.matchEntire(expr)?.let { matchResult ->
+            val key = matchResult.groupValues[1]
+            callTypeFor(key)?.let { type ->
+                return ChainedCallExpression(location, type, key, matchResult.groupValues[3])
+            }
+        }
+        return Identifier(location, expr)
+    }
+
     companion object {
 
         internal fun ParserRuleContext.asNote() = (start as? KensaToken)?.asNote()
         internal fun TerminalNode.asNote() = (this.symbol as? KensaToken)?.asNote()
+        internal fun ParserRuleContext.asReplaceSentenceHint(): String? =
+            (start as? KensaToken)?.hint
+                ?.takeIf { it.startsWith("ReplaceSentence:") }
+                ?.removePrefix("ReplaceSentence:")
+                ?.trim()
         internal fun ParseTree.asOperator() = Operator(location, text)
         internal fun ParseTree.asBooleanLiteral() = BooleanLiteral(location, text)
         internal fun ParseTree.asCharacterLiteral() = CharacterLiteral(location, text)
@@ -103,7 +131,7 @@ class ParseContext(
         internal fun ParseTree.asEnterExpression() = EnterExpression(location)
         internal fun ParseTree.asMethodInvocation() = EnterMethodInvocation(location)
 
-        private fun KensaToken.asNote() = Note(Location(line, charPositionInLine), note)
+        private fun KensaToken.asNote() = note.takeIf { it.isNotBlank() }?.let { Note(Location(line, charPositionInLine), it) }
         private fun String.removeQuotes(): String = removeSurrounding("\"")
 
         private fun ParseTree.asTextBlock(): String {

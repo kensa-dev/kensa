@@ -64,6 +64,11 @@ sealed interface TemplateToken {
     ) : TemplateToken {
         var parameterTokens: List<TemplateToken> = emptyList()
     }
+
+    data class ErrorTemplateToken(val message: String) : TemplateToken {
+        override val template: String = message
+        override val types: Set<Type> = emptySet()
+    }
 }
 
 sealed interface RenderedToken {
@@ -96,5 +101,13 @@ sealed interface RenderedToken {
         val rows: List<List<RenderedToken>>,
         val headers: List<String> = emptyList()
     ) : RenderedToken
+
+    data class ErrorToken(
+        val message: String,
+    ) : RenderedToken {
+        override val value: String = message
+        override val cssClasses: Set<String> = emptySet()
+        override val hint: String = message
+    }
 }
 

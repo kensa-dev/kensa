@@ -4,9 +4,10 @@ import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/ho
 import {useConfig} from '@/contexts/ConfigContext';
 import {useFixtureHighlight} from '@/contexts/FixtureHighlightContext';
 import Sentence from "@/components/Sentence";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {NestedItem, Token as TokenType} from '@/types/Test';
+import {ErrorTokenData, NestedItem, Token as TokenType} from '@/types/Test';
+import {isRelatedFixture} from '@/util/fixtureHighlight';
 
 interface ExpandableProps {
     token: TokenType;
@@ -209,25 +210,23 @@ const InfoToken = ({value, tooltipContent, tokenCls}: InfoTokenProps) => {
     if (!tooltipContent) return <span className={tokenCls}>{value}</span>;
 
     return (
-        <TooltipProvider>
-            <Tooltip delayDuration={200}>
-                <TooltipTrigger asChild>
-                    <span
-                        className={cn(
-                            "cursor-help font-medium",
-                            "underline decoration-dotted decoration-muted-foreground/60 underline-offset-2",
-                            "hover:decoration-muted-foreground",
-                            tokenCls
-                        )}
-                    >
-                        {value}
-                    </span>
-                </TooltipTrigger>
-                <TooltipContent className="bg-slate-900 text-white border-none shadow-xl text-xs px-3 py-2 max-w-sm">
-                    {tooltipContent}
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <Tooltip delayDuration={200}>
+            <TooltipTrigger asChild>
+                <span
+                    className={cn(
+                        "cursor-help font-medium",
+                        "underline decoration-dotted decoration-muted-foreground/60 underline-offset-2",
+                        "hover:decoration-muted-foreground",
+                        tokenCls
+                    )}
+                >
+                    {value}
+                </span>
+            </TooltipTrigger>
+            <TooltipContent className="bg-slate-900 text-white border-none shadow-xl text-xs px-3 py-2 max-w-sm">
+                {tooltipContent}
+            </TooltipContent>
+        </Tooltip>
     );
 };
 
@@ -288,27 +287,14 @@ const NoteToken = ({value}: NoteTokenProps) => {
 const FixtureToken = ({value}: { value: string }) => {
     const {selected, setSelected, fixtureSpecs, fixtures} = useFixtureHighlight();
 
-    const keyForValue = (v: string) => {
-        const entry = fixtures.find(nv => Object.values(nv)[0] === v);
-        return entry ? Object.keys(entry)[0] : undefined;
-    };
-
     const isSelected = selected === value;
-
-    const isRelated = !isSelected && selected !== undefined && (() => {
-        const selectedKey = keyForValue(selected);
-        const thisKey = keyForValue(value);
-        if (!selectedKey || !thisKey) return false;
-        const selectedSpec = fixtureSpecs.find(s => s.key === selectedKey);
-        const thisSpec = fixtureSpecs.find(s => s.key === thisKey);
-        if (!selectedSpec || !thisSpec) return false;
-        return thisSpec.parents.includes(selectedKey) || selectedSpec.parents.includes(thisKey);
-    })();
+    const isRelated = !isSelected && selected !== undefined &&
+        isRelatedFixture(selected, value, fixtures, fixtureSpecs);
 
     return (
         <span
             className={cn(
-                'text-foreground font-medium px-0.5 py-0.5 rounded border cursor-pointer',
+                'text-foreground font-medium px-0.5 py-0.5 rounded border cursor-pointer transition-colors duration-150',
                 isSelected
                     ? 'bg-yellow-400/60 border-yellow-400/60'
                     : isRelated
@@ -321,6 +307,9 @@ const FixtureToken = ({value}: { value: string }) => {
         </span>
     );
 };
+
+const isErrorTokenData = (item: NestedItem): item is ErrorTokenData =>
+    !Array.isArray(item) && 'type' in item && item.type === 'error';
 
 export const keywordColors: Record<string, string> = {
     'given': 'text-sky-600 dark:text-sky-400',
@@ -359,8 +348,26 @@ interface TokenProps {
 
 export const Token = ({token, inheritedKeyword}: TokenProps) => {
     const {acronyms} = useConfig();
-    const {types = [], value, hint} = token;
+    const {types = [], value, hint, tokens} = token;
     const tokenCls = types.join(" ");
+
+    // Detect ErrorToken: backend serialises it with an empty types array and a
+    // tokens array whose first item has type === 'error'.
+    if (tokens && tokens.length > 0 && isErrorTokenData(tokens[0])) {
+        const errorData = tokens[0];
+        return (
+            <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                    <span className="cursor-help font-medium text-amber-600 dark:text-amber-400 underline decoration-dotted decoration-amber-500/60 underline-offset-2 hover:decoration-amber-500">
+                        {errorData.text}
+                    </span>
+                </TooltipTrigger>
+                <TooltipContent className="bg-slate-900 text-white border-none shadow-xl text-xs px-3 py-2 max-w-sm">
+                    {errorData.hint}
+                </TooltipContent>
+            </Tooltip>
+        );
+    }
 
     if (types.includes("tk-kw")) return <span className={cn('font-bold tracking-tight inline', getKeywordCls(value, inheritedKeyword))}>{value}</span>;
     if (types.includes("tk-ex") || types.includes("tk-tab")) return <Expandable token={token}/>;

@@ -89,7 +89,7 @@ class MethodParser(
                 val nestedMethods = relatedClasses.fold(emptyMap<String, ParsedNestedMethod>()) { acc, clazz ->
                     acc + clazz.prepareNestedMethods(methodDeclarations, ParseContext(properties, methods))
                 }
-                val testMethodSentences = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods))
+                val (testMethodSentences, testMethodParseErrors) = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods))
 
                 ParsedMethod(
                     indexInSource,
@@ -98,7 +98,8 @@ class MethodParser(
                     testMethodSentences,
                     nestedMethods,
                     properties,
-                    methods
+                    methods,
+                    testMethodParseErrors
                 )
             }
         }.also {
@@ -145,12 +146,12 @@ class MethodParser(
                 imports.match(realMethodParams, dc.parameterTypes)
             } ?: throw KensaException("Did not find nested method [${dc.name}] in class [${this.name}]")
 
-    private fun Class<*>.prepareTestMethodSentences(methodDeclarationContext: MethodDeclarationContext, parseContext: ParseContext): List<TemplateSentence> =
+    private fun Class<*>.prepareTestMethodSentences(methodDeclarationContext: MethodDeclarationContext, parseContext: ParseContext): Pair<List<TemplateSentence>, List<ParseError>> =
         ParserStateMachine(sentenceBuilder()).run {
             with(parserDelegate) {
                 parse(this@run, parseContext, methodDeclarationContext)
             }
-            sentences
+            sentences to parseErrors
         }
 
     private fun Class<*>.prepareMethods(): Map<String, MethodElementDescriptor> =

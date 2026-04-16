@@ -11,6 +11,12 @@ export interface TableData {
     rows: Token[][]
 }
 
+export interface ErrorTokenData {
+    type: 'error'
+    text: string
+    hint: string
+}
+
 export interface Token {
     types: string[]
     value: string
@@ -19,7 +25,17 @@ export interface Token {
     tokens?: NestedItem[]
 }
 
-export type NestedItem = Token[] | TableData;
+export interface ParseError {
+    line: number
+    message: string
+}
+
+export interface RenderError {
+    type: string
+    message: string
+}
+
+export type NestedItem = Token[] | TableData | ErrorTokenData;
 
 export interface NamedAttributes {
     name: string
@@ -78,6 +94,7 @@ export interface Invocation {
     sequenceDiagram?: string
     executionException: Record<string, string>
     customTabContents?: CustomTabContent[]
+    renderErrors?: RenderError[]
 }
 
 export interface Test {
@@ -88,6 +105,8 @@ export interface Test {
     state: TestState
     autoOpenTab?: TabType
     invocations: Invocation[]
+    parseErrors?: ParseError[]
+    hasErrors?: boolean
 }
 
 export interface TestDetail {

@@ -42,6 +42,7 @@ const buildPackageTree = (indices: Indices, commonBase: string): Indices => {
                     children: isLast ? idx.children : [],
                     state: idx.state,
                     issues: isLast ? idx.issues : undefined,
+                    hasErrors: isLast ? idx.hasErrors : undefined,
                 };
                 currentLevel.push(existing);
             }

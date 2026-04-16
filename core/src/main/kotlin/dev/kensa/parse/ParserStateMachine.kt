@@ -12,6 +12,7 @@ import dev.kensa.parse.state.StateMachine
 import dev.kensa.parse.state.StateMachineBuilder
 import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
 import dev.kensa.sentence.SentenceBuilder
+import dev.kensa.sentence.TemplateToken.ErrorTemplateToken
 import dev.kensa.sentence.TemplateSentence
 
 class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) -> SentenceBuilder) {
@@ -19,6 +20,13 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
     private val _sentences: MutableList<TemplateSentence> = ArrayList()
     val sentences: List<TemplateSentence>
         get() = _sentences
+
+    private val _parseErrors: MutableList<ParseError> = ArrayList()
+    val parseErrors: List<ParseError> get() = _parseErrors
+
+    private var skipDepth: Int = 0
+    private var statementEntryState: State? = null
+    private var currentStatementLocation: Location? = null
 
     private lateinit var sentenceBuilder: SentenceBuilder
 
@@ -487,6 +495,40 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
     }
 
     fun apply(event: Event) {
-        stateMachine.apply(event)
+        if (skipDepth > 0) {
+            handleSkipping(event)
+            return
+        }
+        if (event is EnterStatement) {
+            statementEntryState = stateMachine.state
+            currentStatementLocation = event.location
+        }
+        try {
+            stateMachine.apply(event)
+        } catch (e: Exception) {
+            val location = currentStatementLocation
+            val msg = e.message ?: e.javaClass.name
+            _parseErrors += ParseError(location?.lineNumber ?: -1, msg)
+            skipDepth = 1
+        }
+    }
+
+    private fun handleSkipping(event: Event) {
+        when (event) {
+            is EnterStatement -> skipDepth++
+            is ExitStatement -> {
+                skipDepth--
+                if (skipDepth == 0) {
+                    statementEntryState?.let { stateMachine.resetState(it) }
+                    _sentences += errorPlaceholderSentence(currentStatementLocation)
+                }
+            }
+            else -> { /* ignore */ }
+        }
+    }
+
+    private fun errorPlaceholderSentence(location: Location?): TemplateSentence {
+        val lineNumber = location?.lineNumber ?: 0
+        return TemplateSentence(listOf(ErrorTemplateToken("Could not parse this statement")), lineNumber)
     }
 }

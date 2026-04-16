@@ -1,9 +1,8 @@
 package dev.kensa.state
 
-import dev.kensa.SuppressParseErrors
 import dev.kensa.Tab
 import dev.kensa.context.TestContext
-import dev.kensa.util.hasAnnotation
+import dev.kensa.parse.ParseError
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
@@ -12,6 +11,8 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
     val invocationContexts = mutableMapOf<UUID, TestInvocationContext>()
     val invocations: List<TestInvocation>
         field = mutableListOf<TestInvocation>()
+    private var _parseErrors: List<ParseError> = emptyList()
+    val parseErrors: List<ParseError> get() = _parseErrors
 
     // TODO: Need a better way
     //    val indexInSource: Int by lazy { invocations.first().indexInSource }
@@ -34,7 +35,7 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
     }
 
     fun endTestInvocation(testContext: TestContext, testId: UUID, executionException: Throwable?, endTimeMs: Long) {
-        val invocation = invocationContexts.getValue(testId).let { invocationContext ->
+        val (invocation, parseErrors) = invocationContexts.getValue(testId).let { invocationContext ->
             testInvocationFactory.create(
                 (endTimeMs - invocationContext.startTimeMs).milliseconds,
                 testContext,
@@ -44,9 +45,7 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
             )
         }
         invocations.add(invocation)
-        if (invocation.parseException != null && !method.hasAnnotation<SuppressParseErrors>() && !method.declaringClass.hasAnnotation<SuppressParseErrors>()) {
-            throw invocation.parseException
-        }
+        if (_parseErrors.isEmpty()) _parseErrors = parseErrors
     }
 
     val state: TestState

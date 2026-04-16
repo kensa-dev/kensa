@@ -67,6 +67,12 @@ object JsonTransforms {
                             .add("executionException", executionExceptionFrom(i))
                             .add("displayName", i.parameterizedTestDescription ?: i.displayName)
 
+                        i.renderErrors.takeIf { it.isNotEmpty() }?.let { errors ->
+                            invocationJson.add("renderErrors", asJsonArray(errors) { e ->
+                                jsonObject().add("type", e.type).add("message", e.message)
+                            })
+                        }
+
                         val tabs = customTabs(testMethodContainer, i, idx)
                         if (tabs.isNotEmpty()) {
                             invocationJson.add("customTabContents", asJsonArray(tabs, customTabContentAsJson()))
@@ -76,7 +82,7 @@ object JsonTransforms {
                     }
                 }
 
-                jsonObject()
+                val methodJson = jsonObject()
                     .add("elapsedTime", totalElapsed.format())
                     .add("testMethod", testMethodContainer.method.name)
                     .add("displayName", testMethodContainer.displayName)
@@ -84,6 +90,14 @@ object JsonTransforms {
                     .add("state", testMethodContainer.state.description)
                     .add("autoOpenTab", testMethodContainer.autoOpenTab.name)
                     .add("invocations", invocations)
+
+                testMethodContainer.parseErrors.takeIf { it.isNotEmpty() }?.let { errors ->
+                    methodJson.add("parseErrors", asJsonArray(errors) { e ->
+                        jsonObject().add("line", e.lineNumber).add("message", e.message)
+                    })
+                }
+
+                methodJson
             })
     }
 
@@ -111,30 +125,39 @@ object JsonTransforms {
             .add("displayName", container.displayName)
             .add("state", container.state.description)
             .add("tests", asJsonArray(container.methodContainers.values) { invocation: TestMethodContainer ->
-                jsonObject()
+                val methodIndexJson = jsonObject()
                     .add("testMethod", invocation.method.name)
                     .add("issues", asJsonArray(invocation.issues))
                     .add("displayName", invocation.displayName)
                     .add("state", invocation.state.description)
+                if (methodHasErrors(invocation)) methodIndexJson.add("hasErrors", true)
+                methodIndexJson
             })
     }
 
     fun toModernIndexJson(id: String): (TestContainer) -> JsonValue = { container: TestContainer ->
-        jsonObject()
+        val classJson = jsonObject()
             .add("id", id)
             .add("testClass", container.testClass.name)
             .add("issues", asJsonArray(container.issues))
             .add("displayName", container.displayName)
             .add("state", container.state.description)
             .add("children", asJsonArray(container.orderedMethodContainers) { invocation: TestMethodContainer ->
-                jsonObject()
+                val childIndexJson = jsonObject()
                     .add("id", "$id:${invocation.method.name}")
                     .add("testMethod", invocation.method.name)
                     .add("issues", asJsonArray(invocation.issues))
                     .add("displayName", invocation.displayName)
                     .add("state", invocation.state.description)
+                if (methodHasErrors(invocation)) childIndexJson.add("hasErrors", true)
+                childIndexJson
             })
+        if (container.orderedMethodContainers.any { methodHasErrors(it) }) classJson.add("hasErrors", true)
+        classJson
     }
+
+    private fun methodHasErrors(container: TestMethodContainer): Boolean =
+        container.parseErrors.isNotEmpty() || container.invocations.any { it.renderErrors.isNotEmpty() }
 
     fun toJsonString(): (JsonValue) -> String = { jv: JsonValue ->
         try {
@@ -178,6 +201,15 @@ object JsonTransforms {
                             add("tokens", asJsonArray(token.expandableTokens) { tokens ->
                                 asJsonArray(tokens) { t -> baseTokenJson(t) }
                             })
+                        }
+
+                        is RenderedToken.ErrorToken -> {
+                            add("tokens", Json.array().add(
+                                jsonObject()
+                                    .add("type", "error")
+                                    .add("text", "⚠ parse error")
+                                    .add("hint", token.message)
+                            ))
                         }
 
                         else -> {}

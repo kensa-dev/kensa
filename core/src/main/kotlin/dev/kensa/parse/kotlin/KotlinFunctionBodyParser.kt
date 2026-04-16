@@ -3,6 +3,7 @@ package dev.kensa.parse.kotlin
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.kotlin.KotlinLexer.*
 import dev.kensa.parse.kotlin.KotlinParser.ValueArgumentContext
+import dev.kensa.parse.Location
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
@@ -13,36 +14,36 @@ import dev.kensa.parse.ParseContext.Companion.asMultilineString
 import dev.kensa.parse.ParseContext.Companion.asNullLiteral
 import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
 import dev.kensa.parse.ParseContext.Companion.asOperator
+import dev.kensa.parse.ParseContext.Companion.asReplaceSentenceHint
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
+import dev.kensa.parse.ReplaceSentenceHintParser
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class KotlinFunctionBodyParser(
     private val stateMachine: ParserStateMachine,
-    private val parseContext: ParseContext
+    private val parseContext: ParseContext,
+    private val hintParser: ReplaceSentenceHintParser,
 ) : KotlinParserBaseListener() {
 
-    //  For Debugging:
-    override fun enterEveryRule(ctx: ParserRuleContext) {
-//        println(">Entering: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
-    }
+    private var replacedStatementDepth = 0
 
-    // For Debugging:
-    override fun exitEveryRule(ctx: ParserRuleContext) {
-//        println(">Exiting: ${ctx::class.simpleName} :: ${ctx.text} :: ${stateMachine.stateMachine.state}")
-    }
-
+    override fun enterEveryRule(ctx: ParserRuleContext) {}
+    override fun exitEveryRule(ctx: ParserRuleContext) {}
 
     override fun enterLambdaLiteral(ctx: KotlinParser.LambdaLiteralContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(EnterLambda)
     }
 
     override fun exitLambdaLiteral(ctx: KotlinParser.LambdaLiteralContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(ExitLambda)
     }
 
     override fun enterInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
+        if (replacedStatementDepth > 0) return
         with(parseContext) {
             val rhExpression = ctx.rangeExpression(1)
             if (rhExpression.matchesFixturesExpression()
@@ -55,6 +56,7 @@ class KotlinFunctionBodyParser(
     }
 
     override fun exitInfixFunctionCall(ctx: KotlinParser.InfixFunctionCallContext) {
+        if (replacedStatementDepth > 0) return
         with(parseContext) {
             val rhExpression = ctx.rangeExpression(1)
             if (rhExpression.matchesFixturesExpression()
@@ -67,6 +69,7 @@ class KotlinFunctionBodyParser(
     }
 
     override fun enterRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
+        if (replacedStatementDepth > 0) return
         with(parseContext) {
             when {
                 ctx.matchesFixturesExpression() -> ctx.asFixture()
@@ -79,6 +82,7 @@ class KotlinFunctionBodyParser(
     }
 
     override fun exitRangeExpression(ctx: KotlinParser.RangeExpressionContext) {
+        if (replacedStatementDepth > 0) return
         with(parseContext) {
             if (ctx.matchesFixturesExpression()
                 || ctx.matchesOutputsExpression()
@@ -91,34 +95,49 @@ class KotlinFunctionBodyParser(
     }
 
     override fun enterFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(EnterMethod)
     }
 
     override fun exitFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(ExitMethod)
     }
 
     override fun enterBlock(ctx: KotlinParser.BlockContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(EnterBlock)
     }
 
     override fun exitBlock(ctx: KotlinParser.BlockContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(ExitBlock)
     }
 
     override fun enterStatement(ctx: KotlinParser.StatementContext) {
-        ctx.asNote()?.also {
-            stateMachine.apply(it)
+        if (replacedStatementDepth > 0) {
+            replacedStatementDepth++
+            return
         }
-
+        ctx.asNote()?.also { stateMachine.apply(it) }
         stateMachine.apply(ctx.asEnterStatement())
+        ctx.asReplaceSentenceHint()?.also { hint ->
+            hintParser.emitEvents(hint, Location(ctx.start.line, ctx.start.charPositionInLine), stateMachine)
+            replacedStatementDepth = 1
+        }
     }
 
     override fun exitStatement(ctx: KotlinParser.StatementContext) {
+        if (replacedStatementDepth > 0) {
+            replacedStatementDepth--
+            if (replacedStatementDepth == 0) stateMachine.apply(ExitStatement)
+            return
+        }
         stateMachine.apply(ExitStatement)
     }
 
     override fun enterExpression(ctx: KotlinParser.ExpressionContext) {
+        if (replacedStatementDepth > 0) return
         return with(parseContext) {
             when {
                 ctx.matchesFixturesExpression() -> ctx.asFixture()
@@ -131,10 +150,12 @@ class KotlinFunctionBodyParser(
     }
 
     override fun exitExpression(ctx: KotlinParser.ExpressionContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(ExitExpression)
     }
 
     override fun enterSimpleIdentifier(ctx: KotlinParser.SimpleIdentifierContext) {
+        if (replacedStatementDepth > 0) return
         with(parseContext) {
             stateMachine.apply(
                 ctx.asParameter()
@@ -148,30 +169,37 @@ class KotlinFunctionBodyParser(
     }
 
     override fun enterValueArgument(ctx: ValueArgumentContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(EnterValueArgument)
     }
 
     override fun exitValueArgument(ctx: ValueArgumentContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(ExitValueArgument)
     }
 
     override fun enterValueArguments(ctx: KotlinParser.ValueArgumentsContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(EnterValueArguments)
     }
 
     override fun exitValueArguments(ctx: KotlinParser.ValueArgumentsContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(ExitValueArguments)
     }
 
     override fun enterTypeArguments(ctx: KotlinParser.TypeArgumentsContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(EnterTypeArguments)
     }
 
     override fun exitTypeArguments(ctx: KotlinParser.TypeArgumentsContext) {
+        if (replacedStatementDepth > 0) return
         stateMachine.apply(ExitTypeArguments)
     }
 
     override fun visitTerminal(node: TerminalNode) {
+        if (replacedStatementDepth > 0) return
         with(parseContext) {
             with(node) {
                 when (symbol.type) {
@@ -198,7 +226,6 @@ class KotlinFunctionBodyParser(
                 }
             } ?: false
         }
-
         return (parent?.parent as? ParserRuleContext)?.findValueArguments() ?: false
     }
 }
