@@ -114,7 +114,7 @@ class Configuration {
     internal val dictionary: Dictionary = Dictionary()
     var sourceLocations: List<Path> = emptyList()
     val sourceCode: SourceCode by lazy { SourceCode({ sourceLocations }) }
-    var uiMode: UiMode = UiMode.Legacy
+    var uiMode: UiMode = UiMode.Modern
 
     internal val tabServiceFactories: Map<KClass<*>, () -> Any>
         field = ConcurrentHashMap<KClass<*>, () -> Any>()
