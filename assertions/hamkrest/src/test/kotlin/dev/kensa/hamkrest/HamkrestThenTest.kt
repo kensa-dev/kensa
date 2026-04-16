@@ -35,7 +35,7 @@ class HamkrestThenTest {
     }
 
     @Test
-    fun `does not invoke extractor more than once`() {
+    fun `does not invoke collector more than once`() {
         whenever(stateCollector.execute(anyOrNull())).thenReturn("result")
 
         HamkrestThen.then(testContext, stateCollector, equalTo("result"))
@@ -129,7 +129,7 @@ class HamkrestThenTest {
             duration = 5.seconds,
             interval = 200.milliseconds,
             context = testContext,
-            extractor = retryingCollector,
+            collector = retryingCollector,
             matcher = equalTo("result")
         )
 

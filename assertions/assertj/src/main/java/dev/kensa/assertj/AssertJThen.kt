@@ -8,18 +8,18 @@ import java.time.temporal.ChronoUnit
 
 object AssertJThen {
     @JvmStatic
-    fun <A, T> then(context: TestContext, extractor: StateCollector<T>, assertProvider: (T?) -> A): A =
-        assertProvider(extractor.execute(context.collectorContext))
+    fun <A, T> then(context: TestContext, collector: StateCollector<T>, assertProvider: (T?) -> A): A =
+        assertProvider(collector.execute(context.collectorContext))
 
     @JvmStatic
-    fun <A, T> thenEventually(duration: Duration, context: TestContext, extractor: StateCollector<T>, assertProvider: (T?) -> A): A {
-        await.atMost(duration).untilAsserted { assertProvider(extractor.execute(context.collectorContext)) }
-        return assertProvider(extractor.execute(context.collectorContext))
+    fun <A, T> thenEventually(duration: Duration, context: TestContext, collector: StateCollector<T>, assertProvider: (T?) -> A): A {
+        await.atMost(duration).untilAsserted { assertProvider(collector.execute(context.collectorContext)) }
+        return assertProvider(collector.execute(context.collectorContext))
     }
 
     @JvmStatic
-    fun <A, T> thenEventually(timeout: Long, timeUnit: ChronoUnit, context: TestContext, extractor: StateCollector<T>, assertProvider: (T?) -> A): A {
-        await.atMost(Duration.of(timeout, timeUnit)).untilAsserted { assertProvider(extractor.execute(context.collectorContext)) }
-        return assertProvider(extractor.execute(context.collectorContext))
+    fun <A, T> thenEventually(timeout: Long, timeUnit: ChronoUnit, context: TestContext, collector: StateCollector<T>, assertProvider: (T?) -> A): A {
+        await.atMost(Duration.of(timeout, timeUnit)).untilAsserted { assertProvider(collector.execute(context.collectorContext)) }
+        return assertProvider(collector.execute(context.collectorContext))
     }
 }

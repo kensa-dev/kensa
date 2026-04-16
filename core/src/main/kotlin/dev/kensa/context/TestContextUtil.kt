@@ -15,5 +15,5 @@ class TestContextRunner(private val testContext: TestContext) {
         action.execute(testContext.actionContext)
     }
 
-    fun <T> execute(extractor: StateCollector<T>) = testContext.run { extractor.execute(collectorContext) }
+    fun <T> execute(collector: StateCollector<T>) = testContext.run { collector.execute(collectorContext) }
 }

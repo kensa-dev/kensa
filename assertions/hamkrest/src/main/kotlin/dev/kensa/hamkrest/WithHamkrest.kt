@@ -11,20 +11,20 @@ import kotlin.time.Duration.Companion.seconds
 
 interface WithHamkrest {
 
-    fun <T> then(extractor: StateCollector<T>, matcher: Matcher<T>) {
-        HamkrestThen.then(testContext(), extractor, matcher)
+    fun <T> then(collector: StateCollector<T>, matcher: Matcher<T>) {
+        HamkrestThen.then(testContext(), collector, matcher)
     }
 
-    fun <T> then(extractor: StateCollector<T>, block: T.() -> Unit) {
-        HamkrestThen.then(testContext(), extractor, block)
+    fun <T> then(collector: StateCollector<T>, block: T.() -> Unit) {
+        HamkrestThen.then(testContext(), collector, block)
     }
 
-    fun <T> and(extractor: StateCollector<T>, matcher: Matcher<T>) {
-        then(extractor, matcher)
+    fun <T> and(collector: StateCollector<T>, matcher: Matcher<T>) {
+        then(collector, matcher)
     }
 
-    fun <T> and(extractor: StateCollector<T>, block: T.() -> Unit) {
-        then(extractor, block)
+    fun <T> and(collector: StateCollector<T>, block: T.() -> Unit) {
+        then(collector, block)
     }
 
     fun <T> then(spec: ThenSpec<T>) {
@@ -39,14 +39,14 @@ interface WithHamkrest {
 
     fun <T> and(spec: ThenSpec<T>): Unit = then(spec)
 
-    fun <T> thenContinually(extractor: StateCollector<T>, matcher: Matcher<T>): Unit = thenContinually(10.seconds, extractor, matcher)
+    fun <T> thenContinually(collector: StateCollector<T>, matcher: Matcher<T>): Unit = thenContinually(10.seconds, collector, matcher)
 
-    fun <T> thenContinually(duration: Duration, extractor: StateCollector<T>, matcher: Matcher<T>) {
-        HamkrestThen.thenContinually(duration, testContext(), extractor, matcher)
+    fun <T> thenContinually(duration: Duration, collector: StateCollector<T>, matcher: Matcher<T>) {
+        HamkrestThen.thenContinually(duration, testContext(), collector, matcher)
     }
 
-    fun <T> thenContinually(duration: Duration, extractor: StateCollector<T>, block: T.() -> Unit) {
-        HamkrestThen.thenContinually(duration, testContext(), extractor, block)
+    fun <T> thenContinually(duration: Duration, collector: StateCollector<T>, block: T.() -> Unit) {
+        HamkrestThen.thenContinually(duration, testContext(), collector, block)
     }
 
     fun <T> thenEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
@@ -62,23 +62,23 @@ interface WithHamkrest {
         }
     }
 
-    fun <T> thenEventually(extractor: StateCollector<T>, matcher: Matcher<T>): Unit = thenEventually(10.seconds, extractor, matcher)
+    fun <T> thenEventually(collector: StateCollector<T>, matcher: Matcher<T>): Unit = thenEventually(10.seconds, collector, matcher)
 
-    fun <T> thenEventually(duration: Duration, extractor: StateCollector<T>, matcher: Matcher<T>) {
-        thenEventually(ZERO, duration, 25.milliseconds, extractor, matcher)
+    fun <T> thenEventually(duration: Duration, collector: StateCollector<T>, matcher: Matcher<T>) {
+        thenEventually(ZERO, duration, 25.milliseconds, collector, matcher)
     }
 
-    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, extractor: StateCollector<T>, matcher: Matcher<T>) {
-        HamkrestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, matcher)
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, matcher: Matcher<T>) {
+        HamkrestThen.thenEventually(initialDelay, duration, interval, testContext(), collector, matcher)
     }
 
-    fun <T> thenEventually(extractor: StateCollector<T>, block: T.() -> Unit = {}): Unit = thenEventually(10.seconds, extractor, block)
+    fun <T> thenEventually(collector: StateCollector<T>, block: T.() -> Unit = {}): Unit = thenEventually(10.seconds, collector, block)
 
-    fun <T> thenEventually(duration: Duration, extractor: StateCollector<T>, block: T.() -> Unit = {}) {
-        thenEventually(ZERO, duration, 25.milliseconds, extractor, block)
+    fun <T> thenEventually(duration: Duration, collector: StateCollector<T>, block: T.() -> Unit = {}) {
+        thenEventually(ZERO, duration, 25.milliseconds, collector, block)
     }
 
-    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, extractor: StateCollector<T>, block: T.() -> Unit = {}) {
-        HamkrestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, block)
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, block: T.() -> Unit = {}) {
+        HamkrestThen.thenEventually(initialDelay, duration, interval, testContext(), collector, block)
     }
 }

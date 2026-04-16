@@ -13,43 +13,43 @@ import kotlin.time.toJavaDuration
 
 object HamkrestThen {
 
-    fun <T> then(context: TestContext, extractor: StateCollector<T>, matcher: Matcher<T>) {
-        then(context, extractor) { assertThat(this, matcher) }
+    fun <T> then(context: TestContext, collector: StateCollector<T>, matcher: Matcher<T>) {
+        then(context, collector) { assertThat(this, matcher) }
     }
 
-    fun <T> then(context: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
-        block(extractor.execute(context.collectorContext))
+    fun <T> then(context: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
+        block(collector.execute(context.collectorContext))
     }
 
-    fun <T> thenContinually(duration: Duration = 10.seconds, context: TestContext, extractor: StateCollector<T>, matcher: Matcher<T>) {
-        thenContinually(duration, context, extractor) { assertThat(this, matcher) }
+    fun <T> thenContinually(duration: Duration = 10.seconds, context: TestContext, collector: StateCollector<T>, matcher: Matcher<T>) {
+        thenContinually(duration, context, collector) { assertThat(this, matcher) }
     }
 
-    fun <T> thenContinually(duration: Duration = 10.seconds, context: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
+    fun <T> thenContinually(duration: Duration = 10.seconds, context: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
         val end = System.nanoTime() + duration.inWholeNanoseconds
         while (System.nanoTime() < end) {
-            block(extractor.execute(context.collectorContext))
+            block(collector.execute(context.collectorContext))
             Thread.sleep(25)
         }
     }
 
-    fun <T> thenEventually(duration: Duration = 10.seconds, context: TestContext, extractor: StateCollector<T>, matcher: Matcher<T>) {
-        thenEventually(ZERO, duration, 25.milliseconds, context, extractor, matcher)
+    fun <T> thenEventually(duration: Duration = 10.seconds, context: TestContext, collector: StateCollector<T>, matcher: Matcher<T>) {
+        thenEventually(ZERO, duration, 25.milliseconds, context, collector, matcher)
     }
 
-    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, context: TestContext, extractor: StateCollector<T>, matcher: Matcher<T>) {
-        thenEventually(initialDelay, duration, interval, context, extractor) { assertThat(this, matcher) }
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, context: TestContext, collector: StateCollector<T>, matcher: Matcher<T>) {
+        thenEventually(initialDelay, duration, interval, context, collector) { assertThat(this, matcher) }
     }
 
-    fun <T> thenEventually(duration: Duration = 10.seconds, context: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
-        thenEventually(ZERO, duration, 25.milliseconds, context, extractor, block)
+    fun <T> thenEventually(duration: Duration = 10.seconds, context: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
+        thenEventually(ZERO, duration, 25.milliseconds, context, collector, block)
     }
 
-    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, context: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, context: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
         await
             .pollDelay(initialDelay.toJavaDuration())
             .pollInterval(interval.toJavaDuration())
             .atMost(duration.toJavaDuration())
-            .untilAsserted { block(extractor.execute(context.collectorContext)) }
+            .untilAsserted { block(collector.execute(context.collectorContext)) }
     }
 }

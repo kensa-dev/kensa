@@ -12,6 +12,6 @@ class DummyAssert<T : Any> {
         @JvmStatic
         fun <T : Any> assertThat(actual: T?): DummyAssert<T> = DummyAssert()
 
-        fun <T: Any> assertThat(extractor: StateCollector<T>) : DummyAssert<T> = DummyAssert()
+        fun <T: Any> assertThat(collector: StateCollector<T>) : DummyAssert<T> = DummyAssert()
     }
 }

@@ -24,20 +24,20 @@ interface WithKotest {
 
     fun <T> and(spec: ThenSpec<T>): Unit = then(spec)
 
-    fun <T> then(extractor: StateCollector<T>, block: T.() -> Unit) {
-        KotestThen.then(testContext(), extractor, block)
+    fun <T> then(collector: StateCollector<T>, block: T.() -> Unit) {
+        KotestThen.then(testContext(), collector, block)
     }
 
-    fun <T> then(extractor: StateCollector<T>, match: Matcher<T>) {
-        KotestThen.then(testContext(), extractor, match)
+    fun <T> then(collector: StateCollector<T>, match: Matcher<T>) {
+        KotestThen.then(testContext(), collector, match)
     }
 
-    fun <T> and(extractor: StateCollector<T>, block: T.() -> Unit) {
-        then(extractor, block)
+    fun <T> and(collector: StateCollector<T>, block: T.() -> Unit) {
+        then(collector, block)
     }
 
-    fun <T> and(extractor: StateCollector<T>, match: Matcher<T>) {
-        then(extractor, match)
+    fun <T> and(collector: StateCollector<T>, match: Matcher<T>) {
+        then(collector, match)
     }
 
     fun <T> thenEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
@@ -58,41 +58,41 @@ interface WithKotest {
         }
     }
 
-    fun <T> thenContinually(extractor: StateCollector<T>, match: Matcher<T>): Unit = thenContinually(10.seconds, extractor, match)
+    fun <T> thenContinually(collector: StateCollector<T>, match: Matcher<T>): Unit = thenContinually(10.seconds, collector, match)
 
-    fun <T> thenContinually(duration: Duration, extractor: StateCollector<T>, block: T.() -> Unit) {
+    fun <T> thenContinually(duration: Duration, collector: StateCollector<T>, block: T.() -> Unit) {
         runBlocking {
-            KotestThen.thenContinually(duration, testContext(), extractor, block)
+            KotestThen.thenContinually(duration, testContext(), collector, block)
         }
     }
 
-    fun <T> thenContinually(duration: Duration, extractor: StateCollector<T>, match: Matcher<T>) {
+    fun <T> thenContinually(duration: Duration, collector: StateCollector<T>, match: Matcher<T>) {
         runBlocking {
-            KotestThen.thenContinually(duration, testContext(), extractor, match)
+            KotestThen.thenContinually(duration, testContext(), collector, match)
         }
     }
 
-    fun <T> thenEventually(extractor: StateCollector<T>, match: Matcher<T>): Unit = thenEventually(10.seconds, extractor, match)
+    fun <T> thenEventually(collector: StateCollector<T>, match: Matcher<T>): Unit = thenEventually(10.seconds, collector, match)
 
-    fun <T> thenEventually(duration: Duration, extractor: StateCollector<T>, match: Matcher<T>) {
-        thenEventually(ZERO, duration, 25.milliseconds, extractor, match)
+    fun <T> thenEventually(duration: Duration, collector: StateCollector<T>, match: Matcher<T>) {
+        thenEventually(ZERO, duration, 25.milliseconds, collector, match)
     }
 
-    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, extractor: StateCollector<T>, match: Matcher<T>) {
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, match: Matcher<T>) {
         runBlocking {
-            KotestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, match)
+            KotestThen.thenEventually(initialDelay, duration, interval, testContext(), collector, match)
         }
     }
 
-    fun <T> thenEventually(extractor: StateCollector<T>, block: T.() -> Unit = {}): Unit = thenEventually(10.seconds, extractor, block)
+    fun <T> thenEventually(collector: StateCollector<T>, block: T.() -> Unit = {}): Unit = thenEventually(10.seconds, collector, block)
 
-    fun <T> thenEventually(duration: Duration, extractor: StateCollector<T>, block: T.() -> Unit = {}) {
-        thenEventually(ZERO, duration, 25.milliseconds, extractor, block)
+    fun <T> thenEventually(duration: Duration, collector: StateCollector<T>, block: T.() -> Unit = {}) {
+        thenEventually(ZERO, duration, 25.milliseconds, collector, block)
     }
 
-    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, extractor: StateCollector<T>, block: T.() -> Unit = {}) {
+    fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, block: T.() -> Unit = {}) {
         runBlocking {
-            KotestThen.thenEventually(initialDelay, duration, interval, testContext(), extractor, block)
+            KotestThen.thenEventually(initialDelay, duration, interval, testContext(), collector, block)
         }
     }
 }

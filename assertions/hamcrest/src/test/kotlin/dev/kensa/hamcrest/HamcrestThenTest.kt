@@ -32,7 +32,7 @@ class HamcrestThenTest {
     }
 
     @Test
-    fun `does not invoke extractor more than once`() {
+    fun `does not invoke collector more than once`() {
         whenever(stateCollector.execute(anyOrNull())).thenReturn("result")
 
         HamcrestThen.then(testContext, stateCollector, equalTo("result"))
@@ -128,12 +128,12 @@ class HamcrestThenTest {
     }
 
     class Dummy : WithHamcrest {
-        fun <T> runThen(extractor: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
-            then(extractor, matcher)
+        fun <T> runThen(collector: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
+            then(collector, matcher)
         }
 
-        fun <T> runThenEventually(duration: Duration, extractor: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
-            thenEventually(duration, extractor, matcher)
+        fun <T> runThenEventually(duration: Duration, collector: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
+            thenEventually(duration, collector, matcher)
         }
     }
 }

@@ -44,7 +44,7 @@ class KotestThenTest {
     }
 
     @Test
-    fun `does not invoke extractor more than once`() {
+    fun `does not invoke collector more than once`() {
         whenever(stateCollector.execute(anyOrNull())).thenReturn("result")
 
         KotestThen.then(testContext, stateCollector, be("result"))

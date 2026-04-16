@@ -16,43 +16,43 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 object KotestThen {
-    fun <T> then(testContext: TestContext, extractor: StateCollector<T>, match: Matcher<T>) {
-        then(testContext, extractor) {
+    fun <T> then(testContext: TestContext, collector: StateCollector<T>, match: Matcher<T>) {
+        then(testContext, collector) {
             invokeMatcher(this, match)
         }
     }
 
-    fun <T> then(testContext: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
-        block(extractor.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)))
+    fun <T> then(testContext: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
+        block(collector.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)))
     }
 
-    suspend fun <T> thenContinually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateCollector<T>, match: Matcher<T>) {
-        thenContinually(duration, testContext, extractor) {
-            invokeMatcher(extractor.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)), match)
+    suspend fun <T> thenContinually(duration: Duration = 10.seconds, testContext: TestContext, collector: StateCollector<T>, match: Matcher<T>) {
+        thenContinually(duration, testContext, collector) {
+            invokeMatcher(collector.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)), match)
         }
     }
 
-    suspend fun <T> thenContinually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
+    suspend fun <T> thenContinually(duration: Duration = 10.seconds, testContext: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
         continually(duration) {
-            block(extractor.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)))
+            block(collector.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)))
         }
     }
 
-    suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateCollector<T>, match: Matcher<T>) {
-        thenEventually(ZERO, duration, 25.milliseconds, testContext, extractor, match)
+    suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, collector: StateCollector<T>, match: Matcher<T>) {
+        thenEventually(ZERO, duration, 25.milliseconds, testContext, collector, match)
     }
 
-    suspend fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, testContext: TestContext, extractor: StateCollector<T>, match: Matcher<T>) {
-        thenEventually(initialDelay, duration, interval, testContext, extractor) {
-            invokeMatcher(extractor.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)), match)
+    suspend fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, testContext: TestContext, collector: StateCollector<T>, match: Matcher<T>) {
+        thenEventually(initialDelay, duration, interval, testContext, collector) {
+            invokeMatcher(collector.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)), match)
         }
     }
 
-    suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
-        thenEventually(ZERO, duration, testContext = testContext, extractor = extractor, block = block)
+    suspend fun <T> thenEventually(duration: Duration = 10.seconds, testContext: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
+        thenEventually(ZERO, duration, testContext = testContext, collector = collector, block = block)
     }
 
-    suspend fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, testContext: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
+    suspend fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, testContext: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
         thenEventually(
             eventuallyConfig {
                 this.duration = duration
@@ -62,15 +62,15 @@ object KotestThen {
                 shortCircuit = { it is OnMatchException }
             },
             testContext,
-            extractor,
+            collector,
             block
         )
     }
 
-    suspend fun <T> thenEventually(config: EventuallyConfiguration, testContext: TestContext, extractor: StateCollector<T>, block: T.() -> Unit) {
+    suspend fun <T> thenEventually(config: EventuallyConfiguration, testContext: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
         try {
             eventually(config) {
-                block(extractor.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)))
+                block(collector.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)))
             }
         } catch (e: Throwable) {
             val listener = config.listener
