@@ -24,7 +24,7 @@ subprojects {
         mavenCentral()
     }
 
-    if (name != "ui" && name != "ui2" && name != "bom" && name != "antlr") {
+    if (name != "ui" && name != "ui2" && name != "bom" && name != "antlr" && name != "adoptabot") {
         apply(plugin = "org.jetbrains.kotlin.jvm")
         apply(plugin = "java-library")
         apply(plugin = "maven-publish")
