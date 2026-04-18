@@ -7,11 +7,11 @@ interface SentenceProps {
     sentence: TokenType[];
     lineNumber?: number;
     failingLine?: number;
-    isNested?: boolean;
+    isExpandable?: boolean;
     inheritedKeyword?: string;
 }
 
-const Sentence = ({ sentence, lineNumber, failingLine, isNested = false, inheritedKeyword }: SentenceProps) => {
+const Sentence = ({ sentence, lineNumber, failingLine, isExpandable = false, inheritedKeyword }: SentenceProps) => {
     if (!sentence || sentence.length === 0) return null;
 
     // Detect pure-note sentences (only tk-nt tokens, ignoring whitespace tokens)
@@ -47,7 +47,7 @@ const Sentence = ({ sentence, lineNumber, failingLine, isNested = false, inherit
     return (
         <div className={cn(
             "sentence-container text-[15px] leading-relaxed text-foreground",
-            isNested && "ml-1 border-muted pl-3 py-0.5 my-1",
+            isExpandable && "ml-1 border-muted pl-3 py-0.5 my-1",
             isFailingLine && "border-l-[3px] border-red-500/90 bg-gradient-to-r from-red-500/[0.08] dark:from-red-500/[0.13] to-transparent pl-3 py-0.5 rounded-r-sm"
         )}>
             {lines.map((line, lineIdx) => (

@@ -6,7 +6,7 @@ import {useFixtureHighlight} from '@/contexts/FixtureHighlightContext';
 import Sentence from "@/components/Sentence";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {ErrorTokenData, NestedItem, Token as TokenType} from '@/types/Test';
+import {ErrorTokenData, ExpandableItem, Token as TokenType} from '@/types/Test';
 import {isRelatedFixture} from '@/util/fixtureHighlight';
 
 interface ExpandableProps {
@@ -136,12 +136,12 @@ const Expandable = ({token}: ExpandableProps) => {
                     className={"p-4 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1 w-[450px]"}
                 >
                     <div className="space-y-1">
-                        {tokens?.map((item: NestedItem, idx: number) => {
+                        {tokens?.map((item: ExpandableItem, idx: number) => {
                             if (!Array.isArray(item) && item.type === 'table') {
                                 return <TokenTable key={idx} headers={item.headers} rows={item.rows}/>;
                             }
 
-                            return <Sentence key={idx} sentence={item as TokenType[]} isNested={true}/>;
+                            return <Sentence key={idx} sentence={item as TokenType[]} isExpandable={true}/>;
                         })}
                     </div>
                 </HoverCardContent>
@@ -152,12 +152,12 @@ const Expandable = ({token}: ExpandableProps) => {
                     className="w-full mt-2 mb-2 pl-4 border-l-2 border-primary/20 bg-primary/[0.01] py-0.5 rounded-r-lg overflow-x-auto"
                     style={{marginLeft: `${leftOffset}px`}}
                 >
-                    {tokens?.map((item: NestedItem, idx: number) => {
+                    {tokens?.map((item: ExpandableItem, idx: number) => {
                         if (!Array.isArray(item) && item.type === 'table') {
                             return <TokenTable key={idx} headers={item.headers} rows={item.rows}/>;
                         }
 
-                        return <Sentence key={idx} sentence={item as TokenType[]} isNested={true}/>;
+                        return <Sentence key={idx} sentence={item as TokenType[]} isExpandable={true}/>;
                     })}
                 </div>
             )}
@@ -308,7 +308,7 @@ const FixtureToken = ({value}: { value: string }) => {
     );
 };
 
-const isErrorTokenData = (item: NestedItem): item is ErrorTokenData =>
+const isErrorTokenData = (item: ExpandableItem): item is ErrorTokenData =>
     !Array.isArray(item) && 'type' in item && item.type === 'error';
 
 export const keywordColors: Record<string, string> = {

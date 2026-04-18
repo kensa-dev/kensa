@@ -1,6 +1,6 @@
 package dev.kensa.runtime
 
-import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.context.RenderedValueInvocationContextHolder
 import dev.kensa.util.findMethod
 import java.lang.reflect.Method
@@ -11,7 +11,7 @@ object CompilerPluginHookFunctions {
     fun onEnterExpandableSentence(owner: Any?, fqName: String, simpleName: String, paramTypes: Array<KClass<*>>, args: Array<Any?>) {
         val method: Method = deriveMethod(owner, fqName, simpleName, paramTypes)
 
-        NestedInvocationContextHolder.expandableSentenceInvocationContext().recordInvocation(method, args)
+        ExpandableInvocationContextHolder.expandableSentenceInvocationContext().recordInvocation(method, args)
     }
 
     fun onExitRenderedValue(owner: Any?, fqName: String, simpleName: String, paramTypes: Array<KClass<*>>, returnValue: Any?) {

@@ -37,7 +37,7 @@ class KensaLifecycleManager private constructor(
         TestContext(testClass, testMethod, configuration.setupStrategy).also {
             TestContextHolder.bindToCurrentThread(it)
         }
-        NestedInvocationContextHolder.bindToCurrentThread(NestedInvocationContext())
+        ExpandableInvocationContextHolder.bindToCurrentThread(ExpandableInvocationContext())
         RenderedValueInvocationContextHolder.bindToCurrentThread(RenderedValueInvocationContext())
     }
 
@@ -68,7 +68,7 @@ class KensaLifecycleManager private constructor(
             }
         } finally {
             TestContextHolder.clearFromThread()
-            NestedInvocationContextHolder.clearFromThread()
+            ExpandableInvocationContextHolder.clearFromThread()
             RenderedValueInvocationContextHolder.clearFromThread()
         }
     }

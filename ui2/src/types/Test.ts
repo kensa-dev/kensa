@@ -22,7 +22,7 @@ export interface Token {
     value: string
     hint?: string
     parameterTokens?: Token[]
-    tokens?: NestedItem[]
+    tokens?: ExpandableItem[]
 }
 
 export interface ParseError {
@@ -35,7 +35,7 @@ export interface RenderError {
     message: string
 }
 
-export type NestedItem = Token[] | TableData | ErrorTokenData;
+export type ExpandableItem = Token[] | TableData | ErrorTokenData;
 
 export interface NamedAttributes {
     name: string

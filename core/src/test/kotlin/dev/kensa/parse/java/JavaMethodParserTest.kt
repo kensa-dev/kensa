@@ -1,8 +1,8 @@
 package dev.kensa.parse.java
 
 import dev.kensa.Configuration
-import dev.kensa.context.NestedInvocationContext
-import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.context.ExpandableInvocationContext
+import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.example.*
 import dev.kensa.parse.*
 import dev.kensa.sentence.TemplateSentence
@@ -89,7 +89,7 @@ internal class JavaMethodParserTest {
                     Word.asTemplateToken("blank"),
                 )
             )
-            val expectedNestedSentence = TemplateSentence(
+            val expectedExpandableSentence = TemplateSentence(
                 listOf(
                     Word.asTemplateToken("some"),
                     Word.asTemplateToken("builder"),
@@ -129,10 +129,10 @@ internal class JavaMethodParserTest {
                 methods[methodName]
                     .shouldBeNull()
 
-                assertSoftly(nestedMethods["nested1"]) {
+                assertSoftly(expandableMethods["expandable1"]) {
                     shouldNotBeNull()
                     sentences.shouldHaveSize(1)
-                    sentences.first().tokens.shouldBe(expectedNestedSentence.tokens)
+                    sentences.first().tokens.shouldBe(expectedExpandableSentence.tokens)
                 }
                 sentences.first().tokens.shouldBe(expectedSentence.tokens)
             }
@@ -357,7 +357,7 @@ internal class JavaMethodParserTest {
     }
 
     @Nested
-    inner class NestedSentences {
+    inner class ExpandableSentences {
 
         @Test
         internal fun `parses method with parameters`() {
@@ -436,13 +436,13 @@ internal class JavaMethodParserTest {
         @BeforeAll
         @JvmStatic
         fun beforeAll() {
-            NestedInvocationContextHolder.bindToCurrentThread(NestedInvocationContext())
+            ExpandableInvocationContextHolder.bindToCurrentThread(ExpandableInvocationContext())
         }
 
         @AfterAll
         @JvmStatic
         fun afterAll() {
-            NestedInvocationContextHolder.clearFromThread()
+            ExpandableInvocationContextHolder.clearFromThread()
         }
     }
 }

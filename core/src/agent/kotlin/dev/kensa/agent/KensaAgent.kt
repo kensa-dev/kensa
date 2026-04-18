@@ -44,7 +44,6 @@ object KensaAgent {
                     .intercept(MethodDelegation.to(RenderedValueInterceptor::class.java))
 
                 // TODO: would prefer to use Advice - but this causes problems (NoSuchMethodError) with the latest Kotlin compiled code
-//                    .method(not(takesNoArguments()).and(isAnnotatedWith(NestedSentence::class.java))).intercept(Advice.to(NestedSentenceAdvice::class.java))
 //                    .method(not(takesNoArguments()).and(isAnnotatedWith(RenderedValue::class.java))).intercept(Advice.to(RenderedValueAdvice::class.java))
             }
             .installOn(instrumentation)

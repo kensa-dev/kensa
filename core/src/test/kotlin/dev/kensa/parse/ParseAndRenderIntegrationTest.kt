@@ -1,8 +1,8 @@
 package dev.kensa.parse
 
 import dev.kensa.Configuration
-import dev.kensa.context.NestedInvocationContext
-import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.context.ExpandableInvocationContext
+import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.example.KotlinWithScenario
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
@@ -64,7 +64,7 @@ class ParseAndRenderIntegrationTest {
             name = "someMethod",
             parameters = MethodParameters(emptyMap()),
             sentences = emptyList(),
-            nestedMethods = emptyMap(),
+            expandableMethods = emptyMap(),
             properties = emptyMap(),
             methods = emptyMap(),
             parseErrors = parseErrors
@@ -145,7 +145,7 @@ class ParseAndRenderIntegrationTest {
             name = method.name,
             parameters = MethodParameters(emptyMap()),
             sentences = emptyList(),
-            nestedMethods = emptyMap(),
+            expandableMethods = emptyMap(),
             properties = emptyMap(),
             methods = emptyMap(),
             parseErrors = parseErrors
@@ -171,13 +171,13 @@ class ParseAndRenderIntegrationTest {
         @BeforeAll
         @JvmStatic
         fun beforeAll() {
-            NestedInvocationContextHolder.bindToCurrentThread(NestedInvocationContext())
+            ExpandableInvocationContextHolder.bindToCurrentThread(ExpandableInvocationContext())
         }
 
         @AfterAll
         @JvmStatic
         fun afterAll() {
-            NestedInvocationContextHolder.clearFromThread()
+            ExpandableInvocationContextHolder.clearFromThread()
         }
     }
 }

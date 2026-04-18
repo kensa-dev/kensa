@@ -17,7 +17,7 @@ interface ParserDelegate {
     fun Method.prepareParameters(parameterNamesAndTypes: List<Pair<String, String>>): MethodParameters
 
     companion object {
-        val expandableSentenceAnnotationNames = listOf("NestedSentence", "dev.kensa.NestedSentence", "ExpandableSentence", "dev.kensa.ExpandableSentence")
+        val expandableSentenceAnnotationNames = listOf("ExpandableSentence", "dev.kensa.ExpandableSentence")
     }
 }
 

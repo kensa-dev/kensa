@@ -7,13 +7,13 @@ data class ParsedMethod(
     val name: String,
     val parameters: MethodParameters,
     val sentences: List<TemplateSentence>,
-    val nestedMethods: Map<String, ParsedNestedMethod>,
+    val expandableMethods: Map<String, ParsedExpandableMethod>,
     val properties: Map<String, ElementDescriptor>,
     val methods: Map<String, ElementDescriptor>,
     val parseErrors: List<ParseError> = emptyList()
 )
 
-data class ParsedNestedMethod(
+data class ParsedExpandableMethod(
     val name: String,
     val parameters: MethodParameters,
     val sentences: List<TemplateSentence>

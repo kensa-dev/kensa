@@ -7,7 +7,7 @@ import dev.kensa.RenderedValue
 class KotlinExpandableSentenceSource {
 
     @ExpandableSentence
-    fun nestedFromSource(@RenderedValue value: String?) {
+    fun expandableFromSource(@RenderedValue value: String?) {
         assertThat(value).isEqualTo("foo")
     }
 }

@@ -2,7 +2,7 @@
 
 ![Latest Release](https://img.shields.io/github/v/release/kensa-dev/kensa)
 
-A Gradle plugin for the acceptance test framework Kensa. To use the full functionality of Kensa's `@NestedSentence` & `@RenderedValue` annotations (collection and rendering of function arguments), you must apply this plugin to your Kotlin project.
+A Gradle plugin for the acceptance test framework Kensa. To use the full functionality of Kensa's `@ExpandableSentence` & `@RenderedValue` annotations (collection and rendering of function arguments), you must apply this plugin to your Kotlin project.
 
 ## What it does
 - Applies the Kensa Kotlin compiler plugin `dev.kensa.compiler-plugin`

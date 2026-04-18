@@ -36,14 +36,14 @@ class KotlinWithAnnotations {
     }
 
     @ExpandableSentence
-    private fun nested1(): Action<GivensContext> {
+    private fun expandable1(): Action<GivensContext> {
         return someBuilder()
             .withSomething()
             .build()
     }
 
     @ExpandableSentence
-    internal fun internalNested() {
+    internal fun internalExpandable() {
     }
 
     companion object {

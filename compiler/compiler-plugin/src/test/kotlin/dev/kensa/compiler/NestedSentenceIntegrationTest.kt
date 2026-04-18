@@ -1,11 +1,11 @@
 package dev.kensa.compiler
 
-import dev.kensa.context.NestedInvocationContext
-import dev.kensa.context.NestedInvocationContextHolder
-import dev.kensa.context.RealNestedInvocation
+import dev.kensa.context.ExpandableInvocationContext
+import dev.kensa.context.ExpandableInvocationContextHolder
+import dev.kensa.context.RealExpandableInvocation
 import dev.kensa.parse.ElementDescriptor
 import dev.kensa.parse.MethodParameters
-import dev.kensa.parse.ParsedNestedMethod
+import dev.kensa.parse.ParsedExpandableMethod
 import example.ExpandableSentences
 import example.Service
 import io.kotest.matchers.collections.shouldContainExactly
@@ -22,19 +22,19 @@ import kotlin.reflect.KClass
 
 class ExpandableSentenceIntegrationTest {
 
-    private lateinit var nestedInvocationContext: NestedInvocationContext
+    private lateinit var expandableInvocationContext: ExpandableInvocationContext
     private val service = mock<Service>()
 
     @BeforeEach
     fun setUp() {
         reset(service)
-        nestedInvocationContext = NestedInvocationContext()
-        NestedInvocationContextHolder.bindToCurrentThread(nestedInvocationContext)
+        expandableInvocationContext = ExpandableInvocationContext()
+        ExpandableInvocationContextHolder.bindToCurrentThread(expandableInvocationContext)
     }
 
     @AfterEach
     fun tearDown() {
-        NestedInvocationContextHolder.clearFromThread()
+        ExpandableInvocationContextHolder.clearFromThread()
     }
 
     @Test
@@ -42,27 +42,27 @@ class ExpandableSentenceIntegrationTest {
         val methodName = "foo"
 
         val parsedNestedMethod = mockParsedNestedMethod<ExpandableSentences>(methodName, String::class)
-        nestedInvocationContext.update(mapOf(methodName to parsedNestedMethod))
+        expandableInvocationContext.update(mapOf(methodName to parsedNestedMethod))
 
         val instance = ExpandableSentences(service)
 
         instance.foo("test arg")
 
-        val invocation = nestedInvocationContext.nextInvocationFor(methodName)
+        val invocation = expandableInvocationContext.nextInvocationFor(methodName)
 
-        invocation.shouldBeInstanceOf<RealNestedInvocation> {
+        invocation.shouldBeInstanceOf<RealExpandableInvocation> {
             it.arguments.shouldContainExactly("test arg")
         }
 
         verify(service).call(arrayOf("test arg"))
     }
 
-    private inline fun <reified T> mockParsedNestedMethod(fnName: String, vararg parameterTypes: KClass<*>): ParsedNestedMethod {
+    private inline fun <reified T> mockParsedNestedMethod(fnName: String, vararg parameterTypes: KClass<*>): ParsedExpandableMethod {
         val klass = T::class.java
         val method: Method = klass.getMethod(fnName, *parameterTypes.map { it.java }.toTypedArray()) ?: throw IllegalArgumentException("No such method: [$fnName] with parameters: ${parameterTypes.joinToString(", ") { it.simpleName!! }}")
         val parameterDescriptors = method.parameters.mapIndexed { i, p -> ElementDescriptor.forParameter(p, p.name, i) }.associateBy { it.name }
         val methodParameters = mock<MethodParameters> { on { descriptors } doReturn parameterDescriptors }
 
-        return mock<ParsedNestedMethod> { on { parameters } doReturn methodParameters }
+        return mock<ParsedExpandableMethod> { on { parameters } doReturn methodParameters }
     }
 }

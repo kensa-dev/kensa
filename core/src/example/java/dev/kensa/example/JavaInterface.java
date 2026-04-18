@@ -19,9 +19,4 @@ public interface JavaInterface {
     default void methodOnInterface() {
         doSomething();
     }
-
-//    @NestedSentence
-//    default void nestedSentence() {
-//        assertThat("abc").contains("a");
-//    }
 }

@@ -1,8 +1,8 @@
 package dev.kensa.parse
 
 import dev.kensa.KensaException
-import dev.kensa.context.NestedInvocationContextHolder.expandableSentenceInvocationContext
-import dev.kensa.context.RealNestedInvocation
+import dev.kensa.context.ExpandableInvocationContextHolder.expandableSentenceInvocationContext
+import dev.kensa.context.RealExpandableInvocation
 import dev.kensa.context.RealRenderedValueInvocation
 import dev.kensa.context.RenderedValueInvocationContextHolder.renderedValueInvocationContext
 import dev.kensa.parse.ElementDescriptor.*
@@ -98,7 +98,7 @@ class TokenRenderer(
             name = name,
             parameterTokens = render(parameterTokens),
             expandableTokens = when (val invocation = expandableSentenceInvocationContext().nextInvocationFor(name)) {
-                is RealNestedInvocation -> expandableTokens.map { tokens -> invocation.rebuildRenderer().render(tokens) }
+                is RealExpandableInvocation -> expandableTokens.map { tokens -> invocation.rebuildRenderer().render(tokens) }
                 else -> expandableTokens.map { tokens -> render(tokens) }
             }
         )
@@ -198,7 +198,7 @@ class TokenRenderer(
             hint
         )
 
-    private fun RealNestedInvocation.rebuildRenderer() =
+    private fun RealExpandableInvocation.rebuildRenderer() =
         TokenRenderer(testInstance, this.arguments, renderers, fixtureAndOutputAccessor, this.parameters, properties, methods, highlightedValues)
 
     private fun Type.asCss(): String = "tk-$code"

@@ -1,13 +1,13 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.Configuration
-import dev.kensa.context.NestedInvocationContext
-import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.context.ExpandableInvocationContext
+import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.example.*
 import dev.kensa.parse.CompositeParserDelegate
 import dev.kensa.parse.ElementDescriptor.*
 import dev.kensa.parse.MethodParser
-import dev.kensa.parse.ParsedNestedMethod
+import dev.kensa.parse.ParsedExpandableMethod
 import dev.kensa.parse.ParserCache
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.TemplateSentence
@@ -605,19 +605,19 @@ internal class KotlinFunctionParserTest {
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
-                    assertSoftly(get("nested1")) {
+                    assertSoftly(get("expandable1")) {
                         shouldNotBeNull()
                         asClue {
-                            it.name shouldBe "nested1"
+                            it.name shouldBe "expandable1"
                             it.isHighlight.shouldBeFalse()
                             it.isRenderedValue.shouldBeFalse()
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
-                    assertSoftly(get("internalNested\$core_example")) {
+                    assertSoftly(get("internalExpandable\$core_example")) {
                         shouldNotBeNull()
                         asClue {
-                            it.name shouldBe "internalNested\$core_example"
+                            it.name shouldBe "internalExpandable\$core_example"
                             it.isHighlight.shouldBeFalse()
                             it.isRenderedValue.shouldBeFalse()
                             it.isParameterizedTestDescription.shouldBeFalse()
@@ -767,9 +767,9 @@ internal class KotlinFunctionParserTest {
             val method = KotlinWithExpandableSentenceFromSources::class.java.findMethod(functionName)
             val parsedMethod = parser.parse(method)
 
-            parsedMethod.nestedMethods
+            parsedMethod.expandableMethods
                 .shouldHaveSize(1)
-                .keys.first().shouldBe("nestedFromSource")
+                .keys.first().shouldBe("expandableFromSource")
         }
     }
 
@@ -812,7 +812,7 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
-        internal fun parsesVariousNestedSentenceStyles() {
+        internal fun parsesVariousExpandableSentenceStyles() {
             // Need to hook into the parser via a standard test function...
             val functionName = "parameterizedTest"
             val parser = createParserFor(aFunctionNamed(functionName))
@@ -820,7 +820,7 @@ internal class KotlinFunctionParserTest {
             val testMethod = KotlinWithParameters::class.java.findMethod(functionName, java.lang.String::class.java, Integer::class.java)
             val parsedTestMethod = parser.parse(testMethod)
 
-            parsedTestMethod.nestedMethods
+            parsedTestMethod.expandableMethods
                 .shouldHaveSize(4)
                 .should {
                     verifyExtensionFunction(it, "anExtensionFunction")
@@ -831,7 +831,7 @@ internal class KotlinFunctionParserTest {
 
         }
 
-        private fun verifyExtensionFunction(map: Map<String, ParsedNestedMethod>, functionName: String) {
+        private fun verifyExtensionFunction(map: Map<String, ParsedExpandableMethod>, functionName: String) {
             map[functionName].shouldNotBeNull {
                 assertSoftly(parameters.descriptors["receiver"]) {
                     shouldNotBeNull()
@@ -848,7 +848,7 @@ internal class KotlinFunctionParserTest {
             }
         }
 
-        private fun verifyFunctionWithContextParameter(map: Map<String, ParsedNestedMethod>, functionName: String) {
+        private fun verifyFunctionWithContextParameter(map: Map<String, ParsedExpandableMethod>, functionName: String) {
             map[functionName].shouldNotBeNull {
                 assertSoftly(parameters.descriptors["context$1"]) {
                     shouldNotBeNull()
@@ -865,7 +865,7 @@ internal class KotlinFunctionParserTest {
             }
         }
 
-        private fun verifyExtensionFunctionWithContextParameters(map: Map<String, ParsedNestedMethod>, functionName: String) {
+        private fun verifyExtensionFunctionWithContextParameters(map: Map<String, ParsedExpandableMethod>, functionName: String) {
             map[functionName].shouldNotBeNull {
                 assertSoftly(parameters.descriptors["context$1"]) {
                     shouldNotBeNull()
@@ -1055,13 +1055,13 @@ internal class KotlinFunctionParserTest {
         @BeforeAll
         @JvmStatic
         fun beforeAll() {
-            NestedInvocationContextHolder.bindToCurrentThread(NestedInvocationContext())
+            ExpandableInvocationContextHolder.bindToCurrentThread(ExpandableInvocationContext())
         }
 
         @AfterAll
         @JvmStatic
         fun afterAll() {
-            NestedInvocationContextHolder.clearFromThread()
+            ExpandableInvocationContextHolder.clearFromThread()
         }
     }
 }

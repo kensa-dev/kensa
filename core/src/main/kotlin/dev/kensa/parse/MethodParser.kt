@@ -1,7 +1,7 @@
 package dev.kensa.parse
 
 import dev.kensa.*
-import dev.kensa.context.NestedInvocationContextHolder
+import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.parse.ElementDescriptor.MethodElementDescriptor
 import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateSentence
@@ -13,13 +13,13 @@ import kotlin.reflect.KClass
 class ClassDeclarations(
     val imports: Imports,
     val testMethods: List<MethodDeclarationContext> = emptyList(),
-    val nestedMethods: List<MethodDeclarationContext> = emptyList()
+    val expandableMethods: List<MethodDeclarationContext> = emptyList()
 ) {
     operator fun plus(other: ClassDeclarations): ClassDeclarations =
         ClassDeclarations(
             imports + other.imports,
             testMethods + other.testMethods,
-            nestedMethods + other.nestedMethods
+            expandableMethods + other.expandableMethods
         )
 }
 
@@ -86,41 +86,41 @@ class MethodParser(
                         acc.apply { putAll(clazz.prepareMethods()) }
                     }
                 }
-                val nestedMethods = relatedClasses.fold(emptyMap<String, ParsedNestedMethod>()) { acc, clazz ->
-                    acc + clazz.prepareNestedMethods(methodDeclarations, ParseContext(properties, methods))
+                val expandableMethods = relatedClasses.fold(emptyMap<String, ParsedExpandableMethod>()) { acc, clazz ->
+                    acc + clazz.prepareExpandableMethods(methodDeclarations, ParseContext(properties, methods))
                 }
-                val (testMethodSentences, testMethodParseErrors) = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, nestedMethods))
+                val (testMethodSentences, testMethodParseErrors) = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, expandableMethods))
 
                 ParsedMethod(
                     indexInSource,
                     method.normalisedPlatformName,
                     testMethodParameters,
                     testMethodSentences,
-                    nestedMethods,
+                    expandableMethods,
                     properties,
                     methods,
                     testMethodParseErrors
                 )
             }
         }.also {
-            NestedInvocationContextHolder.expandableSentenceInvocationContext().update(it.nestedMethods)
+            ExpandableInvocationContextHolder.expandableSentenceInvocationContext().update(it.expandableMethods)
         }
 
     private fun sentenceBuilder(): (Boolean, Location) -> SentenceBuilder =
         { isCommentSentence, location -> SentenceBuilder(isCommentSentence, location, configuration.dictionary, configuration.tabSize) }
 
-    private fun Class<*>.prepareNestedMethods(methodDeclarations: MethodDeclarations, parseContext: ParseContext): Map<String, ParsedNestedMethod> =
-        cache.getOrPutNestedMethods(this) {
+    private fun Class<*>.prepareExpandableMethods(methodDeclarations: MethodDeclarations, parseContext: ParseContext): Map<String, ParsedExpandableMethod> =
+        cache.getOrPutExpandableMethods(this) {
             val imports = methodDeclarations.declarationsByClass[this]?.imports ?: Imports(emptySet(), emptySet(), this)
-            val declarations = methodDeclarations.declarationsByClass[this]?.nestedMethods ?: emptyList()
+            val declarations = methodDeclarations.declarationsByClass[this]?.expandableMethods ?: emptyList()
 
             declarations
                 .map { dc ->
-                    val method = findNestedMethod(dc, imports)
+                    val method = findExpandableMethod(dc, imports)
                     val parameters = with(parserDelegate) {
                         method.prepareParameters(dc.parameterNamesAndTypes)
                     }
-                    ParsedNestedMethod(
+                    ParsedExpandableMethod(
                         dc.name,
                         parameters,
                         ParserStateMachine(sentenceBuilder()).run {
@@ -134,7 +134,7 @@ class MethodParser(
                 .associateBy({ it.name }, { it })
         }
 
-    private fun Class<*>.findNestedMethod(dc: MethodDeclarationContext, imports: Imports): Method =
+    private fun Class<*>.findExpandableMethod(dc: MethodDeclarationContext, imports: Imports): Method =
         allMethods.filter { it.normalisedPlatformName == dc.name }
             .find { method ->
                 val syntheticCount = method.findSyntheticKotlinReceivers().size
@@ -144,7 +144,7 @@ class MethodParser(
 
                 val realMethodParams = method.parameterTypes.drop(syntheticCount).toTypedArray()
                 imports.match(realMethodParams, dc.parameterTypes)
-            } ?: throw KensaException("Did not find nested method [${dc.name}] in class [${this.name}]")
+            } ?: throw KensaException("Did not find expandable method [${dc.name}] in class [${this.name}]")
 
     private fun Class<*>.prepareTestMethodSentences(methodDeclarationContext: MethodDeclarationContext, parseContext: ParseContext): Pair<List<TemplateSentence>, List<ParseError>> =
         ParserStateMachine(sentenceBuilder()).run {

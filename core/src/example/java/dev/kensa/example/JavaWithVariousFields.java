@@ -28,7 +28,7 @@ public class JavaWithVariousFields {
     }
 
     @ExpandableSentence
-    private @NotNull Action<GivensContext> nested1() {
+    private @NotNull Action<GivensContext> expandable1() {
         return someBuilder()
                 .withSomething()
                 .build();

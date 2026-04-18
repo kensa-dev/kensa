@@ -222,7 +222,7 @@ data class RenderingDirective(
 typealias RenderingDirectives = Map<KClass<*>, RenderingDirective>
 
 /**
- * Annotation used to specify other source files to parse.  Useful to point to shared nested sentences.
+ * Annotation used to specify other source files to parse.  Useful to point to shared expandable sentences.
  */
 @Retention(RUNTIME)
 @Target(CLASS)

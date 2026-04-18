@@ -20,7 +20,7 @@ class ParseContext(
     private val properties: Map<String, ElementDescriptor>,
     private val methods: Map<String, ElementDescriptor.MethodElementDescriptor>,
     private val parameters: Map<String, ElementDescriptor> = emptyMap(),
-    private val nestedMethods: Map<String, ParsedNestedMethod> = emptyMap()
+    private val expandableMethods: Map<String, ParsedExpandableMethod> = emptyMap()
 ) {
 
     private val expandableRenderedValueMethodNames = methods.filterValues { it.isExpandableRenderedValue }.keys
@@ -28,12 +28,12 @@ class ParseContext(
     private val methodNames = methods.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val fieldNames = properties.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val parameterNames = parameters.filterValues { it.isRenderedValue || it.isHighlight }.keys
-    private val expandableMethodNames = nestedMethods.keys
+    private val expandableMethodNames = expandableMethods.keys
 
-    private fun nestedSentences(name: String) = nestedMethods[name]?.sentences ?: error("No nested method found with name [$name]")
+    private fun expandableSentencesFor(name: String) = expandableMethods[name]?.sentences ?: error("No expandable method found with name [$name]")
 
     internal fun ParseTree.asIdentifier() = Identifier(location, text)
-    internal fun ParseTree.asExpandableSentence() = takeIf { expandableMethodNames.contains(text) }?.let { ExpandableSentence(location, text, nestedSentences(text)) }
+    internal fun ParseTree.asExpandableSentence() = takeIf { expandableMethodNames.contains(text) }?.let { ExpandableSentence(location, text, expandableSentencesFor(text)) }
     internal fun ParseTree.asExpandableValue() = takeIf { expandableRenderedValueMethodNames.contains(text) }?.let {
         val md = methods[text]!!
         ExpandableValue(location, text, md.renderedValueStyle, md.renderedValueHeaders)
@@ -46,7 +46,7 @@ class ParseContext(
     private fun ParseTree.asOutputsByName() = outputsByNamePattern.matchEntire(text)?.let { PathExpression.OutputsByNameExpression(location, it.groupValues[1], it.groupValues[2]) }
     private fun ParseTree.asOutputsByKey() = outputsByKeyPattern.matchEntire(text)?.let { PathExpression.OutputsByKeyExpression(location, it.groupValues[1], it.groupValues[2]) }
 
-    fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, nestedMethods)
+    fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, expandableMethods)
 
     internal fun ExpandableSentence.asExpandableSentenceWithArguments() = ExpandableSentenceWithArguments(location, name, sentences)
     internal fun ExpandableValue.asExpandableValueWithArguments() = ExpandableValueWithArguments(location, name, style, headers)

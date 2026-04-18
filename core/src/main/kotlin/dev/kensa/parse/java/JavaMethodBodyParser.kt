@@ -94,10 +94,10 @@ class JavaMethodBodyParser(
     override fun enterMethodName(ctx: Java20Parser.MethodNameContext) {
         if (replacedStatementDepth > 0) return
         with(parseContext) {
-            stateMachine.apply(ctx.asMethod() ?: ctx.asExpandableSentence()?.let { nested ->
+            stateMachine.apply(ctx.asMethod() ?: ctx.asExpandableSentence()?.let { expandable ->
                 if (ctx.hasArguments())
-                    nested.asExpandableSentenceWithArguments()
-                else nested
+                    expandable.asExpandableSentenceWithArguments()
+                else expandable
             } ?: ctx.asIdentifier())
         }
     }
