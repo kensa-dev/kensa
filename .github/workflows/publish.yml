@@ -54,7 +54,7 @@ jobs:
   DispatchReleaseEvent:
     runs-on: ubuntu-latest
     needs: [PublishToStaging, PublishToSnapshot]
-    if: ${{ always() && (needs.PublishToStaging.result == 'success' || needs.PublishToSnapshot.result == 'success') }}
+    if: ${{ always() && needs.PublishToStaging.result == 'success' && !contains(github.ref_name, '-') }}
     steps:
       - uses: actions/checkout@v6
         with:
