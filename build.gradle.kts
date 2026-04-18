@@ -129,6 +129,7 @@ jreleaser {
             mavenCentral.create("sonatype") {
                 active.set(Active.RELEASE)
                 url.set("https://central.sonatype.com/api/v1/publisher")
+                applyMavenCentralRules.set(true)
                 stagingRepositories.add(layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
             }
             nexus2.create("snapshots") {
