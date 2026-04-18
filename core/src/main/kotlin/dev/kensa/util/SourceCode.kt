@@ -4,7 +4,6 @@ import dev.kensa.KensaException
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.misc.Interval
-import java.io.File
 import java.net.URI
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -105,31 +104,43 @@ class SourceCode(private val sourceLocations: () -> List<Path> = { emptyList() }
     companion object {
         private val sourcesSuffixes = listOf("-sources.jar", "-src.jar")
 
-        internal fun Path.findSourcesJar(): Path? = when {
-            isLocalMavenJar() -> findMavenSourcesJar()
-            else -> findGradleSourcesJar()
+        // Try sibling resolution first (covers Maven-style same-directory layouts, including classified binary
+        // jars whose sources jar uses the base artifact name). Fall back to a bounded walk of sibling directories
+        // (covers Gradle's files-2.1 cache where sources live under a sibling hash-named subdirectory).
+        internal fun Path.findSourcesJar(): Path? =
+            findSiblingSourcesJar() ?: findSourcesJarInSiblingDirs()
+
+        // Candidates try the full jar name first, then (if a classifier is present) the classifier-stripped
+        // base name. Classifier is detected by locating "-<parentDirName>-" in the jar name, where the parent
+        // directory name is the artifact version in Maven-style layouts.
+        internal fun Path.candidateSourcesJarNames(): List<String> {
+            val jarName = fileName.toString().removeSuffix(".jar")
+            val versionDir = parent?.fileName?.toString()
+
+            val baseNames = buildList {
+                add(jarName)
+                if (versionDir != null) {
+                    val marker = "-$versionDir-"
+                    val idx = jarName.indexOf(marker)
+                    if (idx >= 0) add(jarName.substring(0, idx + versionDir.length + 1))
+                }
+            }
+
+            return baseNames.flatMap { base -> sourcesSuffixes.map { "$base$it" } }
         }
 
-        // Gradle files-2.1 layout: .../version/<hash>/artifact.jar
-        // Sources jar is in a sibling hash-named subdirectory under the version dir
-        private fun Path.findGradleSourcesJar() = parent?.parent?.takeIf { it.exists() }
+        private fun Path.findSiblingSourcesJar(): Path? {
+            val parent = parent ?: return null
+            return candidateSourcesJarNames().firstNotNullOfOrNull { name ->
+                parent.resolve(name).takeIf { it.exists() }
+            }
+        }
+
+        private fun Path.findSourcesJarInSiblingDirs(): Path? = parent?.parent?.takeIf { it.exists() }
             ?.toFile()
             ?.walkTopDown()
             ?.maxDepth(2)
             ?.firstOrNull { file -> file.isFile && sourcesSuffixes.any { file.name.endsWith(it) } }
             ?.toPath()
-
-        // Maven .m2 layout: .../group/artifact/version/artifact-version.jar
-        // Sources jar is a sibling in the same directory
-        private fun Path.isLocalMavenJar(): Boolean {
-            val parentName = parent?.fileName?.toString() ?: return false
-            val jarName = fileName.toString().removeSuffix(".jar")
-            return jarName.endsWith("-$parentName") || toString().contains("${System.getProperty("user.home")}${File.separator}.m2")
-        }
-
-        private fun Path.findMavenSourcesJar() = sourcesSuffixes
-            .map { suffix -> parent.resolve(fileName.toString().replace(".jar", suffix)) }
-            .firstOrNull { it.exists() }
-
     }
 }

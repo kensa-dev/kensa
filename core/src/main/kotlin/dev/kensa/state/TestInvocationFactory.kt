@@ -5,7 +5,6 @@ import dev.kensa.context.TestContext
 import dev.kensa.parse.MethodParser
 import dev.kensa.parse.ParseError
 import dev.kensa.parse.ParsedInvocation
-import dev.kensa.parse.RenderError
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.render.diagram.SequenceDiagramFactory
 import dev.kensa.sentence.RenderedSentence

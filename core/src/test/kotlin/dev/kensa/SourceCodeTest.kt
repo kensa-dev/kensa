@@ -2,6 +2,7 @@ package dev.kensa
 
 import dev.kensa.example.KotlinInterface
 import dev.kensa.util.SourceCode
+import dev.kensa.util.SourceCode.Companion.candidateSourcesJarNames
 import dev.kensa.util.SourceCode.Companion.findSourcesJar
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldEndWith
@@ -93,6 +94,93 @@ internal class SourceCodeTest {
         createJarWithClass(binaryJar)
 
         val sourcesJar = versionDir.resolve("foo-1.0-sources.jar")
+        createJarWithSource(sourcesJar, "dev/kensa/example/KotlinInterface.kt", kotlinInterfaceSource())
+
+        val sourceCode = sourceCodeWithJarLocation(binaryJar)
+        val stream = sourceCode.sourceStreamFor(KotlinInterface::class.java)
+
+        stream.sourceName shouldBe "/dev/kensa/example/KotlinInterface.kt"
+        stream.getText(Interval.of(78, 102)) shouldBe "interface KotlinInterface"
+    }
+
+    @Test
+    fun `candidateSourcesJarNames returns base variants only when no classifier present`() {
+        val baseJar = Path("repo/com/example/foo/1.0/foo-1.0.jar")
+
+        baseJar.candidateSourcesJarNames() shouldBe listOf(
+            "foo-1.0-sources.jar",
+            "foo-1.0-src.jar"
+        )
+    }
+
+    @Test
+    fun `candidateSourcesJarNames includes classifier-stripped variants for classified jar`() {
+        val classifiedJar = Path("repo/com/example/foo/1.0/foo-1.0-test-support.jar")
+
+        classifiedJar.candidateSourcesJarNames() shouldBe listOf(
+            "foo-1.0-test-support-sources.jar",
+            "foo-1.0-test-support-src.jar",
+            "foo-1.0-sources.jar",
+            "foo-1.0-src.jar"
+        )
+    }
+
+    @Test
+    fun `candidateSourcesJarNames handles version with hyphens`() {
+        val rcJar = Path("repo/com/example/foo/1.0-RC1/foo-1.0-RC1-test-support.jar")
+
+        rcJar.candidateSourcesJarNames() shouldBe listOf(
+            "foo-1.0-RC1-test-support-sources.jar",
+            "foo-1.0-RC1-test-support-src.jar",
+            "foo-1.0-RC1-sources.jar",
+            "foo-1.0-RC1-src.jar"
+        )
+    }
+
+    @Test
+    fun `can locate source for classified Maven JAR using base sources jar`() {
+        // Simulates a fat sources jar: classified binary (e.g. -test-support) with a single base -sources.jar
+        //   <group-path>/<artifact>/<version>/artifact-version-<classifier>.jar
+        //   <group-path>/<artifact>/<version>/artifact-version-sources.jar   ← base name
+        val versionDir = tempDir.resolve("com/example/foo/1.0").also { Files.createDirectories(it) }
+
+        val binaryJar = versionDir.resolve("foo-1.0-test-support.jar")
+        createJarWithClass(binaryJar)
+
+        val sourcesJar = versionDir.resolve("foo-1.0-sources.jar")
+        createJarWithSource(sourcesJar, "dev/kensa/example/KotlinInterface.kt", kotlinInterfaceSource())
+
+        val sourceCode = sourceCodeWithJarLocation(binaryJar)
+        val stream = sourceCode.sourceStreamFor(KotlinInterface::class.java)
+
+        stream.sourceName shouldBe "/dev/kensa/example/KotlinInterface.kt"
+        stream.getText(Interval.of(78, 102)) shouldBe "interface KotlinInterface"
+    }
+
+    @Test
+    fun `prefers classifier-specific sources jar when one exists alongside base sources jar`() {
+        val versionDir = tempDir.resolve("com/example/foo/1.0").also { Files.createDirectories(it) }
+
+        val binaryJar = versionDir.resolve("foo-1.0-test-support.jar")
+        createJarWithClass(binaryJar)
+
+        val classifiedSourcesJar = versionDir.resolve("foo-1.0-test-support-sources.jar")
+        createJarWithSource(classifiedSourcesJar, "dev/kensa/example/KotlinInterface.kt", kotlinInterfaceSource())
+        val baseSourcesJar = versionDir.resolve("foo-1.0-sources.jar")
+        createJarWithSource(baseSourcesJar, "dev/kensa/example/KotlinInterface.kt", "WRONG CONTENT")
+
+        binaryJar.findSourcesJar() shouldBe classifiedSourcesJar
+    }
+
+    @Test
+    fun `can locate source for classified Gradle cached JAR using base sources jar in sibling hash dir`() {
+        val versionDir = tempDir.resolve("com.example/foo/1.0").also { Files.createDirectories(it) }
+        val binaryJarDir = versionDir.resolve("abc123").also { Files.createDirectories(it) }
+        val sourcesJarDir = versionDir.resolve("def456").also { Files.createDirectories(it) }
+
+        val binaryJar = binaryJarDir.resolve("foo-1.0-test-support.jar")
+        createJarWithClass(binaryJar)
+        val sourcesJar = sourcesJarDir.resolve("foo-1.0-sources.jar")
         createJarWithSource(sourcesJar, "dev/kensa/example/KotlinInterface.kt", kotlinInterfaceSource())
 
         val sourceCode = sourceCodeWithJarLocation(binaryJar)
