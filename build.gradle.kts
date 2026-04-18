@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jreleaser.model.Active
+import org.jreleaser.model.api.deploy.maven.MavenCentralMavenDeployer.Stage
 
 plugins {
     alias(libs.plugins.kotlinJvm) apply false
@@ -24,10 +25,10 @@ subprojects {
         mavenCentral()
     }
 
-    if (name != "ui" && name != "ui2" && name != "bom" && name != "antlr" && name != "adoptabot") {
+    if (name != "ui" && name != "ui2" && name != "bom" && name != "antlr") {
         apply(plugin = "org.jetbrains.kotlin.jvm")
         apply(plugin = "java-library")
-        apply(plugin = "maven-publish")
+        if (name != "adoptabot") apply(plugin = "maven-publish")
 
         var javaVersion = if(name == "adoptabot") VERSION_21 else VERSION_17
         var kotlinJvmTarget = if(name == "adoptabot") JVM_21 else JVM_17
@@ -84,7 +85,7 @@ subprojects {
             }
         }
 
-        publishing {
+        if (name != "adoptabot") publishing {
             publications {
                 create<MavenPublication>("mavenJava") {
                     artifactId = "${rootProject.name}-${project.name}"
@@ -130,6 +131,7 @@ jreleaser {
                 active.set(Active.RELEASE)
                 url.set("https://central.sonatype.com/api/v1/publisher")
                 applyMavenCentralRules.set(true)
+                stage.set(Stage.UPLOAD)
                 stagingRepositories.add(layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
             }
             nexus2.create("snapshots") {
