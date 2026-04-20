@@ -82,9 +82,11 @@ internal fun Class<*>.findAllRelatedClasses(sourceCode: SourceCode): Set<Class<*
     }
 
 fun Class<*>.findAllRenderingDirectives(): RenderingDirectives =
-    findAllAnnotations<RenderedValueWithHint>().associate {
-        it.type to RenderingDirective(it.valueStrategy, it.valueParam, it.hintStrategy, it.hintParam)
-    }
+    RenderingDirectives(
+        findAllAnnotations<RenderedValueWithHint>().associate {
+            it.type to RenderingDirective(it.valueStrategy, it.valueParam, it.hintStrategy, it.hintParam)
+        }
+    )
 
 internal fun Method.actualDeclaringClass(): Class<*> {
 

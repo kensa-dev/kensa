@@ -182,7 +182,7 @@ class MethodParser(
                     it.hasKotlinOrJavaAnnotation<RenderedValue>() ||
                         it.hasKotlinOrJavaAnnotation<RenderedValueContainer>() ||
                         it.hasKotlinOrJavaAnnotation<Highlight>() ||
-                        directives.containsKey(propertyClass)
+                        directives.appliesTo(propertyClass)
                 }
                 .flatMap { property ->
                     buildList {

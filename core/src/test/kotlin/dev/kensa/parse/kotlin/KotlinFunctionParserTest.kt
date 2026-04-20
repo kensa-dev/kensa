@@ -535,6 +535,40 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
+        fun `RenderedValueWithHint on a supertype applies to subtype properties and is overridden by a more specific directive`() {
+            val functionName = "simpleTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val target = KotlinWithHierarchicalHints()
+            val javaClass = KotlinWithHierarchicalHints::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            with(parsedMethod.properties) {
+                size shouldBe 2
+
+                assertSoftly(get("aJsonPath")) {
+                    shouldBeInstanceOf<HintedPropertyElementDescriptor>()
+                    asClue {
+                        it.name shouldBe "aJsonPath"
+                        val resolved = it.resolveValue(target, null) as HintedValue
+                        resolved.value shouldBe "aJsonPath"
+                        resolved.hint shouldBe "\$.a.b"
+                    }
+                }
+                assertSoftly(get("anXPath")) {
+                    shouldBeInstanceOf<HintedPropertyElementDescriptor>()
+                    asClue {
+                        it.name shouldBe "anXPath"
+                        val resolved = it.resolveValue(target, null) as HintedValue
+                        resolved.value shouldBe "anXPath"
+                        resolved.hint shouldBe "ns:example"
+                    }
+                }
+            }
+        }
+
+        @Test
         internal fun `recognises RenderedValue and Highlight on various Kotlin properties and functions`() {
             val functionName = "simpleTest"
             val parser = createParserFor(aFunctionNamed(functionName))

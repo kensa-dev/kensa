@@ -217,11 +217,6 @@ data class RenderingDirective(
 )
 
 /**
- * A lookup map associating a target class with its specific rendering instructions.
- */
-typealias RenderingDirectives = Map<KClass<*>, RenderingDirective>
-
-/**
  * Annotation used to specify other source files to parse.  Useful to point to shared expandable sentences.
  */
 @Retention(RUNTIME)
