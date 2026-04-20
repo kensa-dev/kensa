@@ -1,5 +1,31 @@
 <h2 class="github">Changelog</h2>
 
+### v0.7.0
+Breaking — deprecated APIs removed:
+  - `@NestedSentence` annotation removed — use `@ExpandableSentence`
+  - `Givens` / `GivensBuilder` / `ActionUnderTest` / `StateExtractor` and the deprecated `given(GivensBuilder)` & `whenever(ActionUnderTest)` overloads removed
+  - Deprecated `KensaTest` overloads removed from the JUnit 5 / JUnit 6 adapters
+  - `WithAssertJ` and all `*StateExtractor` helper classes removed (AssertJ module)
+  - `WithHamcrest` removed; `KotestThen` pruned of deprecated entry points
+  - Enum values `Section.Buttons` and `Tab.Givens` removed
+  - `SuppressParseErrors` annotation removed — the parser now recovers from errors automatically, making suppression unnecessary
+
+Breaking — renamed parameter `extractor` → `collector` on assertion entry points. If you were calling these with named parameters (`then(extractor = ...)`), update call sites.
+
+Deprecations:
+  - `Configuration.uiMode` and `KensaConfigurator.withUiMode(...)` — Modern is now the only supported UI; Legacy UI and the `UiMode` enum are scheduled for removal in 0.8.0.
+
+New features:
+  - `/*+ ReplaceSentence: ... */` hint — a comment placed before any test statement replaces its rendered sentence with the hint text. Supports value interpolation via `{expr}` (fields, fixtures, outputs, chained calls). Discouraged as a long-term pattern; intended as a short-term workaround when Kensa fails to parse a test due to unsupported syntax — please [raise an issue](https://github.com/kensa-dev/kensa/issues) if you hit a parser gap.
+  - Parse errors no longer fail the build. The parser recovers and continues, and failed sentences are rendered inline with an error marker in the report.
+  - Modern UI is now the default `UIMode`.
+  - `@RenderedValueWithHint` is now hierarchy-aware — a directive declared on a supertype or interface applies to every subtype unless a more specific directive is declared. Avoids having to repeat the annotation for each member of a sealed hierarchy.
+
+Fixes:
+  - Revert `-Xexplicit-backing-fields` compile option. Kensa no longer requires downstream projects to set `-Xskip-prerelease-check`.
+  - Source file lookup now works when the sources come from the Gradle cache or a local Maven repository and support fat sources with `-sources` classifier.
+  - More robust recognition of `fixtures[...]`, `outputs(...)`, and chained property/method calls in test sources, backed by dedicated regex tests.
+
 ### v0.6.7
   - Add annotation `SuppressParseErrors` to allow temporary bypass of parsing errors. Also added instructional sentences in test output.
   - Fix an issue where log indices were not indexed correctly for consecutive log lines.
