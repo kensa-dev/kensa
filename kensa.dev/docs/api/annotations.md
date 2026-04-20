@@ -124,11 +124,13 @@ private final PaymentRequest paymentRequest = new PaymentRequest(amount, currenc
 
 Adds a technical hint (e.g., a JSON path or XPath expression) alongside a rendered value. Repeatable — multiple hints can be applied to the same target.
 
+Resolution is hierarchy-aware: a directive declared for a supertype (class or interface) applies to every subtype, unless a more specific directive is also declared. This means a single annotation on a sealed parent or common interface covers its whole hierarchy.
+
 **Parameters:**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `type` | `KClass<*>` | — | The type this hint applies to |
+| `type` | `KClass<*>` | — | The type this hint applies to. Matches the exact type and all subtypes; the most specific declared type wins. |
 | `valueStrategy` | `RenderedValueStrategy` | `UseIdentifierName` | How to extract the display value |
 | `valueParam` | `String` | `""` | Property/method name when strategy requires it |
 | `hintStrategy` | `RenderedHintStrategy` | `NoHint` | How to extract the hint |
