@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkensa_dev=self.webpackChunkkensa_dev||[]).push([["1833"],{5513(e){e.exports=JSON.parse('{"title":"All posts","items":[{"title":"Introducing Kensa: BDD for Kotlin and Java Without the Gherkin Tax","permalink":"/blog/introducing-kensa","unlisted":false,"date":"2026-04-08T00:00:00.000Z"}]}')}}]);
