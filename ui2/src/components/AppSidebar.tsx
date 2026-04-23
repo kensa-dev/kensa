@@ -12,6 +12,7 @@ import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from "@/components
 import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import {Kbd, KbdGroup} from "@/components/ui/kbd"
 import {useConfig} from "@/contexts/ConfigContext"
+import {matchesAnyIssue} from "@/util/issueMatch"
 
 interface StateCounts {
     passed: number;
@@ -215,7 +216,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
                 // Class issues...
                 const classMatchesIssue = requiredIssues.length === 0 ||
-                    nodeIssues.some(ni => requiredIssues.some(ri => ni.includes(ri.toLowerCase())));
+                    matchesAnyIssue(nodeIssues, requiredIssues);
 
                 // If we have state/issue filters, we MUST filter children
                 if (node.children && (requiredStates.length > 0 || requiredIssues.length > 0)) {
@@ -230,8 +231,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                                 return childMatchesState;
                             }
                             // Otherwise, check if the child has the issue
-                            const childIssues = (child.issues || []).map((i: string) => i.toLowerCase());
-                            const childMatchesIssue = childIssues.some(ci => requiredIssues.some(ri => ci.includes(ri.toLowerCase())));
+                            const childMatchesIssue = matchesAnyIssue(child.issues || [], requiredIssues);
                             return childMatchesIssue && childMatchesState;
                         }
 
