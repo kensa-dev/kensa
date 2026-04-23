@@ -13,6 +13,7 @@ import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import {Kbd, KbdGroup} from "@/components/ui/kbd"
 import {useConfig} from "@/contexts/ConfigContext"
 import {matchesAnyIssue} from "@/util/issueMatch"
+import {hasOpenDialog} from "@/util/escapeGuard"
 
 interface StateCounts {
     passed: number;
@@ -91,7 +92,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
 
     React.useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && inputValueRef.current) {
+            if (e.key === 'Escape' && inputValueRef.current && !hasOpenDialog()) {
                 e.preventDefault();
                 setInputValue('');
                 setShowPicker(false);

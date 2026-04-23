@@ -16,6 +16,7 @@ import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSe
 import {TestContainer} from './components/TestContainer';
 import {NotesCard} from './components/NotesCard';
 import {TooltipProvider} from "@/components/ui/tooltip";
+import {hasOpenDialog, shouldClearSearchOnEscape} from "@/util/escapeGuard";
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -147,7 +148,13 @@ const App = () => {
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === "Escape" && searchQueryRef.current && !commandOpenRef.current) {
+            if (e.key !== "Escape") return;
+            const clear = shouldClearSearchOnEscape({
+                hasQuery: !!searchQueryRef.current,
+                isCommandOpen: commandOpenRef.current,
+                isDialogOpen: hasOpenDialog(),
+            });
+            if (clear) {
                 e.preventDefault();
                 onSearchChange('');
             }
