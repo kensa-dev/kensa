@@ -1,5 +1,6 @@
 package dev.kensa.compile
 
+import org.jetbrains.kotlin.backend.common.extensions.DeclarationFinder
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
@@ -36,12 +37,13 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     private val hooksClassId = ClassId.topLevel(FqName("dev.kensa.runtime.CompilerPluginHookFunctions"))
 
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        val hookClass = pluginContext.referenceClass(hooksClassId) ?: return
+        val finder = pluginContext.finderForBuiltins()
+        val hookClass = finder.findClass(hooksClassId) ?: return
         val expandableSentenceHookFn = hookClass.functions.firstOrNull { it.owner.name.asString() == "onEnterExpandableSentence" } ?: return
         val renderedValueHookFn = hookClass.functions.firstOrNull { it.owner.name.asString() == "onExitRenderedValue" } ?: return
 
         // Get the symbol for kotlin.arrayOf() so we can build the parameter types and argument values arrays
-        val arrayOf = pluginContext.arrayOf()
+        val arrayOf = finder.arrayOf()
         var expandableSentenceCount = 0
         var renderedValueCount = 0
 
@@ -87,73 +89,31 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     ): Boolean {
         val hasAnnotation = fn.annotations.hasAnnotation(renderedValueFqName) || fn.annotations.hasAnnotation(expandableRenderedValueFqName)
         if (!hasAnnotation) return false
-        val body = fn.body ?: return false
 
-        val blockBody: IrBlockBody = when (body) {
-            is IrBlockBody -> body
-            is IrExpressionBody -> {
-                val factory = pluginContext.irFactory
-                val newBody = factory.createBlockBody(body.startOffset, body.endOffset)
-                newBody.statements += body.expression
-                fn.body = newBody
-                newBody
-            }
+        val ctx = prepareInjection(fn, file, pluginContext, arrayOf) ?: return false
 
-            else -> return false
-        }
-
-        val builder = DeclarationIrBuilder(pluginContext, fn.symbol, fn.startOffset, fn.endOffset)
-        val ownerExpr = fn.dispatchReceiverParameter?.let { builder.irGet(it) } ?: builder.irNull()
-
-        val contextParams = fn.parameters.filter { it.kind == IrParameterKind.Context }
-        val extensionParam = fn.parameters.firstOrNull { it.kind == IrParameterKind.ExtensionReceiver }
-        val valueParameters = fn.parameters.filter { it.kind == IrParameterKind.Regular }
-        val allParams: List<IrValueParameter> = buildList {
-            addAll(contextParams)
-            extensionParam?.let { add(it) }
-            addAll(valueParameters)
-        }
-
-        val ownerFqName = builder.irString(fn.parentClassOrNull?.fqNameWhenAvailable?.asString() ?: "${file.packageFqName.asString()}.${fn.name.asString()}")
-        val simpleName = builder.irString(fn.name.asString())
-        val paramTypesArray = builder.buildParamTypesArray(arrayOf, allParams)
-
-        val tempVar = builder.scope.createTemporaryVariableDeclaration(
-            startOffset = builder.startOffset,
-            endOffset = builder.endOffset,
+        val tempVar = ctx.builder.scope.createTemporaryVariableDeclaration(
+            startOffset = ctx.builder.startOffset,
+            endOffset = ctx.builder.endOffset,
             nameHint = "result",
             irType = fn.returnType
         )
 
-        val lastStatement = blockBody.statements.lastOrNull()
-        val originalReturnExpression: IrExpression = when (lastStatement) {
+        val originalReturnExpression: IrExpression = when (val lastStatement = ctx.blockBody.statements.lastOrNull()) {
             is IrReturn -> {
-                blockBody.statements.removeAt(blockBody.statements.size - 1)
+                ctx.blockBody.statements.removeAt(ctx.blockBody.statements.size - 1)
                 lastStatement.value
             }
 
-            else -> if (blockBody.statements.isNotEmpty()) {
-                blockBody.statements.removeAt(blockBody.statements.size - 1) as? IrExpression ?: builder.irNull()
-            } else builder.irNull()
+            else -> if (ctx.blockBody.statements.isNotEmpty()) {
+                ctx.blockBody.statements.removeAt(ctx.blockBody.statements.size - 1) as? IrExpression ?: ctx.builder.irNull()
+            } else ctx.builder.irNull()
         }
 
         tempVar.initializer = originalReturnExpression
-        blockBody.statements.add(tempVar)
-
-        val call = builder.irCall(hookFnOwner.symbol).apply {
-            // This goes into arguments[0]
-            dispatchReceiver = builder.irGetObject(hookClassOwner.symbol)
-
-            arguments[1] = ownerExpr
-            arguments[2] = ownerFqName
-            arguments[3] = simpleName
-            arguments[4] = paramTypesArray
-            arguments[5] = builder.irGet(tempVar)
-        }
-
-        blockBody.statements.add(call)
-
-        blockBody.statements.add(builder.irReturn(builder.irGet(tempVar)))
+        ctx.blockBody.statements.add(tempVar)
+        ctx.blockBody.statements.add(ctx.buildHookCall(hookClassOwner, hookFnOwner, ctx.builder.irGet(tempVar)))
+        ctx.blockBody.statements.add(ctx.builder.irReturn(ctx.builder.irGet(tempVar)))
 
         return true
     }
@@ -168,19 +128,53 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     ): Boolean {
         val hasAnnotation = fn.annotations.hasAnnotation(expandableSentenceFqName)
         if (!hasAnnotation) return false
-        val body = fn.body ?: return false
+
+        val ctx = prepareInjection(fn, file, pluginContext, arrayOf) ?: return false
+
+        val argsArray = ctx.builder.buildArgsArray(arrayOf, ctx.allParams)
+        ctx.blockBody.statements.add(0, ctx.buildHookCall(hookClassOwner, hookFnOwner, argsArray))
+
+        return true
+    }
+
+    private class InjectionContext(
+        val blockBody: IrBlockBody,
+        val builder: DeclarationIrBuilder,
+        val ownerExpr: IrExpression,
+        val ownerFqName: IrExpression,
+        val simpleName: IrExpression,
+        val paramTypesArray: IrExpression,
+        val allParams: List<IrValueParameter>
+    ) {
+        fun buildHookCall(hookClassOwner: IrClass, hookFnOwner: IrSimpleFunction, lastArg: IrExpression): IrCall =
+            builder.irCall(hookFnOwner.symbol).apply {
+                dispatchReceiver = builder.irGetObject(hookClassOwner.symbol)
+                arguments[1] = ownerExpr
+                arguments[2] = ownerFqName
+                arguments[3] = simpleName
+                arguments[4] = paramTypesArray
+                arguments[5] = lastArg
+            }
+    }
+
+    private fun prepareInjection(
+        fn: IrSimpleFunction,
+        file: IrFile,
+        pluginContext: IrPluginContext,
+        arrayOf: IrSimpleFunctionSymbol
+    ): InjectionContext? {
+        val body = fn.body ?: return null
 
         val blockBody: IrBlockBody = when (body) {
             is IrBlockBody -> body
             is IrExpressionBody -> {
-                val factory = pluginContext.irFactory
-                val newBody = factory.createBlockBody(body.startOffset, body.endOffset)
+                val newBody = pluginContext.irFactory.createBlockBody(body.startOffset, body.endOffset)
                 newBody.statements += body.expression
                 fn.body = newBody
                 newBody
             }
 
-            else -> return false
+            else -> return null
         }
 
         val builder = DeclarationIrBuilder(pluginContext, fn.symbol, fn.startOffset, fn.endOffset)
@@ -198,27 +192,13 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         val ownerFqName = builder.irString(fn.parentClassOrNull?.fqNameWhenAvailable?.asString() ?: "${file.packageFqName.asString()}.${fn.name.asString()}")
         val simpleName = builder.irString(fn.name.asString())
         val paramTypesArray = builder.buildParamTypesArray(arrayOf, allParams)
-        val argsArray = builder.buildArgsArray(arrayOf, allParams)
 
-        val call = builder.irCall(hookFnOwner.symbol).apply {
-            // This goes into arguments[0]
-            dispatchReceiver = builder.irGetObject(hookClassOwner.symbol)
-
-            arguments[1] = ownerExpr
-            arguments[2] = ownerFqName
-            arguments[3] = simpleName
-            arguments[4] = paramTypesArray
-            arguments[5] = argsArray
-        }
-
-        blockBody.statements.add(0, call)
-
-        return true
+        return InjectionContext(blockBody, builder, ownerExpr, ownerFqName, simpleName, paramTypesArray, allParams)
     }
 
     // Gets the `kotlin.arrayOf` function symbol so we can build arrays with it
-    private fun IrPluginContext.arrayOf() =
-        referenceFunctions(CallableId(FqName("kotlin"), Name.identifier("arrayOf")))
+    private fun DeclarationFinder.arrayOf() =
+        findFunctions(CallableId(FqName("kotlin"), Name.identifier("arrayOf")))
             .single { fn ->
                 fn.owner.typeParameters.size == 1 &&
                         fn.owner.parameters.size == 1 &&

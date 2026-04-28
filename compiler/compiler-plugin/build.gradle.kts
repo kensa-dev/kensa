@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilerExecutionStrategy
-import org.gradle.api.tasks.testing.Test
 
 sourceSets {
     create("testFixtures", Action {
@@ -39,20 +38,9 @@ dependencies {
     testImplementation(platform(libs.kotestBom))
     testImplementation(libs.kotestAssertionsCoreJvm)
     testImplementation(libs.mockitoKotlin)
-    testImplementation(libs.kotlinCompilerEmbeddable)
 }
 
 tasks {
-    named<Test>("test") {
-        dependsOn(named<Jar>("jar"))
-        val pluginJarPath = provider {
-            named<Jar>("jar").get().archiveFile.get().asFile.absolutePath
-        }
-        doFirst {
-            systemProperty("kensa.plugin.jar", pluginJarPath.get())
-        }
-    }
-
     named<KotlinCompile>("compileTestFixturesKotlin") {
         dependsOn(project(":compiler-plugin").tasks.named<Jar>("jar"))
 
@@ -66,8 +54,15 @@ tasks {
         compilerOptions {
             verbose.set(true)
             freeCompilerArgs.addAll(
-                "-Xplugin=${pluginJarPath.get()}"
+                "-Xplugin=${pluginJarPath.get()}",
+                "-Xcontext-parameters"
             )
+        }
+    }
+
+    named<KotlinCompile>("compileTestKotlin") {
+        compilerOptions {
+            freeCompilerArgs.add("-Xcontext-parameters")
         }
     }
 }
