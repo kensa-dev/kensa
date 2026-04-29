@@ -1,5 +1,11 @@
 <h2 class="github">Changelog</h2>
 
+### v0.7.1
+  - Fix #132: don't clear sidebar search on Escape while a dialog is open
+  - Fix #131: match issue ids exactly, not as substrings
+  - Build uses Gradle 9.5.0
+  - Kotlin 2.3.21
+
 ### v0.7.0
 Breaking — deprecated APIs removed:
   - `@NestedSentence` annotation removed — use `@ExpandableSentence`
