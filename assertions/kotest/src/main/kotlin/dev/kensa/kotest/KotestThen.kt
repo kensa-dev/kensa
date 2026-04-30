@@ -28,7 +28,7 @@ object KotestThen {
 
     suspend fun <T> thenContinually(duration: Duration = 10.seconds, testContext: TestContext, collector: StateCollector<T>, match: Matcher<T>) {
         thenContinually(duration, testContext, collector) {
-            invokeMatcher(collector.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)), match)
+            invokeMatcher(this, match)
         }
     }
 
@@ -44,7 +44,7 @@ object KotestThen {
 
     suspend fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, testContext: TestContext, collector: StateCollector<T>, match: Matcher<T>) {
         thenEventually(initialDelay, duration, interval, testContext, collector) {
-            invokeMatcher(collector.execute(CollectorContext(testContext.fixtures, testContext.interactions, testContext.outputs)), match)
+            invokeMatcher(this, match)
         }
     }
 

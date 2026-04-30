@@ -29,6 +29,7 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -130,6 +131,66 @@ class KotestThenTest {
         pollCount shouldBeLessThanOrEqual 7
     }
 
+    @Test
+    fun `WithKotest andEventually with spec retries until matcher passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector<String> {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            val spec = object : ThenSpec<String> {
+                override val collector: StateCollector<String> = retryingCollector
+                override val matcher: Matcher<String> = be("result")
+                override val onMatch: CollectorContext.(String) -> Unit = {}
+            }
+
+            Dummy(spec).runAndEventually()
+
+            callCount.get() shouldBe 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
+    @Test
+    fun `WithKotest andEventually with collector and matcher retries until matcher passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector<String> {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            DummyCollector().runAndEventually(retryingCollector, be("result"))
+
+            callCount.get() shouldBe 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
+    @Test
+    fun `WithKotest andEventually with collector and block retries until block passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector<String> {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            DummyCollector().runAndEventuallyBlock(retryingCollector) { this shouldBe "result" }
+
+            callCount.get() shouldBe 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
     class Dummy(private val spec: ThenSpec<String>) : WithKotest {
         fun runThenEventually() {
             thenEventually(5.seconds, spec)
@@ -137,6 +198,20 @@ class KotestThenTest {
 
         fun runThen() {
             then(spec)
+        }
+
+        fun runAndEventually() {
+            andEventually(5.seconds, spec)
+        }
+    }
+
+    class DummyCollector : WithKotest {
+        fun <T> runAndEventually(collector: StateCollector<T>, matcher: Matcher<T>) {
+            andEventually(5.seconds, collector, matcher)
+        }
+
+        fun <T> runAndEventuallyBlock(collector: StateCollector<T>, block: T.() -> Unit) {
+            andEventually(5.seconds, collector, block)
         }
     }
 }

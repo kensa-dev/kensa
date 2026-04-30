@@ -62,23 +62,37 @@ interface WithHamkrest {
         }
     }
 
+    fun <T> andEventually(duration: Duration, spec: ThenSpec<T>): Unit = thenEventually(duration, spec)
+
     fun <T> thenEventually(collector: StateCollector<T>, matcher: Matcher<T>): Unit = thenEventually(10.seconds, collector, matcher)
+    fun <T> andEventually(collector: StateCollector<T>, matcher: Matcher<T>): Unit = thenEventually(collector, matcher)
 
     fun <T> thenEventually(duration: Duration, collector: StateCollector<T>, matcher: Matcher<T>) {
         thenEventually(ZERO, duration, 25.milliseconds, collector, matcher)
     }
 
+    fun <T> andEventually(duration: Duration, collector: StateCollector<T>, matcher: Matcher<T>): Unit = thenEventually(duration, collector, matcher)
+
     fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, matcher: Matcher<T>) {
         HamkrestThen.thenEventually(initialDelay, duration, interval, testContext(), collector, matcher)
     }
 
+    fun <T> andEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, matcher: Matcher<T>): Unit =
+        thenEventually(initialDelay, duration, interval, collector, matcher)
+
     fun <T> thenEventually(collector: StateCollector<T>, block: T.() -> Unit = {}): Unit = thenEventually(10.seconds, collector, block)
+    fun <T> andEventually(collector: StateCollector<T>, block: T.() -> Unit = {}): Unit = thenEventually(collector, block)
 
     fun <T> thenEventually(duration: Duration, collector: StateCollector<T>, block: T.() -> Unit = {}) {
         thenEventually(ZERO, duration, 25.milliseconds, collector, block)
     }
 
+    fun <T> andEventually(duration: Duration, collector: StateCollector<T>, block: T.() -> Unit = {}): Unit = thenEventually(duration, collector, block)
+
     fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, block: T.() -> Unit = {}) {
         HamkrestThen.thenEventually(initialDelay, duration, interval, testContext(), collector, block)
     }
+
+    fun <T> andEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, block: T.() -> Unit = {}): Unit =
+        thenEventually(initialDelay, duration, interval, collector, block)
 }

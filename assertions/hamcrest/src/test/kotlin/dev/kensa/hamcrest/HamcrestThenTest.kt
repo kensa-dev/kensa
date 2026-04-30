@@ -127,6 +127,48 @@ class HamcrestThenTest {
         }
     }
 
+    @Test
+    fun `WithHamcrest andEventually with duration retries until matcher passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            Dummy().runAndEventually(Duration.ofSeconds(5), retryingCollector, equalTo("result"))
+
+            callCount.get() shouldBe 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
+    @Test
+    fun `WithHamcrest andEventually with initialDelay retries until matcher passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            Dummy().runAndEventuallyWithDelay(
+                Duration.ofMillis(100),
+                Duration.ofSeconds(5),
+                Duration.ofMillis(200),
+                retryingCollector,
+                equalTo("result")
+            )
+
+            callCount.get() shouldBe 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
     class Dummy : WithHamcrest {
         fun <T> runThen(collector: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
             then(collector, matcher)
@@ -134,6 +176,14 @@ class HamcrestThenTest {
 
         fun <T> runThenEventually(duration: Duration, collector: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
             thenEventually(duration, collector, matcher)
+        }
+
+        fun <T> runAndEventually(duration: Duration, collector: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
+            andEventually(duration, collector, matcher)
+        }
+
+        fun <T> runAndEventuallyWithDelay(initialDelay: Duration, duration: Duration, interval: Duration, collector: StateCollector<T>, matcher: org.hamcrest.Matcher<in T>) {
+            andEventually(initialDelay, duration, interval, collector, matcher)
         }
     }
 }

@@ -35,7 +35,12 @@ interface WithHamcrest {
         HamcrestThen.thenEventually(duration, testContext(), collector, matcher)
     }
 
+    fun <T> andEventually(duration: Duration, collector: StateCollector<T>, matcher: Matcher<in T>): Unit = thenEventually(duration, collector, matcher)
+
     fun <T> thenEventually(initialDelay: Duration, duration: Duration, interval: Duration, collector: StateCollector<T>, matcher: Matcher<in T>) {
         HamcrestThen.thenEventually(initialDelay, duration, interval, testContext(), collector, matcher)
     }
+
+    fun <T> andEventually(initialDelay: Duration, duration: Duration, interval: Duration, collector: StateCollector<T>, matcher: Matcher<in T>): Unit =
+        thenEventually(initialDelay, duration, interval, collector, matcher)
 }

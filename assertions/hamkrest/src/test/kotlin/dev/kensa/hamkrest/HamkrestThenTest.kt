@@ -10,6 +10,7 @@ import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.SetupStrategy
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import org.junit.jupiter.api.AfterEach
@@ -169,6 +170,66 @@ class HamkrestThenTest {
         blockCallCount shouldBe (blockCallCount.coerceAtLeast(1))
     }
 
+    @Test
+    fun `WithHamkrest andEventually with spec retries until matcher passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector<String> {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            val spec = object : ThenSpec<String> {
+                override val collector: StateCollector<String> = retryingCollector
+                override val matcher = equalTo("result")
+                override val onMatch: CollectorContext.(String) -> Unit = {}
+            }
+
+            Dummy(spec).runAndEventually()
+
+            callCount.get() shouldBeGreaterThanOrEqual 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
+    @Test
+    fun `WithHamkrest andEventually with collector and matcher retries until matcher passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector<String> {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            DummyCollector().runAndEventually(retryingCollector, equalTo("result"))
+
+            callCount.get() shouldBe 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
+    @Test
+    fun `WithHamkrest andEventually with collector and block retries until block passes`() {
+        try {
+            TestContextHolder.bindToCurrentThread(testContext)
+
+            val callCount = AtomicInteger(0)
+            val retryingCollector = StateCollector<String> {
+                if (callCount.incrementAndGet() < 3) "wrong" else "result"
+            }
+
+            DummyCollector().runAndEventuallyBlock(retryingCollector) { this shouldBe "result" }
+
+            callCount.get() shouldBe 3
+        } finally {
+            TestContextHolder.clearFromThread()
+        }
+    }
+
     class Dummy(private val spec: ThenSpec<String>) : WithHamkrest {
         fun runThenEventually() {
             thenEventually(5.seconds, spec)
@@ -176,6 +237,20 @@ class HamkrestThenTest {
 
         fun runThen() {
             then(spec)
+        }
+
+        fun runAndEventually() {
+            andEventually(5.seconds, spec)
+        }
+    }
+
+    class DummyCollector : WithHamkrest {
+        fun <T> runAndEventually(collector: StateCollector<T>, matcher: com.natpryce.hamkrest.Matcher<T>) {
+            andEventually(5.seconds, collector, matcher)
+        }
+
+        fun <T> runAndEventuallyBlock(collector: StateCollector<T>, block: T.() -> Unit) {
+            andEventually(5.seconds, collector, block)
         }
     }
 }
