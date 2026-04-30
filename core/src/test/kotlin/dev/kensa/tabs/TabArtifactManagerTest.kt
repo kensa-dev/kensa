@@ -3,6 +3,7 @@ package dev.kensa.tabs
 import dev.kensa.Configuration
 import dev.kensa.KensaTab
 import dev.kensa.KensaTabVisibility
+import dev.kensa.attachments.Attachments
 import dev.kensa.context.TestContainer
 import dev.kensa.fixture.Fixtures
 import dev.kensa.output.json.JsonTransforms
@@ -73,6 +74,7 @@ class TabArtifactManagerTest {
             on { it.displayName } doReturn "display"
             on { it.fixtures } doReturn Fixtures()
             on { it.outputs } doReturn CapturedOutputs()
+            on { it.attachments } doReturn Attachments()
             on { it.state } doReturn TestState.Failed
         }
 

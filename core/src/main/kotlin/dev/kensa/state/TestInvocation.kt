@@ -1,5 +1,6 @@
 package dev.kensa.state
 
+import dev.kensa.attachments.Attachments
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.parse.ParsedInvocation
@@ -21,6 +22,7 @@ class TestInvocation(
     interactions: CapturedInteractions,
     val outputs: CapturedOutputs,
     val fixtures: Fixtures,
+    val attachments: Attachments,
     val renderErrors: List<RenderError> = emptyList(),
 ) {
     val sentences: List<RenderedSentence> = parsedInvocation.sentences

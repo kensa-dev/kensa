@@ -1,8 +1,10 @@
 package dev.kensa.parse
 
 import dev.kensa.Configuration
+import dev.kensa.attachments.Attachments
 import dev.kensa.context.ExpandableInvocationContext
 import dev.kensa.context.ExpandableInvocationContextHolder
+import dev.kensa.context.TestContext
 import dev.kensa.example.KotlinWithScenario
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
@@ -118,10 +120,11 @@ class ParseAndRenderIntegrationTest {
             fixtures = Fixtures(),
             capturedOutputs = CapturedOutputs()
         )
-        val testContext = mock<dev.kensa.context.TestContext> {
+        val testContext = mock<TestContext> {
             on { interactions } doReturn mock()
             on { outputs } doReturn mock()
             on { fixtures } doReturn mock()
+            on { attachments } doReturn Attachments()
         }
         whenever(diagramFactory.create(any())).thenReturn(null)
 

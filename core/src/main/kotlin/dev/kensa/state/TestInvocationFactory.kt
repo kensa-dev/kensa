@@ -39,6 +39,7 @@ class TestInvocationFactory(
             testContext.interactions,
             testContext.outputs,
             testContext.fixtures,
+            testContext.attachments,
             renderErrors,
         )
         return invocation to parseErrors

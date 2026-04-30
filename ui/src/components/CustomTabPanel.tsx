@@ -23,23 +23,33 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                                                               }) => {
     if (mediaType === 'text/html') {
         const [expandedImage, setExpandedImage] = React.useState<{ src: string; alt: string } | null>(null);
+        const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
         React.useEffect(() => {
             const handler = (e: MessageEvent) => {
                 if (e.data?.type === 'kensa-expand-image') {
+                    iframeRef.current?.blur();
+                    window.focus();
                     setExpandedImage({src: e.data.src, alt: e.data.alt ?? ''});
+                } else if (e.data?.type === 'kensa-close-image') {
+                    setExpandedImage(null);
                 }
             };
             window.addEventListener('message', handler);
             return () => window.removeEventListener('message', handler);
         }, []);
-
-        const iframeRef = React.useRef<HTMLIFrameElement>(null);
         const sizeIframe = () => {
             const doc = iframeRef.current?.contentDocument;
             if (doc?.body) {
                 iframeRef.current!.style.height = (doc.documentElement.scrollHeight + 16) + 'px';
             }
+        };
+        const onIframeLoad = () => {
+            sizeIframe();
+            const doc = iframeRef.current?.contentDocument;
+            doc?.querySelectorAll('img').forEach(img => {
+                if (!img.complete) img.addEventListener('load', sizeIframe, {once: true});
+            });
         };
 
         return (
@@ -51,7 +61,7 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                     className="w-full border-0"
                     style={{minHeight: 200}}
                     title="tab content"
-                    onLoad={sizeIframe}
+                    onLoad={onIframeLoad}
                 />
                 <Dialog open={!!expandedImage} onOpenChange={(open) => { if (!open) setExpandedImage(null); }}>
                     <DialogContent

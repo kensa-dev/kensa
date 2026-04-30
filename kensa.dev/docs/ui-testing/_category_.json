@@ -1,0 +1,8 @@
+{
+  "label": "UI Testing",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Drive a real browser with the same Given-When-Then DSL and view screenshots in the HTML report."
+  }
+}

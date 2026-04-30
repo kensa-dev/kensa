@@ -114,6 +114,19 @@ class Configuration {
         tabServiceFactories[type] = factory
     }
 
+    private val extras = ConcurrentHashMap<KClass<*>, Any>()
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> getExtra(type: KClass<T>): T? = extras[type] as T?
+
+    fun <T : Any> putExtra(type: KClass<T>, value: T) {
+        extras[type] = value
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> computeExtraIfAbsent(type: KClass<T>, factory: () -> T): T =
+        extras.computeIfAbsent(type) { factory() } as T
+
     val renderers: Renderers = Renderers()
     var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR)
     var flattenOutputPackages: Boolean = false
@@ -159,3 +172,8 @@ class RendererConfiguration(@PublishedApi internal val renderers: Renderers) {
 }
 
 fun Configuration.withRenderers(block: RendererConfiguration.() -> Unit) = RendererConfiguration(this.renderers).block()
+
+inline fun <reified T : Any> Configuration.getExtra(): T? = getExtra(T::class)
+inline fun <reified T : Any> Configuration.putExtra(value: T) = putExtra(T::class, value)
+inline fun <reified T : Any> Configuration.computeExtraIfAbsent(noinline factory: () -> T): T =
+    computeExtraIfAbsent(T::class, factory)

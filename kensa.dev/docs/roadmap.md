@@ -17,3 +17,4 @@ Both releases contain breaking changes. Review the notes below before upgrading.
 ## v0.8.x
 
 - **Breaking:** Removed the legacy UI completely
+- UI testing support (Playwright + Selenium)

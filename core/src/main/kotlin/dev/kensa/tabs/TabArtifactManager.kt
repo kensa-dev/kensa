@@ -175,7 +175,9 @@ class TabArtifactManager {
             invocationState = invocation.state.description,
             fixtures = invocation.fixtures,
             capturedOutputs = invocation.outputs,
+            attachments = invocation.attachments,
             services = services,
+            outputDir = outputDir,
             sourceId = tab.sourceId
         )
 

@@ -1,6 +1,7 @@
 package dev.kensa.state
 
 import dev.kensa.KensaException
+import dev.kensa.attachments.Attachments
 import dev.kensa.context.TestContext
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
@@ -33,6 +34,7 @@ class TestInvocationFactoryTest {
             on { interactions } doReturn mock()
             on { outputs } doReturn mock()
             on { fixtures } doReturn mock()
+            on { attachments } doReturn Attachments()
         }
         whenever(diagramFactory.create(any())).thenReturn(null)
 
@@ -58,6 +60,7 @@ class TestInvocationFactoryTest {
             on { interactions } doReturn mock()
             on { outputs } doReturn mock()
             on { fixtures } doReturn mock()
+            on { attachments } doReturn Attachments()
         }
         whenever(diagramFactory.create(any())).thenReturn(null)
 

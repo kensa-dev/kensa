@@ -1,6 +1,7 @@
 package dev.kensa.context
 
 import dev.kensa.*
+import dev.kensa.attachments.Attachments
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.state.CapturedInteractions
@@ -9,7 +10,12 @@ import dev.kensa.util.findAnnotation
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
-class TestContext(val interactions: CapturedInteractions, override val fixtures: Fixtures, override val outputs: CapturedOutputs) : WithFixturesAndOutputs {
+class TestContext(
+    val interactions: CapturedInteractions,
+    override val fixtures: Fixtures,
+    override val outputs: CapturedOutputs,
+    val attachments: Attachments = Attachments()
+) : WithFixturesAndOutputs {
 
     override val fixturesAndOutputs = FixturesAndOutputs(fixtures, outputs)
     val givensContext = GivensContext(fixtures, outputs)

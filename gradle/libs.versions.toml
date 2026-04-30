@@ -19,6 +19,9 @@ jreleaser = "1.23.0"
 byteBuddy = "1.17.8"
 shadow = "9.4.1"
 
+playwright = "1.59.0"
+selenium = "4.43.0"
+
 http4k = "6.23.1.0"
 jackson = "2.21.2"
 
@@ -61,6 +64,9 @@ junit6PlatformTestKit = { module = "org.junit.platform:junit-platform-testkit" }
 
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
 byteBuddyCore = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
+
+playwrightJava = { module = "com.microsoft.playwright:playwright", version.ref = "playwright" }
+seleniumJava = { module = "org.seleniumhq.selenium:selenium-java", version.ref = "selenium" }
 
 ## for adoptabot example
 http4kCore = { module = "org.http4k:http4k-core", version.ref = "http4k" }

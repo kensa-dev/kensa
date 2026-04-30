@@ -21,7 +21,16 @@
             <option value="$PROJECT_DIR$/frameworks/junit/junit5" />
             <option value="$PROJECT_DIR$/frameworks/junit/junit6" />
             <option value="$PROJECT_DIR$/frameworks/kotest" />
+            <option value="$PROJECT_DIR$/frameworks/playwright" />
+            <option value="$PROJECT_DIR$/frameworks/playwright/junit5" />
+            <option value="$PROJECT_DIR$/frameworks/playwright/junit6" />
+            <option value="$PROJECT_DIR$/frameworks/selenium" />
+            <option value="$PROJECT_DIR$/frameworks/selenium/junit5" />
+            <option value="$PROJECT_DIR$/frameworks/selenium/junit6" />
             <option value="$PROJECT_DIR$/frameworks/testng" />
+            <option value="$PROJECT_DIR$/frameworks/uitesting" />
+            <option value="$PROJECT_DIR$/frameworks/uitesting/junit5" />
+            <option value="$PROJECT_DIR$/frameworks/uitesting/junit6" />
             <option value="$PROJECT_DIR$/ui" />
           </set>
         </option>
