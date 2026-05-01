@@ -16,7 +16,7 @@ testng = "7.12.0"
 awaitility = "4.3.0"
 minimalJson = "0.9.5"
 antlr = "4.13.2"
-jreleaser = "1.23.0"
+jreleaser = "1.24.0"
 byteBuddy = "1.17.8"
 shadow = "9.4.1"
 
