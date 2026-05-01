@@ -1,8 +1,4 @@
-import java.nio.file.Paths
-
 description = "Kensa for Kotest"
-
-private val uiBuildDir = Paths.get(project(":ui").layout.buildDirectory.get().toString(), "js")
 
 dependencies {
     api(project(":core"))

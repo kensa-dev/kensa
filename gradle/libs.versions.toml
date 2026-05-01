@@ -4,7 +4,6 @@ coroutines = "1.10.2"
 node = "22.4.1"
 nodeGradle = "7.0.2"
 plantUml = "1.2026.2"
-pebble = "3.2.4"
 mockito = "6.3.0"
 kotest = "6.1.9"
 junit5 = "5.14.3"
@@ -37,7 +36,6 @@ testng = { module = "org.testng:testng", version.ref = "testng" }
 awaitilityKotlin = { module = "org.awaitility:awaitility-kotlin", version.ref = "awaitility" }
 minimalJson = { module = "com.eclipsesource.minimal-json:minimal-json", version.ref = "minimalJson" }
 plantuml = { module = "net.sourceforge.plantuml:plantuml", version.ref = "plantUml" }
-pebble = { module = "io.pebbletemplates:pebble", version.ref = "pebble" }
 
 kotestBom = { module = "io.kotest:kotest-bom", version.ref = "kotest" }
 kotestAssertionsCoreJvm = { module = "io.kotest:kotest-assertions-core-jvm" }

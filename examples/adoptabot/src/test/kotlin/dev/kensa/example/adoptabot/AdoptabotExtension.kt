@@ -2,7 +2,6 @@ package dev.kensa.example.adoptabot
 
 import dev.kensa.Kensa.konfigure
 import dev.kensa.Tab
-import dev.kensa.UiMode
 import dev.kensa.example.adoptabot.AdoptionStatus.Available
 import dev.kensa.fixture.FixtureContainer
 import dev.kensa.fixture.FixtureRegistry.registerFixtures
@@ -36,7 +35,6 @@ class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
         registerFixtures(AdoptabotFixtures)
         konfigure {
             titleText = "Adoptabot Acceptance Tests"
-            uiMode = UiMode.Modern
             outputDir = Path("${System.getProperty("user.dir")}/build/kensa-output")
             autoOpenTab = Tab.SequenceDiagram
             sourceLocations = listOf(Path("src/test/kotlin"))

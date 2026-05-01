@@ -118,24 +118,6 @@ object JsonTransforms {
     fun <T, R, V> ((T) -> R).andThen(other: (R) -> V): ((T) -> V) = { other(this(it)) }
 
     fun toIndexJson(id: String): (TestContainer) -> JsonValue = { container: TestContainer ->
-        jsonObject()
-            .add("id", id)
-            .add("testClass", container.testClass.name)
-            .add("issues", asJsonArray(container.issues))
-            .add("displayName", container.displayName)
-            .add("state", container.state.description)
-            .add("tests", asJsonArray(container.methodContainers.values) { invocation: TestMethodContainer ->
-                val methodIndexJson = jsonObject()
-                    .add("testMethod", invocation.method.name)
-                    .add("issues", asJsonArray(invocation.issues))
-                    .add("displayName", invocation.displayName)
-                    .add("state", invocation.state.description)
-                if (methodHasErrors(invocation)) methodIndexJson.add("hasErrors", true)
-                methodIndexJson
-            })
-    }
-
-    fun toModernIndexJson(id: String): (TestContainer) -> JsonValue = { container: TestContainer ->
         val classJson = jsonObject()
             .add("id", id)
             .add("testClass", container.testClass.name)

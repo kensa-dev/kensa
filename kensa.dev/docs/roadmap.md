@@ -16,4 +16,4 @@ Both releases contain breaking changes. Review the notes below before upgrading.
 
 ## v0.8.x
 
-- **Breaking:** Remove the legacy UI completely
+- **Breaking:** Removed the legacy UI completely

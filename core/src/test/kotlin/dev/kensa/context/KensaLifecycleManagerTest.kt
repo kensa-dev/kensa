@@ -2,7 +2,6 @@ package dev.kensa.context
 
 import dev.kensa.Configuration
 import dev.kensa.KensaConfigurationProvider
-import dev.kensa.UiMode
 import dev.kensa.state.TestState
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -95,7 +94,6 @@ private fun createManager(tempDir: Path, outputEnabled: Boolean = true): KensaLi
         TestConfigProvider.configuration = Configuration().apply {
             outputDir = tempDir.resolve("kensa-output")
             isOutputEnabled = outputEnabled
-            uiMode = UiMode.Modern
         }
         System.setProperty(KensaLifecycleManager.CONFIGURATION_PROVIDER_PROPERTY, TestConfigProvider::class.java.name)
         try {

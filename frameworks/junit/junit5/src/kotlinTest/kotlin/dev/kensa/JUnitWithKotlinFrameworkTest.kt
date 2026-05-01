@@ -63,7 +63,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 resolve("configuration.json").shouldNotExist()
                 resolve("index.html").shouldNotExist()
                 resolve("indices.json").shouldNotExist()
-                resolve("kensa2.js").shouldNotExist()
+                resolve("kensa.js").shouldNotExist()
                 resolve("logo.svg").shouldNotExist()
                 resolve(Path("results", "dev.kensa.${KotlinWithOutputDisabledTest::class.simpleName}.json")).shouldNotExist()
             }
@@ -90,7 +90,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 resolve("configuration.json").shouldExist()
                 resolve("index.html").shouldExist()
                 resolve("indices.json").shouldExist()
-                resolve("kensa2.js").shouldExist()
+                resolve("kensa.js").shouldExist()
                 resolve("logo.svg").shouldExist()
             }
         }

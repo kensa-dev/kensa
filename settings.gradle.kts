@@ -5,7 +5,6 @@ include("antlr")
 include("core")
 
 include("ui")
-include("ui2")
 
 include("compiler-plugin")
 project(":compiler-plugin").projectDir = file("compiler/compiler-plugin")

@@ -3,13 +3,10 @@ package dev.kensa.output
 import com.eclipsesource.json.Json
 import dev.kensa.Configuration
 import dev.kensa.Section.Tabs
-import dev.kensa.UiMode
 import dev.kensa.context.TestContainer
+import dev.kensa.output.json.JsonTransforms.toIndexJson
 import dev.kensa.output.json.JsonTransforms.toJsonString
 import dev.kensa.output.json.JsonTransforms.toJsonWith
-import dev.kensa.output.json.JsonTransforms.toModernIndexJson
-import dev.kensa.output.template.FileTemplate.IndexFileTemplate
-import dev.kensa.output.template.FileTemplate.TestFileTemplate
 import dev.kensa.sentence.Acronym
 import dev.kensa.tabs.TabArtifactManager
 import dev.kensa.util.IoUtil
@@ -28,30 +25,10 @@ class ResultWriter(private val configuration: Configuration) {
     private val tabArtifactManager = TabArtifactManager()
 
     fun write(containers: List<TestContainer>) {
-        when (configuration.uiMode) {
-            UiMode.Legacy -> writeLegacy(containers)
-            UiMode.Modern -> writeModern(containers)
-        }
-    }
-
-    fun writeLegacy(containers: List<TestContainer>) {
-        writeLegacyIndices(containers.sortedBy { it.testClass.name })
+        writeIndices(containers.sortedBy { it.testClass.name })
+        writeConfiguration()
+        writeHtml()
         IoUtil.copyResource("/kensa.js", configuration.outputDir)
-        IoUtil.copyResource("/favicon.ico", configuration.outputDir)
-
-        println(
-            """
-                Kensa Output :
-                ${configuration.outputDir.resolve("index.html")}
-            """.trimIndent()
-        )
-    }
-
-    fun writeModern(containers: List<TestContainer>) {
-        writeModernIndices(containers.sortedBy { it.testClass.name })
-        writeModernConfiguration()
-        writeModernHtml()
-        IoUtil.copyResource("/kensa2.js", configuration.outputDir)
         IoUtil.copyResource("/logo.svg", configuration.outputDir)
 
         println(
@@ -63,17 +40,22 @@ class ResultWriter(private val configuration: Configuration) {
     }
 
     fun writeTest(container: TestContainer) {
-        when (configuration.uiMode) {
-            UiMode.Legacy -> writeLegacyTest(container)
-            UiMode.Modern -> writeModernTest(container)
+        with(configuration) {
+            val tabArtifacts = tabArtifactManager.generate(container, outputDir, configuration)
+
+            val json = toJsonWith(renderers) { methodContainer, _, invocationIndex ->
+                tabArtifacts[TabArtifactManager.InvocationKey(methodContainer.method.name, invocationIndex)] ?: emptyList()
+            }(container)
+
+            val string = toJsonString()(json)
+
+            val resultsPath: Path = outputDir.resolve("results")
+            resultsPath.createDirectories()
+            resultsPath.resolve("${container.testClass.name}.json").writeText(string)
         }
     }
 
-    fun writeLegacyTest(container: TestContainer) {
-        TestFileTemplate(configuration, container).write()
-    }
-
-    private fun writeModernConfiguration() =
+    private fun writeConfiguration() =
         with(configuration) {
             val kensaVersion = ResultWriter::class.java.`package`?.implementationVersion ?: "dev"
             val json = jsonObject()
@@ -102,7 +84,7 @@ class ResultWriter(private val configuration: Configuration) {
         }
     }
 
-    private fun writeModernHtml() {
+    private fun writeHtml() {
         val html = """
             <!doctype html>
             <html lang="en">
@@ -115,49 +97,26 @@ class ResultWriter(private val configuration: Configuration) {
             </head>
             <body>
                 <div id="root"></div>
-                <script src="kensa2.js"></script>
+                <script src="kensa.js"></script>
             </body>
             </html>
         """.trimIndent()
         configuration.outputDir.resolve("index.html").writeText(html)
     }
 
-    fun writeModernTest(container: TestContainer) {
-        with(configuration) {
-            val tabArtifacts = tabArtifactManager.generate(container, outputDir, configuration)
-
-            val json = toJsonWith(renderers) { methodContainer, _, invocationIndex ->
-                tabArtifacts[TabArtifactManager.InvocationKey(methodContainer.method.name, invocationIndex)] ?: emptyList()
-            }(container)
-
-            val string = toJsonString()(json)
-
-            val resultsPath: Path = outputDir.resolve("results")
-            resultsPath.createDirectories()
-            resultsPath.resolve("${container.testClass.name}.json").writeText(string)
-        }
-    }
-
-    private fun writeModernIndices(containers: List<TestContainer>) {
+    private fun writeIndices(containers: List<TestContainer>) {
         with(configuration) {
             val json = jsonObject()
                 .add(
                     "indices",
                     Json.array().apply {
-                        containers.forEach { add(toModernIndexJson(it.testClass.name)(it)) }
+                        containers.forEach { add(toIndexJson(it.testClass.name)(it)) }
                     }
                 )
             val string = toJsonString()(json)
 
             val indicesPath: Path = outputDir.resolve("indices.json")
             indicesPath.writeText(string)
-        }
-    }
-
-    private fun writeLegacyIndices(containers: List<TestContainer>) {
-        IndexFileTemplate(configuration).apply {
-            containers.forEach { addIndex(it) }
-            write()
         }
     }
 }

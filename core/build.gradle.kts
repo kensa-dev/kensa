@@ -63,7 +63,6 @@ dependencies {
     implementation(libs.minimalJson)
     compileOnly(libs.plantuml)
     plantUmlBundle(libs.plantuml)
-    implementation(libs.pebble)
     "agentImplementation"(libs.byteBuddyCore)
 
     testImplementation(platform(libs.junit6Bom))
@@ -125,12 +124,9 @@ tasks {
         relocate("net.sourceforge.plantuml", "dev.kensa.internal.plantuml")
         relocate("net.atmp", "dev.kensa.internal.atmp")
         relocate("com.plantuml", "dev.kensa.internal.com.plantuml")
-        dependsOn(":ui:viteBuild", ":ui2:viteBuild")
+        dependsOn(":ui:viteBuild")
         from(project(":antlr").sourceSets["main"].output)
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
-            into("/")
-        }
-        from(project(":ui2").layout.buildDirectory.dir("js").get()) {
             into("/")
         }
         configurations = listOf(plantUmlBundle)

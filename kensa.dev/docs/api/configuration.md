@@ -46,7 +46,6 @@ Configuration is typically placed in a test base class, a JUnit 5 `@BeforeAll`, 
 |----------------|--------------|------|---------|-------------|
 | `withOutputDir(path)` | `outputDir` | `Path` | system temp dir / `kensa-output` | Where HTML reports are written |
 | `withOutputDisabled()` | `isOutputEnabled = false` | `Boolean` | `true` | Suppress all report generation |
-| `withUiMode(mode)` | `uiMode` | `UiMode` | `UiMode.Legacy` | Report template (Legacy or Modern) |
 | `withFlattenOutputPackages(bool)` | `flattenOutputPackages` | `Boolean` | `false` | Simplify package paths in output filenames |
 | `withPackageDisplayMode(mode)` | `packageDisplay` | `PackageDisplay` | `HideCommonPackages` | How package names appear in the report |
 | `withPackageDisplayRoot(root)` | `packageDisplayRoot` | `String?` | `null` | Root package to strip when displaying package names |

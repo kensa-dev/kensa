@@ -69,8 +69,8 @@ export default defineConfig({
         cssCodeSplit: false,
         lib: {
             entry: path.resolve(__dirname, 'src/main.tsx'),
-            name: 'Kensa2',
-            fileName: () => `kensa2.js`,
+            name: 'Kensa',
+            fileName: () => `kensa.js`,
             formats: ['iife'],
         },
         target:

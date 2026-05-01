@@ -515,61 +515,12 @@ class JsonTransformsTest {
     inner class IndexJson {
 
         @Test
-        fun `serialises class and methods with hasErrors absent when no errors`() {
-            val methodA = fakeTestMethodContainer(method = alpha, invocations = listOf(fakeTestInvocation()))
-            val methodB = fakeTestMethodContainer(method = beta, invocations = listOf(fakeTestInvocation()))
-            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(methodA, methodB))
-
-            val json = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
-
-            json.getString("id", null) shouldBe "cls-1"
-            json.getString("testClass", null) shouldBe sampleClass.name
-            val tests = json.get("tests").asArray()
-            tests.size() shouldBe 2
-            tests[0].asObject().get("hasErrors").shouldBeNull()
-            tests[1].asObject().get("hasErrors").shouldBeNull()
-        }
-
-        @Test
-        fun `sets hasErrors true on method with parseErrors`() {
-            val methodA = fakeTestMethodContainer(method = alpha, invocations = listOf(fakeTestInvocation()))
-            val methodB = fakeTestMethodContainer(
-                method = beta,
-                invocations = listOf(fakeTestInvocation()),
-                parseErrors = listOf(ParseError(1, "oops")),
-            )
-            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(methodA, methodB))
-
-            val tests = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject().get("tests").asArray()
-            val byName = tests.map { it.asObject() }.associateBy { it.getString("testMethod", null) }
-
-            byName["alpha"]!!.get("hasErrors").shouldBeNull()
-            byName["beta"]!!.getBoolean("hasErrors", false).shouldBeTrue()
-        }
-
-        @Test
-        fun `sets hasErrors true on method with renderErrors in any invocation`() {
-            val invocationWithErrors = fakeTestInvocation(renderErrors = listOf(RenderError("R", "m")))
-            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocationWithErrors))
-            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
-
-            JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
-                .get("tests").asArray()[0].asObject()
-                .getBoolean("hasErrors", false)
-                .shouldBeTrue()
-        }
-    }
-
-    @Nested
-    inner class ModernIndexJson {
-
-        @Test
         fun `omits class-level hasErrors when no children have errors`() {
             val methodA = fakeTestMethodContainer(method = alpha, invocations = listOf(fakeTestInvocation()))
             val methodB = fakeTestMethodContainer(method = beta, invocations = listOf(fakeTestInvocation()))
             val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(methodA, methodB))
 
-            val json = JsonTransforms.toModernIndexJson(id = "cls-1")(container).asObject()
+            val json = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
 
             json.get("hasErrors").shouldBeNull()
             val children = json.get("children").asArray()
@@ -587,7 +538,7 @@ class JsonTransformsTest {
             )
             val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(methodA, methodB))
 
-            val json = JsonTransforms.toModernIndexJson(id = "cls-1")(container).asObject()
+            val json = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
 
             json.getBoolean("hasErrors", false).shouldBeTrue()
             val children = json.get("children").asArray()
@@ -601,7 +552,7 @@ class JsonTransformsTest {
             val method = fakeTestMethodContainer(method = alpha, invocations = listOf(fakeTestInvocation()))
             val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
 
-            JsonTransforms.toModernIndexJson(id = "cls-1")(container).asObject()
+            JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
                 .get("children").asArray()[0].asObject()
                 .getString("id", null) shouldBe "cls-1:alpha"
         }

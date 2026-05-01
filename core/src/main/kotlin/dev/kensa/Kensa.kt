@@ -45,12 +45,6 @@ object Kensa {
 
 class KensaConfigurator(private val configuration: Configuration) {
 
-    @Deprecated(
-        "Modern is now the only supported UI. Legacy UI will be removed in 0.8.0; this configurator method will be removed alongside it.",
-        level = DeprecationLevel.WARNING
-    )
-    fun withUiMode(mode: UiMode) = apply { configuration.uiMode = mode }
-
     fun withIssueTrackerUrl(url: URL): KensaConfigurator = apply { configuration.issueTrackerUrl = url }
 
     fun withOutputDir(dir: String): KensaConfigurator = withOutputDir(Paths.get(dir))
@@ -88,11 +82,6 @@ class KensaConfigurator(private val configuration: Configuration) {
     fun withSourceLocations(vararg locations: Path): KensaConfigurator = apply { configuration.sourceLocations = locations.toList() }
 }
 
-enum class UiMode {
-    Legacy,
-    Modern
-}
-
 enum class PackageDisplay {
     Hidden,
     HideCommonPackages,
@@ -118,12 +107,6 @@ class Configuration {
     internal val dictionary: Dictionary = Dictionary()
     var sourceLocations: List<Path> = emptyList()
     val sourceCode: SourceCode by lazy { SourceCode({ sourceLocations }) }
-    @Deprecated(
-        "Modern is now the only supported UI. Legacy UI will be removed in 0.8.0; this property will be removed alongside it.",
-        level = DeprecationLevel.WARNING
-    )
-    var uiMode: UiMode = UiMode.Modern
-
     internal val tabServiceFactories: Map<KClass<*>, () -> Any>
         field = ConcurrentHashMap<KClass<*>, () -> Any>()
 
