@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 Kensa Fixtures are collections of type-safe, lazily-created test data values. Each test invocation has its own discreet set of Fixtures. They are shared across `given`, `whenever`, and `then` steps via the context objects.
 
 :::tip[Full example]
-The code on this page is taken from [clearwave-kensa-example](https://github.com/kensa-dev/clearwave-kensa-example) — a complete working project that demonstrates fixtures, captured outputs, sequence diagrams, and async assertions.
+The code on this page is taken from [clearwave-example](https://github.com/kensa-dev/clearwave-example) — a complete working project that demonstrates fixtures, captured outputs, sequence diagrams, and async assertions.
 :::
 
 ---
@@ -35,7 +35,7 @@ The key design principle is **granularity**: define one fixture per meaningful f
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L12-L65
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L12-L65
 ```
 
 </TabItem>
@@ -44,7 +44,7 @@ https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/c
 Java tests access fixtures via static aliases that delegate to the `FixtureContainer` singleton. Import them statically for idiomatic `SCREAMING_SNAKE_CASE` usage in test code.
 
 ```java reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/support/JavaTelecomsFixtures.java#L14-L47
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/clearwave/support/JavaTelecomsFixtures.java#L14-L47
 ```
 
 </TabItem>
@@ -60,7 +60,7 @@ A secondary fixture depends on one or more parent fixtures. Its factory receives
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L66-L68
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L66-L68
 ```
 
 </TabItem>
@@ -80,7 +80,7 @@ createFixture("Appointment Slot", appointmentDate, appointmentTimeSlot,
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L47-L49
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L47-L49
 ```
 
 </TabItem>
@@ -100,7 +100,7 @@ createFixture("Voice Profile", voiceDownloadSpeed, voiceUploadSpeed, voiceSuppli
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L28-L39
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L28-L39
 ```
 
 </TabItem>
@@ -132,22 +132,22 @@ Access fixtures through the context destructured in each action lambda:
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L104-L113
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L104-L113
 ```
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L125-L137
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L125-L137
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L100-L111
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L100-L111
 ```
 
 ```java reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/OrderServiceJavaTest.java#L113-L157
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/clearwave/OrderServiceJavaTest.java#L113-L157
 ```
 
 </TabItem>
@@ -161,22 +161,22 @@ The most important place to use fixture references is **directly in the test bod
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L51-L62
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L51-L62
 ```
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L65-L77
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L65-L77
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L48-L58
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L48-L58
 ```
 
 ```java reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/OrderServiceJavaTest.java#L54-L65
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/clearwave/OrderServiceJavaTest.java#L54-L65
 ```
 
 </TabItem>
@@ -188,22 +188,22 @@ The assertion helpers simply accept the fixture values as ordinary parameters �
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L172-L184
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/FeasibilityServiceTest.kt#L172-L184
 ```
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L194-L206
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/OrderServiceTest.kt#L194-L206
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L178-L197
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/clearwave/FeasibilityServiceJavaTest.java#L178-L197
 ```
 
 ```java reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/java/com/clearwave/OrderServiceJavaTest.java#L190-L211
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/clearwave/OrderServiceJavaTest.java#L190-L211
 ```
 
 </TabItem>
@@ -314,7 +314,7 @@ Set `highlighted = true` on any fixture to have its value appear prominently in 
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L14-L15
+https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/support/TelecomsFixtures.kt#L14-L15
 ```
 
 </TabItem>

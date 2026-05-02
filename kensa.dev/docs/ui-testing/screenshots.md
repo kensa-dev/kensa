@@ -10,7 +10,7 @@ description: How screenshots are captured in Kensa UI tests, stored on disk, and
 Call `screenshot("label")` from any method in your `UserStub` subclass — for example, the Playwright user stub from the clearwave example:
 
 ```kotlin reference title="FeasibilityUser.kt — Playwright variant"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUser.kt#L11-L49
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUser.kt#L11-L49
 ```
 
 Each call appends a labelled PNG to the Screenshots tab for that test invocation.
@@ -20,7 +20,7 @@ Each call appends a labelled PNG to the Screenshots tab for that test invocation
 Set `uiTesting.autoScreenshotOnFailure = true` in `Kensa.konfigure` to capture an extra screenshot (labelled `"On failure"`) automatically whenever a test fails:
 
 ```kotlin reference title="FeasibilityUiPlaywrightTest.kt — companion setup"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiPlaywrightTest.kt#L115-L124
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiPlaywrightTest.kt#L115-L124
 ```
 
 ## Storage layout

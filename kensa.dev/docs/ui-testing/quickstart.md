@@ -12,13 +12,13 @@ This guide walks through setting up a UI test using Playwright. A [Selenium vari
 Pick the artifacts that match your JUnit version — `-junit6` for JUnit 6, `-junit5` for JUnit 5. The clearwave example places UI testing in its own source set; the dependencies declaration below shows both drivers wired up for that source set:
 
 ```kotlin reference title="build.gradle.kts — UI testing dependencies"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/build.gradle.kts#L67-L72
+https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L67-L72
 ```
 
 The version-catalog entries those `libs.*` references resolve to:
 
 ```toml reference title="gradle/libs.versions.toml"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/gradle/libs.versions.toml#L11-L19
+https://github.com/kensa-dev/clearwave-example/blob/master/gradle/libs.versions.toml#L11-L19
 ```
 
 Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
@@ -27,7 +27,7 @@ Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/
 Before running Playwright tests for the first time, install the browsers once. Add a Gradle task that runs the Playwright CLI:
 
 ```kotlin reference title="build.gradle.kts — installPlaywrightBrowsers"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/build.gradle.kts#L130-L137
+https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L130-L137
 ```
 
 Then run `./gradlew installPlaywrightBrowsers` once. Selenium 4.x auto-manages ChromeDriver — no extra setup needed.
@@ -40,7 +40,7 @@ A user stub is a page object that extends `UserStub<D>`, where `D` is your `Brow
 The clearwave example pairs each driver with its own user stub class in the same file:
 
 ```kotlin reference title="FeasibilityUser.kt — Playwright variant"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUser.kt#L11-L49
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUser.kt#L11-L49
 ```
 
 ## 3. Write a UI Test
@@ -50,7 +50,7 @@ Extend `KensaPlaywrightUiTest<U>` — driver creation is handled for you (headle
 Configure Kensa in a `@BeforeAll` companion method — set `sourceLocations` to point at your UI test sources so sentence parsing works correctly.
 
 ```kotlin reference title="FeasibilityUiPlaywrightTest.kt"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiPlaywrightTest.kt
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiPlaywrightTest.kt
 ```
 
 ### What's happening here
@@ -105,11 +105,11 @@ Each test invocation includes a **Screenshots** tab in the HTML report showing a
 For Selenium, extend `KensaSeleniumUiTest<U>`. Defaults to headless Chrome with CI-friendly flags. Override `configureChromeOptions` to customise.
 
 ```kotlin reference title="FeasibilityUiSeleniumTest.kt"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiSeleniumTest.kt
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiSeleniumTest.kt
 ```
 
 The Selenium user stub accesses `driver.webDriver` instead of `driver.page`. The `given`/`and`/`whenever`/`then` DSL and `screenshot()` calls are identical:
 
 ```kotlin reference title="FeasibilityUser.kt — Selenium variant"
-https://github.com/kensa-dev/clearwave-kensa-example/blob/main/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUser.kt#L51-L95
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUser.kt#L51-L95
 ```

@@ -14,8 +14,8 @@ jobs:
 
       - uses: actions/checkout@v6
         with:
-          repository: kensa-dev/clearwave-kensa-example
-          path: clearwave-kensa-example
+          repository: kensa-dev/clearwave-example
+          path: clearwave-example
 
       - uses: actions/setup-java@v5
         with:
@@ -30,4 +30,4 @@ jobs:
 
       - name: Build clearwave example
         run: ./gradlew build
-        working-directory: clearwave-kensa-example
+        working-directory: clearwave-example
