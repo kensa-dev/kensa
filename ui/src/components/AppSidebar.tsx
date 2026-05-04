@@ -10,10 +10,13 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/
 import {Index, Indices} from "@/types/Index";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from "@/components/ui/collapsible"
 import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 import {Kbd, KbdGroup} from "@/components/ui/kbd"
 import {useConfig} from "@/contexts/ConfigContext"
 import {matchesAnyIssue} from "@/util/issueMatch"
 import {hasOpenDialog} from "@/util/escapeGuard"
+
+const SourceMetaContext = React.createContext<Record<string, { generatedAt?: string }>>({});
 
 interface StateCounts {
     passed: number;
@@ -55,6 +58,7 @@ const BAR_SEGMENTS = [
 
 interface AppSidebarProps {
     indices: Indices;
+    sourceMetaById?: Record<string, { generatedAt?: string }>;
     searchQuery: string;
     onSearchChange: (query: string) => void;
     onSelect: (node: Index, firstMatchingMethod: string | null, allMatchingMethods: string[]) => void;
@@ -66,7 +70,7 @@ interface AppSidebarProps {
     onFilterApplied?: (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => void;
 }
 
-export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied}: AppSidebarProps) {
+export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied}: AppSidebarProps) {
     const allIssues = React.useMemo(() => {
         const issues = new Set<string>();
         const collect = (nodes: Indices) => {
@@ -348,6 +352,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
     }, [firstMatchingTest, firstMatchingMethod, matchingMethodsMap, onFilterApplied, searchQuery, inputValue]);
 
     return (
+        <SourceMetaContext.Provider value={sourceMetaById ?? {}}>
         <Sidebar className="w-full border-none">
             <SidebarHeader className="p-3 pb-0 gap-3">
                 <div className="flex items-center justify-between px-1">
@@ -536,6 +541,7 @@ export function AppSidebar({indices, searchQuery, onSearchChange, onSelect, sele
                 <ReportMeta/>
             </SidebarFooter>
         </Sidebar>
+        </SourceMetaContext.Provider>
     );
 }
 
@@ -550,26 +556,39 @@ function formatGeneratedAt(iso: string): string {
     }
 }
 
+function formatRelative(iso: string): string {
+    try {
+        const t = new Date(iso).getTime();
+        if (Number.isNaN(t)) return iso;
+        const seconds = Math.max(0, Math.round((Date.now() - t) / 1000));
+        if (seconds < 60) return 'just now';
+        const minutes = Math.round(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.round(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        const days = Math.round(hours / 24);
+        if (days < 2) return 'yesterday';
+        if (days < 7) return `${days}d ago`;
+        const date = new Date(iso);
+        const sameYear = date.getFullYear() === new Date().getFullYear();
+        return new Intl.DateTimeFormat(undefined, sameYear
+            ? {day: '2-digit', month: 'short'}
+            : {day: '2-digit', month: 'short', year: 'numeric'}
+        ).format(date);
+    } catch {
+        return iso;
+    }
+}
+
 function ReportMeta() {
-    const config = useConfig();
-    const {kensaVersion, generatedAt} = config;
-    if (!kensaVersion && !generatedAt) return null;
+    const {kensaVersion} = useConfig();
+    if (!kensaVersion) return null;
 
     return (
         <div className="flex items-center justify-center gap-1.5 pt-1.5 border-t border-border/30 group-data-[collapsible=icon]:hidden">
-            {kensaVersion && (
-                <span className="text-[9px] font-mono text-muted-foreground/55 select-none tracking-wide">
-                    v{kensaVersion}
-                </span>
-            )}
-            {kensaVersion && generatedAt && (
-                <span className="text-[9px] text-muted-foreground/30 select-none">·</span>
-            )}
-            {generatedAt && (
-                <span className="text-[9px] font-mono text-muted-foreground/55 select-none">
-                    {formatGeneratedAt(generatedAt)}
-                </span>
-            )}
+            <span className="text-[9px] font-mono text-muted-foreground/55 select-none tracking-wide">
+                v{kensaVersion}
+            </span>
         </div>
     );
 }
@@ -647,9 +666,10 @@ interface CollapsibleMenuNodeProps {
     children: Index[];
     testMethodMap: Map<string, string | null>;
     matchingMethodsMap: Map<string, string[]>;
+    generatedAt?: string;
 }
 
-function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconTone, childCounts, labelClassName, children, testMethodMap, matchingMethodsMap}: CollapsibleMenuNodeProps) {
+function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconTone, childCounts, labelClassName, children, testMethodMap, matchingMethodsMap, generatedAt}: CollapsibleMenuNodeProps) {
     const [open, setOpen] = React.useState(true);
     const sortedChildren = React.useMemo(() =>
         [...children].sort((a, b) => {
@@ -676,6 +696,21 @@ function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconT
                             : <Folder className={cn("h-3.5 w-3.5", iconTone)}/>
                         }
                         <span className="sidebar-label flex-1 min-w-0 truncate">{node.displayName}</span>
+                        {generatedAt && (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span
+                                        className="text-[10px] font-mono text-muted-foreground/40 select-none whitespace-nowrap shrink-0 group-data-[collapsible=icon]:hidden"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {formatRelative(generatedAt)}
+                                    </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="right" className="text-[11px] font-mono">
+                                    {formatGeneratedAt(generatedAt)}
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
                         {childCounts && <StateBadges counts={childCounts}/>}
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
@@ -703,6 +738,7 @@ interface RecursiveMenuItemProps {
 
 const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById, testMethodMap, matchingMethodsMap}: RecursiveMenuItemProps) {
     const {packageDisplay, packageDisplayRoot} = useConfig();
+    const sourceMetaById = React.useContext(SourceMetaContext);
     const isSelected = selectedId === node.id;
 
     const iconTone =
@@ -717,6 +753,8 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
     const childCounts = node.id ? stateCountsById.get(node.id) ?? null : null;
 
     if (node.type === 'project') {
+        const generatedAt = node.sourceId ? sourceMetaById[node.sourceId]?.generatedAt : undefined;
+
         return (
             <CollapsibleMenuNode
                 node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
@@ -725,6 +763,7 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                 children={buildTree(node.children || [], packageDisplay, packageDisplayRoot)}
                 testMethodMap={testMethodMap}
                 matchingMethodsMap={matchingMethodsMap}
+                generatedAt={generatedAt}
             />
         );
     }

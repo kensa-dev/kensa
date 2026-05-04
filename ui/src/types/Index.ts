@@ -12,6 +12,7 @@ export interface Index {
     children?: Indices;
     testMethod?: string;
     hasErrors?: boolean;
+    sourceId?: string;
 }
 
 export type Indices = Index[]
@@ -21,4 +22,5 @@ export interface SelectedIndex {
     displayName: string;
     testClass: string;
     state: TestState;
+    sourceId?: string;
 }

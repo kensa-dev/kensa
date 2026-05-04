@@ -6,12 +6,12 @@ import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.tabs.DefaultKensaTabServices
 import dev.kensa.tabs.KensaTabContext
 import io.kotest.matchers.nulls.shouldBeNull
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.paths.shouldExist
+import io.kotest.matchers.paths.shouldNotExist
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import java.nio.file.Files
 import java.nio.file.Path
 
 class ScreenshotsTabRendererTest {
@@ -45,8 +45,8 @@ class ScreenshotsTabRendererTest {
             .resolve("aTest")
             .resolve("invocation-0")
             .resolve("Screenshots-screenshots")
-        Files.exists(outDir.resolve("0-before.png")) shouldBe true
-        Files.exists(outDir.resolve("1-after.png")) shouldBe true
+        outDir.resolve("0-before.png").shouldExist()
+        outDir.resolve("1-after.png").shouldExist()
     }
 
     @Test
@@ -64,8 +64,8 @@ class ScreenshotsTabRendererTest {
             .resolve("aTest")
             .resolve("invocation-0")
             .resolve("_-screenshots")
-        Files.exists(expectedDir.resolve("0-shot.png")) shouldBe true
-        Files.exists(outputDir.resolve("..").normalize().resolve("0-shot.png")) shouldBe false
+        expectedDir.resolve("0-shot.png").shouldExist()
+        outputDir.resolve("..").normalize().resolve("0-shot.png").shouldNotExist()
     }
 
     private fun newCtx(

@@ -4,6 +4,8 @@ import hljs from "highlight.js";
 import {Dialog, DialogContent} from "@/components/ui/dialog";
 import {cn, getAllTextNodes, removeHighlightSpans} from "@/lib/utils";
 import {TestState} from "@/types/Test";
+import {useSource} from "@/contexts/SourceContext";
+import {injectBaseHref} from "@/lib/injectBaseHref";
 
 interface CustomTabPanelProps {
     title: string;
@@ -15,71 +17,84 @@ interface CustomTabPanelProps {
 
 const highlightHtml = (content: string): string => hljs.highlight(content, {language: "plaintext"}).value;
 
-export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
-                                                                  content,
-                                                                  mediaType = 'text/plain',
-                                                                  testState,
-                                                                  maxHeight = 700,
-                                                              }) => {
-    if (mediaType === 'text/html') {
-        const [expandedImage, setExpandedImage] = React.useState<{ src: string; alt: string } | null>(null);
-        const iframeRef = React.useRef<HTMLIFrameElement>(null);
+const HtmlTabPanel: React.FC<{content: string}> = ({content}) => {
+    const {baseUrl} = useSource();
+    const [expandedImage, setExpandedImage] = React.useState<{ src: string; alt: string } | null>(null);
+    const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
-        React.useEffect(() => {
-            const handler = (e: MessageEvent) => {
-                if (e.data?.type === 'kensa-expand-image') {
-                    iframeRef.current?.blur();
-                    window.focus();
-                    setExpandedImage({src: e.data.src, alt: e.data.alt ?? ''});
-                } else if (e.data?.type === 'kensa-close-image') {
-                    setExpandedImage(null);
-                }
-            };
-            window.addEventListener('message', handler);
-            return () => window.removeEventListener('message', handler);
-        }, []);
-        const sizeIframe = () => {
-            const doc = iframeRef.current?.contentDocument;
-            if (doc?.body) {
-                iframeRef.current!.style.height = (doc.documentElement.scrollHeight + 16) + 'px';
+    // Inject <base href="..."> so relative URLs in srcdoc HTML (e.g. `<img src="tabs/...">`)
+    // resolve under the active source's URL, not the parent document's root.
+    const absoluteBase = React.useMemo(() => {
+        const trailingSlash = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+        return new URL(trailingSlash, document.baseURI).href;
+    }, [baseUrl]);
+    const contentWithBase = React.useMemo(
+        () => injectBaseHref(content, absoluteBase),
+        [content, absoluteBase]
+    );
+
+    React.useEffect(() => {
+        const handler = (e: MessageEvent) => {
+            // Multiple HtmlTabPanel instances share the window message bus. Only react to
+            // messages from this panel's own iframe, otherwise every previously-expanded
+            // TestCard's panel opens its dialog and Escape has to close them one at a time.
+            if (e.source !== iframeRef.current?.contentWindow) return;
+            if (e.data?.type === 'kensa-expand-image') {
+                iframeRef.current?.blur();
+                window.focus();
+                setExpandedImage({src: e.data.src, alt: e.data.alt ?? ''});
+            } else if (e.data?.type === 'kensa-close-image') {
+                setExpandedImage(null);
             }
         };
-        const onIframeLoad = () => {
-            sizeIframe();
-            const doc = iframeRef.current?.contentDocument;
-            doc?.querySelectorAll('img').forEach(img => {
-                if (!img.complete) img.addEventListener('load', sizeIframe, {once: true});
-            });
-        };
+        window.addEventListener('message', handler);
+        return () => window.removeEventListener('message', handler);
+    }, []);
 
-        return (
-            <>
-                <iframe
-                    ref={iframeRef}
-                    srcDoc={content}
-                    sandbox="allow-scripts allow-same-origin"
-                    className="w-full border-0"
-                    style={{minHeight: 200}}
-                    title="tab content"
-                    onLoad={onIframeLoad}
-                />
-                <Dialog open={!!expandedImage} onOpenChange={(open) => { if (!open) setExpandedImage(null); }}>
-                    <DialogContent
-                        className="fixed flex items-center justify-center gap-0 p-4 overflow-hidden outline-none [&>button]:hidden border-none bg-black/90 max-w-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl"
-                        onClick={() => setExpandedImage(null)}
-                    >
-                        {expandedImage && (
-                            <img
-                                src={expandedImage.src}
-                                alt={expandedImage.alt}
-                                className="max-w-full max-h-full object-contain"
-                            />
-                        )}
-                    </DialogContent>
-                </Dialog>
-            </>
-        );
-    }
+    const sizeIframe = () => {
+        const doc = iframeRef.current?.contentDocument;
+        if (doc?.body) {
+            iframeRef.current!.style.height = (doc.documentElement.scrollHeight + 16) + 'px';
+        }
+    };
+    const onIframeLoad = () => {
+        sizeIframe();
+        const doc = iframeRef.current?.contentDocument;
+        doc?.querySelectorAll('img').forEach(img => {
+            if (!img.complete) img.addEventListener('load', sizeIframe, {once: true});
+        });
+    };
+
+    return (
+        <>
+            <iframe
+                ref={iframeRef}
+                srcDoc={contentWithBase}
+                sandbox="allow-scripts allow-same-origin"
+                className="w-full border-0"
+                style={{minHeight: 200}}
+                title="tab content"
+                onLoad={onIframeLoad}
+            />
+            <Dialog open={!!expandedImage} onOpenChange={(open) => { if (!open) setExpandedImage(null); }}>
+                <DialogContent
+                    className="fixed flex items-center justify-center gap-0 p-4 overflow-hidden outline-none [&>button]:hidden border-none bg-black/90 max-w-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl"
+                    onClick={() => setExpandedImage(null)}
+                >
+                    {expandedImage && (
+                        <img
+                            src={expandedImage.src}
+                            alt={expandedImage.alt}
+                            className="max-w-full max-h-full object-contain"
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+};
+
+const TextTabPanel: React.FC<{content: string; testState?: TestState; maxHeight: number}> = ({content, testState, maxHeight}) => {
     const isPassed = testState === "Passed";
 
     const [isMaximized, setIsMaximized] = React.useState(false);
@@ -301,4 +316,16 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
             </Dialog>
         </>
     );
+};
+
+export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
+                                                                  content,
+                                                                  mediaType = 'text/plain',
+                                                                  testState,
+                                                                  maxHeight = 700,
+                                                              }) => {
+    if (mediaType === 'text/html') {
+        return <HtmlTabPanel content={content}/>;
+    }
+    return <TextTabPanel content={content} testState={testState} maxHeight={maxHeight}/>;
 };

@@ -27,14 +27,16 @@ class ResultWriter(private val configuration: Configuration) {
     fun write(containers: List<TestContainer>) {
         writeIndices(containers.sortedBy { it.testClass.name })
         writeConfiguration()
-        writeHtml()
-        IoUtil.copyResource("/kensa.js", configuration.outputDir)
-        IoUtil.copyResource("/logo.svg", configuration.outputDir)
+        if (!configuration.dataOnly) {
+            writeHtml()
+            IoUtil.copyResource("/kensa.js", configuration.outputDir)
+            IoUtil.copyResource("/logo.svg", configuration.outputDir)
+        }
 
         println(
             """
                 Kensa Output :
-                ${configuration.outputDir.resolve("index.html")}
+                ${configuration.outputDir.resolve(if (configuration.dataOnly) "indices.json" else "index.html")}
             """.trimIndent()
         )
     }

@@ -45,12 +45,15 @@ class ScreenshotsTabRenderer : KensaTabRenderer {
 
     private fun buildStackedHtml(items: List<Pair<String, String>>): String {
         val sections = items.joinToString("\n") { (label, src) ->
+            val ariaLabel = if (label.isNotBlank()) "Expand screenshot: ${escapeHtml(label)}" else "Expand screenshot"
             val caption = if (label.isNotBlank()) {
                 """    <figcaption>${escapeHtml(label)}</figcaption>"""
             } else ""
             """  <figure class="shot">
+    <button type="button" class="thumb" onclick="expand(this.querySelector('img'))" aria-label="$ariaLabel">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(label)}" loading="lazy" />
+    </button>
 $caption
-    <img src="${escapeHtml(src)}" alt="${escapeHtml(label)}" onclick="expand(this)" />
   </figure>""".trimEnd()
         }
         return """<!DOCTYPE html>
@@ -59,16 +62,91 @@ $caption
 <meta charset="UTF-8"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: sans-serif; background: #f5f5f5; padding: 16px; }
-  .shot { margin: 0 auto 24px; max-width: 720px; }
-  .shot:last-child { margin-bottom: 0; }
-  figcaption { font-size: 0.85em; color: #555; margin-bottom: 6px; }
-  .shot img { display: block; max-width: 100%; max-height: 420px; height: auto; border: 1px solid #ddd; background: #fff; cursor: zoom-in; }
+  :root {
+    --bg: #fafafa;
+    --fg: #333;
+    --muted: #666;
+    --card: #fff;
+    --border: #e5e5e5;
+    --accent: #2f8a64;
+    --accent-soft: #b6d8c5;
+  }
+  :root.kensa-dark {
+    --bg: #0f0f0f;
+    --fg: #d4d4d4;
+    --muted: #888;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    padding: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px 18px;
+  }
+  .shot { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .thumb {
+    appearance: none;
+    border: 1px solid var(--border);
+    padding: 0;
+    background: var(--card);
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    cursor: zoom-in;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+  .thumb:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-soft);
+    box-shadow: 0 6px 20px -10px rgba(0, 0, 0, 0.18);
+  }
+  .thumb:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  figcaption {
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
 </style>
 </head>
 <body>
+<div class="grid">
 $sections
+</div>
 <script>
+  function applyParentTheme() {
+    try {
+      var isDark = window.parent.document.documentElement.classList.contains('dark');
+      document.documentElement.classList.toggle('kensa-dark', isDark);
+    } catch (_) { /* parent inaccessible — leave as light */ }
+  }
+  applyParentTheme();
+  try {
+    new MutationObserver(applyParentTheme).observe(
+      window.parent.document.documentElement,
+      { attributes: true, attributeFilter: ['class'] }
+    );
+  } catch (_) {}
+
   function expand(img) {
     if (document.activeElement) document.activeElement.blur();
     window.parent.postMessage({type: 'kensa-expand-image', src: img.src, alt: img.alt}, '*');

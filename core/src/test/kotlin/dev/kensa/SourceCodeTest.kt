@@ -11,8 +11,8 @@ import org.antlr.v4.runtime.misc.Interval
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.FileOutputStream
-import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
@@ -66,9 +66,9 @@ internal class SourceCodeTest {
         // Gradle files-2.1 layout:
         //   <group>/<artifact>/<version>/<hashA>/artifact.jar
         //   <group>/<artifact>/<version>/<hashB>/artifact-sources.jar
-        val versionDir = tempDir.resolve("com.example/foo/1.0").also { Files.createDirectories(it) }
-        val binaryJarDir = versionDir.resolve("abc123").also { Files.createDirectories(it) }
-        val sourcesJarDir = versionDir.resolve("def456").also { Files.createDirectories(it) }
+        val versionDir = tempDir.resolve("com.example/foo/1.0").also { it.createDirectories() }
+        val binaryJarDir = versionDir.resolve("abc123").also { it.createDirectories() }
+        val sourcesJarDir = versionDir.resolve("def456").also { it.createDirectories() }
 
         val binaryJar = binaryJarDir.resolve("foo-1.0.jar")
         createJarWithClass(binaryJar)
@@ -88,7 +88,7 @@ internal class SourceCodeTest {
         // Maven .m2 layout:
         //   <group-path>/<artifact>/<version>/artifact-version.jar
         //   <group-path>/<artifact>/<version>/artifact-version-sources.jar  ← same folder
-        val versionDir = tempDir.resolve("com/example/foo/1.0").also { Files.createDirectories(it) }
+        val versionDir = tempDir.resolve("com/example/foo/1.0").also { it.createDirectories() }
 
         val binaryJar = versionDir.resolve("foo-1.0.jar")
         createJarWithClass(binaryJar)
@@ -142,7 +142,7 @@ internal class SourceCodeTest {
         // Simulates a fat sources jar: classified binary (e.g. -test-support) with a single base -sources.jar
         //   <group-path>/<artifact>/<version>/artifact-version-<classifier>.jar
         //   <group-path>/<artifact>/<version>/artifact-version-sources.jar   ← base name
-        val versionDir = tempDir.resolve("com/example/foo/1.0").also { Files.createDirectories(it) }
+        val versionDir = tempDir.resolve("com/example/foo/1.0").also { it.createDirectories() }
 
         val binaryJar = versionDir.resolve("foo-1.0-test-support.jar")
         createJarWithClass(binaryJar)
@@ -159,7 +159,7 @@ internal class SourceCodeTest {
 
     @Test
     fun `prefers classifier-specific sources jar when one exists alongside base sources jar`() {
-        val versionDir = tempDir.resolve("com/example/foo/1.0").also { Files.createDirectories(it) }
+        val versionDir = tempDir.resolve("com/example/foo/1.0").also { it.createDirectories() }
 
         val binaryJar = versionDir.resolve("foo-1.0-test-support.jar")
         createJarWithClass(binaryJar)
@@ -174,9 +174,9 @@ internal class SourceCodeTest {
 
     @Test
     fun `can locate source for classified Gradle cached JAR using base sources jar in sibling hash dir`() {
-        val versionDir = tempDir.resolve("com.example/foo/1.0").also { Files.createDirectories(it) }
-        val binaryJarDir = versionDir.resolve("abc123").also { Files.createDirectories(it) }
-        val sourcesJarDir = versionDir.resolve("def456").also { Files.createDirectories(it) }
+        val versionDir = tempDir.resolve("com.example/foo/1.0").also { it.createDirectories() }
+        val binaryJarDir = versionDir.resolve("abc123").also { it.createDirectories() }
+        val sourcesJarDir = versionDir.resolve("def456").also { it.createDirectories() }
 
         val binaryJar = binaryJarDir.resolve("foo-1.0-test-support.jar")
         createJarWithClass(binaryJar)
@@ -192,8 +192,8 @@ internal class SourceCodeTest {
 
     @Test
     fun `returns null stream when no sources jar exists in Gradle cache`() {
-        val versionDir = tempDir.resolve("com.example/foo/1.0").also { Files.createDirectories(it) }
-        val binaryJarDir = versionDir.resolve("abc123").also { Files.createDirectories(it) }
+        val versionDir = tempDir.resolve("com.example/foo/1.0").also { it.createDirectories() }
+        val binaryJarDir = versionDir.resolve("abc123").also { it.createDirectories() }
 
         val binaryJar = binaryJarDir.resolve("foo-1.0.jar")
         createJarWithClass(binaryJar)

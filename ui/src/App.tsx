@@ -4,8 +4,10 @@ import {AppSidebar} from './components/AppSidebar';
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {cn, isNative, loadJson, useNavigateWithSearch} from "@/lib/utils";
+import {loadManifestOrFallback} from "@/lib/manifestLoader";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
+import {SourceContext} from "@/contexts/SourceContext";
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
 import {TestDetail} from "@/types/Test";
@@ -17,6 +19,14 @@ import {TestContainer} from './components/TestContainer';
 import {NotesCard} from './components/NotesCard';
 import {TooltipProvider} from "@/components/ui/tooltip";
 import {hasOpenDialog, shouldClearSearchOnEscape} from "@/util/escapeGuard";
+
+const tagWithSourceId = (nodes: Indices, sourceId: string): Indices =>
+    nodes.map(n => ({
+        ...n,
+        id: n.testClass ? `${sourceId}::${n.id}` : n.id,
+        sourceId,
+        children: n.children ? tagWithSourceId(n.children, sourceId) : undefined,
+    }));
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -34,6 +44,8 @@ const App = () => {
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [commandQuery, setCommandQuery] = useState("");
+    const [sourceConfigs, setSourceConfigs] = useState<Record<string, KensaConfig>>({});
+    const [sourceUrls, setSourceUrls] = useState<Record<string, string>>({});
     const searchInputRef = useRef<HTMLInputElement>(null);
     const pendingTestToExpandRef = useRef<{testId: string, method: string} | null>(null);
     const searchQueryRef = useRef(searchQuery);
@@ -88,7 +100,7 @@ const App = () => {
         const match = location.pathname.match(/^\/test\/(.+)$/);
         if (match && indices.length > 0) {
             const id = match[1];
-            if (id === 'root-project') {
+            if (id.startsWith('src:')) {
                 setSelectedIndex(null);
                 setTestDetail(null);
                 return;
@@ -99,7 +111,8 @@ const App = () => {
                     id: node.id,
                     displayName: node.displayName,
                     testClass: node.testClass,
-                    state: node.state
+                    state: node.state,
+                    sourceId: node.sourceId,
                 });
                 const method = searchParams.get('method');
                 if (method) {
@@ -177,29 +190,50 @@ const App = () => {
 
     useEffect(() => {
         const loadInitialData = async () => {
-            const configData = await loadJson<KensaConfig>('./configuration.json', 'Configuration');
-            if (!configData) return;
-            setConfig(configData);
+            const manifest = await loadManifestOrFallback();
 
-            const indicesData = await loadJson<{ indices: Indices }>(
-                './indices.json',
-                'Indices tree'
-            );
-            if (!indicesData) return;
+            const perSource = await Promise.all(manifest.sources.map(async (source) => {
+                const config = await loadJson<KensaConfig>(
+                    'configuration.json',
+                    `Configuration (${source.id})`,
+                    {baseUrl: source.url}
+                );
+                const indicesData = await loadJson<{ indices: Indices }>(
+                    'indices.json',
+                    `Indices tree (${source.id})`,
+                    {baseUrl: source.url}
+                );
+                return {source, config, indicesData};
+            }));
 
-            const loadedIndices = indicesData.indices || [];
-
-            if (loadedIndices.length > 0) {
-                const rootNode: Index = {
-                    id: 'root-project',
+            const sourceConfigsMap: Record<string, KensaConfig> = {};
+            const roots: Indices = [];
+            for (const {source, config, indicesData} of perSource) {
+                if (config) sourceConfigsMap[source.id] = config;
+                const sourceIndices = indicesData?.indices ?? [];
+                if (sourceIndices.length === 0) continue;
+                const tagged = tagWithSourceId(sourceIndices, source.id);
+                roots.push({
+                    id: `src:${source.id}`,
                     type: 'project',
-                    displayName: configData.titleText || "Kensa Tests",
+                    displayName: config?.titleText || source.title || source.id,
                     testClass: '',
-                    state: loadedIndices.some(i => i.state === 'Failed') ? 'Failed' : 'Passed',
-                    children: loadedIndices
-                };
-                setIndices([rootNode]);
+                    state: tagged.some(i => i.state === 'Failed') ? 'Failed' : 'Passed',
+                    children: tagged,
+                    sourceId: source.id,
+                });
             }
+
+            const urls: Record<string, string> = {};
+            for (const source of manifest.sources) urls[source.id] = source.url;
+
+            setSourceConfigs(sourceConfigsMap);
+            setSourceUrls(urls);
+            setIndices(roots);
+            // First source's config flows through ConfigContext until the user selects a test;
+            // selection updates it via the selectedIndex effect below.
+            const first = manifest.sources[0];
+            if (first && sourceConfigsMap[first.id]) setConfig(sourceConfigsMap[first.id]);
         };
 
         void loadInitialData();
@@ -212,9 +246,14 @@ const App = () => {
             setIsLoading(true);
             setTestDetail(null);
 
+            const sourceId = selectedIndex.sourceId;
+            const baseUrl = sourceId ? (sourceUrls[sourceId] ?? '.') : '.';
+            const localId = sourceId ? selectedIndex.id.replace(`${sourceId}::`, '') : selectedIndex.id;
+
             const data = await loadJson<TestDetail>(
-                `results/${selectedIndex.id}.json`,
-                `Test results (${selectedIndex.displayName})`
+                `results/${localId}.json`,
+                `Test results (${selectedIndex.displayName})`,
+                {baseUrl}
             );
 
             if (data) {
@@ -230,7 +269,13 @@ const App = () => {
         };
 
         void loadTestDetail();
-    }, [selectedIndex]);
+    }, [selectedIndex, sourceUrls]);
+
+    useEffect(() => {
+        if (!selectedIndex?.sourceId) return;
+        const cfg = sourceConfigs[selectedIndex.sourceId];
+        if (cfg) setConfig(cfg);
+    }, [selectedIndex, sourceConfigs]);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -300,8 +345,19 @@ const App = () => {
         );
     }, [allTests, commandQuery]);
 
+    const activeSourceBaseUrl = selectedIndex?.sourceId ? (sourceUrls[selectedIndex.sourceId] ?? '.') : '.';
+
+    const sourceMetaById = useMemo(() => {
+        const out: Record<string, { generatedAt?: string }> = {};
+        for (const [id, cfg] of Object.entries(sourceConfigs)) {
+            if (cfg.generatedAt) out[id] = {generatedAt: cfg.generatedAt};
+        }
+        return out;
+    }, [sourceConfigs]);
+
     return (
         <ConfigContext.Provider value={config}>
+            <SourceContext.Provider value={{baseUrl: activeSourceBaseUrl}}>
             <TooltipProvider>
             <SidebarProvider>
                 <CommandDialog open={open} onOpenChange={setOpen}>
@@ -371,12 +427,13 @@ const App = () => {
                         >
                             <AppSidebar
                                 indices={indices}
+                                sourceMetaById={sourceMetaById}
                                 searchQuery={searchQuery}
                                 onSearchChange={onSearchChange}
                                 environment={environment}
                                 onEnvChange={setEnvironment}
                                 onSelect={(node, firstMatchingMethod, allMatchingMethods) => {
-                                    if (node.id.startsWith('pkg:') || node.id === 'root-project') {
+                                    if (node.id.startsWith('pkg:') || node.id.startsWith('src:')) {
                                         return;
                                     }
 
@@ -528,6 +585,7 @@ const App = () => {
                 </div>
             </SidebarProvider>
             </TooltipProvider>
+            </SourceContext.Provider>
         </ConfigContext.Provider>
     );
 };

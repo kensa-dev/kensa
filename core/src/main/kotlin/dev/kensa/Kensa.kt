@@ -24,6 +24,9 @@ import kotlin.reflect.KClass
 private const val KENSA_OUTPUT_ROOT = "kensa.output.root"
 private const val KENSA_DISABLE_OUTPUT = "kensa.disable.output"
 private const val KENSA_OUTPUT_DIR = "kensa-output"
+private const val KENSA_SOURCE_ID = "kensa.source.id"
+private const val KENSA_SOURCE_TITLE = "kensa.source.title"
+private const val KENSA_SOURCES_SUBDIR = "sources"
 
 fun interface KensaConfigurationProvider {
     operator fun invoke(): Configuration
@@ -49,6 +52,7 @@ class KensaConfigurator(private val configuration: Configuration) {
 
     fun withOutputDir(dir: String): KensaConfigurator = withOutputDir(Paths.get(dir))
     fun withOutputDir(dir: Path): KensaConfigurator = apply {
+        if (configuration.dataOnly) return@apply
         require(dir.isAbsolute) { "OutputDir must be absolute." }
         configuration.outputDir = if (dir.endsWith(KENSA_OUTPUT_DIR)) dir else dir.resolve(KENSA_OUTPUT_DIR)
     }
@@ -128,7 +132,16 @@ class Configuration {
         extras.computeIfAbsent(type) { factory() } as T
 
     val renderers: Renderers = Renderers()
-    var outputDir: Path = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")), KENSA_OUTPUT_DIR)
+    var dataOnly: Boolean = !System.getProperty(KENSA_SOURCE_ID).isNullOrBlank()
+    var outputDir: Path = run {
+        val root = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")))
+        val sourceId = System.getProperty(KENSA_SOURCE_ID)
+        if (!sourceId.isNullOrBlank()) {
+            root.resolve(KENSA_SOURCES_SUBDIR).resolve(sourceId)
+        } else {
+            root.resolve(KENSA_OUTPUT_DIR)
+        }
+    }
     var flattenOutputPackages: Boolean = false
     var isOutputEnabled: Boolean = if (System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
         System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
@@ -143,7 +156,7 @@ class Configuration {
     var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
     var packageDisplayRoot: String? = null
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
-    var titleText: String = "Index"
+    var titleText: String = System.getProperty(KENSA_SOURCE_TITLE, "Index")
 
     private var _sectionOrder: List<Section> = listOf(Tabs, Sentences, Exception)
     var sectionOrder: List<Section>

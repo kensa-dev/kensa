@@ -6,6 +6,7 @@ import {Tab} from "@/constants";
 import {Interaction, Invocation, TestState} from "@/types/Test";
 import {SequenceDiagram} from "@/components/SequenceDiagram";
 import {loadText} from "@/lib/utils";
+import {useSource} from "@/contexts/SourceContext";
 import {CustomTabPanel} from "@/components/CustomTabPanel";
 import {DataTable} from "@/components/DataTable";
 import {FixturesTable} from "@/components/FixturesTable";
@@ -20,6 +21,7 @@ interface TabProps {
 }
 
 export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
+    const {baseUrl} = useSource();
     const isPassed = testState === 'Passed';
 
     const builtinTabs = [
@@ -111,7 +113,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
             [activeCustomFile]: {status: 'loading'}
         }));
 
-        loadText(activeCustomFile, `custom tab "${activeCustomLabel}"`, { signal: controller.signal })
+        loadText(activeCustomFile, `custom tab "${activeCustomLabel}"`, { signal: controller.signal, baseUrl })
             .then((content) => {
                 if (controller.signal.aborted) return;
 
@@ -143,7 +145,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
             controller.abort();
             inFlightRef.current.delete(activeCustomFile);
         };
-    }, [activeCustomFile, activeCustomLabel]);
+    }, [activeCustomFile, activeCustomLabel, baseUrl]);
 
     if (tabs.length === 0) return null;
 
