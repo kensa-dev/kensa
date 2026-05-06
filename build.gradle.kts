@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "dev.kensa"
-version = project.properties["releaseVersion"] ?: "SNAPSHOT"
+version = project.properties["releaseVersion"] ?: "${file("snapshot-version.txt").readText().trim()}-SNAPSHOT"
 
 subprojects {
     group = "dev.kensa"
