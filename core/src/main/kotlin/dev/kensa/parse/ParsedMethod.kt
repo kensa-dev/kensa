@@ -13,8 +13,14 @@ data class ParsedMethod(
     val parseErrors: List<ParseError> = emptyList()
 )
 
-data class ParsedExpandableMethod(
+class ParsedExpandableMethod(
     val name: String,
     val parameters: MethodParameters,
-    val sentences: List<TemplateSentence>
-)
+    sentencesProvider: () -> List<TemplateSentence>
+) {
+    private val lazySentences = lazy(LazyThreadSafetyMode.SYNCHRONIZED, sentencesProvider)
+    val sentences: List<TemplateSentence> get() = lazySentences.value
+
+    constructor(name: String, parameters: MethodParameters, sentences: List<TemplateSentence>) :
+        this(name, parameters, { sentences })
+}

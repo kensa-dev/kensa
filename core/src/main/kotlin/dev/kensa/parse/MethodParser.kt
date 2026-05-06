@@ -122,14 +122,15 @@ class MethodParser(
                     }
                     ParsedExpandableMethod(
                         dc.name,
-                        parameters,
+                        parameters
+                    ) {
                         ParserStateMachine(sentenceBuilder()).run {
                             with(parserDelegate) {
                                 parse(this@run, parseContext.copy(parameters.descriptors), dc)
                             }
                             sentences
                         }
-                    )
+                    }
                 }
                 .associateBy({ it.name }, { it })
         }

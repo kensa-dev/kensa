@@ -1,5 +1,13 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.1
+
+Changed:
+  - `@ExpandableSentence` bodies are now parsed lazily — the parser runs only on first access, so unused expandable methods incur no parse cost.
+
+Fixes:
+  - Remove `-Xexplicit-backing-fields` again (re-introduced unintentionally in 0.8.0). Downstream Kotlin projects no longer need `-Xskip-prerelease-check` to consume kensa-core.
+
 ### v0.8.0
 New features:
   - **Kotest Field Assertion DSL** — three new modules (`kensa-kotest-test-support`, `-xml`, `-json`) providing a `MatcherField<T, R>` interface and composable, named-field matchers for JSON and XML payloads. Extension functions `of` / `matching` / `withListOf` / `withSetOf` / `toMatcher` produce standard `Matcher<T?>` values that compose with `then(collector, matcher)`. Failure messages are auto-prefixed with the field's description. [Docs](https://kensa.dev/docs/field-assertion-dsl).
