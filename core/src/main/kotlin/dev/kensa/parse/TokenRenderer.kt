@@ -13,6 +13,7 @@ import dev.kensa.sentence.RenderedToken.RenderedExpandableToken
 import dev.kensa.sentence.RenderedToken.RenderedValueToken
 import dev.kensa.sentence.TemplateToken
 import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
+import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
 import dev.kensa.sentence.TemplateToken.TabularTemplateToken
 import dev.kensa.sentence.TemplateToken.Type
 import dev.kensa.sentence.TemplateToken.Type.*
@@ -40,6 +41,7 @@ class TokenRenderer(
                 token.hasType(FixturesValue) -> token.asFixtureValue()
                 token.hasType(OutputsValueByName) -> token.asOutputValueByName()
                 token.hasType(OutputsValueByKey) -> token.asOutputValueByKey()
+                token is ExpandableValueTemplateToken -> token.asExpandableValue()
                 token is ExpandableTemplateToken -> token.asExpandable()
                 token is TabularTemplateToken -> token.asTabular()
 
@@ -102,6 +104,31 @@ class TokenRenderer(
                 else -> expandableTokens.map { tokens -> render(tokens) }
             }
         )
+
+    private fun ExpandableValueTemplateToken.asExpandableValue(): RenderedToken {
+        val invocation = renderedValueInvocationContext().nextInvocationFor(name)
+
+        val expandableTokens: List<List<RenderedToken>> = if (invocation is RealRenderedValueInvocation) {
+            when (val returnValue = invocation.returnValue) {
+                is Iterable<*> -> returnValue.map { item -> singleValueRow(item) }
+                is Array<*> -> returnValue.map { item -> singleValueRow(item) }
+                else -> listOf(singleValueRow(returnValue))
+            }
+        } else {
+            emptyList()
+        }
+
+        return RenderedExpandableToken(
+            template,
+            types.map { it.asCss() }.toSortedSet(),
+            name = name,
+            parameterTokens = render(parameterTokens),
+            expandableTokens = expandableTokens
+        )
+    }
+
+    private fun singleValueRow(value: Any?): List<RenderedToken> =
+        listOf(RenderedValueToken(renderers.renderValue(value), setOf(Word.asCss())))
 
     private fun TabularTemplateToken.asTabular(): RenderedToken {
         val returnValue = when (val invocation = renderedValueInvocationContext().nextInvocationFor(name)) {

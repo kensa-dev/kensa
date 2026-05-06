@@ -65,6 +65,14 @@ sealed interface TemplateToken {
         var parameterTokens: List<TemplateToken> = emptyList()
     }
 
+    data class ExpandableValueTemplateToken(
+        override val template: String,
+        override val types: Set<Type>,
+        val name: String,
+    ) : TemplateToken {
+        var parameterTokens: List<TemplateToken> = emptyList()
+    }
+
     data class ErrorTemplateToken(val message: String) : TemplateToken {
         override val template: String = message
         override val types: Set<Type> = emptySet()

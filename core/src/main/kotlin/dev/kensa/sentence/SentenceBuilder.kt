@@ -42,7 +42,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     }
 
     fun beginExpandableValue(location: Location, name: String, style: RenderedValueStyle, headers: List<String>) {
-        val token = if (style == Tabular) {
+        val token: TemplateToken = if (style == Tabular) {
             TabularTemplateToken(
                 template = name,
                 types = setOf(Expandable, Table),
@@ -51,11 +51,10 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
                 headers = headers
             )
         } else {
-            ExpandableTemplateToken(
+            ExpandableValueTemplateToken(
                 template = name,
-                types = setOf(Expandable, MethodValue),
-                name = name,
-                expandableTokens = emptyList()
+                types = setOf(Expandable),
+                name = name
             )
         }
 
@@ -114,6 +113,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         when (currentTemplate) {
             is ExpandableTemplateToken -> currentTemplate.parameterTokens = parameterTokens
             is TabularTemplateToken -> currentTemplate.parameterTokens = parameterTokens
+            is ExpandableValueTemplateToken -> currentTemplate.parameterTokens = parameterTokens
             else -> {}
         }
         currentExpandableTemplateToken = null

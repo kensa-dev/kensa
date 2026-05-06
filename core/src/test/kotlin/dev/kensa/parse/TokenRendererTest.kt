@@ -5,6 +5,8 @@ import dev.kensa.Highlight
 import dev.kensa.RenderedHintStrategy.HintFromProperty
 import dev.kensa.RenderedValueStrategy.UseIdentifierName
 import dev.kensa.RenderingDirective
+import dev.kensa.context.RenderedValueInvocationContext
+import dev.kensa.context.RenderedValueInvocationContextHolder
 import dev.kensa.example.TheTestClass
 import dev.kensa.example.Wrapper
 import dev.kensa.fixture.FixtureContainer
@@ -14,12 +16,18 @@ import dev.kensa.fixture.fixture
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.render.Renderers
 import dev.kensa.render.ValueRenderer
+import dev.kensa.sentence.RenderedToken
+import dev.kensa.sentence.TemplateToken
+import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.aRenderedValueOf
 import dev.kensa.sentence.asTemplateToken
 import dev.kensa.util.NamedValue
 import dev.kensa.util.findMethod
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -273,6 +281,102 @@ class TokenRendererTest {
             val renderedTokens = renderer.render(templates)
 
             renderedTokens shouldContainExactly expected
+        }
+    }
+
+    @Nested
+    inner class ExpandableRenderedValueDefault {
+
+        @AfterEach
+        fun tearDown() {
+            RenderedValueInvocationContextHolder.clearFromThread()
+        }
+
+        @Test
+        fun `renders captured scalar return value through registered renderer`() {
+            bindContextWithCapturedValue("method3", "Hello")
+
+            val token = renderSingle(ExpandableValueTemplateToken("method3", setOf(Expandable), "method3"))
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
+            token.value shouldBe "method3"
+            token.cssClasses shouldBe sortedSetOf("tk-ex")
+            token.expandableTokens shouldContainExactly listOf(
+                listOf(RenderedToken.RenderedValueToken("***Hello***", setOf("tk-wd")))
+            )
+        }
+
+        @Test
+        fun `renders each item of an iterable value through its registered renderer`() {
+            bindContextWithCapturedValue("method3", listOf("a", "b", "c"))
+
+            val token = renderSingle(ExpandableValueTemplateToken("method3", setOf(Expandable), "method3"))
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
+            token.expandableTokens shouldContainExactly listOf(
+                listOf(RenderedToken.RenderedValueToken("***a***", setOf("tk-wd"))),
+                listOf(RenderedToken.RenderedValueToken("***b***", setOf("tk-wd"))),
+                listOf(RenderedToken.RenderedValueToken("***c***", setOf("tk-wd"))),
+            )
+        }
+
+        @Test
+        fun `renders each item of an array value through its registered renderer`() {
+            bindContextWithCapturedValue("method3", arrayOf("x", "y"))
+
+            val token = renderSingle(ExpandableValueTemplateToken("method3", setOf(Expandable), "method3"))
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
+            token.expandableTokens shouldContainExactly listOf(
+                listOf(RenderedToken.RenderedValueToken("***x***", setOf("tk-wd"))),
+                listOf(RenderedToken.RenderedValueToken("***y***", setOf("tk-wd"))),
+            )
+        }
+
+        @Test
+        fun `falls back to toString when no renderer is registered`() {
+            bindContextWithCapturedValue("method3", true)
+
+            val token = renderSingle(ExpandableValueTemplateToken("method3", setOf(Expandable), "method3"))
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
+            token.expandableTokens shouldContainExactly listOf(
+                listOf(RenderedToken.RenderedValueToken("true", setOf("tk-wd")))
+            )
+        }
+
+        @Test
+        fun `renders a captured null return value as NULL`() {
+            bindContextWithCapturedValue("method3", null)
+
+            val token = renderSingle(ExpandableValueTemplateToken("method3", setOf(Expandable), "method3"))
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
+            token.expandableTokens shouldContainExactly listOf(
+                listOf(RenderedToken.RenderedValueToken("NULL", setOf("tk-wd")))
+            )
+        }
+
+        @Test
+        fun `produces no expandable tokens when no invocation was captured`() {
+            RenderedValueInvocationContextHolder.bindToCurrentThread(RenderedValueInvocationContext())
+
+            val token = renderSingle(ExpandableValueTemplateToken("method3", setOf(Expandable), "method3"))
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
+            token.expandableTokens shouldBe emptyList()
+        }
+
+        private fun renderSingle(token: TemplateToken): RenderedToken {
+            val rendered = renderer.render(listOf(token))
+            rendered.size shouldBe 1
+            return rendered.single()
+        }
+
+        private fun bindContextWithCapturedValue(methodName: String, value: Any?) {
+            val context = RenderedValueInvocationContext()
+            context.recordInvocation(TheTestClass::class.java.findMethod(methodName), value)
+            RenderedValueInvocationContextHolder.bindToCurrentThread(context)
         }
     }
 
