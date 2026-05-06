@@ -54,41 +54,130 @@ private final Money paymentAmount = new Money(100, "GBP");
 
 ### `@ExpandableRenderedValue`
 
-Like `@RenderedValue`, but renders in an expandable section. Useful for complex objects.
+Renders **only the return value** of the annotated method or property — the body is hidden. Use it when many fields need verification but they are not individually meaningful as named matchers; the data itself is the unit of meaning. The method may also perform comparison work; only the return value reaches the report.
+
+When a field *is* domain-important on its own, prefer a named matcher (see [Writing Fluent Tests](../writing-fluent-tests)).
 
 **Parameters:**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `renderAs` | `RenderedValueStyle` | `Default` | `Default` (toString-style) or `Tabular` (table layout) |
+| `renderAs` | `RenderedValueStyle` | `Default` | `Default` (value renderer / flat list) or `Tabular` (table layout) |
 | `headers` | `Array<String>` | `[]` | Column headers when `renderAs = Tabular` |
 
 **Targets:** `FIELD`, `VALUE_PARAMETER`, `FUNCTION`, `PROPERTY_GETTER`
+
+---
+
+#### Default style
+
+Renders the return value via its registered value renderer. If the value is iterable, the renderer is invoked on each item and items appear as a flat list in the report. Use this when the items are meaningful values on their own — enum states, identifiers, or labels — and you want each one visible without a table:
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin
-@ExpandableRenderedValue(renderAs = RenderedValueStyle.Tabular, headers = ["Product", "Qty", "Price"])
-private val orderLines = listOf(
-    listOf("Widget", 2, "£9.99"),
-    listOf("Gadget", 1, "£24.99"),
-)
+@ExpandableRenderedValue
+private fun theDispatchedLifecycle(): List<DispatchStatus> {
+    val actual = courier.observedLifecycle()
+    actual shouldContainExactly listOf(ACKNOWLEDGED, COMMITTED, DISPATCHED, DELIVERED)
+    return actual
+}
+
+// In the test:
+then(theShipment(), shouldHaveCompletedDispatch())
+and(theDispatchedLifecycle())
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-@ExpandableRenderedValue(renderAs = RenderedValueStyle.Tabular, headers = {"Product", "Qty", "Price"})
-private final List<List<Object>> orderLines = List.of(
-    List.of("Widget", 2, "£9.99"),
-    List.of("Gadget", 1, "£24.99")
-);
+@ExpandableRenderedValue
+private List<DispatchStatus> theDispatchedLifecycle() {
+    List<DispatchStatus> actual = courier.observedLifecycle();
+    assertThat(actual).containsExactly(ACKNOWLEDGED, COMMITTED, DISPATCHED, DELIVERED);
+    return actual;
+}
+
+// In the test:
+then(theShipment(), shouldHaveCompletedDispatch());
+and(theDispatchedLifecycle());
 ```
 
 </TabItem>
 </Tabs>
+
+The report expands to show each `DispatchStatus` value; the test body shows one call. The helper body is not rendered.
+
+---
+
+#### Tabular style
+
+Renders the return value as a labelled table. The default table-renderer behaviour: an `Iterable<Pair<*, *>>` becomes two-column rows. Provide explicit `headers` to label the columns. For richer table shapes, register a custom `TableRenderer<T>` for your type.
+
+Use this when you need to verify a full set of named fields and want the BA to see field name alongside expected value:
+
+<Tabs groupId="lang">
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+@ExpandableRenderedValue(renderAs = Tabular, headers = ["Field", "Expected"])
+private fun theShipmentFields(): List<Pair<String, String>> {
+    val dispatched = courier.lastDispatchedShipment()
+    return listOf(
+        "PostCode"     to fixtures[PostCodeFx],
+        "CountryCode"  to fixtures[CountryCodeFx],
+        "ServiceLevel" to fixtures[ServiceLevelFx],
+        // all fields
+    ).also { fields ->
+        fields.forEach { (field, expected) ->
+            dispatched.field(field) shouldBe expected
+        }
+    }
+}
+
+// In the test:
+then(courier.hasDispatched(aShipmentWith(theShipmentFields())))
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@ExpandableRenderedValue(renderAs = RenderedValueStyle.Tabular, headers = {"Field", "Expected"})
+private List<Pair<String, String>> theShipmentFields() {
+    ShipmentRecord dispatched = courier.lastDispatchedShipment();
+    List<Pair<String, String>> fields = List.of(
+        Pair.of("PostCode",     fixtures().get(PostCodeFx)),
+        Pair.of("CountryCode",  fixtures().get(CountryCodeFx)),
+        Pair.of("ServiceLevel", fixtures().get(ServiceLevelFx))
+        // all fields
+    );
+    fields.forEach(f -> assertThat(dispatched.field(f.getFirst())).isEqualTo(f.getSecond()));
+    return fields;
+}
+
+// In the test:
+then(courier.hasDispatched(aShipmentWith(theShipmentFields())));
+```
+
+</TabItem>
+</Tabs>
+
+The report shows a two-column table headed "Field / Expected". The test body stays a single line.
+
+---
+
+#### When to use `@ExpandableRenderedValue` vs a named matcher
+
+| Situation | Use |
+|---|---|
+| Field is domain-important on its own | Named matcher — `aPostCode of value` |
+| Many fields; collection is the unit of meaning; items are meaningful values | `@ExpandableRenderedValue` (Default) |
+| Many fields; want a labelled table of field name to expected value | `@ExpandableRenderedValue(renderAs = Tabular)` |
+
+See [Writing Fluent Tests](../writing-fluent-tests) for the full narrative, worked bad/good examples, and the review checklist.
 
 ---
 
