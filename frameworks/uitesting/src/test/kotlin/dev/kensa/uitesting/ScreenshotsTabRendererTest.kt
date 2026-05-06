@@ -8,6 +8,7 @@ import dev.kensa.tabs.KensaTabContext
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.paths.shouldExist
 import io.kotest.matchers.paths.shouldNotExist
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
@@ -23,7 +24,12 @@ class ScreenshotsTabRendererTest {
     }
 
     @Test
-    fun `render writes PNGs to disk and references them by relative URL`(@TempDir outputDir: Path) {
+    fun `mediaType identifies the screenshots vendor json`() {
+        ScreenshotsTabRenderer().mediaType() shouldBe "application/vnd.kensa.screenshots+json"
+    }
+
+    @Test
+    fun `render writes PNGs to disk and returns JSON referencing them by relative URL`(@TempDir outputDir: Path) {
         val driver = FakeBrowserDriver()
         val screenshots = CapturedScreenshots()
         screenshots.capture(driver, "before")
@@ -32,12 +38,11 @@ class ScreenshotsTabRendererTest {
         val attachments = Attachments().apply { put(SCREENSHOTS_KEY, screenshots) }
         val ctx = newCtx(outputDir, attachments = attachments, tabId = "Screenshots")
 
-        val html = ScreenshotsTabRenderer().render(ctx)
-        requireNotNull(html)
+        val json = ScreenshotsTabRenderer().render(ctx)
+        requireNotNull(json)
 
-        html shouldContain """src="tabs/FooTest/aTest/invocation-0/Screenshots-screenshots/0-before.png""""
-        html shouldContain """src="tabs/FooTest/aTest/invocation-0/Screenshots-screenshots/1-after.png""""
-        html shouldNotContain "data:image/png;base64"
+        json shouldBe """[{"label":"before","src":"tabs/FooTest/aTest/invocation-0/Screenshots-screenshots/0-before.png"},{"label":"after","src":"tabs/FooTest/aTest/invocation-0/Screenshots-screenshots/1-after.png"}]"""
+        json shouldNotContain "data:image/png;base64"
 
         val outDir = outputDir
             .resolve("tabs")
@@ -66,6 +71,20 @@ class ScreenshotsTabRendererTest {
             .resolve("_-screenshots")
         expectedDir.resolve("0-shot.png").shouldExist()
         outputDir.resolve("..").normalize().resolve("0-shot.png").shouldNotExist()
+    }
+
+    @Test
+    fun `render escapes JSON-special characters in labels`(@TempDir outputDir: Path) {
+        val driver = FakeBrowserDriver()
+        val label = "q\"b\\n\nctrl"
+        val screenshots = CapturedScreenshots().apply { capture(driver, label) }
+        val attachments = Attachments().apply { put(SCREENSHOTS_KEY, screenshots) }
+        val ctx = newCtx(outputDir, attachments = attachments)
+
+        val json = ScreenshotsTabRenderer().render(ctx)
+        requireNotNull(json)
+
+        json shouldContain """"label":"q\"b\\n\nctrl""""
     }
 
     private fun newCtx(

@@ -94,6 +94,90 @@ const HtmlTabPanel: React.FC<{content: string}> = ({content}) => {
     );
 };
 
+interface ScreenshotItem {
+    label: string;
+    src: string;
+}
+
+const isScreenshotItem = (x: unknown): x is ScreenshotItem =>
+    typeof x === "object" && x !== null
+    && typeof (x as ScreenshotItem).label === "string"
+    && typeof (x as ScreenshotItem).src === "string";
+
+const ScreenshotsTabPanel: React.FC<{content: string}> = ({content}) => {
+    const {baseUrl} = useSource();
+    const [expandedImage, setExpandedImage] = React.useState<{src: string; alt: string} | null>(null);
+
+    const absoluteBase = React.useMemo(() => {
+        const trailingSlash = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+        return new URL(trailingSlash, document.baseURI).href;
+    }, [baseUrl]);
+
+    const items = React.useMemo<ScreenshotItem[] | null>(() => {
+        try {
+            const parsed: unknown = JSON.parse(content);
+            if (!Array.isArray(parsed) || !parsed.every(isScreenshotItem)) return null;
+            return parsed.map(item => ({
+                label: item.label,
+                src: new URL(item.src, absoluteBase).href,
+            }));
+        } catch {
+            return null;
+        }
+    }, [content, absoluteBase]);
+
+    if (items === null) {
+        return (
+            <div className="p-4 text-sm text-muted-foreground">
+                Could not parse screenshots tab content.
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-x-[18px] gap-y-6 p-5">
+                {items.map((item, i) => (
+                    <figure key={i} className="flex flex-col gap-2 min-w-0">
+                        <button
+                            type="button"
+                            onClick={() => setExpandedImage({src: item.src, alt: item.label})}
+                            aria-label={item.label ? `Expand screenshot: ${item.label}` : 'Expand screenshot'}
+                            className="aspect-[4/3] bg-card border border-border rounded-md overflow-hidden cursor-zoom-in transition hover:-translate-y-px hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        >
+                            <img
+                                src={item.src}
+                                alt={item.label}
+                                loading="lazy"
+                                className="w-full h-full object-cover block"
+                            />
+                        </button>
+                        {item.label && (
+                            <figcaption className="text-xs text-muted-foreground line-clamp-2 leading-snug">
+                                {item.label}
+                            </figcaption>
+                        )}
+                    </figure>
+                ))}
+            </div>
+            <Dialog open={!!expandedImage} onOpenChange={(open) => { if (!open) setExpandedImage(null); }}>
+                <DialogContent
+                    className="fixed flex items-center justify-center gap-0 p-4 overflow-hidden outline-none [&>button]:hidden border-none bg-black/90 max-w-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl"
+                    onClick={() => setExpandedImage(null)}
+                >
+                    {expandedImage && (
+                        <img
+                            src={expandedImage.src}
+                            alt={expandedImage.alt}
+                            className="max-w-full max-h-full object-contain"
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+};
+
 const TextTabPanel: React.FC<{content: string; testState?: TestState; maxHeight: number}> = ({content, testState, maxHeight}) => {
     const isPassed = testState === "Passed";
 
@@ -324,6 +408,9 @@ export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
                                                                   testState,
                                                                   maxHeight = 700,
                                                               }) => {
+    if (mediaType === 'application/vnd.kensa.screenshots+json') {
+        return <ScreenshotsTabPanel content={content}/>;
+    }
     if (mediaType === 'text/html') {
         return <HtmlTabPanel content={content}/>;
     }
