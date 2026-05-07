@@ -98,6 +98,12 @@ const config: Config = {
         },
         {
           type: 'doc',
+          docId: 'agent-skills',
+          position: 'left',
+          label: 'AI Skills',
+        },
+        {
+          type: 'doc',
           docId: 'roadmap',
           position: 'left',
           label: 'Roadmap',
@@ -124,6 +130,7 @@ const config: Config = {
             { label: 'Quickstart', to: '/docs/quickstart/kotlin-quickstart' },
             { label: 'Documentation', to: '/docs/intro' },
             { label: 'API Reference', to: '/docs/api/overview' },
+            { label: 'AI Agent Skills', to: '/docs/agent-skills' },
           ],
         },
         {

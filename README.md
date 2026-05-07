@@ -78,23 +78,18 @@ Install the [Kensa plugin](https://plugins.jetbrains.com/plugin/31099) from the 
 - Links in the test console output
 - Test toolbar actions
 
-### Claude Code skill — AI-assisted test review
+### AI Agent Skills — teach your AI assistant Kensa
 
-Every release also ships `kensa-test.skill`, a [Claude Code](https://claude.ai/code) skill that reviews Kensa tests for idiomatic style, fluency violations, and best-practice patterns.
+The [`kensa-dev/agent-skills`](https://github.com/kensa-dev/agent-skills) repository ships a skill that teaches AI coding agents to write and review idiomatic Kensa tests. Works with [Claude Code](https://claude.ai/code), [OpenCode](https://opencode.ai), and any agent that supports `SKILL.md`.
 
-Install it once:
-
-```bash
-claude plugin install kensa-test.skill
-```
-
-Then invoke it in any Claude Code session:
+For Claude Code:
 
 ```
-/kensa-test review this test
+/plugin marketplace add kensa-dev/agent-skills
+/plugin install kensa
 ```
 
-The skill checks for fluent English in rendered test bodies, correct use of Fixtures and CapturedOutputs, semantic assertion naming, composable setup toolboxes, and the typed context/mixin pattern for multi-stub tests.
+See the [AI Agent Skills docs](https://kensa.dev/docs/agent-skills) for OpenCode, JetBrains AI Assistant, GitHub Copilot, and Cursor instructions.
 
 ## Community
 
