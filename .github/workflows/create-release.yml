@@ -32,7 +32,7 @@ jobs:
           GOOS=windows GOARCH=arm64 go build -o build/bin/kensa-windows-arm64.exe cmd/kensa/main.go
           cd ..
           echo "${GIT_TAG_NAME}" > cli/build/bin/version.txt
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ github.event.client_payload.version }}
