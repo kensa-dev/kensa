@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kensa.dev/sitemap.xml
