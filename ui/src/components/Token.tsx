@@ -133,7 +133,8 @@ const Expandable = ({token}: ExpandableProps) => {
                 <HoverCardContent
                     side="top"
                     align="start"
-                    className={"p-4 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1 w-[450px]"}
+                    collisionPadding={8}
+                    className={"p-4 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1 w-[450px] max-h-[var(--radix-hover-card-content-available-height)] overflow-y-auto overscroll-contain"}
                 >
                     <div className="space-y-1">
                         {tokens?.map((item: ExpandableItem, idx: number) => {
@@ -273,7 +274,8 @@ const NoteToken = ({value}: NoteTokenProps) => {
                 <HoverCardContent
                     side="top"
                     align="start"
-                    className="w-80 p-0 shadow-2xl border-border/50 overflow-hidden rounded-xl"
+                    collisionPadding={8}
+                    className="w-80 p-0 shadow-2xl border-border/50 rounded-xl max-h-[var(--radix-hover-card-content-available-height)] overflow-y-auto overscroll-contain"
                 >
                     <div className="p-3 leading-relaxed text-foreground/90 bg-background whitespace-pre-wrap font-sans text-[13px] italic">
                         {value}
