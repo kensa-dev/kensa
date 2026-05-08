@@ -18,6 +18,8 @@
     "@docusaurus/core": "^3.10.0",
     "@docusaurus/faster": "^3.10.0",
     "@docusaurus/preset-classic": "^3.10.0",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/plus-jakarta-sans": "^5.2.8",
     "@mdx-js/react": "^3.0.0",
     "@saucelabs/theme-github-codeblock": "^0.3.0",
     "clsx": "^2.0.0",

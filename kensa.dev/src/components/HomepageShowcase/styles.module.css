@@ -10,8 +10,10 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: var(--kensa-accent);
+    color: var(--kensa-accent-strong);
     margin: 0 0 0.5rem;
+    font-family: inherit;
+    line-height: 1.4;
 }
 
 .liveLink {
@@ -28,6 +30,7 @@
 
 .column {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
@@ -38,7 +41,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--ifm-color-emphasis-600);
+    color: var(--ifm-color-emphasis-800);
     margin: 0;
 }
 
@@ -104,6 +107,7 @@
 
 .screenshot {
     width: 100%;
+    height: auto;
     border-radius: 8px;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: zoom-in;

@@ -67,6 +67,7 @@ export default function HomepageFeatures(): ReactNode {
     return (
         <section className={styles.features}>
             <div className="container">
+                <h2 className="sr-only">Features</h2>
                 <div className={styles.bentoGrid}>
                     {FeatureList.map((props, idx) => (
                         <Feature key={idx} {...props} />

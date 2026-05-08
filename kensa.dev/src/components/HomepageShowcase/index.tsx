@@ -28,7 +28,7 @@ export default function HomepageShowcase(): ReactNode {
     return (
         <section className={styles.showcase}>
             <div className="container">
-                <p className={styles.eyebrow}>See it in action</p>
+                <h2 className={styles.eyebrow}>See it in action</h2>
                 <p className={styles.liveLink}>
                     <a href="https://kensa-dev.github.io/clearwave-kensa-example" target="_blank" rel="noopener noreferrer">
                         Browse the live Clearwave report →
@@ -46,6 +46,10 @@ export default function HomepageShowcase(): ReactNode {
                                 src="/img/code-example.png"
                                 alt="Kensa test written in Kotlin"
                                 className={styles.screenshot}
+                                width={1764}
+                                height={1570}
+                                fetchPriority="high"
+                                decoding="async"
                             />
                         </button>
                     </div>
@@ -61,6 +65,10 @@ export default function HomepageShowcase(): ReactNode {
                                 src="/img/report-example.png"
                                 alt="Kensa generated HTML report with sequence diagram"
                                 className={styles.screenshot}
+                                width={3300}
+                                height={2842}
+                                loading="lazy"
+                                decoding="async"
                             />
                         </button>
                     </div>

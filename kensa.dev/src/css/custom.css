@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/plus-jakarta-sans/800.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
 
 :root {
   --ifm-color-primary: #2e8555;
@@ -12,6 +15,7 @@
   --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
   --kensa-accent: #e8a430;
+  --kensa-accent-strong: #a86c00;
   --kensa-font-display: 'Plus Jakarta Sans', sans-serif;
 }
 
@@ -41,14 +45,26 @@ code, kbd, samp, pre {
   font-feature-settings: 'liga' 1, 'calt' 1;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ─── Footer ─────────────────────────────────────────────────────────────── */
 
 .footer {
   --footer-bg: #0d1f16;
   --footer-border: rgba(62, 173, 110, 0.18);
-  --footer-text: rgba(255, 255, 255, 0.55);
-  --footer-heading: rgba(255, 255, 255, 0.35);
-  --footer-link: rgba(255, 255, 255, 0.7);
+  --footer-text: rgba(255, 255, 255, 0.7);
+  --footer-heading: rgba(255, 255, 255, 0.72);
+  --footer-link: rgba(255, 255, 255, 0.82);
   --footer-link-hover: #3cad6e;
 
   background: var(--footer-bg);
