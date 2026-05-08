@@ -15,6 +15,7 @@ import {Kbd, KbdGroup} from "@/components/ui/kbd"
 import {useConfig} from "@/contexts/ConfigContext"
 import {matchesAnyIssue} from "@/util/issueMatch"
 import {hasOpenDialog} from "@/util/escapeGuard"
+import {setStateFilter} from "@/util/stateFilterToggle"
 
 const SourceMetaContext = React.createContext<Record<string, { generatedAt?: string }>>({});
 
@@ -305,19 +306,13 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
         };
     }, [indices, queryMeta, inputValue]);
 
-    const {globalCounts, stateCountsById} = React.useMemo(() => {
-        const global: StateCounts = {passed: 0, failed: 0, disabled: 0, total: 0};
+    const rawGlobalCounts = React.useMemo(() => countStates(indices), [indices]);
+
+    const stateCountsById = React.useMemo(() => {
         const map = new Map<string, StateCounts>();
 
         const walk = (nodes: Indices) => {
             for (const node of nodes) {
-                if (node.testMethod) {
-                    global.total++;
-                    if (node.state === "Passed") global.passed++;
-                    else if (node.state === "Failed") global.failed++;
-                    else if (node.state === "Disabled") global.disabled++;
-                }
-
                 if (node.id && node.testClass && node.children && node.children.length > 0) {
                     const counts = countChildStates(node);
                     if (counts.failed > 0 || counts.disabled > 0) {
@@ -330,7 +325,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
         };
 
         walk(filteredIndices);
-        return {globalCounts: global, stateCountsById: map};
+        return map;
     }, [filteredIndices]);
 
     const prevSearchQueryRef = React.useRef<string | null>(null);
@@ -537,7 +532,11 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
             </SidebarContent>
 
             <SidebarFooter className="p-3 pt-0">
-                <StateCountBar counts={globalCounts}/>
+                <StateCountBar
+                    counts={rawGlobalCounts}
+                    activeStates={queryMeta.states}
+                    onToggle={(s) => onSearchChange(setStateFilter(searchQuery, s))}
+                />
                 <ReportMeta/>
             </SidebarFooter>
         </Sidebar>
@@ -616,9 +615,23 @@ function StateBadges({counts}: StateBadgesProps) {
 
 interface StateCountBarProps {
     counts: StateCounts;
+    activeStates: readonly string[];
+    onToggle: (state: string) => void;
 }
 
-function StateCountBar({counts}: StateCountBarProps) {
+const RING_BY_KEY: Record<"passed" | "failed" | "disabled", string> = {
+    passed: "ring-success/60",
+    failed: "ring-failure/60",
+    disabled: "ring-disabled/60",
+};
+
+const HOVER_BG_BY_KEY: Record<"passed" | "failed" | "disabled", string> = {
+    passed: "hover:bg-success/10",
+    failed: "hover:bg-failure/10",
+    disabled: "hover:bg-disabled/10",
+};
+
+function StateCountBar({counts, activeStates, onToggle}: StateCountBarProps) {
     const {total} = counts;
     if (total === 0) return null;
 
@@ -626,30 +639,47 @@ function StateCountBar({counts}: StateCountBarProps) {
         .map(s => ({...s, count: counts[s.key]}))
         .filter(s => s.count > 0);
 
+    const anyActive = activeStates.length > 0;
+    const isActive = (key: string) => activeStates.includes(key);
+
     return (
         <div className="space-y-2">
             <div className="flex h-1.5 rounded-full overflow-hidden bg-muted/50">
                 {active.map((seg) => (
                     <div
                         key={seg.key}
-                        className={cn("transition-all duration-500", seg.barCls)}
+                        className={cn(
+                            "transition-all duration-500",
+                            seg.barCls,
+                            anyActive && !isActive(seg.key) && "opacity-30"
+                        )}
                         style={{width: `${(seg.count / total) * 100}%`}}
                     />
                 ))}
             </div>
 
             <div className="flex items-center justify-center gap-2">
-                {active.map((seg) => (
-                    <span
-                        key={seg.key}
-                        className={cn(
-                            "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold",
-                            seg.color, seg.bg
-                        )}
-                    >
-                        {seg.count} {seg.key}
-                    </span>
-                ))}
+                {active.map((seg) => {
+                    const pressed = isActive(seg.key);
+                    return (
+                        <button
+                            key={seg.key}
+                            type="button"
+                            aria-pressed={pressed}
+                            onClick={() => onToggle(seg.key)}
+                            title={pressed ? `Remove ${seg.key} filter` : `Show only ${seg.key} tests`}
+                            className={cn(
+                                "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold cursor-pointer transition-all",
+                                seg.color, seg.bg,
+                                HOVER_BG_BY_KEY[seg.key],
+                                pressed && cn("ring-1", RING_BY_KEY[seg.key]),
+                                anyActive && !pressed && "opacity-50"
+                            )}
+                        >
+                            {seg.count} {seg.key}
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );
