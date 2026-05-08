@@ -10,9 +10,10 @@ interface InvocationCardProps {
     autoOpenTab?: string;
     isLast: boolean;
     initialExpanded?: boolean;
+    testClass: string;
 }
 
-export const InvocationCard = ({invocation, parseErrors, autoOpenTab, isLast, initialExpanded}: InvocationCardProps) => {
+export const InvocationCard = ({invocation, parseErrors, autoOpenTab, isLast, initialExpanded, testClass}: InvocationCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState<boolean>(() => {
         if (initialExpanded !== undefined) return initialExpanded;
         return invocation.state === 'Failed';
@@ -68,6 +69,7 @@ export const InvocationCard = ({invocation, parseErrors, autoOpenTab, isLast, in
                         testState={invocation.state}
                         autoOpenTab={autoOpenTab}
                         parseErrors={parseErrors}
+                        testClass={testClass}
                     />
                 </div>
             )}

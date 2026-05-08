@@ -125,6 +125,7 @@ export const TestContainer = ({ tests, testClass, testToExpand, matchingMethods 
                         test={test}
                         initialExpanded={i === expandedTestIndex}
                         initialExpandedInvocation={expandedInvocationIndex}
+                        testClass={testClass}
                     />
                 </div>
             ))}

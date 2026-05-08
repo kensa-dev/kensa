@@ -45,9 +45,10 @@ interface TestCardProps {
     test: Test;
     initialExpanded?: boolean;
     initialExpandedInvocation?: number;
+    testClass: string;
 }
 
-export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1 }: TestCardProps) => {
+export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1, testClass }: TestCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
 
     React.useEffect(() => {
@@ -108,6 +109,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                                         autoOpenTab={test.autoOpenTab}
                                         isLast={invIdx === test.invocations.length - 1}
                                         initialExpanded={initialExpandedInvocation >= 0 ? invIdx === initialExpandedInvocation : invocation.state === 'Failed'}
+                                        testClass={testClass}
                                     />
                                 );
                             }
@@ -119,6 +121,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                                         testState={invocation.state}
                                         autoOpenTab={test.autoOpenTab}
                                         parseErrors={test.parseErrors}
+                                        testClass={testClass}
                                     />
                                 </div>
                             );

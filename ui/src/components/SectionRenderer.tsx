@@ -55,9 +55,10 @@ interface SectionRendererProps {
     testState: TestState;
     autoOpenTab?: string;
     parseErrors?: ParseError[];
+    testClass: string;
 }
 
-export const SectionRenderer = ({ invocation, testState, autoOpenTab, parseErrors }: SectionRendererProps) => {
+export const SectionRenderer = ({ invocation, testState, autoOpenTab, parseErrors, testClass }: SectionRendererProps) => {
     const {sectionOrder} = useContext(ConfigContext);
 
     return (
@@ -100,7 +101,7 @@ export const SectionRenderer = ({ invocation, testState, autoOpenTab, parseError
                         }
 
                         const sentenceLines = new Set(sentences.map(s => s.lineNumber));
-                        const failingLine = testState === 'Failed' ? getFailingLine(invocation.executionException?.stackTrace ?? '', sentenceLines) : undefined;
+                        const failingLine = testState === 'Failed' ? getFailingLine(invocation.executionException?.stackTrace ?? '', sentenceLines, testClass) : undefined;
 
                         let lastMajorKw = '';
                         return (
