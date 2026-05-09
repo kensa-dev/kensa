@@ -5,7 +5,7 @@ import {useConfig} from '@/contexts/ConfigContext';
 import {useFixtureHighlight} from '@/contexts/FixtureHighlightContext';
 import Sentence from "@/components/Sentence";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {ErrorTokenData, ExpandableItem, Token as TokenType} from '@/types/Test';
 import {isRelatedFixture} from '@/util/fixtureHighlight';
 
@@ -136,7 +136,7 @@ const Expandable = ({token}: ExpandableProps) => {
                     collisionPadding={8}
                     className={"p-0 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1 w-[450px] max-h-[var(--radix-hover-card-content-available-height)] overflow-hidden"}
                 >
-                    <div className="space-y-1 p-4 max-h-[var(--radix-hover-card-content-available-height)] overflow-y-auto overscroll-contain">
+                    <div className="space-y-1 max-h-[var(--radix-hover-card-content-available-height)] overflow-y-auto overscroll-contain">
                         {tokens?.map((item: ExpandableItem, idx: number) => {
                             if (!Array.isArray(item) && item.type === 'table') {
                                 return <TokenTable key={idx} headers={item.headers} rows={item.rows}/>;
@@ -173,10 +173,10 @@ interface TokenTableProps {
 
 const TokenTable = ({headers, rows}: TokenTableProps) => {
     if (!rows) return null;
-    return (<div className="my-3 rounded-md border border-border/50 bg-background/50 overflow-hidden shadow-sm">
-        <Table>
+    return (<div className="my-3 first:mt-0 last:mb-0 rounded-md border border-border/50 bg-background/50 shadow-sm">
+        <table className="w-full caption-bottom text-sm">
             {headers && headers.length > 0 && (
-                <TableHeader className="bg-muted/30">
+                <TableHeader className="sticky top-0 z-10 bg-muted">
                     <TableRow className="hover:bg-transparent">
                         {headers.map((header, i) => (
                             <TableHead key={i} className="h-8 text-[11px] font-bold uppercase tracking-wider text-muted-foreground py-2 px-4">
@@ -197,7 +197,7 @@ const TokenTable = ({headers, rows}: TokenTableProps) => {
                     </TableRow>
                 ))}
             </TableBody>
-        </Table>
+        </table>
     </div>)
 };
 
