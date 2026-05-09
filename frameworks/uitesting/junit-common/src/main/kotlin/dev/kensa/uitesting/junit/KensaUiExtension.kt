@@ -25,8 +25,7 @@ class KensaUiExtension : BeforeEachCallback, AfterTestExecutionCallback, AfterEa
     override fun beforeEach(context: ExtensionContext) {
         CapturedScreenshots.bind(CapturedScreenshots())
 
-        val testInstance = context.requiredTestInstance as? KensaUiTest<*> ?: return
-        testInstance.installDriverAndUser()
+        (context.requiredTestInstance as? KensaUiTest<*>)?.also(KensaUiTest<*>::installDriverAndUser)
     }
 
     override fun afterTestExecution(context: ExtensionContext) {
@@ -34,12 +33,13 @@ class KensaUiExtension : BeforeEachCallback, AfterTestExecutionCallback, AfterEa
 
         if (context.executionException.isPresent && KensaLifecycleManager.current()?.configuration?.uiTesting?.autoScreenshotOnFailure == true) {
             testInstance?._driver?.let { driver ->
-                CapturedScreenshots.current().capture(driver, "On failure")
+                CapturedScreenshots.current().capture(driver, ON_FAILURE_LABEL)
             }
         }
 
         // Store into attachments before KensaExtension.afterTestExecution finalises the invocation.
         // (afterTestExecution callbacks run in reverse registration order, so this runs first.)
+        // Deliberate: attachment failures must not fail the test; surfaced via stderr only.
         try {
             testContext().attachments.put(SCREENSHOTS_KEY, CapturedScreenshots.current())
         } catch (e: Exception) {
@@ -49,6 +49,7 @@ class KensaUiExtension : BeforeEachCallback, AfterTestExecutionCallback, AfterEa
     }
 
     override fun afterEach(context: ExtensionContext) {
+        // Deliberate: driver teardown failures must not fail the test; surfaced via stderr only.
         try {
             (context.requiredTestInstance as? KensaUiTest<*>)?.quitDriver()
         } catch (e: Exception) {
@@ -56,5 +57,9 @@ class KensaUiExtension : BeforeEachCallback, AfterTestExecutionCallback, AfterEa
             e.printStackTrace(System.err)
         }
         CapturedScreenshots.clear()
+    }
+
+    companion object {
+        private const val ON_FAILURE_LABEL = "onFailure"
     }
 }

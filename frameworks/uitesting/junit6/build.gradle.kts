@@ -16,6 +16,9 @@ dependencies {
     testImplementation(libs.kotestAssertionsCoreJvm)
 }
 
+// Shared sources with framework-uitesting-junit5; canonical copy in ../junit-common.
+sourceSets.main { kotlin.srcDir("../junit-common/src/main/kotlin") }
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }

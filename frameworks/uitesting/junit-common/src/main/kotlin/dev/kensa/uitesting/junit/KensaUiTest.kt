@@ -1,10 +1,6 @@
 package dev.kensa.uitesting.junit
 
-import dev.kensa.*
-import dev.kensa.context.TestContextHolder.testContext
-import dev.kensa.fixture.Fixtures
-import dev.kensa.junit.KensaExtension
-import dev.kensa.outputs.CapturedOutputs
+import dev.kensa.junit.KensaTest
 import dev.kensa.uitesting.BrowserDriver
 import dev.kensa.uitesting.UserStub
 import dev.kensa.uitesting.WithScreenshots
@@ -14,7 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith
  * Base class for UI tests. Extend this class and implement [createDriver] and [createUser].
  *
  * The underlying [BrowserDriver] is created fresh per test and torn down automatically.
- * Test authors interact only with [theUser] and the Kensa BDD DSL ([given]/[whenever]).
+ * Test authors interact only with [theUser] and the Kensa BDD DSL ([given]/[whenever]),
+ * inherited from [KensaTest].
  *
  * Example:
  * ```kotlin
@@ -29,8 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith
  * }
  * ```
  */
-@ExtendWith(KensaExtension::class, KensaUiExtension::class)
-abstract class KensaUiTest<U : UserStub<*>> : WithScreenshots, WithFixturesAndOutputs {
+@ExtendWith(KensaUiExtension::class)
+abstract class KensaUiTest<U : UserStub<*>> : WithScreenshots, KensaTest {
 
     /** Create the browser driver for this test. Called once per test method. */
     abstract fun createDriver(): BrowserDriver
@@ -52,19 +49,4 @@ abstract class KensaUiTest<U : UserStub<*>> : WithScreenshots, WithFixturesAndOu
     internal fun quitDriver() {
         if (::_driver.isInitialized) _driver.quit()
     }
-
-    // ── Kensa BDD DSL ─────────────────────────────────────────────────────────
-
-    fun given(action: Action<GivensContext>) = testContext().given(action)
-    fun given(steps: SetupSteps) = testContext().given(steps)
-    fun given(step: SetupStep) = given(SetupSteps(step))
-    fun and(action: Action<GivensContext>) = given(action)
-    fun and(steps: SetupSteps) = given(steps)
-    fun and(step: SetupStep) = given(SetupSteps(step))
-    fun `when`(action: Action<ActionContext>) = whenever(action)
-    fun whenever(action: Action<ActionContext>) = testContext().whenever(action)
-
-    override val fixturesAndOutputs: FixturesAndOutputs get() = testContext().fixturesAndOutputs
-    override val fixtures: Fixtures get() = testContext().fixtures
-    override val outputs: CapturedOutputs get() = testContext().outputs
 }

@@ -26,7 +26,7 @@ class ScreenshotsTabRenderer : KensaTabRenderer {
         invocationDir.createDirectories()
 
         return screenshots.mapIndexed { i, s ->
-            val fileName = "$i-${safeSegment(s.label).ifEmpty { "screenshot" }}.${s.format}"
+            val fileName = "$i-${safeSegment(s.label).ifEmpty { DEFAULT_SCREENSHOT_LABEL }}.${s.format}"
             invocationDir.resolve(fileName).writeBytes(s.bytes)
             val src = "tabs/$safeClass/$safeMethod/invocation-${ctx.invocationIndex}/$tabIdSafe-screenshots/$fileName"
             """{"label":${jsonString(s.label)},"src":${jsonString(src)}}"""
@@ -36,8 +36,8 @@ class ScreenshotsTabRenderer : KensaTabRenderer {
     override fun mediaType(): String = "application/vnd.kensa.screenshots+json"
 
     private fun safeSegment(input: String): String {
-        val sanitized = input.replace(Regex("""[^A-Za-z0-9._-]"""), "_")
-        return if (sanitized == "." || sanitized == "..") "_" else sanitized
+        val sanitised = input.replace(sanitisePattern, "_")
+        return if (sanitised == "." || sanitised == "..") "_" else sanitised
     }
 
     private fun jsonString(s: String): String = buildString {
@@ -51,5 +51,10 @@ class ScreenshotsTabRenderer : KensaTabRenderer {
             else -> append(c)
         }
         append('"')
+    }
+
+    companion object {
+        private const val DEFAULT_SCREENSHOT_LABEL = "screenshot"
+        private val sanitisePattern = """[^A-Za-z0-9._-]""".toRegex()
     }
 }
