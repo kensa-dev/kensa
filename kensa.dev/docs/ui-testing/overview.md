@@ -32,7 +32,7 @@ The `-junit5` and `-junit6` artifacts share the same source — choose the one t
 |------|---------|---------|
 | `KensaPlaywrightUiTest<U>` | `dev.kensa.playwright.junit` | Base class for Playwright UI tests — driver creation handled |
 | `KensaSeleniumUiTest<U>` | `dev.kensa.selenium.junit` | Base class for Selenium UI tests — driver creation handled |
-| `KensaUiTest<U>` | `dev.kensa.uitesting.junit` | Lower-level base class if you want full control over driver creation |
+| `KensaUiTest<D, U>` | `dev.kensa.uitesting.junit` | Lower-level base class if you want full control over driver creation (`D` = your `BrowserDriver` subtype) |
 | `UserStub<D>` | `dev.kensa.uitesting` | Base class for page objects; exposes typed `driver` |
 | `BrowserDriver` | `dev.kensa.uitesting` | Common interface implemented by `PlaywrightBrowserDriver` and `SeleniumBrowserDriver` |
 | `screenshot(label)` | `dev.kensa.uitesting` | Called from a `UserStub` method to capture the current page state |

@@ -76,7 +76,7 @@ override fun configureLaunchOptions(options: BrowserType.LaunchOptions) {
 }
 ```
 
-If you need full control over driver creation (different browser type, custom `BrowserContext`, etc.), extend `KensaUiTest<U>` directly and implement `createDriver()` / `createUser()` yourself.
+If you need full control over driver creation (different browser type, custom `BrowserContext`, etc.), extend `KensaUiTest<D, U>` directly (where `D` is your `BrowserDriver` subtype) and implement `createDriver()` / `createUser()` yourself.
 
 ## 4. Run the Tests
 
