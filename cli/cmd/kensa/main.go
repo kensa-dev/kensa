@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -10,8 +11,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/kensa-dev/kensa/cli/internal/shell"
 	"gopkg.in/yaml.v3"
 )
 
@@ -22,6 +26,10 @@ var (
 )
 
 const configFile = ".kensa-properties"
+
+// version is the Kensa release the embedded shell artifacts were built from.
+// Overridden at build time via `-ldflags "-X main.version=$(cat version.txt)"`.
+var version = "dev"
 
 type Config struct {
 	TestFolders map[string]string `yaml:"testFolders"`
@@ -61,7 +69,6 @@ func main() {
 		log.Fatal("Please specify a test name (from .kensa-properties config) or use --dir /path/to/folder.")
 	}
 
-	// Make absolute for consistency
 	absDir, err := filepath.Abs(serveDir)
 	if err != nil {
 		log.Fatalf("Could not resolve directory %s: %v", serveDir, err)
@@ -72,15 +79,15 @@ func main() {
 		log.Fatalf("Directory %s does not exist. Please verify the path.", serveDir)
 	}
 
-	// Check required files
-	if _, err := os.Stat(filepath.Join(serveDir, "index.html")); os.IsNotExist(err) {
-		log.Fatalf("Missing index.html in %s. This file is required.", serveDir)
-	}
-	if _, err := os.Stat(filepath.Join(serveDir, "kensa.js")); os.IsNotExist(err) {
-		log.Fatalf("Missing kensa.js in %s. Please ensure the output folder is correctly set up.", serveDir)
+	if err := validateKensaDir(serveDir); err != nil {
+		log.Fatal(err)
 	}
 
-	http.Handle("/", http.FileServer(http.Dir(serveDir)))
+	if reportVersion := detectReportVersion(serveDir); reportVersion != "" && versionLess(version, reportVersion) {
+		log.Printf("warning: kensa CLI version %s is older than report version %s; some UI features may not render correctly. Update the CLI to match.", version, reportVersion)
+	}
+
+	http.Handle("/", shell.Handler(serveDir))
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
@@ -95,6 +102,91 @@ func main() {
 	}
 
 	log.Fatal(http.Serve(lis, nil))
+}
+
+// validateKensaDir confirms serveDir looks like a Kensa report. It accepts:
+//   - Single-bundle output (build/kensa-output/) — has configuration.json + indices.json at root.
+//   - Site-mode root (build/kensa-site/) — has manifest.json + sources/ subdir.
+//   - Data-only source bundle (build/kensa-site/sources/<id>/) — has configuration.json + indices.json.
+func validateKensaDir(serveDir string) error {
+	hasConfig := fileExists(filepath.Join(serveDir, "configuration.json"))
+	hasIndices := fileExists(filepath.Join(serveDir, "indices.json"))
+	hasManifest := fileExists(filepath.Join(serveDir, "manifest.json"))
+	if (hasConfig && hasIndices) || hasManifest {
+		return nil
+	}
+	return fmt.Errorf("%s does not look like a Kensa output directory: expected configuration.json + indices.json, or a manifest.json (site-mode root)", serveDir)
+}
+
+// detectReportVersion reads kensaVersion from configuration.json (single-bundle/data-only) or
+// manifest.json (site-mode root). Returns "" if neither is parseable.
+func detectReportVersion(serveDir string) string {
+	if v := readKensaVersion(filepath.Join(serveDir, "configuration.json")); v != "" {
+		return v
+	}
+	if v := readKensaVersion(filepath.Join(serveDir, "manifest.json")); v != "" {
+		return v
+	}
+	return ""
+}
+
+func readKensaVersion(path string) string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	var doc struct {
+		KensaVersion string `json:"kensaVersion"`
+	}
+	if err := json.Unmarshal(data, &doc); err != nil {
+		return ""
+	}
+	return doc.KensaVersion
+}
+
+// versionLess reports whether a < b for version strings like "0.7.1".
+// Returns false if either side is empty, "dev", or unparseable — so we don't
+// nag about version skew in dev builds.
+func versionLess(a, b string) bool {
+	pa, ok := parseVersion(a)
+	if !ok {
+		return false
+	}
+	pb, ok := parseVersion(b)
+	if !ok {
+		return false
+	}
+	for i := 0; i < len(pa) && i < len(pb); i++ {
+		if pa[i] != pb[i] {
+			return pa[i] < pb[i]
+		}
+	}
+	return len(pa) < len(pb)
+}
+
+func parseVersion(v string) ([]int, bool) {
+	v = strings.TrimSpace(v)
+	if v == "" || v == "dev" {
+		return nil, false
+	}
+	if dash := strings.IndexAny(v, "-+"); dash >= 0 {
+		v = v[:dash]
+	}
+	parts := strings.Split(v, ".")
+	out := make([]int, len(parts))
+	for i, p := range parts {
+		n, err := strconv.Atoi(p)
+		if err != nil {
+			return nil, false
+		}
+		out[i] = n
+	}
+	return out, true
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }
 
 func loadConfig() (*Config, error) {
@@ -117,7 +209,7 @@ func loadConfig() (*Config, error) {
 }
 
 func openBrowser(url string) {
-	time.Sleep(500 * time.Millisecond) // Allow the server to start.
+	time.Sleep(500 * time.Millisecond)
 
 	var cmd string
 	var args []string
@@ -129,7 +221,7 @@ func openBrowser(url string) {
 	case "darwin":
 		cmd = "open"
 		args = []string{url}
-	default: // Linux, BSD, etc.
+	default:
 		cmd = "xdg-open"
 		args = []string{url}
 	}

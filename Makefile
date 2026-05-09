@@ -50,4 +50,9 @@ create-release-note:
 
 .PHONY: build-cli
 build-cli:
-	cd cli && go mod tidy && mkdir -p build/bin && go build -o build/bin/kensa cmd/kensa/main.go
+	@if [ ! -f ui/build/js/kensa.js ]; then \
+		echo "ui/build/js/kensa.js missing — run './gradlew :ui:build' first."; exit 1; \
+	fi
+	cp ui/build/js/kensa.js cli/internal/shell/embed/kensa.js
+	cp ui/public/logo.svg cli/internal/shell/embed/logo.svg
+	cd cli && go mod tidy && mkdir -p build/bin && go build -ldflags "-X main.version=$$(cat ../version.txt)" -o build/bin/kensa ./cmd/kensa
