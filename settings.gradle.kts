@@ -21,6 +21,15 @@ project(":assertions-hamkrest").projectDir = file("assertions/hamkrest")
 include("assertions-kotest")
 project(":assertions-kotest").projectDir = file("assertions/kotest")
 
+include("kotest-test-support")
+project(":kotest-test-support").projectDir = file("test-support/kotest/core")
+
+include("kotest-test-support-xml")
+project(":kotest-test-support-xml").projectDir = file("test-support/kotest/xml")
+
+include("kotest-test-support-json")
+project(":kotest-test-support-json").projectDir = file("test-support/kotest/json")
+
 include("framework-junit5")
 project(":framework-junit5").projectDir = file("frameworks/junit/junit5")
 

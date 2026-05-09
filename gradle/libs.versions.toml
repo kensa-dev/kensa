@@ -74,6 +74,7 @@ http4kJackson = { module = "org.http4k:http4k-format-jackson", version.ref = "ht
 http4kClientOkHttp = { module = "org.http4k:http4k-client-okhttp", version.ref = "http4k" }
 http4kKotest = { module = "org.http4k:http4k-testing-kotest ", version.ref = "http4k" }
 jacksonKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
