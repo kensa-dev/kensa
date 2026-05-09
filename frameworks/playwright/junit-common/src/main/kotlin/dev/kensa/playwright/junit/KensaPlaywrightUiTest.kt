@@ -3,7 +3,6 @@ package dev.kensa.playwright.junit
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import dev.kensa.playwright.PlaywrightBrowserDriver
-import dev.kensa.uitesting.BrowserDriver
 import dev.kensa.uitesting.UserStub
 import dev.kensa.uitesting.junit.KensaUiTest
 
@@ -39,12 +38,12 @@ import dev.kensa.uitesting.junit.KensaUiTest
  * }
  * ```
  */
-abstract class KensaPlaywrightUiTest<U : UserStub<PlaywrightBrowserDriver>> : KensaUiTest<U>() {
+abstract class KensaPlaywrightUiTest<U : UserStub<PlaywrightBrowserDriver>> : KensaUiTest<PlaywrightBrowserDriver, U>() {
 
     /** Customise the [BrowserType.LaunchOptions] before the browser is launched. Default: no-op. */
     protected open fun configureLaunchOptions(options: BrowserType.LaunchOptions) {}
 
-    final override fun createDriver(): BrowserDriver {
+    final override fun createDriver(): PlaywrightBrowserDriver {
         val playwright = Playwright.create()
         try {
             val launchOptions = BrowserType.LaunchOptions().setHeadless(true)
@@ -56,10 +55,4 @@ abstract class KensaPlaywrightUiTest<U : UserStub<PlaywrightBrowserDriver>> : Ke
             throw t
         }
     }
-
-    final override fun createUser(driver: BrowserDriver): U =
-        createUser(driver as PlaywrightBrowserDriver)
-
-    /** Create the [UserStub] subclass backed by [driver]. Called once per test method. */
-    protected abstract fun createUser(driver: PlaywrightBrowserDriver): U
 }

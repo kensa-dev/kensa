@@ -1,7 +1,6 @@
 package dev.kensa.selenium.junit
 
 import dev.kensa.selenium.SeleniumBrowserDriver
-import dev.kensa.uitesting.BrowserDriver
 import dev.kensa.uitesting.UserStub
 import dev.kensa.uitesting.junit.KensaUiTest
 import org.openqa.selenium.chrome.ChromeDriver
@@ -40,22 +39,16 @@ import org.openqa.selenium.chrome.ChromeOptions
  * }
  * ```
  */
-abstract class KensaSeleniumUiTest<U : UserStub<SeleniumBrowserDriver>> : KensaUiTest<U>() {
+abstract class KensaSeleniumUiTest<U : UserStub<SeleniumBrowserDriver>> : KensaUiTest<SeleniumBrowserDriver, U>() {
 
     /** Customise the [ChromeOptions] before the browser is launched. Default: no-op. */
     protected open fun configureChromeOptions(options: ChromeOptions) {}
 
-    final override fun createDriver(): BrowserDriver {
+    final override fun createDriver(): SeleniumBrowserDriver {
         val options = ChromeOptions().apply {
             addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage")
         }
         configureChromeOptions(options)
         return SeleniumBrowserDriver(ChromeDriver(options))
     }
-
-    final override fun createUser(driver: BrowserDriver): U =
-        createUser(driver as SeleniumBrowserDriver)
-
-    /** Create the [UserStub] subclass backed by [driver]. Called once per test method. */
-    protected abstract fun createUser(driver: SeleniumBrowserDriver): U
 }

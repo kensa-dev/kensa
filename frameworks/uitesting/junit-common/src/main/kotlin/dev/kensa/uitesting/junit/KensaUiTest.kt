@@ -15,9 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith
  *
  * Example:
  * ```kotlin
- * class LoginTest : KensaUiTest<TheUser>() {
+ * class LoginTest : KensaUiTest<SeleniumBrowserDriver, TheUser>() {
  *     override fun createDriver() = SeleniumBrowserDriver(ChromeDriver())
- *     override fun createUser(driver: BrowserDriver) = TheUser(driver)
+ *     override fun createUser(driver: SeleniumBrowserDriver) = TheUser(driver)
  *
  *     @Test fun `user can log in`() {
  *         given { theUser.navigatesToLoginPage() }
@@ -27,19 +27,19 @@ import org.junit.jupiter.api.extension.ExtendWith
  * ```
  */
 @ExtendWith(KensaUiExtension::class)
-abstract class KensaUiTest<U : UserStub<*>> : WithScreenshots, KensaTest {
+abstract class KensaUiTest<D : BrowserDriver, U : UserStub<D>> : WithScreenshots, KensaTest {
 
     /** Create the browser driver for this test. Called once per test method. */
-    abstract fun createDriver(): BrowserDriver
+    abstract fun createDriver(): D
 
     /** Create the user stub backed by [driver]. Called once per test method. */
-    abstract fun createUser(driver: BrowserDriver): U
+    abstract fun createUser(driver: D): U
 
     /** The user workflow object. Available from within test methods. */
     lateinit var theUser: U
 
     /** Internal: the driver held by the extension for auto-capture and teardown. */
-    internal lateinit var _driver: BrowserDriver
+    internal lateinit var _driver: D
 
     internal fun installDriverAndUser() {
         _driver = createDriver()

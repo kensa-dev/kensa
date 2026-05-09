@@ -27,14 +27,20 @@ class PlaywrightBrowserDriver(
     override fun quit() {
         val context = page.context()
         val browser = context.browser()
-        try {
-            context.close()
-        } finally {
+        val closers = listOfNotNull(
+            context::close,
+            browser?.let { { it.close() } },
+            playwright::close,
+        )
+
+        var primary: Throwable? = null
+        for (close in closers) {
             try {
-                browser?.close()
-            } finally {
-                playwright.close()
+                close()
+            } catch (t: Throwable) {
+                if (primary == null) primary = t else primary.addSuppressed(t)
             }
         }
+        primary?.let { throw it }
     }
 }

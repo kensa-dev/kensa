@@ -51,4 +51,24 @@ class PlaywrightBrowserDriverTest {
         ex.message shouldBe "browser boom"
         verify(playwright).close()
     }
+
+    @Test
+    fun `quit attaches subsequent failure as suppressed when both context_close and browser_close throw`() {
+        val playwright = mock<Playwright>()
+        val browser = mock<Browser>()
+        val context = mock<BrowserContext> {
+            on { browser() } doReturn browser
+        }
+        val page = mock<Page> {
+            on { context() } doReturn context
+        }
+        whenever(context.close()).doThrow(RuntimeException("context boom"))
+        whenever(browser.close()).doThrow(RuntimeException("browser boom"))
+
+        val ex = shouldThrow<RuntimeException> { PlaywrightBrowserDriver(page, playwright).quit() }
+
+        ex.message shouldBe "context boom"
+        ex.suppressed.map { it.message } shouldBe listOf("browser boom")
+        verify(playwright).close()
+    }
 }

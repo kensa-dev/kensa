@@ -25,11 +25,11 @@ class KensaUiExtension : BeforeEachCallback, AfterTestExecutionCallback, AfterEa
     override fun beforeEach(context: ExtensionContext) {
         CapturedScreenshots.bind(CapturedScreenshots())
 
-        (context.requiredTestInstance as? KensaUiTest<*>)?.also(KensaUiTest<*>::installDriverAndUser)
+        (context.requiredTestInstance as? KensaUiTest<*, *>)?.also(KensaUiTest<*, *>::installDriverAndUser)
     }
 
     override fun afterTestExecution(context: ExtensionContext) {
-        val testInstance = context.requiredTestInstance as? KensaUiTest<*>
+        val testInstance = context.requiredTestInstance as? KensaUiTest<*, *>
 
         if (context.executionException.isPresent && KensaLifecycleManager.current()?.configuration?.uiTesting?.autoScreenshotOnFailure == true) {
             testInstance?._driver?.let { driver ->
@@ -51,7 +51,7 @@ class KensaUiExtension : BeforeEachCallback, AfterTestExecutionCallback, AfterEa
     override fun afterEach(context: ExtensionContext) {
         // Deliberate: driver teardown failures must not fail the test; surfaced via stderr only.
         try {
-            (context.requiredTestInstance as? KensaUiTest<*>)?.quitDriver()
+            (context.requiredTestInstance as? KensaUiTest<*, *>)?.quitDriver()
         } catch (e: Exception) {
             System.err.println("KensaUiExtension: failed to quit browser driver: ${e.message}")
             e.printStackTrace(System.err)
