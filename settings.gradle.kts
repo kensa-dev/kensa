@@ -30,6 +30,15 @@ project(":kotest-test-support-xml").projectDir = file("test-support/kotest/xml")
 include("kotest-test-support-json")
 project(":kotest-test-support-json").projectDir = file("test-support/kotest/json")
 
+include("hamkrest-test-support")
+project(":hamkrest-test-support").projectDir = file("test-support/hamkrest/core")
+
+include("hamkrest-test-support-xml")
+project(":hamkrest-test-support-xml").projectDir = file("test-support/hamkrest/xml")
+
+include("hamkrest-test-support-json")
+project(":hamkrest-test-support-json").projectDir = file("test-support/hamkrest/json")
+
 include("framework-junit5")
 project(":framework-junit5").projectDir = file("frameworks/junit/junit5")
 
