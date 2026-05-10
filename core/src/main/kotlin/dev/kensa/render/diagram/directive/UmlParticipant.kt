@@ -32,6 +32,8 @@ class UmlParticipant private constructor(
 
         fun collections(name: String): UmlParticipant = UmlParticipant("collections", name)
 
+        fun queue(name: String): UmlParticipant = UmlParticipant("queue", name)
+
         fun participant(party: Party): UmlParticipant = UmlParticipant("participant", party.asString())
 
         fun actor(party: Party): UmlParticipant = actor(party.asString())
@@ -45,5 +47,7 @@ class UmlParticipant private constructor(
         fun database(party: Party): UmlParticipant = database(party.asString())
 
         fun collections(party: Party): UmlParticipant = collections(party.asString())
+
+        fun queue(party: Party): UmlParticipant = queue(party.asString())
     }
 }
