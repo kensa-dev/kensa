@@ -1,6 +1,10 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+const kensaVersion = readFileSync(resolve(__dirname, '../version.txt'), 'utf8').trim();
 
 const config: Config = {
   title: 'Kensa',
@@ -107,6 +111,11 @@ const config: Config = {
           docId: 'roadmap',
           position: 'left',
           label: 'Roadmap',
+        },
+        {
+          href: `https://github.com/kensa-dev/kensa/releases/tag/${kensaVersion}`,
+          label: `v${kensaVersion}`,
+          position: 'right',
         },
         {
           href: 'https://github.com/kensa-dev/kensa',
