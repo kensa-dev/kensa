@@ -1,18 +1,37 @@
 ---
 sidebar_position: 4
-description: "Reference for the kensa-kotest-test-support-json module: JSON field classes backed by Jackson JsonNode and JSONPointer."
+description: "Reference for the JSON field classes: JsonField, typed subclasses, JsonMapField family, transformX factories, and JsonNode extension helpers."
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # JSON Fields
 
-**Artifact:** `dev.kensa:kensa-kotest-test-support-json`
+*Documentation for Kensa 0.7.1.*
 
-Source (assumes merge to `master` — currently on branch `feature/kotest-test-support`):
-[`test-support/kotest/json/src/main/kotlin/dev/kensa/kotest/testsupport/field/json/`](https://github.com/kensa-dev/kensa/blob/master/test-support/kotest/json/src/main/kotlin/dev/kensa/kotest/testsupport/field/json/)
-
-Extraction is backed by Jackson's `JsonNode` and JSONPointer (`JsonNode.at(path)`). No additional JSON library is required.
+JSON fields implement `MatcherField<JsonNode, R>` and extract values via Jackson's `JsonNode.at(path)`. No additional JSON library is required beyond Jackson.
 
 All `path` values are [JSONPointer](https://datatracker.ietf.org/doc/html/rfc6901) strings — they start with `/` and use `/` as a separator (e.g. `/profiles/0/supplier`).
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+**Artifact:** `dev.kensa:kensa-kotest-test-support-json`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/kotest/json/src/main/kotlin/dev/kensa/kotest/testsupport/field/json/)
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+**Artifact:** `dev.kensa:kensa-hamkrest-test-support-json`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/hamkrest/json/src/main/kotlin/dev/kensa/hamkrest/testsupport/field/json/)
+
+</TabItem>
+</Tabs>
+
+The only difference between the Kotest and Hamkrest variants is the package of the base `MatcherField` interface.
 
 ---
 
@@ -29,7 +48,7 @@ open class JsonField<TARGET>(
 
 `description` is overridden to return `path` directly, so failure messages show the JSONPointer rather than a camelCase-split name.
 
-Most users will use a typed subclass rather than constructing `JsonField` directly. Reach for it when none of the typed subclasses fit — for example, to extract a computed value:
+Most users will use a typed subclass. Reach for `JsonField` directly when none of the typed subclasses fit — for example, to extract a computed value:
 
 ```kotlin
 val profileCount = JsonField("/profiles") { node, path ->
@@ -41,7 +60,7 @@ val profileCount = JsonField("/profiles") { node, path ->
 
 ## Typed subclasses
 
-Declare these in a `object` or companion object. Each accepts a JSONPointer `path` string.
+Declare these in an `object` or companion object. Each accepts a JSONPointer `path` string.
 
 | Class | Extracted type | Notes |
 |-------|---------------|-------|
@@ -54,13 +73,13 @@ Declare these in a `object` or companion object. Each accepts a JSONPointer `pat
 
 ```kotlin
 object FeasibilityResponseFields {
-    val anAddressPostcode          = JsonTextField("/address/postcode")
-    val serviceable                = JsonBooleanField("/serviceable")
-    val profiles                   = ArrayNodeField("/profiles")
-    val fastestProfileSupplier     = JsonTextField("/profiles/0/supplier")
+    val anAddressPostcode           = JsonTextField("/address/postcode")
+    val serviceable                 = JsonBooleanField("/serviceable")
+    val profiles                    = ArrayNodeField("/profiles")
+    val fastestProfileSupplier      = JsonTextField("/profiles/0/supplier")
     val fastestProfileDownloadSpeed = JsonIntField("/profiles/0/downloadSpeed")
-    val fastestProfileUploadSpeed  = JsonIntField("/profiles/0/uploadSpeed")
-    val fastestProfileType         = JsonTextField("/profiles/0/type")
+    val fastestProfileUploadSpeed   = JsonIntField("/profiles/0/uploadSpeed")
+    val fastestProfileType          = JsonTextField("/profiles/0/type")
 
     // Custom extraction using JsonField directly:
     val profileCount = JsonField("/profiles") { node, path ->
@@ -132,7 +151,7 @@ infix fun <T : Any> MatcherField<T, ProviderCode>.withCode(expected: String) =
     toMatcher(expected) { it.code }
 ```
 
-The lambda passed to `transformX` receives the already-extracted primitive; return `null` to signal a missing or invalid value.
+The lambda receives the already-extracted primitive; return `null` to signal a missing or invalid value.
 
 ---
 
@@ -154,6 +173,9 @@ Defined in `JsonNodeExtensions.kt`. Used internally by the field classes and ava
 ---
 
 ## Worked example
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
 
 ```kotlin
 import com.clearwave.fields.FeasibilityResponseFields.anAddressPostcode
@@ -180,5 +202,39 @@ fun `feasibility response shape — asserted via JsonField DSL`() {
 private fun theFeasibilityResponseAsJson() =
     StateCollector { mapper.valueToTree<JsonNode>(outputs[FeasibilityResult]) }
 ```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+```kotlin
+import com.natpryce.hamkrest.and
+import com.natpryce.hamkrest.assertion.assertThat
+import dev.kensa.hamkrest.testsupport.field.of
+import com.example.fields.FeasibilityResponseFields.anAddressPostcode
+import com.example.fields.FeasibilityResponseFields.fastestProfileDownloadSpeed
+import com.example.fields.FeasibilityResponseFields.fastestProfileSupplier
+import com.example.fields.FeasibilityResponseFields.profileCount
+import com.example.fields.FeasibilityResponseFields.serviceable
+
+@Test
+fun `feasibility response shape — asserted via JsonField DSL`() {
+    given(bothSuppliersAreServiceable())
+    whenever(aFeasibilityCheckIsRequestedForTheServiceAddress())
+
+    then(theFeasibilityResponseAsJson(),
+        (anAddressPostcode of fixtures[postcode])
+            and (serviceable of true)
+            and (profileCount of 3)
+            and (fastestProfileSupplier of fixtures[voiceSupplier])
+            and (fastestProfileDownloadSpeed of fixtures[voiceDownloadSpeed])
+    )
+}
+
+private fun theFeasibilityResponseAsJson() =
+    StateCollector { mapper.valueToTree<JsonNode>(outputs[FeasibilityResult]) }
+```
+
+</TabItem>
+</Tabs>
 
 For the full working example see [FeasibilityResponseFields.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FeasibilityResponseFields.kt) and [FieldDslExamplesTest.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FieldDslExamplesTest.kt) in clearwave-example.

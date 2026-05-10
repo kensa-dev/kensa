@@ -1,0 +1,391 @@
+---
+sidebar_position: 2
+description: "Reference for the Field Assertion DSL core module: MatcherField interface, extension functions, phrasing sugar, and extension points."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Core
+
+*Documentation for Kensa 0.7.1.*
+
+The core module defines the `MatcherField<T, R>` interface and all extension functions that turn fields into matchers.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+**Artifact:** `dev.kensa:kensa-kotest-test-support`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/kotest/core/src/main/kotlin/dev/kensa/kotest/testsupport/field/)
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+**Artifact:** `dev.kensa:kensa-hamkrest-test-support`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/hamkrest/core/src/main/kotlin/dev/kensa/hamkrest/testsupport/field/)
+
+</TabItem>
+</Tabs>
+
+---
+
+## `MatcherField<T, R>`
+
+```kotlin
+interface MatcherField<T, R> {
+    val name: String
+    fun extract(value: T): R?
+    val description: String
+}
+```
+
+| Member | Description |
+|--------|-------------|
+| `name` | Identifier used as the basis for `description`. |
+| `extract(value: T): R?` | Pulls the field's value out of a subject of type `T`. Returns `null` when absent. |
+| `description` | Human-readable label used in failure messages. Derived from `name` by default. |
+
+### Description derivation
+
+The default `description` splits `name` on camelCase boundaries, drops any leading article (`a`, `an`, `the`), and drops a trailing `Field` token:
+
+| `name` | `description` |
+|--------|--------------|
+| `aProviderCode` | `Provider Code` |
+| `anAddressPostcode` | `Address Postcode` |
+| `aFooField` | `Foo` |
+| `firstProfileType` | `First Profile Type` |
+
+For JSON fields, `description` is overridden to return the JSONPointer path directly (e.g. `/profiles/0/supplier`), since the path is already unique and readable.
+
+---
+
+## Extension functions
+
+### `of`
+
+```kotlin
+infix fun <T : Any, R> MatcherField<T, R>.of(expected: R?): Matcher<T?>
+```
+
+Equality check. The most common operator.
+
+```kotlin
+anAddressPostcode of fixtures[postcode]
+serviceable of true
+profileCount of 3
+```
+
+### `matching(matcher)`
+
+```kotlin
+infix fun <T : Any, R> MatcherField<T, R>.matching(matcher: Matcher<R?>): Matcher<T?>
+```
+
+Delegates to any matcher from your chosen library.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+```kotlin
+anAmount matching beGreaterThan(0)
+profileTypes matching containExactlyInAnyOrder("FTTC")
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+```kotlin
+anAmount matching greaterThan(0)
+profileTypes matching hasElement("FTTC")
+```
+
+</TabItem>
+</Tabs>
+
+### `matching(matcher, vararg others)`
+
+```kotlin
+fun <T : Any, R> MatcherField<T, R>.matching(matcher: Matcher<R?>, vararg others: Matcher<R?>): Matcher<T?>
+```
+
+Composes multiple matchers against the same field. All must pass.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Uses `Matcher.all`. Equivalent to chaining `.and()` but scoped to one field.
+
+```kotlin
+anAmount.matching(beGreaterThan(0), beLessThan(1000))
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Uses hamkrest `allOf`. Equivalent to chaining `and` but scoped to one field.
+
+```kotlin
+anAmount.matching(greaterThan(0), lessThan(1000))
+```
+
+</TabItem>
+</Tabs>
+
+### `matching(expectedRegex)` — String fields only
+
+```kotlin
+infix fun <T : Any> MatcherField<T, String>.matching(expectedRegex: String): Matcher<T?>
+```
+
+Matches the extracted string against a regular expression.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Applies Kotest's `match(regex)`.
+
+```kotlin
+aSku matching "[A-Z]{3}-\\d+"
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Applies `present(matches(Regex(...)))`. A `null` extracted value produces a mismatch rather than throwing.
+
+```kotlin
+aSku matching "[A-Z]{3}-\\d+"
+```
+
+</TabItem>
+</Tabs>
+
+### `withListOf`
+
+```kotlin
+fun <T : Any, R> MatcherField<T, List<R>>.withListOf(vararg expected: R): Matcher<T?>
+```
+
+Exact ordered list equality. The field must extract a `List<R>`.
+
+```kotlin
+profileDescriptions.withListOf("Full Fibre 900", "Full Fibre 500")
+```
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Uses Kotest `containExactly`.
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Uses `equalTo(list)`. Elements must be in the same order. Hamkrest has no `containExactly` combinator.
+
+</TabItem>
+</Tabs>
+
+### `withSetOf`
+
+```kotlin
+fun <T : Any, R> MatcherField<T, Set<R>>.withSetOf(vararg expected: R): Matcher<T?>
+```
+
+Order-insensitive set equality. The field must extract a `Set<R>`.
+
+```kotlin
+supportedProtocols.withSetOf("FTTC", "FTTP")
+```
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Uses Kotest `containExactlyInAnyOrder`.
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Uses `equalTo(set)`. `Set.equals` is structurally order-insensitive, so `equalTo` works correctly here.
+
+</TabItem>
+</Tabs>
+
+---
+
+## Phrasing sugar
+
+These functions are in `Phrases.kt` alongside the core extension functions. They add no logic — they make assertion call-sites read like English.
+
+### `with`
+
+```kotlin
+infix fun <T> Matcher<T>.with(other: Matcher<T>): Matcher<T>
+```
+
+Composes two matchers (both must pass). An alternative to `.and()` / `and` when you want the call-site to read as a sentence.
+
+```kotlin
+(aProviderCode of "FW") with (aServiceType of "FTTP")
+```
+
+### `thatHas(matcher)`
+
+```kotlin
+fun <T> thatHas(matcher: Matcher<T>): Matcher<T>
+```
+
+Identity wrapper. Use it to open a multi-line assertion block that reads like prose.
+
+```kotlin
+assertThat(response, thatHas(aProviderCode of "FW"))
+```
+
+### `thatHas(matcher, vararg others)`
+
+```kotlin
+fun <T> thatHas(matcher: Matcher<T>, vararg matchers: Matcher<T>): Matcher<T>
+```
+
+Composes multiple matchers — all must pass.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Uses `Matcher.all`.
+
+```kotlin
+assertThat(response, thatHas(
+    aProviderCode of "FW",
+    aServiceType of "FTTP",
+    aDate of "2026-01-01"
+))
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Uses `allOf`.
+
+```kotlin
+assertThat(response, thatHas(
+    aProviderCode of "FW",
+    aServiceType of "FTTP",
+    aDate of "2026-01-01"
+))
+```
+
+</TabItem>
+</Tabs>
+
+### `thatIs`
+
+```kotlin
+fun <T> thatIs(matcher: Matcher<T>): Matcher<T>
+```
+
+Identity wrapper, same as `thatHas`. Use whichever reads more naturally at the call-site.
+
+```kotlin
+assertThat(status, thatIs(aStatus of "SERVICEABLE"))
+```
+
+### `shouldHaveAll`
+
+```kotlin
+fun <T> T?.shouldHaveAll(vararg matchers: Matcher<T?>)
+```
+
+Extension on the subject. Asserts that it passes every supplied matcher.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Calls `should(Matcher.all(...))`.
+
+```kotlin
+response.shouldHaveAll(
+    aProviderCode of "FW",
+    aServiceType of "FTTP"
+)
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Calls `assertThat(this, allOf(...))`.
+
+```kotlin
+response.shouldHaveAll(
+    aProviderCode of "FW",
+    aServiceType of "FTTP"
+)
+```
+
+</TabItem>
+</Tabs>
+
+---
+
+## Extension points
+
+### `toMatcher`
+
+```kotlin
+fun <T : Any, R, OUT> MatcherField<T, R>.toMatcher(expected: OUT?, convertActual: (R) -> OUT?): Matcher<T?>
+```
+
+Use when you have a domain value type and want a custom infix function instead of `of`. `convertActual` transforms the extracted value before the equality check, so `expected` can be a domain type different from `R`.
+
+```kotlin
+// Define once alongside the field:
+infix fun <T : Any> MatcherField<T, ProviderCode>.withValue(expected: String) =
+    toMatcher(expected) { it.code }
+
+// In tests:
+aProviderCode withValue "FW"
+```
+
+### `nullableExtractingMatcher` / `extractingMatcher`
+
+The building block used internally by all extension functions. Exposed for writing field-aware matchers that do not fit the `MatcherField` interface.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+```kotlin
+fun <T : Any, R> nullableExtractingMatcher(
+    name: String,
+    extractValue: (T) -> R?,
+    match: Matcher<R?>
+): Matcher<T?>
+```
+
+`match` receives `null` when the subject is `null` or extraction returns `null`. Extraction exceptions are surfaced with `name` in the message.
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+```kotlin
+fun <T : Any, R> extractingMatcher(
+    name: String,
+    extractValue: (T) -> R?,
+    matcher: Matcher<R?>
+): Matcher<T?>
+```
+
+The returned matcher's `description` is prefixed with `name`, so failure output always identifies which field failed.
+
+```kotlin
+val myMatcher = extractingMatcher(
+    name = "Order Status",
+    extractValue = { order: Order -> order.status },
+    matcher = equalTo("CONFIRMED")
+)
+assertThat(order, myMatcher)
+```
+
+</TabItem>
+</Tabs>

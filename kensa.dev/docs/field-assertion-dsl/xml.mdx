@@ -1,0 +1,230 @@
+---
+sidebar_position: 3
+description: "Reference for the XML field classes: XmlField, XmlStringField, XmlTextField, XmlNodeField, XmlListField, XmlSetField, and XPathExpressionWrapper."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# XML Fields
+
+*Documentation for Kensa 0.7.1.*
+
+XML fields implement `MatcherField<Node, R>` and extract values from a W3C DOM `Node` via XPath. No external XML library is required — extraction uses the JDK's `javax.xml.xpath` API.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+**Artifact:** `dev.kensa:kensa-kotest-test-support-xml`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/kotest/xml/src/main/kotlin/dev/kensa/kotest/testsupport/field/xml/)
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+**Artifact:** `dev.kensa:kensa-hamkrest-test-support-xml`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/hamkrest/xml/src/main/kotlin/dev/kensa/hamkrest/testsupport/field/xml/)
+
+</TabItem>
+</Tabs>
+
+All XML field classes are `open` and available for subclassing. The only difference between the Kotest and Hamkrest variants is the package of the base `MatcherField` interface they import.
+
+---
+
+## Field classes
+
+### `XmlField<T>`
+
+The base class. Evaluates an XPath expression against a `Node` and applies `transform` to the matched node.
+
+```kotlin
+val aProvider = XmlField(
+    compile("/order/@provider"),
+    "Provider"
+) { node -> Provider.fromString(node.nodeValue) }
+```
+
+**Constructors:**
+
+| Signature | Notes |
+|-----------|-------|
+| `XmlField(expression: XPathExpression, transform: (Node) -> T?)` | Name derived from class simple name |
+| `XmlField(expression: XPathExpression, name: String, transform: (Node) -> T?)` | Explicit name |
+| `XmlField(expressionProvider: () -> XPathExpression, transform: (Node) -> T?)` | Lazy expression |
+| `XmlField(expressionProvider: () -> XPathExpression, name: String?, transform: (Node) -> T?)` | Lazy + explicit name |
+
+The `path` property returns the XPath string when the expression is an `XPathExpressionWrapper`; `null` otherwise.
+
+### `XmlTextField<T>`
+
+Extracts `textContent` from the matched node and applies `transform`. Prefer `XmlStringField` when the identity transform is sufficient.
+
+```kotlin
+val anAmount = XmlTextField(compile("/order/amount"), "Amount") { it.toBigDecimal() }
+```
+
+### `XmlStringField`
+
+Returns the matched node's `textContent` verbatim.
+
+```kotlin
+val status = XmlStringField(compile("/FeasibilityResponse/Status"), "Status")
+```
+
+Constructors accept either a pre-compiled `XPathExpression` or a lazy `() -> XPathExpression`; `name` is optional.
+
+### `XmlNodeField`
+
+Returns the matched `Node` itself. Use when downstream code needs the raw DOM node.
+
+### `XmlListField<T>`
+
+Extracts an ordered `List<T>` by evaluating the XPath as a node-set and mapping each node through `transform`.
+
+```kotlin
+val profileTypes = XmlListField(
+    compile("/FeasibilityResponse/Profiles/Profile/Type"),
+    "Profile Types"
+) { it.textContent }
+```
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Use with `withListOf` for exact ordered assertions, or `matching(containExactlyInAnyOrder(...))` for order-insensitive checks.
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Use with `withListOf` for exact ordered assertions. `withListOf` uses `equalTo(list)` — elements must be in the same order.
+
+</TabItem>
+</Tabs>
+
+### `XmlSetField<T>`
+
+Like `XmlListField<T>` but deduplicates results into a `Set<T>`. Use with `withSetOf` — set equality is order-insensitive.
+
+---
+
+## `XPathExpressionWrapper`
+
+```kotlin
+class XPathExpressionWrapper(
+    private val xPathExpression: XPathExpression,
+    val path: String
+) : XPathExpression
+```
+
+Wraps a compiled `XPathExpression` and retains the original path string. Wrapping ensures that:
+
+1. The `path` property on `XmlField` returns the XPath string (useful for tooling and report rendering).
+2. The path is readable when debugging test failures.
+
+Declare a private `compile` helper in each field object to avoid repeating the boilerplate:
+
+```kotlin
+private fun compile(path: String): XPathExpression =
+    XPathExpressionWrapper(XPathFactory.newInstance().newXPath().compile(path), path)
+```
+
+---
+
+## Node extension helpers
+
+Defined in `XmlExtensions.kt`. Used internally by the field classes and available for direct use.
+
+| Function | Description |
+|----------|-------------|
+| `Node.getNodeOrNull(path: XPathExpression): Node?` | Returns the single matched node, or `null`. |
+| `Node.getNodes(path: XPathExpression): List<Node>` | Returns all matched nodes in document order. |
+
+---
+
+## Worked example
+
+Declare fields in a Kotlin `object`:
+
+```kotlin
+object FibreVisionResponseFields {
+    val status                    = XmlStringField(compile("/FeasibilityResponse/Status"), "Status")
+    val firstProfileType          = XmlStringField(compile("/FeasibilityResponse/Profiles/Profile[1]/Type"), "Profile Type")
+    val firstProfileDownloadSpeed = XmlField(
+        compile("/FeasibilityResponse/Profiles/Profile[1]/DownloadSpeed"),
+        "Download Speed"
+    ) { it.textContent.toInt() }
+
+    val profileTypes = XmlListField(
+        compile("/FeasibilityResponse/Profiles/Profile/Type"),
+        "Profile Types"
+    ) { it.textContent }
+
+    private fun compile(path: String): XPathExpression =
+        XPathExpressionWrapper(XPathFactory.newInstance().newXPath().compile(path), path)
+}
+```
+
+Parse the response document and compose the matcher in the test:
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+```kotlin
+import dev.kensa.kotest.testsupport.field.of
+import dev.kensa.kotest.testsupport.field.withListOf
+import io.kotest.matchers.containExactlyInAnyOrder
+
+@Test
+fun `FibreVision XML response — asserted via XmlField DSL`() {
+    given(bothSuppliersAreServiceable())
+    whenever(aFeasibilityCheckIsRequestedForTheServiceAddress())
+
+    then(theFibreVisionResponseDocument(),
+        (status of "SERVICEABLE")
+            .and(firstProfileType of "FTTC")
+            .and(firstProfileDownloadSpeed of fixtures[broadbandDownloadSpeed])
+            .and(profileTypes matching containExactlyInAnyOrder("FTTC"))
+    )
+}
+
+private fun theFibreVisionResponseDocument() = StateCollector<Document> {
+    val xml = fibreVisionStub.feasibilityResponseFor(fixtures[trackingId])
+        ?: error("no response captured")
+    DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        .parse(ByteArrayInputStream(xml.toByteArray()))
+}
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+```kotlin
+import com.natpryce.hamkrest.and
+import com.natpryce.hamkrest.assertion.assertThat
+import dev.kensa.hamkrest.testsupport.field.of
+import dev.kensa.hamkrest.testsupport.field.withListOf
+import dev.kensa.hamkrest.testsupport.field.xml.XmlField
+import dev.kensa.hamkrest.testsupport.field.xml.XmlListField
+import dev.kensa.hamkrest.testsupport.field.xml.XmlStringField
+import dev.kensa.hamkrest.testsupport.field.xml.XPathExpressionWrapper
+
+@Test
+fun `FibreVision XML response — asserted via XmlField DSL`() {
+    given(bothSuppliersAreServiceable())
+    whenever(aFeasibilityCheckIsRequestedForTheServiceAddress())
+
+    then(theFibreVisionResponseDocument(),
+        (status of "SERVICEABLE")
+            and (firstProfileType of "FTTC")
+            and (firstProfileDownloadSpeed of 80)
+            and profileTypes.withListOf("FTTC")
+    )
+}
+```
+
+</TabItem>
+</Tabs>
+
+For a complete working example see [FibreVisionResponseFields.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FibreVisionResponseFields.kt) and [FieldDslExamplesTest.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FieldDslExamplesTest.kt) in clearwave-example.

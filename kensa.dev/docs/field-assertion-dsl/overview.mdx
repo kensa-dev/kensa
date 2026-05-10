@@ -1,0 +1,114 @@
+---
+sidebar_position: 1
+description: "What the Field Assertion DSL is, why to use it, and how to add the dependencies for Kotest or Hamkrest."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Field Assertion DSL
+
+*Documentation for Kensa 0.7.1.*
+
+Declare named fields once; compose them at the test call-site to produce readable, self-describing assertions on JSON and XML responses.
+
+```kotlin
+then(theFeasibilityResponseAsJson(),
+    (anAddressPostcode of fixtures[postcode])
+        .and(serviceable of true)
+        .and(profileCount of 3)
+        .and(fastestProfileType of "FTTP")
+        .and(fastestProfileSupplier of fixtures[voiceSupplier])
+        .and(fastestProfileDownloadSpeed of fixtures[voiceDownloadSpeed])
+)
+```
+
+Each line names the field being checked and the expected value. Failure messages include the field's human-readable description automatically — no custom assertion messages needed.
+
+## Why use it
+
+Asserting on a JSON or XML response typically requires either direct path access scattered throughout the test, a custom helper per assertion, or a third-party library incompatible with your assertion library. The field DSL avoids all three by producing standard `Matcher<T?>` values that compose with your existing library and integrate with Kensa's `then(collector, matcher)` overload without special wiring.
+
+## Kotest vs Hamkrest
+
+The DSL ships in two flavours. The API surface is identical — the only differences are the matcher type, composition syntax, and import paths.
+
+| | Kotest | Hamkrest |
+|---|---|---|
+| Matcher type | `io.kotest.matchers.Matcher<T?>` | `com.natpryce.hamkrest.Matcher<T?>` |
+| Composition | `.and(other)` method call | `and` / `or` infix operators |
+| String-field regex | `matching(regex)` via Kotest `match` | `matching(regex)` via `present(matches(...))` |
+| Ordered list | `containExactly` | `equalTo(list)` |
+| `shouldHaveAll` | calls `should(Matcher.all(...))` | calls `assertThat(this, allOf(...))` |
+
+Both flavours cover the same field classes ([Core](./core), [XML](./xml), [JSON](./json)) and phrasing sugar (`with`, `thatHas`, `thatIs`, `shouldHaveAll`).
+
+## Modules
+
+| Artifact | What it provides |
+|----------|-----------------|
+| `kensa-kotest-test-support` / `kensa-hamkrest-test-support` | `MatcherField<T, R>` interface + all extension functions |
+| `kensa-kotest-test-support-xml` / `kensa-hamkrest-test-support-xml` | XML field classes backed by W3C DOM + `javax.xml.xpath` |
+| `kensa-kotest-test-support-json` / `kensa-hamkrest-test-support-json` | JSON field classes backed by Jackson `JsonNode` + JSONPointer |
+
+The XML and JSON modules each depend on the corresponding core module. No additional XML library is needed beyond the JDK XPath API; no additional JSON library beyond Jackson.
+
+## Dependencies
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    testImplementation("dev.kensa:kensa-kotest-test-support:0.7.1")
+
+    // Add the modules you need:
+    testImplementation("dev.kensa:kensa-kotest-test-support-xml:0.7.1")
+    testImplementation("dev.kensa:kensa-kotest-test-support-json:0.7.1")
+}
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    testImplementation("dev.kensa:kensa-hamkrest-test-support:0.7.1")
+
+    // Add the modules you need:
+    testImplementation("dev.kensa:kensa-hamkrest-test-support-xml:0.7.1")
+    testImplementation("dev.kensa:kensa-hamkrest-test-support-json:0.7.1")
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Worked example
+
+The [clearwave-example](https://github.com/kensa-dev/clearwave-example) project contains end-to-end demonstrations:
+
+- [FeasibilityResponseFields.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FeasibilityResponseFields.kt) — JSON field declarations
+- [FibreVisionResponseFields.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FibreVisionResponseFields.kt) — XML field declarations
+- [FieldDslExamplesTest.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FieldDslExamplesTest.kt) — tests using those fields
+
+The rendered HTML report is at [kensa-dev.github.io/clearwave-example](https://kensa-dev.github.io/clearwave-example).
+
+## When to use this DSL
+
+Reach for it when:
+
+- You are asserting on a structured response (JSON, XML) and want the assertion to be self-documenting.
+- You want failures to name the field that failed rather than printing raw paths.
+- You want to compose multiple field checks into a single `then(collector, matcher)` call.
+- You have domain value types and need a custom infix function (see [Core — `toMatcher`](./core#tomatcher)).
+
+You do not need it for simple single-value assertions where a plain `shouldBe` or `equalTo` is already readable.
+
+## Next
+
+- [Core](./core) — `MatcherField`, extension functions, phrasing sugar
+- [XML Fields](./xml) — `XmlField` family
+- [JSON Fields](./json) — `JsonField` family
