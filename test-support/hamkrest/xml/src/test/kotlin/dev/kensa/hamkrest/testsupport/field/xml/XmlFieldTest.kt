@@ -184,6 +184,70 @@ class XmlFieldTest {
         sample.getNodes(compile("/order/line")).map { it.textContent } shouldBe listOf("first", "second", "second")
     }
 
+    @Test
+    fun `compileXPath wraps the compiled expression so path is retained`() {
+        val expr = compileXPath("/order/customer/name")
+        (expr as XPathExpressionWrapper).path shouldBe "/order/customer/name"
+    }
+
+    @Test
+    fun `XmlField path-string constructor compiles internally and exposes path`() {
+        val field = XmlField<String>("/order/@id") { it.nodeValue }
+        field.path shouldBe "/order/@id"
+        field.extract(sample) shouldBe "42"
+        field.name shouldBe "/order/@id"
+    }
+
+    @Test
+    fun `XmlField path-string with name uses the given name`() {
+        val field = XmlField<String>("/order/@id", "Id") { it.nodeValue }
+        field.path shouldBe "/order/@id"
+        field.name shouldBe "Id"
+    }
+
+    @Test
+    fun `XmlTextField path-string constructor extracts text content`() {
+        val field = XmlTextField<Int>("/order/@id") { it.toInt() }
+        field.extract(sample) shouldBe 42
+        field.path shouldBe "/order/@id"
+    }
+
+    @Test
+    fun `XmlStringField path-string constructor returns text verbatim`() {
+        val field = XmlStringField("/order/customer/name")
+        field.extract(sample) shouldBe "Alice"
+        field.path shouldBe "/order/customer/name"
+        field.name shouldBe "/order/customer/name"
+    }
+
+    @Test
+    fun `XmlNodeField path-string constructor returns the node`() {
+        val field = XmlNodeField("/order/customer")
+        field.extract(sample)?.nodeName shouldBe "customer"
+        field.path shouldBe "/order/customer"
+    }
+
+    @Test
+    fun `XmlListField path-string constructor extracts ordered list`() {
+        val field = XmlListField<String>("/order/line") { it.textContent }
+        field.extract(sample) shouldBe listOf("first", "second", "second")
+        field.path shouldBe "/order/line"
+    }
+
+    @Test
+    fun `XmlSetField path-string constructor extracts deduplicated set`() {
+        val field = XmlSetField<String>("/order/line") { it.textContent }
+        field.extract(sample) shouldBe setOf("first", "second")
+        field.path shouldBe "/order/line"
+    }
+
+    @Test
+    fun `path-string constructor composes with of`() {
+        val field = XmlStringField("/order/customer/name")
+        (field of "Alice").invoke(sample) shouldBe MatchResult.Match
+        (field of "Bob").invoke(sample).shouldBeInstanceOf<MatchResult.Mismatch>()
+    }
+
     private fun compile(path: String): XPathExpression =
         XPathExpressionWrapper(XPathFactory.newInstance().newXPath().compile(path), path)
 

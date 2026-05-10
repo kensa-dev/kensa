@@ -80,13 +80,10 @@ object FeasibilityResponseFields {
 Hovering **aProviderCode** reveals `/profiles/0/supplier`. The same applies to XML fields, where hovering reveals the XPath:
 
 ```kotlin
-val aFirstProfileType = XmlStringField(
-    XPathExpressionWrapper(xpath.compile("/FeasibilityResponse/Profiles/Profile[1]/Type"), "/FeasibilityResponse/Profiles/Profile[1]/Type"),
-    "Profile Type"
-)
+val aFirstProfileType = XmlStringField("/FeasibilityResponse/Profiles/Profile[1]/Type", "Profile Type")
 ```
 
-The hint reads the **string** preserved by `XPathExpressionWrapper`, not `XPathExpression.toString()`.
+The path-string constructor preserves the path internally (it wraps the compiled expression in [`XPathExpressionWrapper`](./xml#xpathexpressionwrapper) automatically). The hint reads that preserved **string**, not `XPathExpression.toString()`.
 
 ## Worked example
 
@@ -94,5 +91,5 @@ The hint reads the **string** preserved by `XPathExpressionWrapper`, not `XPathE
 
 ## Caveats
 
-- **XPath fields without `XPathExpressionWrapper` produce no hint.** `XmlField.path` returns `null` if the underlying expression isn't wrapped, and Kensa renders no hint for `null`. Always wrap your compiled expressions if you want path hints.
+- **XPath fields constructed from a raw `XPathExpression` produce no hint.** `XmlField.path` returns `null` unless the expression is an `XPathExpressionWrapper`. The path-string constructors apply the wrapper automatically; if you pass a pre-compiled expression for namespace or builder use, wrap it yourself if you want path hints.
 - **`JsonMapKeyField` exposes `keyName`, not `path`** — if you want a hint for it, use `hintParam = "keyName"`.

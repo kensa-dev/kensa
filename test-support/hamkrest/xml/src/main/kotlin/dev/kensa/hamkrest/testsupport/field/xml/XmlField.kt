@@ -22,6 +22,8 @@ open class XmlField<T>(
     constructor(expression: XPathExpression, transform: (Node) -> T?) : this({ expression }, null, transform)
     constructor(expression: XPathExpression, name: String, transform: (Node) -> T?) : this({ expression }, name, transform)
     constructor(expressionProvider: () -> XPathExpression, transform: (Node) -> T?) : this(expressionProvider, null, transform)
+    constructor(path: String, transform: (Node) -> T?) : this({ compileXPath(path) }, path, transform)
+    constructor(path: String, name: String, transform: (Node) -> T?) : this({ compileXPath(path) }, name, transform)
 
     private val expression by lazy(expressionProvider)
 
@@ -45,6 +47,8 @@ open class XmlTextField<T>(
 ) : XmlField<T>(expressionProvider, name, { it.textContent?.let(transform) }) {
     constructor(expression: XPathExpression, transform: (String) -> T?) : this({ expression }, null, transform)
     constructor(expression: XPathExpression, name: String, transform: (String) -> T?) : this({ expression }, name, transform)
+    constructor(path: String, transform: (String) -> T?) : this({ compileXPath(path) }, path, transform)
+    constructor(path: String, name: String, transform: (String) -> T?) : this({ compileXPath(path) }, name, transform)
 }
 
 /**
@@ -59,6 +63,8 @@ open class XmlStringField(
     name: String? = null,
 ) : XmlTextField<String>(expressionProvider, name, { it }) {
     constructor(expression: XPathExpression, name: String? = null) : this({ expression }, name)
+    constructor(path: String) : this({ compileXPath(path) }, path)
+    constructor(path: String, name: String) : this({ compileXPath(path) }, name)
 }
 
 /** An [XmlField] that returns the matched [Node] itself. */
@@ -67,6 +73,8 @@ open class XmlNodeField(
     name: String? = null,
 ) : XmlField<Node>(expressionProvider, name, { it }) {
     constructor(expression: XPathExpression, name: String? = null) : this({ expression }, name)
+    constructor(path: String) : this({ compileXPath(path) }, path)
+    constructor(path: String, name: String) : this({ compileXPath(path) }, name)
 }
 
 /**
@@ -81,6 +89,8 @@ open class XmlListField<T>(
     constructor(expression: XPathExpression, transform: (Node) -> T) : this({ expression }, null, transform)
     constructor(expression: XPathExpression, name: String, transform: (Node) -> T) : this({ expression }, name, transform)
     constructor(expressionProvider: () -> XPathExpression, transform: (Node) -> T) : this(expressionProvider, null, transform)
+    constructor(path: String, transform: (Node) -> T) : this({ compileXPath(path) }, path, transform)
+    constructor(path: String, name: String, transform: (Node) -> T) : this({ compileXPath(path) }, name, transform)
 
     private val expression by lazy(expressionProvider)
     override val name: String = name ?: this::class.simpleName!!
@@ -103,6 +113,8 @@ open class XmlSetField<T>(
     constructor(expressionProvider: () -> XPathExpression, transform: (Node) -> T) : this(expressionProvider, null, transform)
     constructor(expression: XPathExpression, transform: (Node) -> T) : this({ expression }, transform)
     constructor(expression: XPathExpression, name: String, transform: (Node) -> T) : this({ expression }, name, transform)
+    constructor(path: String, transform: (Node) -> T) : this({ compileXPath(path) }, path, transform)
+    constructor(path: String, name: String, transform: (Node) -> T) : this({ compileXPath(path) }, name, transform)
 
     private val expression by lazy(expressionProvider)
     override val name: String = name ?: this::class.simpleName!!

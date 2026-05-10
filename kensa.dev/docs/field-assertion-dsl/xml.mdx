@@ -31,6 +31,21 @@ All XML field classes are `open` and available for subclassing. The only differe
 
 ---
 
+## Two construction styles
+
+Every XML field class accepts either a path **string** or a pre-compiled **`XPathExpression`**. Pick whichever fits the case:
+
+| | Path-string constructor | `XPathExpression` constructor |
+|---|---|---|
+| Use when | Plain XPath, no namespaces | Namespaces, fluent XPath builders, dynamic / lazy compilation |
+| Compilation | Internal, thread-safe, lazy on first extract | Caller-managed |
+| `path` property | Always non-null | Non-null only when wrapped in [`XPathExpressionWrapper`](#xpathexpressionwrapper) |
+| Default `name` | The path string | Class simple name |
+
+The path-string form is the simpler default. Reach for the `XPathExpression` form only when you need to inject a `NamespaceContext` or compose paths via a builder DSL.
+
+---
+
 ## Field classes
 
 ### `XmlField<T>`
@@ -38,6 +53,12 @@ All XML field classes are `open` and available for subclassing. The only differe
 The base class. Evaluates an XPath expression against a `Node` and applies `transform` to the matched node.
 
 ```kotlin
+// Path-string form (recommended for plain XPath):
+val aProvider = XmlField<Provider>("/order/@provider") {
+    Provider.fromString(it.nodeValue)
+}
+
+// Compiled-expression form (use for namespaces / builders):
 val aProvider = XmlField(
     compile("/order/@provider"),
     "Provider"
@@ -48,12 +69,14 @@ val aProvider = XmlField(
 
 | Signature | Notes |
 |-----------|-------|
+| `XmlField(path: String, transform: (Node) -> T?)` | Compiles internally; `name` defaults to `path` |
+| `XmlField(path: String, name: String, transform: (Node) -> T?)` | Compiles internally; explicit name |
 | `XmlField(expression: XPathExpression, transform: (Node) -> T?)` | Name derived from class simple name |
 | `XmlField(expression: XPathExpression, name: String, transform: (Node) -> T?)` | Explicit name |
 | `XmlField(expressionProvider: () -> XPathExpression, transform: (Node) -> T?)` | Lazy expression |
 | `XmlField(expressionProvider: () -> XPathExpression, name: String?, transform: (Node) -> T?)` | Lazy + explicit name |
 
-The `path` property returns the XPath string when the expression is an `XPathExpressionWrapper`; `null` otherwise.
+The `path` property returns the XPath string when the expression is an `XPathExpressionWrapper`; `null` otherwise. Path-string constructors always wrap, so `path` is non-null in that case.
 
 ### `XmlTextField<T>`
 
@@ -65,13 +88,14 @@ val anAmount = XmlTextField(compile("/order/amount"), "Amount") { it.toBigDecima
 
 ### `XmlStringField`
 
-Returns the matched node's `textContent` verbatim.
+Returns the matched node's `textContent` verbatim. Use this when you don't need a transform — it's the closest XML analogue to JSON's `JsonTextField`.
 
 ```kotlin
-val status = XmlStringField(compile("/FeasibilityResponse/Status"), "Status")
+val status = XmlStringField("/FeasibilityResponse/Status")
+val customerName = XmlStringField("/order/customer/name", "Customer Name")
 ```
 
-Constructors accept either a pre-compiled `XPathExpression` or a lazy `() -> XPathExpression`; `name` is optional.
+Also accepts a pre-compiled `XPathExpression` or a lazy `() -> XPathExpression` for namespace / builder cases.
 
 ### `XmlNodeField`
 
@@ -121,12 +145,15 @@ Wraps a compiled `XPathExpression` and retains the original path string. Wrappin
 1. The `path` property on `XmlField` returns the XPath string (useful for tooling and report rendering).
 2. The path is readable when debugging test failures.
 
-Declare a private `compile` helper in each field object to avoid repeating the boilerplate:
+The path-string constructors apply this wrapper automatically. Use `compileXPath` directly when you want to compile once and reuse the result:
 
 ```kotlin
-private fun compile(path: String): XPathExpression =
-    XPathExpressionWrapper(XPathFactory.newInstance().newXPath().compile(path), path)
+val orderId = compileXPath("/order/@id")  // returns an XPathExpressionWrapper
+val a = XmlField<String>(orderId) { it.nodeValue }
+val b = XmlField<Int>(orderId, "Numeric Id") { it.nodeValue.toInt() }
 ```
+
+For namespace-aware compilation, build your own `XPathExpression` with a `NamespaceContext` and pass it directly to the field's constructor (then wrap it yourself if you want the `path` property populated).
 
 ---
 
@@ -147,20 +174,14 @@ Declare fields in a Kotlin `object`:
 
 ```kotlin
 object FibreVisionResponseFields {
-    val status                    = XmlStringField(compile("/FeasibilityResponse/Status"), "Status")
-    val firstProfileType          = XmlStringField(compile("/FeasibilityResponse/Profiles/Profile[1]/Type"), "Profile Type")
-    val firstProfileDownloadSpeed = XmlField(
-        compile("/FeasibilityResponse/Profiles/Profile[1]/DownloadSpeed"),
-        "Download Speed"
-    ) { it.textContent.toInt() }
-
-    val profileTypes = XmlListField(
-        compile("/FeasibilityResponse/Profiles/Profile/Type"),
-        "Profile Types"
-    ) { it.textContent }
-
-    private fun compile(path: String): XPathExpression =
-        XPathExpressionWrapper(XPathFactory.newInstance().newXPath().compile(path), path)
+    val status                     = XmlStringField("/FeasibilityResponse/Status", "Status")
+    val firstProfileType           = XmlStringField("/FeasibilityResponse/Profiles/Profile[1]/Type", "Profile Type")
+    val firstProfileDownloadSpeed  = XmlField<Int>("/FeasibilityResponse/Profiles/Profile[1]/DownloadSpeed", "Download Speed") {
+        it.textContent.toInt()
+    }
+    val profileTypes               = XmlListField<String>("/FeasibilityResponse/Profiles/Profile/Type", "Profile Types") {
+        it.textContent
+    }
 }
 ```
 
