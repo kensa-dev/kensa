@@ -1,5 +1,30 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.0
+New features:
+  - **Kotest Field Assertion DSL** — three new modules (`kensa-kotest-test-support`, `-xml`, `-json`) providing a `MatcherField<T, R>` interface and composable, named-field matchers for JSON and XML payloads. Extension functions `of` / `matching` / `withListOf` / `withSetOf` / `toMatcher` produce standard `Matcher<T?>` values that compose with `then(collector, matcher)`. Failure messages are auto-prefixed with the field's description. [Docs](https://kensa.dev/docs/field-assertion-dsl).
+  - **Hamkrest Field Assertion DSL** — three new modules (`kensa-hamkrest-test-support`, `-xml`, `-json`) providing a `MatcherField<T, R>` interface and composable, named-field matchers for JSON and XML payloads. Extension functions `of` / `matching` / `withListOf` / `withSetOf` / `toMatcher` produce standard `Matcher<T?>` values that compose with `then(collector, matcher)`. Failure messages are auto-prefixed with the field's description. [Docs](https://kensa.dev/docs/field-assertion-dsl).
+  - **Phrasing sugar** in both flavours — `with`, `thatHas` (single + vararg), `thatIs`, `shouldHaveAll` — for assertions that read like English at the call-site. [Docs](https://kensa.dev/docs/field-assertion-dsl/core#phrasing-sugar).
+  - `@RenderedValueWithHint` integration for field DSL — JSONPointer / XPath surfaced as on-hover hints in the report. [Docs](https://kensa.dev/docs/field-assertion-dsl/report-rendering).
+  - **Site mode** for HTML reports — runtime, UI, and CLI integration. [Docs](https://kensa.dev/docs/build-plugins/site-mode).
+  - **Experimental UI test framework** with Playwright and Selenium adapters (`framework-playwright`, `framework-selenium`, plus `-junit5` / `-junit6` variants). [Docs](https://kensa.dev/docs/ui-testing/overview).
+  - **Component diagram** view. Shows all interactions between components in a test suite. [Docs](https://kensa.dev/docs/component-diagrams).
+  - **UI** Click-to-filter passed / failed / disabled badges on the sidebar footer.
+  - **UI** Scrollable expandable popups.
+  - Missing `andEventually` overloads on the kotest assertion entry points.
+
+Changed:
+  - CLI updated for site mode; warns on Kensa-version drift between the CLI and the report it serves. [Docs](https://kensa.dev/docs/cli).
+  - Local builds now default the version to `snapshot-version.txt`.
+
+Fixes:
+  - `getFailingLine` choosing the wrong line number.
+  - Default-mode `@ExpandableRenderedValue` rendering.
+  - Kotest matcher double-execute inside `andEventually`.
+
+Breaking:
+  - Legacy UI removed (deprecated in 0.7.0; `Configuration.uiMode` and `KensaConfigurator.withUiMode(...)` are gone, along with the `UiMode` enum).
+
 ### v0.7.1
   - Fix #132: don't clear sidebar search on Escape while a dialog is open
   - Fix #131: match issue ids exactly, not as substrings
