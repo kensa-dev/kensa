@@ -10,6 +10,7 @@ import dev.kensa.parse.ParserCache
 import dev.kensa.parse.TestInvocationParser
 import dev.kensa.parse.java.JavaParserDelegate
 import dev.kensa.parse.kotlin.KotlinParserDelegate
+import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.render.diagram.SequenceDiagramFactory
 import dev.kensa.state.TestInvocationFactory
 import java.lang.reflect.Method
@@ -100,7 +101,8 @@ class KensaLifecycleManager private constructor(
         fun initialise(descriptor: FrameworkDescriptor): KensaLifecycleManager {
             val configuration = loadConfiguration()
             val parserCache = ParserCache()
-            val testInvocationFactory = testInvocationFactory(configuration, parserCache, descriptor)
+            val componentDiagramFactory = ComponentDiagramFactory()
+            val testInvocationFactory = testInvocationFactory(configuration, parserCache, descriptor, componentDiagramFactory)
             val testContainerFactory = TestContainerFactory(
                 descriptor.initialStateFor,
                 descriptor.displayNameFor,
@@ -109,7 +111,7 @@ class KensaLifecycleManager private constructor(
                 configuration
             )
             val kensaContext = KensaContext(testContainerFactory)
-            val resultWriter = lazy { ResultWriter(configuration) }
+            val resultWriter = lazy { ResultWriter(configuration, componentDiagramFactory) }
             return KensaLifecycleManager(configuration, kensaContext, resultWriter)
                 .also { currentInstance.set(it) }
         }
@@ -131,7 +133,7 @@ class KensaLifecycleManager private constructor(
             }
         }
 
-        private fun testInvocationFactory(configuration: Configuration, parserCache: ParserCache, descriptor: FrameworkDescriptor): TestInvocationFactory =
+        private fun testInvocationFactory(configuration: Configuration, parserCache: ParserCache, descriptor: FrameworkDescriptor, componentDiagramFactory: ComponentDiagramFactory): TestInvocationFactory =
             TestInvocationFactory(
                 TestInvocationParser(configuration),
                 MethodParser(
@@ -145,7 +147,8 @@ class KensaLifecycleManager private constructor(
                         )
                     )
                 ),
-                SequenceDiagramFactory(configuration.umlDirectives)
+                SequenceDiagramFactory(configuration.umlDirectives),
+                componentDiagramFactory
             )
     }
 }

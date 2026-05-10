@@ -92,6 +92,7 @@ export interface Invocation {
     fixtures: NameAndValues
     fixtureSpecs: FixtureSpec[]
     sequenceDiagram?: string
+    componentDiagram?: string
     executionException: Record<string, string>
     customTabContents?: CustomTabContent[]
     renderErrors?: RenderError[]

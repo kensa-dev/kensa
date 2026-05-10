@@ -117,6 +117,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "passingTest()"
@@ -252,6 +253,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithExpandableScenarioParameter()"
@@ -381,6 +383,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithExpandableSentenceExpression()"

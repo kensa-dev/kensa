@@ -95,6 +95,7 @@
           ],
           "fixtureSpecs":[{"key":"JavaStringFixture","parents":[]},{"key":"JavaBooleanFixture","parents":[]}],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test1()"
@@ -202,6 +203,7 @@
           ],
           "fixtureSpecs":[{"key":"JavaStringFixture","parents":[]},{"key":"JavaChildStringFixture","parents":["JavaStringFixture"]}],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test2()"
@@ -269,6 +271,7 @@
           ],
           "fixtureSpecs":[{"key":"JavaPrivateFixture","parents":[]},{"key":"JavaPublicFixture","parents":["JavaPrivateFixture"]}],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test3()"

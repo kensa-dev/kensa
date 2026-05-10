@@ -63,6 +63,7 @@ object JsonTransforms {
                             .add("fixtures", asJsonArray(i.fixturesNamesAndValues, nvAsJson(renderers)))
                             .add("fixtureSpecs", asJsonArray(i.fixtures.specs(), fixtureSpecAsJson()))
                             .add("sequenceDiagram", i.sequenceDiagram?.toString())
+                            .add("componentDiagram", i.componentDiagram?.toString())
                             .add("state", i.state.description)
                             .add("executionException", executionExceptionFrom(i))
                             .add("displayName", i.parameterizedTestDescription ?: i.displayName)

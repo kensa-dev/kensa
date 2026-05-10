@@ -7,6 +7,7 @@ import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms.toIndexJson
 import dev.kensa.output.json.JsonTransforms.toJsonString
 import dev.kensa.output.json.JsonTransforms.toJsonWith
+import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.sentence.Acronym
 import dev.kensa.tabs.TabArtifactManager
 import dev.kensa.util.IoUtil
@@ -16,7 +17,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 import com.eclipsesource.json.Json.`object` as jsonObject
 
-class ResultWriter(private val configuration: Configuration) {
+class ResultWriter(private val configuration: Configuration, private val componentDiagramFactory: ComponentDiagramFactory) {
 
     init {
         IoUtil.recreate(configuration.outputDir)
@@ -108,6 +109,13 @@ class ResultWriter(private val configuration: Configuration) {
 
     private fun writeIndices(containers: List<TestContainer>) {
         with(configuration) {
+            val aggregateEntries = containers
+                .flatMap { it.orderedMethodContainers }
+                .flatMap { it.invocations }
+                .flatMap { it.interactions }
+                .toSet()
+            val aggregateDiagram = componentDiagramFactory.create(aggregateEntries)
+
             val json = jsonObject()
                 .add(
                     "indices",
@@ -115,6 +123,7 @@ class ResultWriter(private val configuration: Configuration) {
                         containers.forEach { add(toIndexJson(it.testClass.name)(it)) }
                     }
                 )
+                .add("aggregateComponentDiagram", aggregateDiagram?.toString())
             val string = toJsonString()(json)
 
             val indicesPath: Path = outputDir.resolve("indices.json")

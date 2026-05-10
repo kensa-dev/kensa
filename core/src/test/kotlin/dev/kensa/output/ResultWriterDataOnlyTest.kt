@@ -1,6 +1,7 @@
 package dev.kensa.output
 
 import dev.kensa.Configuration
+import dev.kensa.render.diagram.ComponentDiagramFactory
 import io.kotest.matchers.paths.shouldExist
 import io.kotest.matchers.paths.shouldNotExist
 import org.junit.jupiter.api.Test
@@ -19,7 +20,7 @@ class ResultWriterDataOnlyTest {
             dataOnly = true
         }
 
-        val writer = ResultWriter(configuration)
+        val writer = ResultWriter(configuration, ComponentDiagramFactory())
         writer.write(emptyList())
 
         sourceDir.resolve("index.html").shouldNotExist()
@@ -36,7 +37,7 @@ class ResultWriterDataOnlyTest {
             dataOnly = false
         }
 
-        val writer = ResultWriter(configuration)
+        val writer = ResultWriter(configuration, ComponentDiagramFactory())
         writer.write(emptyList())
 
         tempDir.resolve("index.html").shouldExist()
@@ -56,7 +57,7 @@ class ResultWriterDataOnlyTest {
             outputDir = uiSource
             dataOnly = true
         }
-        ResultWriter(configuration).write(emptyList())
+        ResultWriter(configuration, ComponentDiagramFactory()).write(emptyList())
 
         sentinel.shouldExist()
     }

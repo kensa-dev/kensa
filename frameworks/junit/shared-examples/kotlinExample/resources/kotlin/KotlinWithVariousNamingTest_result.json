@@ -24,6 +24,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "My Named Test 1"
@@ -48,6 +49,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test1()"
@@ -72,6 +74,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test 1()"
@@ -96,6 +99,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "Test 1()"
@@ -120,6 +124,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "Test 1 \ud83e\udd21()"
@@ -148,6 +153,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "[1] \"one\""
@@ -166,6 +172,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "[2] \"two\""
@@ -184,6 +191,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "[3] \"three 3\ufe0f\u20e3\""

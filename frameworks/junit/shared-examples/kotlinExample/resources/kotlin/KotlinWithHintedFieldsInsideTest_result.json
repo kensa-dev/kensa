@@ -75,6 +75,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "passingTest()"

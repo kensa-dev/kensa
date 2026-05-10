@@ -106,6 +106,7 @@
             }
           ],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test1()"
@@ -226,6 +227,7 @@
             }
           ],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test2()"
@@ -283,6 +285,7 @@
             }
           ],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test3()"
@@ -349,6 +352,7 @@
             }
           ],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test4()"
@@ -415,6 +419,7 @@
             }
           ],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "test5()"

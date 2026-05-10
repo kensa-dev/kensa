@@ -6,6 +6,7 @@ import dev.kensa.context.TestContext
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.parse.*
+import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.render.diagram.SequenceDiagramFactory
 import dev.kensa.state.TestState.Passed
 import io.kotest.matchers.collections.shouldHaveSize
@@ -23,7 +24,8 @@ class TestInvocationFactoryTest {
     private val parser: MethodParser = mock()
     private val invocationParser: TestInvocationParser = mock()
     private val diagramFactory: SequenceDiagramFactory = mock()
-    private val factory = TestInvocationFactory(invocationParser, parser, diagramFactory)
+    private val componentDiagramFactory: ComponentDiagramFactory = mock()
+    private val factory = TestInvocationFactory(invocationParser, parser, diagramFactory, componentDiagramFactory)
 
     @Test
     fun `returns invocation with error sentences when parsing fails`() {
@@ -37,6 +39,7 @@ class TestInvocationFactoryTest {
             on { attachments } doReturn Attachments()
         }
         whenever(diagramFactory.create(any())).thenReturn(null)
+        whenever(componentDiagramFactory.create(any())).thenReturn(null)
 
         val cause = RuntimeException("root cause detail")
         whenever(invocationParser.parse(any(), any())).thenThrow(KensaException("parse failed", RuntimeException("parse failed", cause)))
@@ -63,6 +66,7 @@ class TestInvocationFactoryTest {
             on { attachments } doReturn Attachments()
         }
         whenever(diagramFactory.create(any())).thenReturn(null)
+        whenever(componentDiagramFactory.create(any())).thenReturn(null)
 
         val parsedInvocation = mock<ParsedInvocation> {
             on { sentences } doReturn emptyList()

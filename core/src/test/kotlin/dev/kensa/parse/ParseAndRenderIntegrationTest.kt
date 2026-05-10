@@ -10,6 +10,7 @@ import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.parse.kotlin.KotlinParser
 import dev.kensa.parse.kotlin.KotlinParserDelegate
+import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.render.diagram.SequenceDiagramFactory
 import dev.kensa.state.TestInvocationContext
 import dev.kensa.state.TestInvocationFactory
@@ -106,7 +107,8 @@ class ParseAndRenderIntegrationTest {
         val invocationParser: TestInvocationParser = mock()
         val methodParser: MethodParser = mock()
         val diagramFactory: SequenceDiagramFactory = mock()
-        val factory = TestInvocationFactory(invocationParser, methodParser, diagramFactory)
+        val componentDiagramFactory: ComponentDiagramFactory = mock()
+        val factory = TestInvocationFactory(invocationParser, methodParser, diagramFactory, componentDiagramFactory)
 
         val method = ParseAndRenderIntegrationTest::class.java.getDeclaredMethod(
             "render errors from TestInvocationParser are captured in TestInvocation"
@@ -127,6 +129,7 @@ class ParseAndRenderIntegrationTest {
             on { attachments } doReturn Attachments()
         }
         whenever(diagramFactory.create(any())).thenReturn(null)
+        whenever(componentDiagramFactory.create(any())).thenReturn(null)
 
         val renderErrors = listOf(
             RenderError("ValueResolution", "field x not found"),

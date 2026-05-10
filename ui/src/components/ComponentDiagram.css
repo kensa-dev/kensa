@@ -1,0 +1,34 @@
+.component-diagram svg {
+  max-width: none;
+  display: block;
+  background: transparent;
+}
+
+/* ─── Entity boxes ────────────────────────────────────────── */
+.component-diagram svg g.entity rect {
+  fill: hsl(var(--card)) !important;
+  stroke: hsl(var(--border)) !important;
+  stroke-width: 1 !important;
+}
+.dark .component-diagram svg g.entity rect {
+  fill: hsl(var(--muted)) !important;
+}
+
+/* ─── Entity labels ───────────────────────────────────────── */
+.component-diagram svg g.entity text {
+  fill: hsl(var(--foreground)) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 12px !important;
+}
+
+/* ─── Edges ───────────────────────────────────────────────── */
+.component-diagram svg line {
+  stroke: hsl(var(--muted-foreground) / 0.55) !important;
+  stroke-width: 1 !important;
+}
+
+.component-diagram svg polygon {
+  fill: hsl(var(--muted-foreground) / 0.65) !important;
+  stroke: hsl(var(--muted-foreground) / 0.65) !important;
+  stroke-width: 1 !important;
+}

@@ -5,6 +5,7 @@ import {cn} from "@/lib/utils";
 import {Tab} from "@/constants";
 import {Interaction, Invocation, TestState} from "@/types/Test";
 import {SequenceDiagram} from "@/components/SequenceDiagram";
+import {ComponentDiagram} from "@/components/ComponentDiagram";
 import {loadText} from "@/lib/utils";
 import {useSource} from "@/contexts/SourceContext";
 import {CustomTabPanel} from "@/components/CustomTabPanel";
@@ -30,6 +31,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
         {id: Tab.CapturedOutputs, label: 'Outputs', count: invocation[Tab.CapturedOutputs]?.length},
         {id: Tab.Fixtures, label: 'Fixtures', count: invocation[Tab.Fixtures]?.length},
         {id: Tab.SequenceDiagram, label: 'Sequence Diagram', exists: !!invocation[Tab.SequenceDiagram]},
+        {id: Tab.ComponentDiagram, label: 'Component Diagram', exists: !!invocation[Tab.ComponentDiagram]},
     ].filter(t => (t.count && t.count > 0) || t.exists);
 
     const customTabs = (invocation.customTabContents ?? []).map((t) => ({
@@ -220,6 +222,10 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                             highlights={invocation.highlights}
                             testState={testState}
                         />
+                    </TabsContent>
+
+                    <TabsContent value={Tab.ComponentDiagram} className="mt-0">
+                        <ComponentDiagram svg={invocation[Tab.ComponentDiagram] ?? ""} />
                     </TabsContent>
 
                     {customTabs.map((tab) => (

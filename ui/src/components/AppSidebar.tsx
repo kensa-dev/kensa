@@ -1,7 +1,7 @@
 import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
-import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, Search, X} from "lucide-react"
+import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, Network, Search, X} from "lucide-react"
 import {buildTree} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
@@ -16,6 +16,7 @@ import {useConfig} from "@/contexts/ConfigContext"
 import {matchesAnyIssue} from "@/util/issueMatch"
 import {hasOpenDialog} from "@/util/escapeGuard"
 import {setStateFilter} from "@/util/stateFilterToggle"
+import {useNavigate, useLocation} from "react-router-dom"
 
 const SourceMetaContext = React.createContext<Record<string, { generatedAt?: string }>>({});
 
@@ -69,9 +70,13 @@ interface AppSidebarProps {
     isNative?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
     onFilterApplied?: (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => void;
+    aggregateComponentDiagram?: string;
 }
 
-export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied}: AppSidebarProps) {
+export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied, aggregateComponentDiagram}: AppSidebarProps) {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const isSystemView = location.pathname === '/system-view';
     const allIssues = React.useMemo(() => {
         const issues = new Set<string>();
         const collect = (nodes: Indices) => {
@@ -519,6 +524,26 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
             </SidebarHeader>
 
             <SidebarContent className="px-2 gap-1">
+                {!!aggregateComponentDiagram && (
+                    <SidebarGroup className="p-1 pb-0">
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    size="sm"
+                                    isActive={isSystemView}
+                                    onClick={() => navigate('/system-view')}
+                                    className={cn(
+                                        "text-[13px] transition-all",
+                                        isSystemView ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground"
+                                    )}
+                                >
+                                    <Network className="h-3.5 w-3.5 shrink-0"/>
+                                    <span>System View</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+                )}
                 <SidebarGroup className="p-1">
                     <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/90 h-7 px-2">
                         Test Explorer

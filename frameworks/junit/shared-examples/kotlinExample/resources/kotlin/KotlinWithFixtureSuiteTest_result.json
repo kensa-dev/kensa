@@ -59,6 +59,7 @@
             }
           ],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "can access fixtures from a suite using block syntax()"

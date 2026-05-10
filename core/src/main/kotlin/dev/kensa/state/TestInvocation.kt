@@ -5,6 +5,7 @@ import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.parse.ParsedInvocation
 import dev.kensa.parse.RenderError
+import dev.kensa.render.diagram.ComponentDiagram
 import dev.kensa.render.diagram.SequenceDiagram
 import dev.kensa.sentence.RenderedSentence
 import dev.kensa.state.TestState.Failed
@@ -18,6 +19,7 @@ class TestInvocation(
     val displayName: String,
     val executionException: Throwable?,
     val sequenceDiagram: SequenceDiagram?,
+    val componentDiagram: ComponentDiagram?,
     parsedInvocation: ParsedInvocation,
     interactions: CapturedInteractions,
     val outputs: CapturedOutputs,

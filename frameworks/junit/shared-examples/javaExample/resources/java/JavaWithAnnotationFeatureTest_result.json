@@ -84,6 +84,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithScenario()"
@@ -181,6 +182,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithHighlight()"
@@ -231,6 +233,7 @@
           "fixtures": [],
           "fixtureSpecs":[],
           "sequenceDiagram": null,
+          "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "testWithRenderedValueFunctionWithParameters()"

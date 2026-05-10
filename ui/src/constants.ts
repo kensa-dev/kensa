@@ -11,6 +11,7 @@ export const Tab = {
     Givens: 'givens',
     Parameters: 'parameters',
     SequenceDiagram: 'sequenceDiagram',
+    ComponentDiagram: 'componentDiagram',
 } as const;
 
 export type SectionType = typeof Section[keyof typeof Section];

@@ -17,6 +17,7 @@ import {Badge} from "@/components/ui/badge";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
 import {TestContainer} from './components/TestContainer';
 import {NotesCard} from './components/NotesCard';
+import {SystemViewPage} from './components/SystemViewPage';
 import {TooltipProvider} from "@/components/ui/tooltip";
 import {hasOpenDialog, shouldClearSearchOnEscape} from "@/util/escapeGuard";
 
@@ -33,6 +34,7 @@ const App = () => {
     const [isMounted, setIsMounted] = useState<boolean>(false);
     const [environment, setEnvironment] = useState<string>(() => localStorage.getItem('kensa-env') || "local");
     const [indices, setIndices] = useState<Indices>([]);
+    const [aggregateComponentDiagram, setAggregateComponentDiagram] = useState<string>("");
     const [selectedIndex, setSelectedIndex] = useState<SelectedIndex | null>(null);
     const [testDetail, setTestDetail] = useState<TestDetail | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -198,7 +200,7 @@ const App = () => {
                     `Configuration (${source.id})`,
                     {baseUrl: source.url}
                 );
-                const indicesData = await loadJson<{ indices: Indices }>(
+                const indicesData = await loadJson<{ indices: Indices; aggregateComponentDiagram?: string }>(
                     'indices.json',
                     `Indices tree (${source.id})`,
                     {baseUrl: source.url}
@@ -208,9 +210,13 @@ const App = () => {
 
             const sourceConfigsMap: Record<string, KensaConfig> = {};
             const roots: Indices = [];
+            let aggregateSvg = "";
             for (const {source, config, indicesData} of perSource) {
                 if (config) sourceConfigsMap[source.id] = config;
                 const sourceIndices = indicesData?.indices ?? [];
+                if (!aggregateSvg && indicesData?.aggregateComponentDiagram) {
+                    aggregateSvg = indicesData.aggregateComponentDiagram;
+                }
                 if (sourceIndices.length === 0) continue;
                 const tagged = tagWithSourceId(sourceIndices, source.id);
                 roots.push({
@@ -230,6 +236,7 @@ const App = () => {
             setSourceConfigs(sourceConfigsMap);
             setSourceUrls(urls);
             setIndices(roots);
+            setAggregateComponentDiagram(aggregateSvg);
             // First source's config flows through ConfigContext until the user selects a test;
             // selection updates it via the selectedIndex effect below.
             const first = manifest.sources[0];
@@ -345,6 +352,8 @@ const App = () => {
         );
     }, [allTests, commandQuery]);
 
+    const isSystemView = location.pathname === '/system-view';
+
     const activeSourceBaseUrl = selectedIndex?.sourceId ? (sourceUrls[selectedIndex.sourceId] ?? '.') : '.';
 
     const sourceMetaById = useMemo(() => {
@@ -432,6 +441,7 @@ const App = () => {
                                 onSearchChange={onSearchChange}
                                 environment={environment}
                                 onEnvChange={setEnvironment}
+                                aggregateComponentDiagram={aggregateComponentDiagram}
                                 onSelect={(node, firstMatchingMethod, allMatchingMethods) => {
                                     if (node.id.startsWith('pkg:') || node.id.startsWith('src:')) {
                                         return;
@@ -545,7 +555,9 @@ const App = () => {
                                 </header>
 
                                 <main className="flex-1 overflow-y-auto bg-muted/30">
-                                    {selectedIndex ? (
+                                    {isSystemView ? (
+                                        <SystemViewPage aggregateComponentDiagram={aggregateComponentDiagram}/>
+                                    ) : selectedIndex ? (
                                         <div className="p-6 lg:p-4">
                                             <div className="max-w-[1400px] mx-auto">
                                                 {isLoading ? (

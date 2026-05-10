@@ -76,6 +76,7 @@ dependencies {
     testImplementation(libs.kotestAssertionsCoreJvm)
     testImplementation(libs.hamcrestCore)
     testImplementation(libs.mockitoKotlin)
+    testImplementation(libs.plantuml)
     testImplementation(sourceSets["example"].output)
 
     "testSupportImplementation"(project(":core"))
@@ -131,38 +132,19 @@ tasks {
         }
         configurations = listOf(plantUmlBundle)
         exclude(
-            "org/eclipse/elk/**",
-            "org/eclipse/emf/**",
             "org/scilab/**",
-            "com/google/common/**",
-            "com/google/thirdparty/**",
-            "com/google/errorprone/**",
-            "com/google/j2objc/**",
-            "org/checkerframework/**",
-            "org/jspecify/**",
             "META-INF/INDEX.LIST",
             "META-INF/*.SF",
             "META-INF/*.DSA",
             "META-INF/*.RSA",
 
-            "**/*elk*/**",
-            "**/*emf*/**",
             "**/*jlatexmath*/**",
             "**/*scilab*/**",
-            "**/*guava*/**",
-            "**/*common*/**",
-            "**/*thirdparty*/**",
-            "**/*errorprone*/**",
-            "**/*j2objc*/**",
-            "**/*checkerframework*/**",
-            "**/*jspecify*/**",
             "**/zxing/**",
 
             "docs/**",
-            "gen/**",
             "jcckit/**",
             "stdlib/**",
-            "smetana/**",
             "schema/**",
             "svg/**",
             "themes/**",
@@ -171,8 +153,7 @@ tasks {
 
             "META-INF/maven/**",
             "META-INF/versions/**",
-            "META-INF/proguard/**",
-            "META-INF/services/org.eclipse.elk*"
+            "META-INF/proguard/**"
         )
         mergeServiceFiles()
     }

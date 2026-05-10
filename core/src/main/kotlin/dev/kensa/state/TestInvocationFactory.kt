@@ -6,6 +6,7 @@ import dev.kensa.parse.MethodParser
 import dev.kensa.parse.ParseError
 import dev.kensa.parse.ParsedInvocation
 import dev.kensa.parse.TestInvocationParser
+import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.render.diagram.SequenceDiagramFactory
 import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.RenderedToken.RenderedValueToken
@@ -14,7 +15,8 @@ import kotlin.time.Duration
 class TestInvocationFactory(
     private val testInvocationParser: TestInvocationParser,
     private val parser: MethodParser,
-    private val sequenceDiagramFactory: SequenceDiagramFactory
+    private val sequenceDiagramFactory: SequenceDiagramFactory,
+    private val componentDiagramFactory: ComponentDiagramFactory
 ) {
 
     fun create(elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?, displayName: String): Pair<TestInvocation, List<ParseError>> {
@@ -35,6 +37,7 @@ class TestInvocationFactory(
             displayName,
             throwable,
             sequenceDiagramFactory.create(testContext.interactions),
+            componentDiagramFactory.create(testContext.interactions.entrySet()),
             parsedInvocation,
             testContext.interactions,
             testContext.outputs,
