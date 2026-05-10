@@ -51,9 +51,15 @@ jobs:
           RELEASE_VERSION: ${{ github.ref_name }}
         run: make publish-to-sonatype-snapshot
 
+  # The three Dispatch* jobs gate on the `maven-central-released` environment so they wait
+  # for manual approval after the Sonatype staging is promoted to Central. This avoids the
+  # build-plugins side running `./gradlew check` against a kensa-core that hasn't propagated
+  # to Central yet. Approve in the Actions UI once `https://repo1.maven.org/maven2/dev/kensa/...`
+  # serves the new version.
   DispatchReleaseEvent:
     runs-on: ubuntu-latest
     needs: [PublishToStaging, PublishToSnapshot]
+    environment: maven-central-released
     if: ${{ always() && needs.PublishToStaging.result == 'success' && !contains(github.ref_name, '-') }}
     steps:
       - uses: actions/checkout@v6
@@ -70,6 +76,7 @@ jobs:
   DispatchToBuildPlugins:
     runs-on: ubuntu-latest
     needs: [PublishToStaging]
+    environment: maven-central-released
     if: ${{ always() && needs.PublishToStaging.result == 'success' && !contains(github.ref_name, '-') }}
     steps:
       - name: Notify build-plugins of new Kensa release
@@ -83,6 +90,7 @@ jobs:
   DispatchToAgentSkills:
     runs-on: ubuntu-latest
     needs: [PublishToStaging]
+    environment: maven-central-released
     if: ${{ always() && needs.PublishToStaging.result == 'success' && !contains(github.ref_name, '-') }}
     steps:
       - name: Notify agent-skills of new Kensa release
