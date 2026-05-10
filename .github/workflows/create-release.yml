@@ -16,9 +16,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: make create-release-note
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
       - uses: actions/setup-go@v6
         with:
           go-version: '1.22'
+      - name: Build UI shell and stage CLI embed assets
+        run: |
+          ./gradlew :ui:viteBuild
+          make copy-shell-resources
       - name: Build Go binaries
         run: |
           cd cli

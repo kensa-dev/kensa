@@ -48,11 +48,14 @@ create-release-note:
 	@echo "Changelog:" > RN.md
 	@sed -n "/^### v${GIT_TAG_NAME}[[:space:]]*.*$$/,/###/p" CHANGELOG.md | sed '1d' | sed '$$d' | sed '$$d' >> RN.md
 
-.PHONY: build-cli
-build-cli:
+.PHONY: copy-shell-resources
+copy-shell-resources:
 	@if [ ! -f ui/build/js/kensa.js ]; then \
-		echo "ui/build/js/kensa.js missing — run './gradlew :ui:build' first."; exit 1; \
+		echo "ui/build/js/kensa.js missing — run './gradlew :ui:viteBuild' first."; exit 1; \
 	fi
 	cp ui/build/js/kensa.js cli/internal/shell/embed/kensa.js
 	cp ui/public/logo.svg cli/internal/shell/embed/logo.svg
+
+.PHONY: build-cli
+build-cli: copy-shell-resources
 	cd cli && go mod tidy && mkdir -p build/bin && go build -ldflags "-X main.version=$$(cat ../version.txt)" -o build/bin/kensa ./cmd/kensa
