@@ -84,6 +84,10 @@ open class XmlListField<T>(
 
     private val expression by lazy(expressionProvider)
     override val name: String = name ?: this::class.simpleName!!
+
+    /** XPath path string when constructed from an [XPathExpressionWrapper]; otherwise `null`. */
+    val path: String? get() = (expression as? XPathExpressionWrapper)?.path
+
     override fun extract(value: Node): List<T> = value.getNodes(expression).map(transform)
 }
 
@@ -102,5 +106,9 @@ open class XmlSetField<T>(
 
     private val expression by lazy(expressionProvider)
     override val name: String = name ?: this::class.simpleName!!
+
+    /** XPath path string when constructed from an [XPathExpressionWrapper]; otherwise `null`. */
+    val path: String? get() = (expression as? XPathExpressionWrapper)?.path
+
     override fun extract(value: Node): Set<T> = value.getNodes(expression).map(transform).toSet()
 }

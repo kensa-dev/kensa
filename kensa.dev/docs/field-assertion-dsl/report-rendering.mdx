@@ -1,0 +1,98 @@
+---
+sidebar_position: 5
+description: "Wire @RenderedValueWithHint to surface JSON paths and XPaths as on-hover hints in Kensa's HTML report."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Report Rendering
+
+Kensa's HTML report can show a field's underlying JSON path or XPath as an on-hover hint, sourced directly from the field declaration. This makes the rendered sentence read naturally — `aProviderCode of "FW"` — while still surfacing the technical detail when needed.
+
+The DSL does this through Kensa's [`@RenderedValueWithHint`](../api/annotations#renderedvaluewithhint) annotation. Every field class exposes a public `path` property: `JsonField.path` returns the JSONPointer; `XmlField.path` (and `XmlListField.path`, `XmlSetField.path`) returns the original XPath string preserved by [`XPathExpressionWrapper`](./xml#xpathexpressionwrapper).
+
+## How it works
+
+| | Sentence display | Hover hint |
+|---|---|---|
+| `valueStrategy = UseIdentifierName` | shows the variable name (e.g. `aProviderCode`) | — |
+| `hintStrategy = HintFromProperty, hintParam = "path"` | — | reads the field's `path` property |
+
+Resolution is hierarchy-aware: declaring the directive on `JsonField` covers all six typed subclasses (`JsonTextField`, `JsonIntField`, `JsonLongField`, `JsonBooleanField`, `JsonNodeField`, `ArrayNodeField`). The same applies to `XmlField` and its subclasses (`XmlTextField`, `XmlStringField`, `XmlNodeField`).
+
+Classes that don't extend `JsonField`/`XmlField` need their own annotation: `JsonMapField`, `XmlListField`, `XmlSetField`.
+
+## Wiring it up
+
+Place the annotations on your test class (or a shared base class). They apply to every test invocation in scope.
+
+```kotlin
+import dev.kensa.RenderedHintStrategy.HintFromProperty
+import dev.kensa.RenderedValueStrategy.UseIdentifierName
+import dev.kensa.RenderedValueWithHint
+import dev.kensa.Sources
+
+@RenderedValueWithHint(JsonField::class,     valueStrategy = UseIdentifierName, hintStrategy = HintFromProperty, hintParam = "path")
+@RenderedValueWithHint(JsonMapField::class,  valueStrategy = UseIdentifierName, hintStrategy = HintFromProperty, hintParam = "path")
+@RenderedValueWithHint(XmlField::class,      valueStrategy = UseIdentifierName, hintStrategy = HintFromProperty, hintParam = "path")
+@RenderedValueWithHint(XmlListField::class,  valueStrategy = UseIdentifierName, hintStrategy = HintFromProperty, hintParam = "path")
+@RenderedValueWithHint(XmlSetField::class,   valueStrategy = UseIdentifierName, hintStrategy = HintFromProperty, hintParam = "path")
+@Sources(FeasibilityResponseFields::class, FibreVisionResponseFields::class)
+class MyAcceptanceTest : KensaTest { /* ... */ }
+```
+
+The `@Sources` annotation tells Kensa to parse the listed source files when resolving identifier names — needed for fields declared in objects rather than inline.
+
+## What it produces
+
+Given a field declared as:
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+```kotlin
+import dev.kensa.kotest.testsupport.field.json.JsonTextField
+
+object FeasibilityResponseFields {
+    val aProviderCode = JsonTextField("/profiles/0/supplier")
+}
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+```kotlin
+import dev.kensa.hamkrest.testsupport.field.json.JsonTextField
+
+object FeasibilityResponseFields {
+    val aProviderCode = JsonTextField("/profiles/0/supplier")
+}
+```
+
+</TabItem>
+</Tabs>
+
+…the assertion in the HTML report renders as:
+
+> then the feasibility response **aProviderCode** of "OpenNetwork"
+
+Hovering **aProviderCode** reveals `/profiles/0/supplier`. The same applies to XML fields, where hovering reveals the XPath:
+
+```kotlin
+val aFirstProfileType = XmlStringField(
+    XPathExpressionWrapper(xpath.compile("/FeasibilityResponse/Profiles/Profile[1]/Type"), "/FeasibilityResponse/Profiles/Profile[1]/Type"),
+    "Profile Type"
+)
+```
+
+The hint reads the **string** preserved by `XPathExpressionWrapper`, not `XPathExpression.toString()`.
+
+## Worked example
+
+[`FieldDslExamplesTest`](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FieldDslExamplesTest.kt) in clearwave-example is annotated this way. The published [HTML report](https://kensa-dev.github.io/clearwave-example) shows the resulting on-hover hints over each field reference.
+
+## Caveats
+
+- **XPath fields without `XPathExpressionWrapper` produce no hint.** `XmlField.path` returns `null` if the underlying expression isn't wrapped, and Kensa renders no hint for `null`. Always wrap your compiled expressions if you want path hints.
+- **`JsonMapKeyField` exposes `keyName`, not `path`** — if you want a hint for it, use `hintParam = "keyName"`.

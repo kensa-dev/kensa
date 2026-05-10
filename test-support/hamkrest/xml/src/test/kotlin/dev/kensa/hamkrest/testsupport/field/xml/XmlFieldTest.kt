@@ -107,6 +107,18 @@ class XmlFieldTest {
     }
 
     @Test
+    fun `XmlListField path property exposes wrapped XPath string`() {
+        val field = XmlListField<String>(compile("/order/line"), "Lines") { it.textContent }
+        field.path shouldBe "/order/line"
+    }
+
+    @Test
+    fun `XmlSetField path property exposes wrapped XPath string`() {
+        val field = XmlSetField<String>(compile("/order/line"), "Lines") { it.textContent }
+        field.path shouldBe "/order/line"
+    }
+
+    @Test
     fun `XmlListField extracts ordered list of transformed nodes`() {
         val field = XmlListField<String>(compile("/order/line"), "Lines") { it.textContent }
         field.extract(sample) shouldBe listOf("first", "second", "second")
