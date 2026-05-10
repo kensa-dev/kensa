@@ -34,6 +34,27 @@ The Maven plugin does **not** wire system properties for you; you set them on ea
 
 You also need `dev.kensa:kensa-core` on the test classpath — the Kotlin compiler plugin and runtime are responsible for emitting per-source bundles, the Maven plugin only assembles them.
 
+## kensa-core compatibility
+
+Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
+
+| Plugin     | Default kensa-core | Min kensa-core | Notes                                |
+| ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.x      | 0.8.0              | 0.8.0          | First decoupled release              |
+| 0.7.x      | 0.7.x              | —              | Same-version pairing (no override)   |
+
+> v0.8.0 was withdrawn — its POM declared an unpublished `dev.kensa:site-common` dep. Use 0.9.0 or later.
+
+Override the default with `<kensaCoreVersion>` on the mojo configuration:
+
+```xml
+<configuration>
+  <kensaCoreVersion>0.8.1</kensaCoreVersion>
+</configuration>
+```
+
+No upper bound — newer `kensa-core` versions are assumed compatible until proven otherwise. A version below the minimum fails fast at execution time.
+
 ## Mojo configuration
 
 | Parameter | Default | Effect |
@@ -41,6 +62,7 @@ You also need `dev.kensa:kensa-core` on the test classpath — the Kotlin compil
 | `siteRoot` | `${project.build.directory}/kensa-site` | Site root directory. |
 | `expectedSourceIds` | *(required)* | List of source ids the manifest should include. Same set you pass via `kensa.source.id` to the per-execution test runs. |
 | `kensaVersion` | `${plugin.version}` | Recorded in `manifest.json`. |
+| `kensaCoreVersion` | *bundled default* | Version of `dev.kensa:kensa-core` to resolve for shell extraction. Defaults to the version this plugin release was tested against. See [compatibility matrix](#kensa-core-compatibility). |
 
 ## Driving per-source bundles via surefire/failsafe
 

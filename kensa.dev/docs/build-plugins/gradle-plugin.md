@@ -17,7 +17,26 @@ The plugin lives at `dev.kensa.gradle-plugin` on the [Gradle Plugin Portal](http
 https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L1-L7
 ```
 
-The Kensa version pulled by the plugin is **paired** with the plugin version — the plugin embeds the kensa-core / compiler-plugin coordinates it was built against. You don't need to declare these manually.
+The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was built against, so you don't need to declare them manually. Since plugin v0.9.0, plugin and `kensa-core` version independently — see the [compatibility matrix](#kensa-core-compatibility) below if you want to pin a different `kensa-core`.
+
+## kensa-core compatibility
+
+| Plugin     | Default kensa-core | Min kensa-core | Notes                                |
+| ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.x      | 0.8.0              | 0.8.0          | First decoupled release              |
+| 0.7.x      | 0.7.x              | —              | Same-version pairing (no override)   |
+
+> v0.8.0 was withdrawn from the Gradle Plugin Portal — its POM declared an unpublished `dev.kensa:site-common` dep. Use 0.9.0 or later.
+
+Override the default with `kensaCoreVersion`:
+
+```kotlin
+kensa {
+    kensaCoreVersion.set("0.8.1")
+}
+```
+
+No upper bound — newer `kensa-core` versions are assumed compatible until proven otherwise. A version below the minimum fails fast at apply time.
 
 ## DSL
 
@@ -30,6 +49,7 @@ Configure via the `kensa { … }` extension:
 | `sourceSets` | `Set<String>` | `setOf("test")` | Which sourcesets/test-tasks Kensa attaches to. |
 | `site` | `Boolean` | `false` | Enable site mode (see [Site Mode](./site-mode.md)). |
 | `siteRoot` | `Directory` | `build/kensa-site` | Site-mode output root. |
+| `kensaCoreVersion` | `String` | *bundled default* | Override the `kensa-core` / `kensa-compiler-plugin` version the plugin resolves. See [compatibility matrix](#kensa-core-compatibility). |
 
 Example with multiple sourcesets in site mode:
 
