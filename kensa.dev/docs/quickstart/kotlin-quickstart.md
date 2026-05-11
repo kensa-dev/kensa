@@ -33,7 +33,6 @@ dependencies {
 
     // Pick one assertions bridge (or use multiple)
     testImplementation("dev.kensa:kensa-assertions-kotest")     // Kotest matchers
-    testImplementation("dev.kensa:kensa-assertions-assertj")    // AssertJ
     testImplementation("dev.kensa:kensa-assertions-hamkrest")   // HamKrest
 }
 ```
