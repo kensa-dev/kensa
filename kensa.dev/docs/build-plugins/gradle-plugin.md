@@ -23,7 +23,7 @@ The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was 
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
-| 0.9.x      | 0.8.0              | 0.8.0          | First decoupled release              |
+| 0.9.x      | 0.8.0              | 0.8.0          | Plugin and kensa-core versioned independently; site-mode ergonomics (sourceTitles DSL, auto-assemble) added in 0.9.1 |
 | 0.7.x      | 0.7.x              | —              | Same-version pairing (no override)   |
 
 > v0.8.0 was withdrawn from the Gradle Plugin Portal — its POM declared an unpublished `dev.kensa:site-common` dep. Use 0.9.0 or later.
@@ -50,6 +50,7 @@ Configure via the `kensa { … }` extension:
 | `site` | `Boolean` | `false` | Enable site mode (see [Site Mode](./site-mode.md)). |
 | `siteRoot` | `Directory` | `build/kensa-site` | Site-mode output root. |
 | `kensaCoreVersion` | `String` | *bundled default* | Override the `kensa-core` / `kensa-compiler-plugin` version the plugin resolves. See [compatibility matrix](#kensa-core-compatibility). |
+| `sourceTitles` | `Map<String, String>` | empty | Per-source display labels for site mode, keyed by source id. Entries override the `titleText` the test runtime wrote to that source's `configuration.json`. See [Site-mode source titles](#site-mode-source-titles). Added in 0.9.1. |
 
 Example with multiple sourcesets in site mode:
 
@@ -63,32 +64,66 @@ For each name in `sourceSets`, the plugin looks up a `Test` task with the same n
 
 - A `dev.kensa:kensa-core` dependency is added to that compilation's classpath via Kotlin's compiler-plugin support.
 - If `site = true`:
-  - `kensa.output.root` system property is set on the test task to the resolved `siteRoot`.
-  - `kensa.source.id` system property is set to the sourceset name (unless you've already set it explicitly — see [overrides](#per-source-overrides)).
-  - The `assembleKensaSite` task is registered, depending on every configured Test task.
+  - `kensa.output.root` / `kensa.source.id` are passed to the test task's JVM via a `CommandLineArgumentProvider` (since 0.9.1). The per-source bundle dir is declared as a Test `@OutputDirectory` — Gradle tracks it correctly, UP-TO-DATE checks become accurate, and absolute paths don't enter the cache key (friendly to shared / remote Gradle build caches).
+  - `kensa.source.id` defaults to the sourceset name, unless you've already set it explicitly — see [overrides](#per-source-overrides).
+  - The `assembleKensaSite` task is registered. Each configured Test task is `finalizedBy(assembleKensaSite)`, so running any of them refreshes the site automatically (since 0.9.1). `assembleKensaSite` itself uses `mustRunAfter` (not `dependsOn`) — invoking it standalone aggregates whatever bundles are on disk without re-running tests.
 
 The compiler plugin is only applied to compilations whose name appears in `sourceSets`. Other sourcesets compile normally without Kensa.
 
+### Site-mode source titles
+
+Set per-source display labels via the `sourceTitles` map. Entries here override whatever the test runtime wrote to that source's `configuration.json` (and rewrite the file so the standalone per-source HTML page `<title>` matches the manifest sidebar label).
+
+```kotlin
+kensa {
+    site = true
+    sourceSets = setOf("test", "uiTest")
+    sourceTitles["uiTest"] = "UI Tests"
+    sourceTitles["test"] = "Unit Tests"
+}
+```
+
+Or set the whole map at once:
+
+```kotlin
+kensa {
+    site = true
+    sourceSets = setOf("test", "uiTest")
+    sourceTitles = mapOf(
+        "uiTest" to "UI Tests",
+        "test"   to "Unit Tests",
+    )
+}
+```
+
+Precedence when more than one path declares a title for the same source id:
+
+1. `kensa { sourceTitles.put(id, ...) }` — build DSL, wins
+2. `Kensa.konfigure { titleText = "..." }` in code (e.g. a per-sourceset base class) — wins when no build entry. Works in site mode because each Gradle `Test` task forks its own JVM, so per-sourceset `Configuration` singletons are isolated.
+3. `kensa.source.title` system property — legacy, soft-deprecated since 0.9.1.
+4. `"Index"` / source id fallback when none of the above is set.
+
 ### Per-source overrides
 
-The plugin's per-task `systemProperty` wiring is **last-write-wins**, so you can override anything from the user side. For example, to prefix the source id with the CI build number:
+Any per-task `systemProperty` you set in your build script flows through to the test task's JVM as a `-D` argument. Source-id overrides still work the same way — useful for CI-driven id schemes:
 
 ```kotlin
 tasks.named<Test>("uiTest") {
     systemProperty("kensa.source.id", "${System.getenv("BUILD_NUMBER") ?: "local"}-uiTest")
-    systemProperty("kensa.source.title", "Build #${System.getenv("BUILD_NUMBER") ?: "local"} — UI Tests")
 }
 ```
 
-`kensa.source.title` overrides the default `Configuration.titleText` for that source's `configuration.json` (and therefore the label shown in the site sidebar).
+For per-source titles, prefer the [`sourceTitles` extension map](#site-mode-source-titles) over `systemProperty("kensa.source.title", ...)` — declarative, build-cache-friendly, and works for downstream consumers without a per-task hook.
 
 ## Tasks added
 
 | Task | Group | Description |
 |---|---|---|
-| `assembleKensaSite` | `verification` | Aggregates all per-source bundles in `siteRoot/sources/<id>/` into a single viewable site. Depends on every configured Test task. Only registered when `site = true`. |
+| `assembleKensaSite` | `verification` | Aggregates all per-source bundles in `siteRoot/sources/<id>/` into a single viewable site. `mustRunAfter` every configured Test task (since 0.9.1 — was `dependsOn` prior). Only registered when `site = true`. |
 
 `assembleKensaSite` is `@CacheableTask` — its inputs are the per-source `configuration.json` files plus the resolved `kensa-core` jar's content. Re-running with no changes is `UP-TO-DATE`; republishing kensa-core to your local maven invalidates the cache and re-extracts the new shell.
+
+Since 0.9.1, every configured `Test` task is `finalizedBy(assembleKensaSite)` — `gradle test` (or any configured Test task) refreshes the aggregated site automatically as a finalizer. The finalizer runs once after all participating tests complete, regardless of pass/fail (a partial site is useful when triaging failures). Standalone `gradle assembleKensaSite` aggregates from disk without forcing a Test re-run.
 
 ## Source ID collisions
 

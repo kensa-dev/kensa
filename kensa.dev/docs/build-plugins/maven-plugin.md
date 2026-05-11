@@ -40,7 +40,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
-| 0.9.x      | 0.8.0              | 0.8.0          | First decoupled release              |
+| 0.9.x      | 0.8.0              | 0.8.0          | Plugin and kensa-core versioned independently; `<sourceTitles>` mojo parameter added in 0.9.1 |
 | 0.7.x      | 0.7.x              | —              | Same-version pairing (no override)   |
 
 > v0.8.0 was withdrawn — its POM declared an unpublished `dev.kensa:site-common` dep. Use 0.9.0 or later.
@@ -63,10 +63,35 @@ No upper bound — newer `kensa-core` versions are assumed compatible until prov
 | `expectedSourceIds` | *(required)* | List of source ids the manifest should include. Same set you pass via `kensa.source.id` to the per-execution test runs. |
 | `kensaVersion` | `${plugin.version}` | Recorded in `manifest.json`. |
 | `kensaCoreVersion` | *bundled default* | Version of `dev.kensa:kensa-core` to resolve for shell extraction. Defaults to the version this plugin release was tested against. See [compatibility matrix](#kensa-core-compatibility). |
+| `sourceTitles` | empty | `Map<String, String>` of per-source display labels for the aggregated site, keyed by source id. Entries override the `titleText` the test runtime wrote to each `configuration.json`. See [Site-mode source titles](#site-mode-source-titles). Added in 0.9.1. |
+
+## Site-mode source titles
+
+Set per-source display labels via `<sourceTitles>` on the mojo configuration. Entries here override the `titleText` the test runtime wrote to each source's `configuration.json` (and rewrite the file so the standalone per-source HTML page `<title>` matches the manifest sidebar label).
+
+```xml
+<configuration>
+  <expectedSourceIds>
+    <expectedSourceId>uiTest</expectedSourceId>
+    <expectedSourceId>scenarioTest</expectedSourceId>
+  </expectedSourceIds>
+  <sourceTitles>
+    <uiTest>UI Tests</uiTest>
+    <scenarioTest>Scenario Tests</scenarioTest>
+  </sourceTitles>
+</configuration>
+```
+
+Precedence when more than one path declares a title for the same source id:
+
+1. `<sourceTitles>` mojo parameter — build DSL, wins
+2. `Kensa.konfigure { titleText = "..." }` in code — wins when no build entry
+3. `kensa.source.title` via `<systemPropertyVariables>` on the surefire/failsafe execution — legacy, soft-deprecated since 0.9.1
+4. `"Index"` / source id fallback when none of the above is set
 
 ## Driving per-source bundles via surefire/failsafe
 
-Each test execution that should produce its own source bundle sets `kensa.output.root` and `kensa.source.id` (and optionally `kensa.source.title`) via `systemPropertyVariables`:
+Each test execution that should produce its own source bundle sets `kensa.output.root` and `kensa.source.id` via `systemPropertyVariables`:
 
 ```xml title="pom.xml — failsafe per-execution wiring"
 <plugin>
@@ -79,7 +104,6 @@ Each test execution that should produce its own source bundle sets `kensa.output
         <systemPropertyVariables>
           <kensa.output.root>${project.build.directory}/kensa-site</kensa.output.root>
           <kensa.source.id>uiTest</kensa.source.id>
-          <kensa.source.title>UI Tests</kensa.source.title>
         </systemPropertyVariables>
       </configuration>
     </execution>
