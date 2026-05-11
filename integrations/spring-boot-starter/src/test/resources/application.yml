@@ -1,0 +1,5 @@
+kensa:
+  title-text: "From Spring YAML"
+  tab-size: 5
+  setup-strategy: Grouped
+  output-enabled: false

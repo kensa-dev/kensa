@@ -84,4 +84,10 @@ project(":adoptabot").projectDir = file("examples/adoptabot")
 include("docker-logs")
 project(":docker-logs").projectDir = file("docker-logs")
 
+include("integration-spring-boot-starter")
+project(":integration-spring-boot-starter").projectDir = file("integrations/spring-boot-starter")
+
+include("integration-spring-boot-starter-web")
+project(":integration-spring-boot-starter-web").projectDir = file("integrations/spring-boot-starter-web")
+
 include("bom")
