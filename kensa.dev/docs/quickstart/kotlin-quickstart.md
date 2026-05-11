@@ -7,20 +7,38 @@ description: Step-by-step guide to adding Kensa to a Kotlin project with JUnit 5
 
 This guide walks through setting up Kensa in a Kotlin project with JUnit 5 and writing your first test.
 
-## 1. Add Dependencies
+## 1. Apply the Kensa Gradle Plugin
+
+The Kensa Gradle plugin wires the Kotlin compiler plugin (so `@RenderedValue` and `@ExpandableSentence` capture values) and pulls the right `kensa-core` variant onto your compilation. Apply it alongside Kotlin:
+
+```kotlin title="build.gradle.kts"
+plugins {
+    kotlin("jvm") version "2.3.21"           // minimum Kotlin enforced by the plugin
+    id("dev.kensa.gradle-plugin") version "<plugin-version>"
+}
+
+repositories { mavenCentral() }
+```
+
+The plugin and `kensa-core` version independently — see the [compatibility matrix](../build-plugins/gradle-plugin.md#kensa-core-compatibility) for the supported pairings.
+
+## 2. Add Test Dependencies
+
+Pick a JUnit variant and one or more assertions bridges. The `kensa-bom` lines up versions across the framework and assertions artifacts so you don't have to repeat them:
 
 ```kotlin title="build.gradle.kts"
 dependencies {
-    testImplementation("dev.kensa:kensa-junit:<version>")
+    testImplementation(platform("dev.kensa:kensa-bom:<kensa-core-version>"))
+    testImplementation("dev.kensa:kensa-framework-junit5")    // for JUnit 5; use kensa-framework-junit6 for JUnit 6
 
     // Pick one assertions bridge (or use multiple)
-    testImplementation("dev.kensa:kensa-kotest:<version>")      // Kotest matchers
-    testImplementation("dev.kensa:kensa-assertj:<version>")     // AssertJ
-    testImplementation("dev.kensa:kensa-hamkrest:<version>")    // HamKrest
+    testImplementation("dev.kensa:kensa-assertions-kotest")     // Kotest matchers
+    testImplementation("dev.kensa:kensa-assertions-assertj")    // AssertJ
+    testImplementation("dev.kensa:kensa-assertions-hamkrest")   // HamKrest
 }
 ```
 
-Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
+The Gradle plugin adds `kensa-core` (with the `core-hooks` capability the compiler plugin needs) onto your compilation — you don't need to declare it here. Find the latest kensa-core version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
 
 :::note[Migrating from 0.6.x]
 
@@ -30,7 +48,7 @@ If you were previously adding `-Xskip-prerelease-check` to your Kotlin compile t
 
 Implement `KensaTest` in your test class to get the Given–When–Then DSL. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface. The lifecycle listener is registered via the JUnit Platform `ServiceLoader`.
 
-## 2. Write a Test
+## 3. Write a Test
 
 Implement `KensaTest` and mix in an assertions bridge. Test methods follow the
 Given–When–Then structure using the `given()`, `whenever()`, and `then()` DSL.
@@ -105,7 +123,7 @@ class LoanDecisionTest : KensaTest, WithKotest {
 | `Action<ActionContext>` | Lambda that runs during `whenever()` — exercises the system |
 | `StateCollector<T>` | Lambda that returns a value for `then()` to assert against |
 
-## 3. Chain Multiple Steps
+## 4. Chain Multiple Steps
 
 Use `and()` to chain additional setup or assertions:
 
@@ -122,7 +140,7 @@ fun canApproveLoanWithUnderwritingApproval() {
 }
 ```
 
-## 4. Record Interactions (Sequence Diagrams)
+## 5. Record Interactions (Sequence Diagrams)
 
 Capture calls between components in your `whenever()` action using `interactions.capture()`.
 Kensa renders these as a sequence diagram in the HTML report.
@@ -143,7 +161,7 @@ private fun theLoanServiceProcessesTheApplication() = Action<ActionContext> { ct
 }
 ```
 
-## 5. Run & View the Report
+## 6. Run & View the Report
 
 Run your tests normally with Gradle:
 

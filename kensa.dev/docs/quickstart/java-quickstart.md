@@ -9,17 +9,22 @@ This guide walks through setting up Kensa in a Java project with JUnit 5 and wri
 
 ## 1. Add Dependencies
 
+The `kensa-bom` lines up versions across the framework and assertions artifacts so you don't have to repeat them. `kensa-core` flows in transitively from the framework artifact — you don't need to declare it.
+
 ```groovy title="build.gradle"
 dependencies {
-    testImplementation 'dev.kensa:kensa-junit:<version>'
+    testImplementation platform('dev.kensa:kensa-bom:<version>')
+    testImplementation 'dev.kensa:kensa-framework-junit5'    // for JUnit 5; use kensa-framework-junit6 for JUnit 6
 
     // Pick one assertions bridge (or use multiple)
-    testImplementation 'dev.kensa:kensa-assertj:<version>'    // AssertJ
-    testImplementation 'dev.kensa:kensa-hamcrest:<version>'   // Hamcrest
+    testImplementation 'dev.kensa:kensa-assertions-assertj'    // AssertJ
+    testImplementation 'dev.kensa:kensa-assertions-hamcrest'   // Hamcrest
 }
 ```
 
 Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
+
+> Site-mode reporting (multi-sourceset aggregated reports) is wired up by the [Kensa Gradle plugin](../build-plugins/gradle-plugin.md). Pure-Java projects don't otherwise need the plugin — value capture for Java goes through the runtime, not a compiler plugin.
 
 Implement `KensaTest` in your test class to get the Given–When–Then DSL. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface. The lifecycle listener is registered via the JUnit Platform `ServiceLoader`.
 
