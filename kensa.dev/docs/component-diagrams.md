@@ -13,7 +13,9 @@ When a test has recorded interactions between two or more actors, a **Component 
 
 ## System View
 
-The top-level **System View** page in the report sidebar shows an aggregate component diagram built from every interaction recorded across the entire test run. It gives a single, consolidated picture of how the components in your system are connected. The page is not shown when no interactions were captured during the run.
+A **System View** entry in the report sidebar shows an aggregate component diagram built from every interaction recorded during the test run, giving a consolidated picture of how the components in your system are connected. The entry is not shown when no interactions were captured.
+
+In [site mode](./build-plugins/site-mode.md) — where multiple sourcesets (Gradle) or executions (Maven) feed a single aggregated site — each source root in the sidebar has its own **System View** entry. The diagram for each source is built only from that source's interactions; sources are not collapsed into a single shared architecture (each sourceset typically exercises a different slice of your system, so a combined view would misrepresent both).
 
 ## How edges are computed
 
