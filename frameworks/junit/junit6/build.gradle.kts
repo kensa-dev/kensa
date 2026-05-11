@@ -81,10 +81,10 @@ dependencies {
     implementation(libs.antlrRuntime)
     implementation(libs.kotlinReflect)
 
-    implementation(platform(libs.junit6Bom))
-    implementation(libs.junit6JupiterParams)
-    implementation(libs.junit6JupiterApi)
-    implementation(libs.junit6JupiterEngine)
+    compileOnly(platform(libs.junit6Bom))
+    compileOnly(libs.junit6JupiterParams)
+    compileOnly(libs.junit6JupiterApi)
+    compileOnly(libs.junit6JupiterEngine)
     implementation(libs.junit6PlatformLauncher)
 
     testRuntimeOnly(sourceSets["javaExample"].output)

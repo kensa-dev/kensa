@@ -12,8 +12,8 @@ dependencies {
     api(project(":core"))
     api(project(":framework-junit5"))
 
-    api(platform(libs.junit5Bom))
-    api(libs.junit5JupiterApi)
+    compileOnly(platform(libs.junit5Bom))
+    compileOnly(libs.junit5JupiterApi)
 
     compileOnly(platform("org.springframework.boot:spring-boot-dependencies:${libs.versions.springBoot.get()}"))
     compileOnly(libs.springBootAutoconfigure)

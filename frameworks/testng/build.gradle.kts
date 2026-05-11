@@ -5,5 +5,5 @@ dependencies {
     compileOnly(project(":antlr"))
     implementation(libs.antlrRuntime)
     implementation(libs.kotlinReflect)
-    implementation(libs.testng)
+    compileOnly(libs.testng)
 }
