@@ -7,6 +7,7 @@ Changed:
 
 Fixes:
   - Remove `-Xexplicit-backing-fields` again (re-introduced unintentionally in 0.8.0). Downstream Kotlin projects no longer need `-Xskip-prerelease-check` to consume kensa-core.
+  - **Per-source component diagrams in site mode.** The HTML UI was loading every per-source `aggregateComponentDiagram` from each `sources/<id>/indices.json` but then only using the *first* source's diagram as a global System View — every other source's architecture was silently dropped. Site mode now renders one System View per source, surfaced as a "System View" entry inside each source's tree root in the sidebar. Single-sourceset projects are unaffected (one source → one entry).
 
 ### v0.8.0
 New features:
