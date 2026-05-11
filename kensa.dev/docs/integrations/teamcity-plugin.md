@@ -5,6 +5,8 @@ description: Embed Kensa HTML reports, human-readable test names, and failure na
 
 # TeamCity Plugin
 
+[![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/31628?style=flat-square&color=3cad6e&labelColor=1a3a2a&label=marketplace)](https://plugins.jetbrains.com/plugin/31628)
+
 The Kensa TeamCity plugin surfaces your BDD test output where your team already triages builds — inside TeamCity itself. Add one build feature, run a build, and three things light up without any path configuration.
 
 ## Features
@@ -29,9 +31,11 @@ When a Kensa test fails, the Given-When-Then narrative, captured values, and exc
 
 ## Install
 
-Download the plugin zip from [GitHub Releases](https://github.com/kensa-dev/teamcity-plugin/releases) and install it via **Administration > Plugins** in your TeamCity server, or install directly from the JetBrains Marketplace:
+Install directly from the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/31628):
 
-{/* TODO: add JetBrains Marketplace URL once the plugin is listed */}
+<iframe width="384" height="319" src="https://plugins.jetbrains.com/embeddable/card/31628" title="Kensa Integration on the JetBrains Marketplace" frameBorder="0"></iframe>
+
+Or download the plugin zip from [GitHub Releases](https://github.com/kensa-dev/teamcity-plugin/releases) and install it via **Administration > Plugins** in your TeamCity server.
 
 ## Configure
 
@@ -54,7 +58,7 @@ The build must publish Kensa output as an artifact for the Report tab to appear.
 
 ## Links
 
+- [JetBrains Marketplace listing](https://plugins.jetbrains.com/plugin/31628)
 - [Source repository](https://github.com/kensa-dev/teamcity-plugin)
 - [Releases](https://github.com/kensa-dev/teamcity-plugin/releases)
 - [Kensa on GitHub](https://github.com/kensa-dev/kensa)
-{/* TODO: JetBrains Marketplace listing URL */}

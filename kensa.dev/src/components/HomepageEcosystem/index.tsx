@@ -41,6 +41,7 @@ const integrations: IntegrationCard[] = [
         ],
         marketplaceUrl: 'https://plugins.jetbrains.com/plugin/31099',
         marketplaceLabel: 'View on JetBrains Marketplace',
+        docsUrl: '/docs/integrations/intellij-plugin',
         Icon: IdeIcon,
     },
     {
