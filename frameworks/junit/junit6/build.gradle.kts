@@ -82,8 +82,7 @@ dependencies {
     implementation(libs.kotlinReflect)
 
     compileOnly(platform(libs.junit6Bom))
-    compileOnly(libs.junit6JupiterApi)
-    compileOnly(libs.junit6JupiterEngine)
+    implementation(libs.junit6JupiterApi)
     implementation(libs.junit6JupiterParams)
     implementation(libs.junit6PlatformLauncher)
 
