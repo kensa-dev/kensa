@@ -11,6 +11,8 @@ plugins.withId("maven-publish") {
 dependencies {
     api(project(":integration-spring-boot-starter"))
 
+    compileOnly(platform("org.springframework.boot:spring-boot-dependencies:${libs.versions.springBoot.get()}"))
+    compileOnly(libs.springBootAutoconfigure)
     compileOnly(libs.springWeb)
     compileOnly(libs.springWebMvc)
     compileOnly(libs.springWebFlux)

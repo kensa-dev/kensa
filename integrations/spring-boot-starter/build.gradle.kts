@@ -15,10 +15,10 @@ dependencies {
     api(platform(libs.junit5Bom))
     api(libs.junit5JupiterApi)
 
-    api(platform("org.springframework.boot:spring-boot-dependencies:${libs.versions.springBoot.get()}"))
-    api(libs.springBootAutoconfigure)
-    api(libs.springBootTest)
-    api(libs.springTest)
+    compileOnly(platform("org.springframework.boot:spring-boot-dependencies:${libs.versions.springBoot.get()}"))
+    compileOnly(libs.springBootAutoconfigure)
+    compileOnly(libs.springBootTest)
+    compileOnly(libs.springTest)
 
     testImplementation(libs.springBootStarterTest)
     testImplementation(platform(libs.kotestBom))
