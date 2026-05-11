@@ -16,7 +16,7 @@ import {useConfig} from "@/contexts/ConfigContext"
 import {matchesAnyIssue} from "@/util/issueMatch"
 import {hasOpenDialog} from "@/util/escapeGuard"
 import {setStateFilter} from "@/util/stateFilterToggle"
-import {useNavigate, useLocation} from "react-router-dom"
+import {useLocation} from "react-router-dom"
 
 const SourceMetaContext = React.createContext<Record<string, { generatedAt?: string }>>({});
 
@@ -70,13 +70,9 @@ interface AppSidebarProps {
     isNative?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
     onFilterApplied?: (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => void;
-    aggregateComponentDiagram?: string;
 }
 
-export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied, aggregateComponentDiagram}: AppSidebarProps) {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const isSystemView = location.pathname === '/system-view';
+export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied}: AppSidebarProps) {
     const allIssues = React.useMemo(() => {
         const issues = new Set<string>();
         const collect = (nodes: Indices) => {
@@ -524,26 +520,6 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
             </SidebarHeader>
 
             <SidebarContent className="px-2 gap-1">
-                {!!aggregateComponentDiagram && (
-                    <SidebarGroup className="p-1 pb-0">
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton
-                                    size="sm"
-                                    isActive={isSystemView}
-                                    onClick={() => navigate('/system-view')}
-                                    className={cn(
-                                        "text-[13px] transition-all",
-                                        isSystemView ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground"
-                                    )}
-                                >
-                                    <Network className="h-3.5 w-3.5 shrink-0"/>
-                                    <span>System View</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroup>
-                )}
                 <SidebarGroup className="p-1">
                     <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/90 h-7 px-2">
                         Test Explorer
@@ -794,6 +770,7 @@ interface RecursiveMenuItemProps {
 const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById, testMethodMap, matchingMethodsMap}: RecursiveMenuItemProps) {
     const {packageDisplay, packageDisplayRoot} = useConfig();
     const sourceMetaById = React.useContext(SourceMetaContext);
+    const location = useLocation();
     const isSelected = selectedId === node.id;
 
     const iconTone =
@@ -810,12 +787,23 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
     if (node.type === 'project') {
         const generatedAt = node.sourceId ? sourceMetaById[node.sourceId]?.generatedAt : undefined;
 
+        // Sysview entries are pseudo-children that shouldn't be funnelled through `buildTree`
+        // (which filters by testClass and would drop them) — pre-extract them and prepend to the
+        // built package tree so the source's System View shows up at the top of its tree.
+        const allChildren = node.children || [];
+        const sysviewChildren = allChildren.filter(c => c.type === 'system-view');
+        const testChildren = allChildren.filter(c => c.type !== 'system-view');
+        const projectChildren = [
+            ...sysviewChildren,
+            ...buildTree(testChildren, packageDisplay, packageDisplayRoot),
+        ];
+
         return (
             <CollapsibleMenuNode
                 node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
                 iconTone={iconTone} childCounts={childCounts}
                 labelClassName="text-[13px] font-bold text-foreground"
-                children={buildTree(node.children || [], packageDisplay, packageDisplayRoot)}
+                children={projectChildren}
                 testMethodMap={testMethodMap}
                 matchingMethodsMap={matchingMethodsMap}
                 generatedAt={generatedAt}
@@ -833,6 +821,27 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                 testMethodMap={testMethodMap}
                 matchingMethodsMap={matchingMethodsMap}
             />
+        );
+    }
+
+    if (node.type === 'system-view') {
+        const isActive = location.pathname === '/system-view'
+            && new URLSearchParams(location.search).get('source') === node.sourceId;
+        return (
+            <SidebarMenuItem>
+                <SidebarMenuButton
+                    size="sm"
+                    isActive={isActive}
+                    onClick={() => onSelect(node, null, [])}
+                    className={cn(
+                        "text-[13px] transition-all",
+                        isActive ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground"
+                    )}
+                >
+                    <Network className="h-3.5 w-3.5 shrink-0"/>
+                    <span>{node.displayName}</span>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
         );
     }
 

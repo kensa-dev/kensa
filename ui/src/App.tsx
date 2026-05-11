@@ -34,7 +34,7 @@ const App = () => {
     const [isMounted, setIsMounted] = useState<boolean>(false);
     const [environment, setEnvironment] = useState<string>(() => localStorage.getItem('kensa-env') || "local");
     const [indices, setIndices] = useState<Indices>([]);
-    const [aggregateComponentDiagram, setAggregateComponentDiagram] = useState<string>("");
+    const [aggregateComponentDiagramsBySource, setAggregateComponentDiagramsBySource] = useState<Record<string, string>>({});
     const [selectedIndex, setSelectedIndex] = useState<SelectedIndex | null>(null);
     const [testDetail, setTestDetail] = useState<TestDetail | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -210,22 +210,37 @@ const App = () => {
 
             const sourceConfigsMap: Record<string, KensaConfig> = {};
             const roots: Indices = [];
-            let aggregateSvg = "";
+            const diagramsBySource: Record<string, string> = {};
             for (const {source, config, indicesData} of perSource) {
                 if (config) sourceConfigsMap[source.id] = config;
                 const sourceIndices = indicesData?.indices ?? [];
-                if (!aggregateSvg && indicesData?.aggregateComponentDiagram) {
-                    aggregateSvg = indicesData.aggregateComponentDiagram;
-                }
+                const sourceDiagram = indicesData?.aggregateComponentDiagram;
+                if (sourceDiagram) diagramsBySource[source.id] = sourceDiagram;
                 if (sourceIndices.length === 0) continue;
                 const tagged = tagWithSourceId(sourceIndices, source.id);
+                // Each source root's first child is a synthetic "System View" entry pointing at
+                // that source's own aggregate component diagram — keeps per-source architectures
+                // separate in the sidebar tree rather than conflating them under one global view.
+                const children: Indices = sourceDiagram
+                    ? [
+                        {
+                            id: `sysview:${source.id}`,
+                            type: 'system-view',
+                            displayName: 'System View',
+                            testClass: '',
+                            state: 'Passed',
+                            sourceId: source.id,
+                        },
+                        ...tagged,
+                    ]
+                    : tagged;
                 roots.push({
                     id: `src:${source.id}`,
                     type: 'project',
                     displayName: config?.titleText || source.title || source.id,
                     testClass: '',
                     state: tagged.some(i => i.state === 'Failed') ? 'Failed' : 'Passed',
-                    children: tagged,
+                    children,
                     sourceId: source.id,
                 });
             }
@@ -236,7 +251,7 @@ const App = () => {
             setSourceConfigs(sourceConfigsMap);
             setSourceUrls(urls);
             setIndices(roots);
-            setAggregateComponentDiagram(aggregateSvg);
+            setAggregateComponentDiagramsBySource(diagramsBySource);
             // First source's config flows through ConfigContext until the user selects a test;
             // selection updates it via the selectedIndex effect below.
             const first = manifest.sources[0];
@@ -353,6 +368,8 @@ const App = () => {
     }, [allTests, commandQuery]);
 
     const isSystemView = location.pathname === '/system-view';
+    const systemViewSourceId = searchParams.get('source') ?? Object.keys(aggregateComponentDiagramsBySource)[0];
+    const systemViewDiagram = systemViewSourceId ? aggregateComponentDiagramsBySource[systemViewSourceId] ?? "" : "";
 
     const activeSourceBaseUrl = selectedIndex?.sourceId ? (sourceUrls[selectedIndex.sourceId] ?? '.') : '.';
 
@@ -441,9 +458,12 @@ const App = () => {
                                 onSearchChange={onSearchChange}
                                 environment={environment}
                                 onEnvChange={setEnvironment}
-                                aggregateComponentDiagram={aggregateComponentDiagram}
                                 onSelect={(node, firstMatchingMethod, allMatchingMethods) => {
                                     if (node.id.startsWith('pkg:') || node.id.startsWith('src:')) {
+                                        return;
+                                    }
+                                    if (node.type === 'system-view' && node.sourceId) {
+                                        navigate(`/system-view?source=${encodeURIComponent(node.sourceId)}`);
                                         return;
                                     }
 
@@ -556,7 +576,7 @@ const App = () => {
 
                                 <main className="flex-1 overflow-y-auto bg-muted/30">
                                     {isSystemView ? (
-                                        <SystemViewPage aggregateComponentDiagram={aggregateComponentDiagram}/>
+                                        <SystemViewPage aggregateComponentDiagram={systemViewDiagram}/>
                                     ) : selectedIndex ? (
                                         <div className="p-6 lg:p-4">
                                             <div className="max-w-[1400px] mx-auto">

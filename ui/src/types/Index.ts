@@ -1,6 +1,6 @@
 import {TestState} from "@/types/Test";
 
-export type NodeType = 'project' | 'package' | 'test'
+export type NodeType = 'project' | 'package' | 'test' | 'system-view'
 
 export interface Index {
     id: string;
