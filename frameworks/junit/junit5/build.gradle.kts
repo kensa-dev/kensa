@@ -82,9 +82,9 @@ dependencies {
     implementation(libs.kotlinReflect)
 
     compileOnly(platform(libs.junit5Bom))
-    compileOnly(libs.junit5JupiterParams)
     compileOnly(libs.junit5JupiterApi)
     compileOnly(libs.junit5JupiterEngine)
+    implementation(libs.junit5JupiterParams)
     implementation(libs.junit5PlatformLauncher)
 
     testRuntimeOnly(sourceSets["javaExample"].output)
