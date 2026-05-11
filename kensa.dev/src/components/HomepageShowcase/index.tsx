@@ -30,7 +30,7 @@ export default function HomepageShowcase(): ReactNode {
             <div className="container">
                 <h2 className={styles.eyebrow}>See it in action</h2>
                 <p className={styles.liveLink}>
-                    <a href="https://kensa-dev.github.io/clearwave-kensa-example" target="_blank" rel="noopener noreferrer">
+                    <a href="https://kensa-dev.github.io/clearwave-example" target="_blank" rel="noopener noreferrer">
                         Browse the live Clearwave report →
                     </a>
                 </p>
