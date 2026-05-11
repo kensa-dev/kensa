@@ -1,0 +1,4 @@
+dev.kensa.spring.web.KensaWebAutoConfiguration
+dev.kensa.spring.web.KensaWebAutoConfiguration$WebMvc
+dev.kensa.spring.web.KensaWebAutoConfiguration$RestClient
+dev.kensa.spring.web.KensaWebAutoConfiguration$Reactive

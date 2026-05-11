@@ -27,6 +27,7 @@ jackson = "2.21.2"
 
 springBoot = "3.5.7"
 spring = "6.2.12"
+jakartaServlet = "6.1.0"
 
 [libraries]
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
@@ -90,6 +91,7 @@ springWebMvc = { module = "org.springframework:spring-webmvc", version.ref = "sp
 springWebFlux = { module = "org.springframework:spring-webflux", version.ref = "spring" }
 springWeb = { module = "org.springframework:spring-web", version.ref = "spring" }
 springTest = { module = "org.springframework:spring-test", version.ref = "spring" }
+jakartaServletApi = { module = "jakarta.servlet:jakarta.servlet-api", version.ref = "jakartaServlet" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

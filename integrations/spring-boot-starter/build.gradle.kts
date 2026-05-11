@@ -1,5 +1,13 @@
 description = "Kensa Spring Boot Starter"
 
+plugins.withId("maven-publish") {
+    extensions.configure<PublishingExtension> {
+        publications.named<MavenPublication>("mavenJava") {
+            artifactId = "kensa-spring-boot-starter"
+        }
+    }
+}
+
 dependencies {
     api(project(":core"))
     api(project(":framework-junit5"))
