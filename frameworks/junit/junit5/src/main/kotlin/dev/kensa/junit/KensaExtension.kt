@@ -3,7 +3,6 @@ package dev.kensa.junit
 import dev.kensa.context.KensaLifecycleManager
 import dev.kensa.context.TestContainer
 import org.junit.jupiter.api.extension.*
-import java.io.Closeable
 import java.lang.reflect.Method
 import java.util.*
 
@@ -73,7 +72,11 @@ class KensaExtension : Extension, BeforeAllCallback, BeforeEachCallback, AfterTe
     }
 }
 
-private class CloseableTestContainer(private val manager: KensaLifecycleManager, val container: TestContainer) : Closeable {
+// Use ExtensionContext.Store.CloseableResource (not java.io.Closeable) so the store invokes
+// close() on JUnit Jupiter < 5.13. Jupiter 5.13 added AutoCloseable/Closeable support but
+// Spring Boot 3.5.x pins Jupiter to 5.12, where only CloseableResource is honoured.
+@Suppress("DEPRECATION")
+private class CloseableTestContainer(private val manager: KensaLifecycleManager, val container: TestContainer) : ExtensionContext.Store.CloseableResource {
     override fun close() {
         manager.writeTestResult(container)
     }
