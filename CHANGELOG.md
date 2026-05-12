@@ -7,7 +7,8 @@ New features:
 
 Changed:
   - `@ExpandableSentence` bodies are now parsed lazily — the parser runs only on first access, so unused expandable methods incur no parse cost.
-  - Test-framework dependencies (`junit-jupiter`, `testng`, etc.) are now `compileOnly` across the framework adapters; consumers bring their own JUnit/TestNG versions and the adapter no longer pins them. `kensa-framework-junit5` and `-junit6` ship `junit-jupiter-params` transitively so `@ParameterizedTest` consumers don't have to add it explicitly.
+  - **JUnit framework adapters — softer version pin.** `kensa-framework-junit5` and `-junit6` previously consumed the `junit-bom` at `implementation` scope, which propagated as a hard runtime dep and made Kensa's JUnit version a floor for consumers. The BOM is now `compileOnly`; the published POM still carries it as `<scope>import</scope>` in `<dependencyManagement>` (so suggested versions are visible to Maven consumers) but is no longer a runtime dep, letting Spring Boot's dependency-management plugin and similar version-managers win cleanly. `junit-jupiter-api`, `junit-jupiter-params`, and `junit-platform-launcher` still ship transitively at `implementation` scope, so consumer classpaths are unchanged. The dead `junit-jupiter-engine` declaration was removed (the adapter's listener uses `junit-platform-engine` types brought in via the launcher).
+  - **TestNG framework adapter — `testng` is now `compileOnly`.** `kensa-framework-testng` no longer ships TestNG transitively. TestNG users already declare `testng` explicitly in their build, so the practical impact is nil; the win is that the adapter no longer imposes a TestNG version on consumers.
 
 Fixes:
   - Remove `-Xexplicit-backing-fields` again (re-introduced unintentionally in 0.8.0). Downstream Kotlin projects no longer need `-Xskip-prerelease-check` to consume kensa-core.
