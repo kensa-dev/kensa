@@ -9,8 +9,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class TestMethodContainer(private val testInvocationFactory: TestInvocationFactory, val method: Method, val displayName: String, val issues: List<String>, private val initialState: TestState, val autoOpenTab: Tab) {
     val invocationContexts = mutableMapOf<UUID, TestInvocationContext>()
-    val invocations: List<TestInvocation>
-        field = mutableListOf<TestInvocation>()
+    private val _invocations = mutableListOf<TestInvocation>()
+    val invocations: List<TestInvocation> get() = _invocations
     private var _parseErrors: List<ParseError> = emptyList()
     val parseErrors: List<ParseError> get() = _parseErrors
 
@@ -44,7 +44,7 @@ class TestMethodContainer(private val testInvocationFactory: TestInvocationFacto
                 invocationContext.displayName
             )
         }
-        invocations.add(invocation)
+        _invocations.add(invocation)
         if (_parseErrors.isEmpty()) _parseErrors = parseErrors
     }
 

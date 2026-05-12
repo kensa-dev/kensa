@@ -44,7 +44,7 @@ subprojects {
             withType<KotlinCompile> {
                 compilerOptions {
                     jvmTarget.set(kotlinJvmTarget)
-                    freeCompilerArgs.addAll(listOf("-opt-in=kotlin.contracts.ExperimentalContracts", "-Xexplicit-backing-fields"))
+                    freeCompilerArgs.addAll(listOf("-opt-in=kotlin.contracts.ExperimentalContracts"))
                 }
             }
 
