@@ -31,6 +31,8 @@
             <option value="$PROJECT_DIR$/frameworks/uitesting" />
             <option value="$PROJECT_DIR$/frameworks/uitesting/junit5" />
             <option value="$PROJECT_DIR$/frameworks/uitesting/junit6" />
+            <option value="$PROJECT_DIR$/integrations/spring-boot-starter" />
+            <option value="$PROJECT_DIR$/integrations/spring-boot-starter-web" />
             <option value="$PROJECT_DIR$/test-support/hamkrest/core" />
             <option value="$PROJECT_DIR$/test-support/hamkrest/json" />
             <option value="$PROJECT_DIR$/test-support/hamkrest/xml" />
