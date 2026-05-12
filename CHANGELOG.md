@@ -2,12 +2,17 @@
 
 ### v0.8.1
 
+New features:
+  - **Spring Boot starter** — two new modules (`kensa-spring-boot-starter`, `kensa-spring-boot-starter-web`) wire Kensa into Spring Boot tests with zero manual configuration: `@KensaTest` boots the application context with Kensa registered as a JUnit Jupiter extension and configures the runtime from `kensa.*` properties in `application.yml`. The `-web` module auto-configures `HandlerInterceptor` / `ClientHttpRequestInterceptor` / `ExchangeFilterFunction` beans that capture HTTP interactions for the sequence diagram. Override any capture point by registering a bean with the canonical name (`kensaHandlerInterceptor`, `kensaClientHttpRequestInterceptor`, `kensaExchangeFilterFunction`) to plug in a party-aware variant. Spring deps are `compileOnly` — non-Spring projects on `kensa-core` see no transitive Spring dependency. [Docs](https://kensa.dev/docs/integrations/spring-boot-starter).
+
 Changed:
   - `@ExpandableSentence` bodies are now parsed lazily — the parser runs only on first access, so unused expandable methods incur no parse cost.
+  - Test-framework dependencies (`junit-jupiter`, `testng`, etc.) are now `compileOnly` across the framework adapters; consumers bring their own JUnit/TestNG versions and the adapter no longer pins them. `kensa-framework-junit5` and `-junit6` ship `junit-jupiter-params` transitively so `@ParameterizedTest` consumers don't have to add it explicitly.
 
 Fixes:
   - Remove `-Xexplicit-backing-fields` again (re-introduced unintentionally in 0.8.0). Downstream Kotlin projects no longer need `-Xskip-prerelease-check` to consume kensa-core.
   - **Per-source component diagrams in site mode.** The HTML UI was loading every per-source `aggregateComponentDiagram` from each `sources/<id>/indices.json` but then only using the *first* source's diagram as a global System View — every other source's architecture was silently dropped. Site mode now renders one System View per source, surfaced as a "System View" entry inside each source's tree root in the sidebar. Single-sourceset projects are unaffected (one source → one entry).
+  - `kensa-framework-junit5`: per-class `results/*.json` files now write correctly on JUnit Jupiter < 5.13. The `CloseableTestContainer` that hooks end-of-class teardown used `java.io.Closeable`, which the Jupiter `ExtensionContext.Store` only honours on 5.13+; on 5.12 (forced by Spring Boot 3.5.x) the close callback never fired and test detail files were silently dropped. Switched to `ExtensionContext.Store.CloseableResource`, which is honoured by every 5.x version.
 
 ### v0.8.0
 New features:
