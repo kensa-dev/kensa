@@ -125,16 +125,24 @@ Add `kensa-spring-boot-starter-web` and three interceptors register automaticall
 
 Each interceptor records the request and response as a pair of Kensa interactions between two participants — `Client` and `Server` by default — so a sequence diagram of the round-trip appears in the report automatically. Outside of an active Kensa test the interceptors short-circuit, so production traffic is never captured.
 
-### Customising the participants
+### Customising the interceptors
 
-Override the auto-registered beans by declaring your own. The auto-config backs off through `@ConditionalOnMissingBean`:
+Each capture point is registered as a named bean. To plug in your own implementation, register a bean with the matching name and a broader Spring interface type — the auto-config gates each default on `@ConditionalOnMissingBean(name = …)` and looks the override up by qualifier, so any `HandlerInterceptor` / `ClientHttpRequestInterceptor` / `ExchangeFilterFunction` swaps in without further wiring. The canonical names are exposed as constants on `KensaWebAutoConfiguration.Companion`:
+
+| Bean name | Override type | Constant |
+| --- | --- | --- |
+| `kensaHandlerInterceptor` | `org.springframework.web.servlet.HandlerInterceptor` | `KensaWebAutoConfiguration.HANDLER_INTERCEPTOR_BEAN` |
+| `kensaClientHttpRequestInterceptor` | `org.springframework.http.client.ClientHttpRequestInterceptor` | `KensaWebAutoConfiguration.CLIENT_HTTP_INTERCEPTOR_BEAN` |
+| `kensaExchangeFilterFunction` | `org.springframework.web.reactive.function.client.ExchangeFilterFunction` | `KensaWebAutoConfiguration.EXCHANGE_FILTER_FUNCTION_BEAN` |
+
+The simplest customisation — re-label `Client` and `Server` on the default interceptor — is still a one-liner:
 
 ```kotlin
 @Configuration
 class TestKensaConfig {
 
-    @Bean
-    fun kensaHandlerInterceptor(): KensaHandlerInterceptor =
+    @Bean(KensaWebAutoConfiguration.HANDLER_INTERCEPTOR_BEAN)
+    fun kensaHandlerInterceptor(): HandlerInterceptor =
         KensaHandlerInterceptor(
             client = HttpEndpoint("Browser"),
             server = HttpEndpoint("OrderApi"),
@@ -142,7 +150,25 @@ class TestKensaConfig {
 }
 ```
 
-The same pattern applies to `kensaRestTemplateCustomizer` and `kensaWebClientCustomizer` — declare a bean with the same name (or type) and the auto-config steps aside.
+For a domain-shaped sequence diagram (e.g. `Customer → OrderService → OpenNetwork`), provide a fully custom `HandlerInterceptor` / `ClientHttpRequestInterceptor` that picks parties off the request path or content type. Same registration pattern — just return your own class against the canonical name.
+
+### Capture across thread boundaries (real Tomcat / `RANDOM_PORT`)
+
+The default interceptors look up the active Kensa test context via a `ThreadLocal`. That works for in-thread test paths — `MockMvc`, `WebTestClient`, and any call your test makes on the JUnit test thread itself. It does **not** work when the call is dispatched to a separate thread pool: under `@SpringBootTest(webEnvironment = RANDOM_PORT)`, Tomcat handles each request on its own worker thread, so a `HandlerInterceptor` running there sees a null Kensa context and silently no-ops. The same goes for any outbound call the application makes from inside a request — that's still a Tomcat thread.
+
+The fix is to correlate by request header instead of thread-local. Generate a unique tracking id per test (Kensa fixture works well), attach it as `X-Tracking-Id` on every outbound call, and have your custom interceptor look up the matching `CapturedInteractions` in a shared registry instead of `TestContextHolder`:
+
+```kotlin
+@Bean(KensaWebAutoConfiguration.CLIENT_HTTP_INTERCEPTOR_BEAN)
+fun kensaClientHttpRequestInterceptor(registry: TrackingRegistry): ClientHttpRequestInterceptor =
+    TrackingAwareClientInterceptor(registry)
+
+// In your test's whenever Action:
+openNetworkStub.register(fixtures[trackingId], interactions)  // before sending
+restTemplate.exchange(uri, POST, requestWithTrackingIdHeader, ...)
+```
+
+The `clearwave-spring-example` project on GitHub has a complete worked example (`TrackingRegistry`, party-aware interceptors, end-to-end capture across `Customer → Service → Suppliers` with async notification callbacks).
 
 ### What gets captured
 
