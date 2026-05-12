@@ -204,6 +204,12 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
         const allMatchingMethodsMap = new Map<string, string[]>();
 
         const filterNode = (node: Index): Index | null => {
+            // Sysview entries are navigation affordances, not tests — always preserve
+            // regardless of search / state / issue filters. Without this short-circuit
+            // they fall through to the `return null` at the bottom because testClass is
+            // '' (so isLeaf is false) and they have no children to recurse into.
+            if (node.type === 'system-view') return node;
+
             const isLeaf = node.testClass && (!node.children || node.children.every((c: Index) => c.testMethod));
 
             if (isLeaf) {
