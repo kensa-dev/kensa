@@ -15,17 +15,22 @@ build-ci:
 	./gradlew check --build-cache --no-daemon
 
 .PHONY: tag-if-release
+# Tags the current `version.txt` value if no such tag exists yet. Robust to multi-commit
+# pushes (the previous diff-against-HEAD approach only inspected the topmost commit, so a
+# follow-up commit on top of the version bump silently lost the trigger).
 tag-if-release:
-	@if git diff-tree --no-commit-id --name-only -r HEAD | grep -qx "version.txt"; then\
-		$(eval VERSION:=$(shell cat version.txt))\
-		echo "New version $(VERSION) was committed - creating tag.";\
-		git config user.name github-actions;\
-		git config user.email github-actions@github.com;\
-		git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/${GITHUB_REPOSITORY}.git;\
-		git tag -a "$(VERSION)" -m "Version $(VERSION)";\
-		git push origin "$(VERSION)";\
-	else\
-		echo "New version was not committed - skipping tag creation.";\
+	@VERSION=$$(cat version.txt); \
+	if [[ "$$VERSION" == *-SNAPSHOT ]]; then \
+		echo "Version $$VERSION is a SNAPSHOT — skipping tag creation."; \
+	elif git rev-parse --verify --quiet "refs/tags/$$VERSION" >/dev/null; then \
+		echo "Tag $$VERSION already exists — skipping."; \
+	else \
+		echo "Version $$VERSION not yet tagged — creating tag."; \
+		git config user.name github-actions; \
+		git config user.email github-actions@github.com; \
+		git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/$${GITHUB_REPOSITORY}.git; \
+		git tag -a "$$VERSION" -m "Version $$VERSION"; \
+		git push origin "$$VERSION"; \
 	fi
 
 .PHONY: publish-to-sonatype
