@@ -1,6 +1,7 @@
 package dev.kensa.render.diagram
 
 import dev.kensa.render.diagram.directive.UmlDirective
+import dev.kensa.render.diagram.directive.UmlParticipant
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.util.Attributes.Key.InteractionId
 import dev.kensa.util.KensaMap
@@ -16,60 +17,72 @@ private val valuePatterns = listOf(
     "^==.*==$".toRegex()
 )
 
-class SequenceDiagramFactory(private val umlDirectives: List<UmlDirective>) {
+private const val SETUP_GROUP_COLOUR = "#ECECEC"
+private const val TEST_GROUP_COLOUR = "#FFFFFF"
 
-    private val participants: List<String>
-        get() = umlDirectives.flatMap { it.asUml() }
+class SequenceDiagramFactory(
+    private val umlDirectives: List<UmlDirective>,
+    private val primaryParticipant: String? = null
+) {
 
     fun create(interactions: CapturedInteractions): SequenceDiagram? =
-        eventsFrom(interactions).takeUnless { it.isEmpty() }?.let { events ->
-            createSvg(
-                (participants + events)
-                    .joinToString("\n",
-                        """
-                           @startuml
-                           
-                           skinparam BackgroundColor transparent
-                           skinparam SequenceGroupBackgroundColor lightgray
-                           skinparam SequenceGroupBodyBackGroundColor white
-                           
-                        """.trimIndent(),
-                        "\n@enduml")
-            )
-        }
+        buildMarkup(umlDirectives.flatMap { it.asUml() }, primaryParticipant, interactions)
+            ?.let { SequenceDiagram(renderSvg(it)) }
 
-    private fun eventsFrom(interactions: CapturedInteractions): List<String> {
-        return ArrayList<String>().also { events ->
-            interactions.entrySet()
-                .filter(IsSvgCompatible)
-                .map(ToGroupedSvg)
-                .groupByTo(LinkedHashMap(), { it.first }, { it.second })
-                .forEach { (group, lines) ->
-                    group?.takeIf { it.isNotEmpty() }?.let { g ->
-                        if(group == "Setup") {
-                            events.add("group $SETUP_GROUP_COLOUR $g")
-                        } else {
-                            events.add("group#gold $TEST_GROUP_COLOUR $g")
-                        }
-
-                        events.addAll(lines)
-                        events.add("end")
-                    } ?: events.addAll(lines)
-                }
-        }
-    }
-
-    private fun createSvg(plantUmlMarkup: String): SequenceDiagram =
+    private fun renderSvg(plantUmlMarkup: String): String =
         ByteArrayOutputStream().use { os ->
             SourceStringReader(plantUmlMarkup).outputImage(os, FileFormatOption(SVG))
-            SequenceDiagram(os.toString())
+            os.toString()
         }
-
-    companion object {
-        private const val SETUP_GROUP_COLOUR = "#ECECEC"
-        private const val TEST_GROUP_COLOUR = "#FFFFFF"
-    }
 }
+
+internal fun buildMarkup(participants: List<String>, primaryParticipant: String?, interactions: CapturedInteractions): String? {
+    val events = eventsFrom(interactions)
+    if (events.isEmpty()) return null
+
+    val effective = when {
+        participants.isNotEmpty() -> participants
+        hasRealInteractions(interactions) -> emptyList()
+        primaryParticipant != null -> UmlParticipant.participant(primaryParticipant).asUml()
+        else -> return null
+    }
+
+    return (effective + events).joinToString(
+        "\n",
+        """
+            @startuml
+
+            skinparam BackgroundColor transparent
+            skinparam SequenceGroupBackgroundColor lightgray
+            skinparam SequenceGroupBodyBackGroundColor white
+
+        """.trimIndent(),
+        "\n@enduml"
+    )
+}
+
+private fun hasRealInteractions(interactions: CapturedInteractions): Boolean =
+    interactions.entrySet().any { keyPattern.matches(it.key.lowercase(Locale.getDefault())) }
+
+private fun eventsFrom(interactions: CapturedInteractions): List<String> =
+    buildList {
+        interactions.entrySet()
+            .filter(IsSvgCompatible)
+            .map(ToGroupedSvg)
+            .groupByTo(LinkedHashMap(), { it.first }, { it.second })
+            .forEach { (group, lines) ->
+                group?.takeIf { it.isNotEmpty() }?.let { g ->
+                    if (group == "Setup") {
+                        add("group $SETUP_GROUP_COLOUR $g")
+                    } else {
+                        add("group#gold $TEST_GROUP_COLOUR $g")
+                    }
+
+                    addAll(lines)
+                    add("end")
+                } ?: addAll(lines)
+            }
+    }
 
 object IsSvgCompatible : (KensaMap.Entry) -> Boolean {
     override fun invoke(entry: KensaMap.Entry) =

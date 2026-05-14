@@ -74,6 +74,7 @@ class KensaConfigurator(private val configuration: Configuration) {
 
     fun withAutoOpenTab(tab: Tab): KensaConfigurator = apply { configuration.autoOpenTab = tab }
     fun withAutoExpandNotes(value: Boolean): KensaConfigurator = apply { configuration.autoExpandNotes = value }
+    fun withPrimaryParticipant(name: String): KensaConfigurator = apply { configuration.primaryParticipant = name }
 
     fun withSetupStrategy(setupStrategy: SetupStrategy): KensaConfigurator = apply { configuration.setupStrategy = setupStrategy }
 
@@ -152,6 +153,7 @@ class Configuration {
     var tabSize: Int = 4
     var autoOpenTab: Tab = Tab.None
     var autoExpandNotes: Boolean = false
+    var primaryParticipant: String? = null
     var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
     var packageDisplayRoot: String? = null
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
