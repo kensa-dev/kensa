@@ -1,10 +1,12 @@
 package dev.kensa.render.diagram
 
+import dev.kensa.render.diagram.directive.UmlBox.Companion.surroundingBox
 import dev.kensa.render.diagram.directive.UmlParticipant.Companion.participant
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Party
 import dev.kensa.state.SetupStrategy
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.string.shouldContain
@@ -86,5 +88,81 @@ internal class SequenceDiagramFactoryTest {
         markup.shouldNotBeNull()
         markup shouldContain "==Midpoint=="
         markup shouldNotContain "participant"
+    }
+
+    @Test
+    fun `buildMarkup preserves umlDirectives declaration order for 4 participants`() {
+        val directives = listOf(
+            participant("Alpha"),
+            participant("Bravo"),
+            participant("Charlie"),
+            participant("Delta")
+        )
+        val interactions = interactions()
+        capture(interactions, "Alpha", "Bravo")
+
+        val markup = buildMarkup(directives.flatMap { it.asUml() }, null, interactions)
+
+        markup.shouldNotBeNull()
+        val idxAlpha = markup.indexOf("participant Alpha")
+        val idxBravo = markup.indexOf("participant Bravo")
+        val idxCharlie = markup.indexOf("participant Charlie")
+        val idxDelta = markup.indexOf("participant Delta")
+        idxAlpha shouldBeGreaterThan -1
+        idxBravo shouldBeGreaterThan idxAlpha
+        idxCharlie shouldBeGreaterThan idxBravo
+        idxDelta shouldBeGreaterThan idxCharlie
+        val interactionLineStart = markup.indexOf("Alpha -> Bravo")
+        interactionLineStart shouldBeGreaterThan idxDelta
+    }
+
+    @Test
+    fun `rendered SVG places first-declared participant leftmost when 4 participants are declared`() {
+        val directives = listOf(
+            participant("Alpha"),
+            participant("Bravo"),
+            participant("Charlie"),
+            participant("Delta")
+        )
+        val interactions = interactions()
+        capture(interactions, "Alpha", "Bravo")
+
+        val diagram = SequenceDiagramFactory(directives, null).create(interactions)
+
+        diagram.shouldNotBeNull()
+        val svg = diagram.toString()
+        val idxAlpha = svg.indexOf(">Alpha<")
+        val idxBravo = svg.indexOf(">Bravo<")
+        val idxCharlie = svg.indexOf(">Charlie<")
+        val idxDelta = svg.indexOf(">Delta<")
+        idxAlpha shouldBeGreaterThan -1
+        idxBravo shouldBeGreaterThan idxAlpha
+        idxCharlie shouldBeGreaterThan idxBravo
+        idxDelta shouldBeGreaterThan idxCharlie
+    }
+
+    @Test
+    fun `rendered SVG preserves declaration order when first two participants are wrapped in a surroundingBox`() {
+        val directives = listOf(
+            surroundingBox("Frontend", participant("Alpha"), participant("Bravo")),
+            participant("Charlie"),
+            participant("Delta")
+        )
+        val interactions = interactions()
+        capture(interactions, "Alpha", "Charlie")
+
+        val diagram = SequenceDiagramFactory(directives, null).create(interactions)
+
+        diagram.shouldNotBeNull()
+        val svg = diagram.toString()
+        val idxAlpha = svg.indexOf(">Alpha<")
+        val idxBravo = svg.indexOf(">Bravo<")
+        val idxCharlie = svg.indexOf(">Charlie<")
+        val idxDelta = svg.indexOf(">Delta<")
+        idxAlpha shouldBeGreaterThan -1
+        idxBravo shouldBeGreaterThan idxAlpha
+        idxCharlie shouldBeGreaterThan idxBravo
+        idxDelta shouldBeGreaterThan idxCharlie
+        svg shouldContain "Frontend"
     }
 }
