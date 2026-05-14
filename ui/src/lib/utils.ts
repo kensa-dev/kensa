@@ -20,7 +20,7 @@ export async function loadJson<T>(
         const normalizedPath = path.replace(/^\.\//, '');
         const url = `${options.baseUrl || '.'}/${normalizedPath}`;
 
-        const res = await fetch(url, {signal: options.signal});
+        const res = await fetch(url, {cache: 'no-store', signal: options.signal});
 
         if (!res.ok) {
             console.warn(`${label} load failed: ${res.status} ${res.statusText} (${url})`);
@@ -45,7 +45,7 @@ export async function loadText(
         const normalizedPath = path.replace(/^\.\//, '');
         const url = `${options.baseUrl || '.'}/${normalizedPath}`;
 
-        const res = await fetch(url, {signal: options.signal});
+        const res = await fetch(url, {cache: 'no-store', signal: options.signal});
 
         if (!res.ok) {
             console.warn(`${label} load failed: ${res.status} ${res.statusText} (${url})`);
