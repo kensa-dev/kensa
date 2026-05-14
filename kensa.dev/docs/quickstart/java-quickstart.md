@@ -148,6 +148,7 @@ kensa --dir build/kensa
 
 ---
 
-## Kotlin
+## Other Setups
 
-The Kotlin API is identical in structure. See the [Kotlin Quickstart](kotlin-quickstart) for Kotlin-specific setup and idiomatic patterns.
+- [Kotlin Quickstart](kotlin-quickstart) — same structure, Kotlin-idiomatic patterns and `@RenderedValue` capture via the compiler plugin.
+- [TestNG Quickstart](testng-quickstart) — using `kensa-framework-testng` with TestNG as the runner (works for both Kotlin and Java).

@@ -186,4 +186,4 @@ kensa --dir build/kensa
 
 ## Other Frameworks
 
-Kensa also supports **Kotest** and **TestNG**. The Given-When-Then DSL is identical — only the dependency and setup differs. See the [Java Quickstart](java-quickstart) for Java-specific setup, or browse the [example projects](https://github.com/kensa-dev/kensa/tree/master/examples) on GitHub.
+Kensa also supports **TestNG** (and **Kotest** is on the roadmap). The Given-When-Then DSL is identical — only the dependency and setup differs. See the [TestNG Quickstart](testng-quickstart) if you're using TestNG, or the [Java Quickstart](java-quickstart) for Java-specific setup. Working examples are linked from each quickstart.
