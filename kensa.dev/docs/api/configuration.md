@@ -210,6 +210,137 @@ Kensa.configure()
 
 ---
 
+## Sequence Diagrams
+
+Configure how participants are declared and rendered in the sequence diagram. Declaration order in the `sequenceDiagram { }` block is the left-to-right order on the rendered diagram.
+
+<Tabs groupId="lang">
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+Kensa.konfigure {
+    sequenceDiagram {
+        title("Order placement")
+        actor("User")
+        participant("Frontend")
+        box("Backend") {
+            participant("Orchestration")
+            database("OrderStore")
+        }
+        queue("Events")
+        hideUnlinked()
+    }
+}
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+The Kotlin DSL is the preferred entry point. Java consumers continue to use the deprecated `umlDirectives` property on `Configuration` until a richer Java-side API lands:
+
+```java
+Kensa.getConfiguration().setUmlDirectives(List.of(
+    UmlParticipant.actor("User"),
+    UmlParticipant.participant("Frontend"),
+    UmlBox.surroundingBox("Backend",
+        UmlParticipant.participant("Orchestration"),
+        UmlParticipant.database("OrderStore")),
+    UmlParticipant.queue("Events"),
+    UmlHideUnlinked.hideUnlinkedParticipants()
+));
+```
+
+</TabItem>
+</Tabs>
+
+### Participants
+
+Eight participant kinds — each maps directly to a PlantUML participant type:
+
+| DSL method | PlantUML output |
+|------------|-----------------|
+| `participant(name)` | `participant name` |
+| `actor(name)` | `actor name` |
+| `boundary(name)` | `boundary name` |
+| `control(name)` | `control name` |
+| `entity(name)` | `entity name` |
+| `database(name)` | `database name` |
+| `collections(name)` | `collections name` |
+| `queue(name)` | `queue name` |
+
+Each call returns a handle. Chain `.withColour(...)` and `.withAlias(...)` inline to style or re-label the participant:
+
+```kotlin
+sequenceDiagram {
+    actor("Operations").withColour("#LightBlue").withAlias("Ops")
+    participant("Orchestration")
+}
+```
+
+A `Party` overload is provided for each method — if your test suite already defines `Party` constants, pass them directly: `participant(MyParty.Orchestration)`.
+
+### Boxes
+
+Group related participants under a labelled box. The box is rendered around the listed participants:
+
+```kotlin
+sequenceDiagram {
+    box("Backend", colour = "#LightYellow") {
+        participant("Orchestration")
+        database("OrderStore")
+    }
+}
+```
+
+Nested boxes are not supported. Use sibling boxes at the top level.
+
+### Title & Hide Unlinked
+
+```kotlin
+sequenceDiagram {
+    title("Order placement", "Happy path")
+    actor("User")
+    participant("Unused")
+    hideUnlinked()                 // omits participants that have no interactions
+}
+```
+
+### Primary Participant (Fallback)
+
+Some tests capture only a divider (`SD-MARKER` value such as `==Setup==`) or no interactions at all. Without at least one participant, PlantUML cannot recognise the markup as a sequence diagram and rendering fails. Configure a **primary** participant as a fallback identity for these cases:
+
+```kotlin
+sequenceDiagram {
+    primary.actor("SUT").withColour("#LightGreen")
+}
+```
+
+The primary is only emitted when both conditions hold:
+
+- No participants are declared in the block, **and**
+- No real arrow interactions (e.g. `A -> B`) have been captured.
+
+If either real participants or real interactions exist, the primary is ignored. `primary.<type>(name)` accepts the same eight participant kinds as the top-level methods and returns the same handle for `.withColour(...)` / `.withAlias(...)` chaining. Setting `primary` twice overwrites the previous value — only one primary is honoured.
+
+:::tip
+Most tests already declare participants or capture real interactions, so the primary is rarely needed. It exists as a safety net for tests that capture only structural markers.
+:::
+
+### Replacement Semantics
+
+Each `sequenceDiagram { }` block resets the prior configuration before applying its body:
+
+```kotlin
+Kensa.konfigure {
+    sequenceDiagram { participant("Alpha") }
+    sequenceDiagram { participant("Bravo") }     // Alpha is discarded
+}
+```
+
+This matches the replacement behaviour of the deprecated `umlDirectives = listOf(...)` setter.
+
+---
+
 ## Source Locations
 
 If you use `@Sources` to parse helper classes referenced in tests, tell Kensa where to find source files:

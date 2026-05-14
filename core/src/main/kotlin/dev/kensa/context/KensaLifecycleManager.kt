@@ -147,7 +147,7 @@ class KensaLifecycleManager private constructor(
                         )
                     )
                 ),
-                SequenceDiagramFactory(configuration.umlDirectives, configuration.primaryParticipant),
+                SequenceDiagramFactory(configuration.sequenceDiagram.directives) { configuration.sequenceDiagram.primary.participant },
                 componentDiagramFactory
             )
     }

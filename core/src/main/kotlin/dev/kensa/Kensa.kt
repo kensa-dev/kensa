@@ -74,7 +74,6 @@ class KensaConfigurator(private val configuration: Configuration) {
 
     fun withAutoOpenTab(tab: Tab): KensaConfigurator = apply { configuration.autoOpenTab = tab }
     fun withAutoExpandNotes(value: Boolean): KensaConfigurator = apply { configuration.autoExpandNotes = value }
-    fun withPrimaryParticipant(name: String): KensaConfigurator = apply { configuration.primaryParticipant = name }
 
     fun withSetupStrategy(setupStrategy: SetupStrategy): KensaConfigurator = apply { configuration.setupStrategy = setupStrategy }
 
@@ -148,12 +147,21 @@ class Configuration {
     } else true
     var antlrPredicationMode: PredictionMode = PredictionMode.LL
     var antlrErrorListenerDisabled: Boolean = true
-    var umlDirectives: List<UmlDirective> = ArrayList()
+    val sequenceDiagram: SequenceDiagramConfiguration = SequenceDiagramConfiguration()
+
+    @Deprecated(
+        "Use sequenceDiagram { } instead. Assigning umlDirectives clears prior directives and invalidates any retained ParticipantHandle from a previous sequenceDiagram block."
+    )
+    var umlDirectives: List<UmlDirective>
+        get() = sequenceDiagram.directives.toList()
+        set(value) {
+            sequenceDiagram.directives.clear()
+            sequenceDiagram.directives.addAll(value)
+        }
     var issueTrackerUrl: URL = URI.create("http://empty").toURL()
     var tabSize: Int = 4
     var autoOpenTab: Tab = Tab.None
     var autoExpandNotes: Boolean = false
-    var primaryParticipant: String? = null
     var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
     var packageDisplayRoot: String? = null
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
@@ -186,6 +194,11 @@ class RendererConfiguration(@PublishedApi internal val renderers: Renderers) {
 }
 
 fun Configuration.withRenderers(block: RendererConfiguration.() -> Unit) = RendererConfiguration(this.renderers).block()
+
+fun Configuration.sequenceDiagram(block: SequenceDiagramConfiguration.() -> Unit) {
+    sequenceDiagram.reset()
+    sequenceDiagram.apply(block)
+}
 
 inline fun <reified T : Any> Configuration.getExtra(): T? = getExtra(T::class)
 inline fun <reified T : Any> Configuration.putExtra(value: T) = putExtra(T::class, value)

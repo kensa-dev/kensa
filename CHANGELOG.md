@@ -1,5 +1,18 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.2
+
+New features:
+  - **`sequenceDiagram { }` Kotlin DSL** on `Configuration` for declaring participants, boxes, title, hide-unlinked, and a fallback identity. Declaration order is left-to-right on the rendered diagram. Each participant call (`participant`, `actor`, `boundary`, `control`, `entity`, `database`, `collections`, `queue`) returns a handle so `.withColour(...)` and `.withAlias(...)` chain inline. `box(title) { ... }` wraps nested participants. [Docs](https://kensa.dev/docs/api/configuration#sequence-diagrams).
+  - **`primary.<type>(name)` fallback identity.** A test that captures only dividers (`SD-MARKER` / `==Something==`) or has no participants previously produced markup PlantUML couldn't recognise as a sequence diagram — falling into the error path that pulls in QR-code (`zxing`) classes stripped from the shadow JAR. Configure `sequenceDiagram { primary.actor("User") }` to inject a single participant for these cases. Only emitted when no participants are declared and no real arrow interactions are captured.
+
+Fixes:
+  - **UI no longer caches `loadJson` / `loadText` fetches.** Browser-side requests for `indices.json`, `results/*.json`, and source-file text now go out with `cache: 'no-store'` so a regenerated report is picked up on reload without a hard refresh.
+  - **Late-applied sequence-diagram config is now observed by the factory.** When `Kensa.konfigure { ... }` runs from a companion-object `init` block (a common pattern — e.g., your own JUnit extension) it may execute *after* `KensaLifecycleManager.initialise(...)` has already constructed `SequenceDiagramFactory`. Previously the factory captured a reference to the old `var umlDirectives` list, so a subsequent `umlDirectives = listOf(...)` reassignment was invisible to it — the rendered diagram had no `participant` declarations and PlantUML laid out participants from interaction order alone. The factory now reads from the shared list at render time, so post-init reassignment via the deprecated setter (or the new `sequenceDiagram { }` block) is honoured.
+
+Deprecated:
+  - `Configuration.umlDirectives` — replaced by the `sequenceDiagram { }` block. The legacy setter still works but clears the directives list and invalidates any retained participant handle from a prior `sequenceDiagram { }` block. Java consumers can keep using it until a richer Java-side API lands.
+
 ### v0.8.1
 
 New features:

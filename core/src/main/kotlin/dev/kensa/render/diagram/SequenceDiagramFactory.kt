@@ -22,11 +22,11 @@ private const val TEST_GROUP_COLOUR = "#FFFFFF"
 
 class SequenceDiagramFactory(
     private val umlDirectives: List<UmlDirective>,
-    private val primaryParticipant: String? = null
+    private val primaryProvider: () -> UmlParticipant? = { null }
 ) {
 
     fun create(interactions: CapturedInteractions): SequenceDiagram? =
-        buildMarkup(umlDirectives.flatMap { it.asUml() }, primaryParticipant, interactions)
+        buildMarkup(umlDirectives.flatMap { it.asUml() }, primaryProvider(), interactions)
             ?.let { SequenceDiagram(renderSvg(it)) }
 
     private fun renderSvg(plantUmlMarkup: String): String =
@@ -36,14 +36,14 @@ class SequenceDiagramFactory(
         }
 }
 
-internal fun buildMarkup(participants: List<String>, primaryParticipant: String?, interactions: CapturedInteractions): String? {
+internal fun buildMarkup(participants: List<String>, primary: UmlParticipant?, interactions: CapturedInteractions): String? {
     val events = eventsFrom(interactions)
     if (events.isEmpty()) return null
 
     val effective = when {
         participants.isNotEmpty() -> participants
         hasRealInteractions(interactions) -> emptyList()
-        primaryParticipant != null -> UmlParticipant.participant(primaryParticipant).asUml()
+        primary != null -> primary.asUml()
         else -> return null
     }
 

@@ -1,5 +1,6 @@
 package dev.kensa.render.diagram
 
+import dev.kensa.Configuration
 import dev.kensa.render.diagram.directive.UmlBox.Companion.surroundingBox
 import dev.kensa.render.diagram.directive.UmlParticipant.Companion.participant
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
@@ -25,14 +26,14 @@ internal class SequenceDiagramFactoryTest {
 
     @Test
     fun `create returns null when interactions are empty`() {
-        val factory = SequenceDiagramFactory(emptyList(), null)
+        val factory = SequenceDiagramFactory(emptyList())
 
         factory.create(interactions()).shouldBeNull()
     }
 
     @Test
     fun `create returns null when only SD-MARKER entries exist and no primary participant configured`() {
-        val factory = SequenceDiagramFactory(emptyList(), null)
+        val factory = SequenceDiagramFactory(emptyList())
         val interactions = interactions()
         interactions.divider("Something")
 
@@ -44,7 +45,7 @@ internal class SequenceDiagramFactoryTest {
         val interactions = interactions()
         interactions.divider("Something")
 
-        val markup = buildMarkup(emptyList(), "X", interactions)
+        val markup = buildMarkup(emptyList(), participant("X"), interactions)
 
         markup.shouldNotBeNull()
         markup shouldContain "participant X"
@@ -56,7 +57,7 @@ internal class SequenceDiagramFactoryTest {
         val interactions = interactions()
         interactions.divider("Something")
 
-        val markup = buildMarkup(participant("Existing").asUml(), "Primary", interactions)
+        val markup = buildMarkup(participant("Existing").asUml(), participant("Primary"), interactions)
 
         markup.shouldNotBeNull()
         markup shouldContain "participant Existing"
@@ -68,7 +69,7 @@ internal class SequenceDiagramFactoryTest {
         val interactions = interactions()
         capture(interactions, "A", "B")
 
-        val markup = buildMarkup(emptyList(), "Primary", interactions)
+        val markup = buildMarkup(emptyList(), participant("Primary"), interactions)
 
         markup.shouldNotBeNull()
         markup shouldNotContain "participant Primary"
@@ -127,7 +128,7 @@ internal class SequenceDiagramFactoryTest {
         val interactions = interactions()
         capture(interactions, "Alpha", "Bravo")
 
-        val diagram = SequenceDiagramFactory(directives, null).create(interactions)
+        val diagram = SequenceDiagramFactory(directives).create(interactions)
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
@@ -142,6 +143,42 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
+    fun `factory observes umlDirectives populated via deprecated setter after factory construction`() {
+        val configuration = Configuration()
+        val factory = SequenceDiagramFactory(configuration.sequenceDiagram.directives)
+        val interactions = interactions()
+        capture(interactions, "Echo", "Foxtrot")
+
+        @Suppress("DEPRECATION")
+        configuration.umlDirectives = listOf(participant("Echo"), participant("Foxtrot"))
+
+        val diagram = factory.create(interactions)
+
+        diagram.shouldNotBeNull()
+        val svg = diagram.toString()
+        svg.indexOf(">Echo<") shouldBeGreaterThan -1
+        svg.indexOf(">Foxtrot<") shouldBeGreaterThan svg.indexOf(">Echo<")
+    }
+
+    @Test
+    fun `factory observes sequenceDiagram block applied after factory construction`() {
+        val configuration = Configuration()
+        val factory = SequenceDiagramFactory(configuration.sequenceDiagram.directives)
+        val interactions = interactions()
+        capture(interactions, "Echo", "Foxtrot")
+
+        configuration.sequenceDiagram.participant("Echo")
+        configuration.sequenceDiagram.participant("Foxtrot")
+
+        val diagram = factory.create(interactions)
+
+        diagram.shouldNotBeNull()
+        val svg = diagram.toString()
+        svg.indexOf(">Echo<") shouldBeGreaterThan -1
+        svg.indexOf(">Foxtrot<") shouldBeGreaterThan svg.indexOf(">Echo<")
+    }
+
+    @Test
     fun `rendered SVG preserves declaration order when first two participants are wrapped in a surroundingBox`() {
         val directives = listOf(
             surroundingBox("Frontend", participant("Alpha"), participant("Bravo")),
@@ -151,7 +188,7 @@ internal class SequenceDiagramFactoryTest {
         val interactions = interactions()
         capture(interactions, "Alpha", "Charlie")
 
-        val diagram = SequenceDiagramFactory(directives, null).create(interactions)
+        val diagram = SequenceDiagramFactory(directives).create(interactions)
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
