@@ -15,22 +15,29 @@ build-ci:
 	./gradlew check --build-cache --no-daemon
 
 .PHONY: tag-if-release
-# Tags the current `version.txt` value if no such tag exists yet. Robust to multi-commit
-# pushes (the previous diff-against-HEAD approach only inspected the topmost commit, so a
-# follow-up commit on top of the version bump silently lost the trigger).
+# Tags the current `version.txt` value iff this push changed it. Multi-commit pushes are
+# handled via $BEFORE_SHA (github.event.before) so the trigger isn't lost when the version
+# bump is followed by further commits in the same push. version.txt is the release stream
+# and never carries a SNAPSHOT suffix — snapshots live in snapshot-version.txt.
 tag-if-release:
 	@VERSION=$$(cat version.txt); \
-	if [[ "$$VERSION" == *-SNAPSHOT ]]; then \
-		echo "Version $$VERSION is a SNAPSHOT — skipping tag creation."; \
-	elif git rev-parse --verify --quiet "refs/tags/$$VERSION" >/dev/null; then \
-		echo "Tag $$VERSION already exists — skipping."; \
+	BEFORE=$${BEFORE_SHA:-}; \
+	if [[ -z "$$BEFORE" || "$$BEFORE" =~ ^0+$$ ]]; then \
+		echo "No previous commit available — skipping tag creation."; \
 	else \
-		echo "Version $$VERSION not yet tagged — creating tag."; \
-		git config user.name github-actions; \
-		git config user.email github-actions@github.com; \
-		git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/$${GITHUB_REPOSITORY}.git; \
-		git tag -a "$$VERSION" -m "Version $$VERSION"; \
-		git push origin "$$VERSION"; \
+		git fetch --quiet --no-tags origin "$$BEFORE" --depth=1 2>/dev/null || true; \
+		if ! git diff --name-only "$$BEFORE" HEAD -- version.txt | grep -qx version.txt; then \
+			echo "version.txt unchanged in this push — skipping tag creation."; \
+		elif git ls-remote --exit-code --tags origin "refs/tags/$$VERSION" >/dev/null 2>&1; then \
+			echo "Tag $$VERSION already exists on remote — skipping."; \
+		else \
+			echo "version.txt bumped to $$VERSION — creating tag."; \
+			git config user.name github-actions; \
+			git config user.email github-actions@github.com; \
+			git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/$${GITHUB_REPOSITORY}.git; \
+			git tag -a "$$VERSION" -m "Version $$VERSION"; \
+			git push origin "$$VERSION"; \
+		fi; \
 	fi
 
 .PHONY: publish-to-sonatype
