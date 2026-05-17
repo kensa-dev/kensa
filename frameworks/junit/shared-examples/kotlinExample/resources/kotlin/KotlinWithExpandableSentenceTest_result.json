@@ -5,12 +5,14 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "tags": [],
   "tests": [
     {
       "elapsedTime": "",
       "testMethod": "simpleExpandable",
       "displayName": "Simple Expandable",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -164,6 +166,7 @@
       "testMethod": "expandableWithMultiLineParameters",
       "displayName": "Expandable With Multi Line Parameters",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -654,6 +657,7 @@
       "testMethod": "expandableWithScenarioParameters",
       "displayName": "Expandable With Scenario Parameters",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -802,6 +806,7 @@
       "testMethod": "expandableWithFixtureAndScenarioParameters",
       "displayName": "Expandable With Fixture And Scenario Parameters",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -1120,6 +1125,7 @@
       "testMethod": "expandableWithLambdaParameter",
       "displayName": "Expandable With Lambda Parameter",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -1231,6 +1237,7 @@
       "testMethod": "expandableWithExpandableExpression",
       "displayName": "Expandable With Expandable Expression",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -1361,6 +1368,7 @@
       "testMethod": "expandableWithExpandableExpressionInInterface",
       "displayName": "Expandable With Expandable Expression In Interface",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -1527,6 +1535,7 @@
       "testMethod": "parameterisedWithExpandableSentence",
       "displayName": "Parameterised With Expandable Sentence",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

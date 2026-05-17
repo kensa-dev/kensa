@@ -5,11 +5,13 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "tags": [],
   "tests": [
     {
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

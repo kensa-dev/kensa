@@ -101,6 +101,7 @@ class KensaLifecycleManager private constructor(
         fun initialise(descriptor: FrameworkDescriptor): KensaLifecycleManager {
             val configuration = loadConfiguration()
             val parserCache = ParserCache()
+            // Hoisted: shared between per-invocation rendering (TestInvocationFactory) and the cross-test aggregate (ResultWriter).
             val componentDiagramFactory = ComponentDiagramFactory()
             val testInvocationFactory = testInvocationFactory(configuration, parserCache, descriptor, componentDiagramFactory)
             val testContainerFactory = TestContainerFactory(
@@ -108,7 +109,8 @@ class KensaLifecycleManager private constructor(
                 descriptor.displayNameFor,
                 descriptor.findTestMethods,
                 testInvocationFactory,
-                configuration
+                configuration,
+                descriptor.tagsFor,
             )
             val kensaContext = KensaContext(testContainerFactory)
             val resultWriter = lazy { ResultWriter(configuration, componentDiagramFactory) }

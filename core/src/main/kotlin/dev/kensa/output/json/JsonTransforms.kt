@@ -45,6 +45,7 @@ object JsonTransforms {
             .add("notes", container.notes)
             .add("packageName", container.testClass.packageName)
             .add("issues", asJsonArray(container.issues))
+            .add("tags", asJsonArray(container.tags))
             .add("tests", asJsonArray(container.orderedMethodContainers) { testMethodContainer: TestMethodContainer ->
                 var totalElapsed: Duration = Duration.ZERO
 
@@ -88,6 +89,7 @@ object JsonTransforms {
                     .add("testMethod", testMethodContainer.method.name)
                     .add("displayName", testMethodContainer.displayName)
                     .add("issues", asJsonArray(testMethodContainer.issues))
+                    .add("tags", asJsonArray(testMethodContainer.tags))
                     .add("state", testMethodContainer.state.description)
                     .add("autoOpenTab", testMethodContainer.autoOpenTab.name)
                     .add("invocations", invocations)
@@ -123,6 +125,7 @@ object JsonTransforms {
             .add("id", id)
             .add("testClass", container.testClass.name)
             .add("issues", asJsonArray(container.issues))
+            .add("tags", asJsonArray(container.tags))
             .add("displayName", container.displayName)
             .add("state", container.state.description)
             .add("children", asJsonArray(container.orderedMethodContainers) { invocation: TestMethodContainer ->
@@ -130,6 +133,7 @@ object JsonTransforms {
                     .add("id", "$id:${invocation.method.name}")
                     .add("testMethod", invocation.method.name)
                     .add("issues", asJsonArray(invocation.issues))
+                    .add("tags", asJsonArray(invocation.tags))
                     .add("displayName", invocation.displayName)
                     .add("state", invocation.state.description)
                 if (methodHasErrors(invocation)) childIndexJson.add("hasErrors", true)

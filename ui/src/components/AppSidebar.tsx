@@ -14,6 +14,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 import {Kbd, KbdGroup} from "@/components/ui/kbd"
 import {useConfig} from "@/contexts/ConfigContext"
 import {matchesAnyIssue} from "@/util/issueMatch"
+import {tagMatch} from "@/util/tagMatch"
 import {hasOpenDialog} from "@/util/escapeGuard"
 import {setStateFilter} from "@/util/stateFilterToggle"
 import {useLocation} from "react-router-dom"
@@ -85,11 +86,23 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
         return Array.from(issues).sort();
     }, [indices]);
 
+    const allTags = React.useMemo(() => {
+        const tags = new Set<string>();
+        const collect = (nodes: Indices) => {
+            nodes.forEach(n => {
+                (n.tags || []).forEach((t: string) => tags.add(t));
+                if (n.children) collect(n.children);
+            });
+        };
+        collect(indices);
+        return Array.from(tags).sort();
+    }, [indices]);
+
     const states = FILTER_STATES;
 
     const [inputValue, setInputValue] = React.useState("");
     const [showPicker, setShowPicker] = React.useState(false);
-    const [pickerType, setPickerType] = React.useState<'state' | 'issue' | null>(null);
+    const [pickerType, setPickerType] = React.useState<'state' | 'issue' | 'tag' | null>(null);
     const [pickerIndex, setPickerIndex] = React.useState(0);
 
     const pickerListRef = React.useRef<HTMLDivElement>(null);
@@ -120,8 +133,9 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
     const pickerItems = React.useMemo(() => {
         if (pickerType === 'state') return [...states];
         if (pickerType === 'issue') return allIssues;
+        if (pickerType === 'tag') return allTags;
         return [];
-    }, [pickerType, states, allIssues]);
+    }, [pickerType, states, allIssues, allTags]);
 
     const handleRemoveBadge = (token: string) => {
         const newQuery = searchQuery
@@ -138,6 +152,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
             .filter(p =>
                 (p.startsWith('issue:') && p.length > 6) ||
                 (p.startsWith('state:') && p.length > 6) ||
+                (p.startsWith('tag:') && p.length > 4) ||
                 (p.startsWith('pkg:') && p.length > 4)
             )
             .join(' ')
@@ -153,6 +168,10 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
             setShowPicker(true);
         } else if (val.endsWith('issue:')) {
             setPickerType('issue');
+            setPickerIndex(0);
+            setShowPicker(true);
+        } else if (val.endsWith('tag:')) {
+            setPickerType('tag');
             setPickerIndex(0);
             setShowPicker(true);
         } else {
@@ -174,29 +193,33 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
         const parts = searchQuery.split(/\s+/).filter(Boolean);
         const issues = parts.filter(p => p.startsWith('issue:') && p.length > 6).map(p => p.slice(6));
         const states = parts.filter(p => p.startsWith('state:') && p.length > 6).map(p => p.slice(6).toLowerCase());
+        const tags = parts.filter(p => p.startsWith('tag:') && p.length > 4).map(p => p.slice(4));
         const packages = parts.filter(p => p.startsWith('pkg:') && p.length > 4).map(p => p.slice(4));
 
         const text = parts.filter(p =>
             !(p.startsWith('issue:') && p.length > 6) &&
             !(p.startsWith('state:') && p.length > 6) &&
+            !(p.startsWith('tag:') && p.length > 4) &&
             !(p.startsWith('pkg:') && p.length > 4)
         ).join(' ');
 
-        return {text, issues, states, packages};
+        return {text, issues, states, tags, packages};
     }, [searchQuery]);
 
     const {filteredIndices, firstMatchingTest, firstMatchingMethod, testMethodMap, matchingMethodsMap} = React.useMemo(() => {
-        const {states, issues, packages, text: committedText} = queryMeta;
+        const {states, issues, tags, packages, text: committedText} = queryMeta;
 
         const activeTyping = inputValue.toLowerCase();
         const typingState = activeTyping.startsWith('state:') ? activeTyping.split(':')[1] : null;
         const typingIssue = activeTyping.startsWith('issue:') ? activeTyping.split(':')[1] : null;
+        const typingTag = activeTyping.startsWith('tag:') && activeTyping.length > 4 ? activeTyping.slice(4) : null;
         const typingPkg = activeTyping.startsWith('pkg:') && activeTyping.length > 4 ? activeTyping.slice(4) : null;
-        const typingText = (!typingState && !typingIssue && !typingPkg) ? activeTyping : "";
+        const typingText = (!typingState && !typingIssue && !typingTag && !typingPkg) ? activeTyping : "";
 
         const requiredStates = typingState ? [...states, typingState] : states;
         const requiredPackages = typingPkg ? [...packages, typingPkg] : packages;
         const requiredIssues = typingIssue ? [...issues, typingIssue] : issues;
+        const requiredTags = new Set(typingTag ? [...tags, typingTag] : tags);
 
         let firstTest: Index | null = null;
         let firstMethod: string | null = null;
@@ -231,24 +254,24 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
                 const classMatchesIssue = requiredIssues.length === 0 ||
                     matchesAnyIssue(nodeIssues, requiredIssues);
 
-                // If we have state/issue filters, we MUST filter children
-                if (node.children && (requiredStates.length > 0 || requiredIssues.length > 0)) {
+                const classMatchesTag = tagMatch(node.tags, requiredTags);
+
+                // If we have state/issue/tag filters, we MUST filter children
+                if (node.children && (requiredStates.length > 0 || requiredIssues.length > 0 || requiredTags.size > 0)) {
                     const matchingChildren = node.children.filter((child: Index) => {
                         const childState = (child.state || "").toLowerCase();
                         const childMatchesState = requiredStates.length === 0 ||
                             requiredStates.some(s => childState.startsWith(s.toLowerCase()));
 
-                        if (requiredIssues.length > 0) {
-                            // If the class has the issue, all children match (issue at class level applies to all methods)
-                            if (classMatchesIssue) {
-                                return childMatchesState;
-                            }
-                            // Otherwise, check if the child has the issue
-                            const childMatchesIssue = matchesAnyIssue(child.issues || [], requiredIssues);
-                            return childMatchesIssue && childMatchesState;
-                        }
+                        const childMatchesIssueFilter = requiredIssues.length === 0
+                            ? true
+                            : (classMatchesIssue || matchesAnyIssue(child.issues || [], requiredIssues));
 
-                        return childMatchesState;
+                        const childMatchesTagFilter = requiredTags.size === 0
+                            ? true
+                            : (classMatchesTag || tagMatch(child.tags, requiredTags));
+
+                        return childMatchesState && childMatchesIssueFilter && childMatchesTagFilter;
                     });
 
                     if (matchingChildren.length > 0 && matchesText && matchesPackage) {
@@ -266,8 +289,8 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
                     return null;
                 }
 
-                // No state/issue filters - use class-level matching
-                if (matchesText && matchesPackage && matchesState && classMatchesIssue) {
+                // No state/issue/tag filters - use class-level matching
+                if (matchesText && matchesPackage && matchesState && classMatchesIssue && classMatchesTag) {
                     methodMap.set(node.id, null);
                     allMatchingMethodsMap.set(node.id, []);
                     if (!firstTest) firstTest = node;
@@ -416,6 +439,14 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
                                                 </span>
                                         </Badge>
                                     ))}
+                                    {queryMeta.tags.map(t => (
+                                        <Badge key={t} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-neutral-500/10 text-neutral-700 dark:text-neutral-300 border-neutral-400/60 max-w-[160px]">
+                                            <span className="truncate">tag:{t}</span>
+                                            <span className="cursor-pointer shrink-0" onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); handleRemoveBadge(`tag:${t}`); }}>
+                                                <X size={10} className="pointer-events-none" />
+                                            </span>
+                                        </Badge>
+                                    ))}
                                     {queryMeta.text && (
                                         <Badge variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-muted/80 text-muted-foreground border-border max-w-[160px]">
                                             <span className="truncate">{queryMeta.text}</span>
@@ -456,7 +487,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
 
                                             if (e.key === 'Enter' && !showPicker && inputValue.trim() !== "") {
                                                 const val = inputValue.trim();
-                                                if (val.startsWith('state:') || val.startsWith('issue:')) {
+                                                if (val.startsWith('state:') || val.startsWith('issue:') || val.startsWith('tag:')) {
                                                     onSearchChange(`${searchQuery} ${val}`.trim());
                                                     setInputValue("");
                                                 }
@@ -492,7 +523,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
                         >
                             <div className="rounded-lg bg-popover p-1">
                                 <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                                    {pickerType === 'state' ? "Select State" : "Select Issue"}
+                                    {pickerType === 'state' ? "Select State" : pickerType === 'tag' ? "Select Tag" : "Select Issue"}
                                 </div>
                                 <div ref={pickerListRef} className="max-h-[200px] overflow-y-auto">
                                     {pickerItems.length === 0 ? (

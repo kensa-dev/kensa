@@ -4,6 +4,7 @@
   "state": "Passed",
   "notes": null,
   "issues": [],
+  "tags": [],
   "packageName": "dev.kensa.example",
   "tests": [
     {
@@ -11,6 +12,7 @@
       "testMethod": "theTest",
       "displayName": "The Test",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -70,6 +72,7 @@
       "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnSameLineAsParameter",
       "displayName": "The Test With Optional Parameter And Closing Function Brace On Same Line As Parameter",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -111,6 +114,7 @@
       "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnDifferentLineAsParameter",
       "displayName": "The Test With Optional Parameter And Closing Function Brace On Different Line As Parameter",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

@@ -9,6 +9,7 @@ import dev.kensa.util.findAnnotation
 import dev.kensa.util.findTestMethods
 import dev.kensa.util.hasAnnotation
 import org.testng.annotations.Test
+import java.lang.reflect.Method
 import dev.kensa.state.TestState.Disabled as DisabledState
 
 private val testAnnotationNames = listOf("Test", "org.testng.annotations.Test")
@@ -42,4 +43,17 @@ val testNgDescriptor = FrameworkDescriptor(
     isJavaClassTest = isJavaClassTest,
     isJavaInterfaceTest = isJavaInterfaceTest,
     isKotlinTest = isKotlinTest,
+    tagsFor = { element ->
+        when (element) {
+            is Method -> (element.declaringClass.testGroups() + element.testGroups()).distinct()
+            is Class<*> -> element.testGroups()
+            else -> emptyList()
+        }
+    },
 )
+
+private fun Class<*>.testGroups(): List<String> =
+    getAnnotation(Test::class.java)?.groups?.toList() ?: emptyList()
+
+private fun Method.testGroups(): List<String> =
+    getAnnotation(Test::class.java)?.groups?.toList() ?: emptyList()

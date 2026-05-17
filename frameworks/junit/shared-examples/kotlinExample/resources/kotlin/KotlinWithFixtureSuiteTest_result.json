@@ -5,12 +5,14 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "tags": [],
   "tests": [
     {
       "elapsedTime": "",
       "testMethod": "can access fixtures from a suite using block syntax",
       "displayName": "can access fixtures from a suite using block syntax",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

@@ -5,12 +5,14 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "tags": [],
   "tests": [
     {
       "elapsedTime": "",
       "testMethod": "test1",
       "displayName": "Test 1",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -118,6 +120,7 @@
       "testMethod": "test2",
       "displayName": "Test 2",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -239,6 +242,7 @@
       "testMethod": "test3",
       "displayName": "Test 3",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -297,6 +301,7 @@
       "testMethod": "test4",
       "displayName": "Test 4",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -364,6 +369,7 @@
       "testMethod": "test5",
       "displayName": "Test 5",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

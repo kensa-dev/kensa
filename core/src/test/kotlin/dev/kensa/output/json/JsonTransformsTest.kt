@@ -74,6 +74,39 @@ class JsonTransformsTest {
             issues[1].asString() shouldBe "X2"
             json.get("tests").asArray().size() shouldBe 0
         }
+
+        @Test
+        fun `serialises class-level tags`() {
+            val container = fakeTestContainer(
+                testClass = sampleClass,
+                tags = listOf("smoke", "regression"),
+                methodContainers = emptyList(),
+            )
+
+            val tags = render(container).get("tags").asArray()
+
+            tags.size() shouldBe 2
+            tags[0].asString() shouldBe "smoke"
+            tags[1].asString() shouldBe "regression"
+        }
+
+        @Test
+        fun `serialises method-level tags`() {
+            val method = fakeTestMethodContainer(
+                method = alpha,
+                tags = listOf("smoke", "regression"),
+                invocations = listOf(fakeTestInvocation()),
+            )
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val tags = render(container)
+                .get("tests").asArray()[0].asObject()
+                .get("tags").asArray()
+
+            tags.size() shouldBe 2
+            tags[0].asString() shouldBe "smoke"
+            tags[1].asString() shouldBe "regression"
+        }
     }
 
     @Nested
@@ -555,6 +588,41 @@ class JsonTransformsTest {
             JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
                 .get("children").asArray()[0].asObject()
                 .getString("id", null) shouldBe "cls-1:alpha"
+        }
+
+        @Test
+        fun `index class node includes tags array`() {
+            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(fakeTestInvocation()))
+            val container = fakeTestContainer(
+                testClass = sampleClass,
+                tags = listOf("smoke", "regression"),
+                methodContainers = listOf(method),
+            )
+
+            val tags = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
+                .get("tags").asArray()
+
+            tags.size() shouldBe 2
+            tags[0].asString() shouldBe "smoke"
+            tags[1].asString() shouldBe "regression"
+        }
+
+        @Test
+        fun `index child node includes tags array`() {
+            val method = fakeTestMethodContainer(
+                method = alpha,
+                tags = listOf("smoke", "regression"),
+                invocations = listOf(fakeTestInvocation()),
+            )
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val tags = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
+                .get("children").asArray()[0].asObject()
+                .get("tags").asArray()
+
+            tags.size() shouldBe 2
+            tags[0].asString() shouldBe "smoke"
+            tags[1].asString() shouldBe "regression"
         }
     }
 

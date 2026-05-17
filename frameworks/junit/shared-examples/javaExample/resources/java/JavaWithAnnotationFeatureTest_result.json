@@ -4,6 +4,7 @@
   "state": "Passed",
   "notes": null,
   "issues": [],
+  "tags": [],
   "packageName": "dev.kensa.example",
   "tests": [
     {
@@ -11,6 +12,7 @@
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -96,6 +98,7 @@
       "testMethod": "testWithHighlight",
       "displayName": "Test With Highlight",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -194,6 +197,7 @@
       "testMethod": "testWithRenderedValueFunctionWithParameters",
       "displayName": "Test With Rendered Value Function With Parameters",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

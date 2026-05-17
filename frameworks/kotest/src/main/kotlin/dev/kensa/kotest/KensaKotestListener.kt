@@ -104,4 +104,11 @@ val kotestDescriptor = FrameworkDescriptor(
     isKotlinTest = { context: KotlinParser.FunctionDeclarationContext ->
         context.findAnnotationNames().any { it in kotestTestAnnotationNames }
     },
+    tagsFor = { element ->
+        element.getAnnotation(io.kotest.core.annotation.Tags::class.java)
+            ?.values
+            ?.toList()
+            ?.distinct()
+            ?: emptyList()
+    },
 )

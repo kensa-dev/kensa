@@ -59,6 +59,7 @@ internal fun fakeTestMethodContainer(
     method: Method,
     displayName: String = method.name,
     issues: List<String> = emptyList(),
+    tags: List<String> = emptyList(),
     state: TestState = TestState.Passed,
     autoOpenTab: Tab = Tab.None,
     invocations: List<TestInvocation> = emptyList(),
@@ -67,6 +68,7 @@ internal fun fakeTestMethodContainer(
     on { it.method } doReturn method
     on { it.displayName } doReturn displayName
     on { it.issues } doReturn issues
+    on { it.tags } doReturn tags
     on { it.state } doReturn state
     on { it.autoOpenTab } doReturn autoOpenTab
     on { it.invocations } doReturn invocations
@@ -79,6 +81,7 @@ internal fun fakeTestContainer(
     state: TestState = TestState.Passed,
     notes: String? = null,
     issues: List<String> = emptyList(),
+    tags: List<String> = emptyList(),
     methodContainers: List<TestMethodContainer> = emptyList(),
 ): TestContainer {
     val byMethod = methodContainers.associateBy { it.method }
@@ -88,6 +91,7 @@ internal fun fakeTestContainer(
         on { it.state } doReturn state
         on { it.notes } doReturn notes
         on { it.issues } doReturn issues
+        on { it.tags } doReturn tags
         on { it.methodContainers } doReturn byMethod
         on { it.orderedMethodContainers } doReturn methodContainers
     }

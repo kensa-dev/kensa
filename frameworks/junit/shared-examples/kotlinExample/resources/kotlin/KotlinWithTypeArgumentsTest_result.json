@@ -4,6 +4,7 @@
   "state": "Passed",
   "notes": null,
   "issues": [],
+  "tags": [],
   "packageName": "dev.kensa.example",
   "tests": [
     {
@@ -11,6 +12,7 @@
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

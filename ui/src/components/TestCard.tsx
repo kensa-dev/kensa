@@ -4,6 +4,7 @@ import {cn} from "@/lib/utils";
 import {SectionRenderer} from './SectionRenderer';
 import {InvocationCard} from "@/components/InvocationCard";
 import {IssueBadge} from './IssueBadge';
+import {TagList} from './TagList';
 import {Invocation, Test, TestState} from "@/types/Test";
 
 const cardBorder: Record<TestState, string> = {
@@ -80,6 +81,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                     {test.issues?.map((issue: string) => (
                         <IssueBadge key={issue} issue={issue} testState={state} />
                     ))}
+                    <TagList tags={test.tags} />
                     {!isDisabled && !isExpanded && test.invocations.length > 1 && (
                         <span className="text-[10px] font-mono text-muted-foreground/60 tabular-nums">
                             {test.invocations.length}×

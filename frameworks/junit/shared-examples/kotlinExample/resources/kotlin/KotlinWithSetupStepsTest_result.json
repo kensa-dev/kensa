@@ -4,6 +4,7 @@
   "state": "Passed",
   "notes": null,
   "issues": [],
+  "tags": [],
   "packageName": "dev.kensa.example",
   "tests": [
     {
@@ -11,6 +12,7 @@
       "testMethod": "singleSetupStep",
       "displayName": "Single Setup Step",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -77,6 +79,7 @@
       "testMethod": "chainedSetupStep",
       "displayName": "Chained Setup Step",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

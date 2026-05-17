@@ -20,6 +20,8 @@ import {NotesCard} from './components/NotesCard';
 import {SystemViewPage} from './components/SystemViewPage';
 import {TooltipProvider} from "@/components/ui/tooltip";
 import {hasOpenDialog, shouldClearSearchOnEscape} from "@/util/escapeGuard";
+import {nextQueryAfterTagClick, selectedTagsFromQuery} from "@/util/tagClick";
+import {TagFilterProvider} from "@/contexts/TagFilterContext";
 
 const tagWithSourceId = (nodes: Indices, sourceId: string): Indices =>
     nodes.map(n => ({
@@ -69,6 +71,13 @@ const App = () => {
             setMatchingMethods([]);
         }
     };
+
+    const onTagClick = useCallback(
+        (tag: string, additive: boolean) => onSearchChange(nextQueryAfterTagClick(searchQueryRef.current, tag, additive)),
+        [],
+    );
+
+    const selectedTags = useMemo(() => selectedTagsFromQuery(searchQuery), [searchQuery]);
 
     const handleFilterApplied = (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => {
         if (firstTest && firstTest.id) {
@@ -386,6 +395,7 @@ const App = () => {
             <SourceContext.Provider value={{baseUrl: activeSourceBaseUrl}}>
             <TooltipProvider>
             <SidebarProvider>
+            <TagFilterProvider onTagClick={onTagClick} selectedTags={selectedTags}>
                 <CommandDialog open={open} onOpenChange={setOpen}>
                     <CommandInput
                         placeholder="Jump to test..."
@@ -615,6 +625,7 @@ const App = () => {
                         </ResizablePanel>
                     </ResizablePanelGroup>
                 </div>
+            </TagFilterProvider>
             </SidebarProvider>
             </TooltipProvider>
             </SourceContext.Provider>

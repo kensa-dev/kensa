@@ -4,6 +4,7 @@
   "state": "Passed",
   "notes": null,
   "issues": [],
+  "tags": [],
   "packageName": "dev.kensa.example",
   "tests": [
     {
@@ -11,6 +12,7 @@
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -129,6 +131,7 @@
       "testMethod": "testWithExpandableScenarioParameter",
       "displayName": "Test With Expandable Scenario Parameter",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -265,6 +268,7 @@
       "testMethod": "testWithExpandableSentenceExpression",
       "displayName": "Test With Expandable Sentence Expression",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

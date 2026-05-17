@@ -9,6 +9,7 @@ export interface Index {
     state: TestState;
     type?: NodeType;
     issues?: string[];
+    tags?: string[];
     children?: Indices;
     testMethod?: string;
     hasErrors?: boolean;

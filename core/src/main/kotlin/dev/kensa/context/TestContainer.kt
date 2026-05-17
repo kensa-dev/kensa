@@ -12,6 +12,7 @@ class TestContainer(
     val methodContainers: Map<Method, TestMethodContainer>,
     val notes: String?,
     val issues: List<String>,
+    val tags: List<String>,
 ) {
 
     val orderedMethodContainers: List<TestMethodContainer> by lazy { methodContainers.values.sortedBy { it.indexInSource } }

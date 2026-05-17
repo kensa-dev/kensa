@@ -15,7 +15,8 @@ class TestContainerFactory(
     private val displayNameFor: (AnnotatedElement) -> String?,
     private val findTestMethods: (Class<*>) -> Set<Method>,
     private val testInvocationFactory: TestInvocationFactory,
-    private val configuration: Configuration
+    private val configuration: Configuration,
+    private val tagsFor: (AnnotatedElement) -> List<String> = { emptyList() },
 ) {
 
     fun createFor(testClass: Class<*>, displayName: String): TestContainer =
@@ -26,6 +27,7 @@ class TestContainerFactory(
                 createMethodContainers(),
                 notes(),
                 issues(),
+                tags(),
             )
         }
 
@@ -40,6 +42,7 @@ class TestContainerFactory(
             this,
             deriveDisplayName { derivedTestName(configuration.dictionary.protectedPhraseValues) },
             issues(),
+            tags(),
             initialState(),
             autoOpenTab(autoOpenTab)
         )
@@ -53,4 +56,6 @@ class TestContainerFactory(
     private fun AnnotatedElement.notes(): String? = findAnnotation<Notes>()?.value
 
     private fun AnnotatedElement.issues(): List<String> = findAnnotation<Issue>()?.value?.toList() ?: emptyList()
+
+    private fun AnnotatedElement.tags(): List<String> = tagsFor(this)
 }

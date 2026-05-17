@@ -4,6 +4,7 @@
   "state": "Passed",
   "notes": null,
   "issues": [],
+  "tags": [],
   "packageName": "dev.kensa.example",
   "tests": [
     {
@@ -11,6 +12,7 @@
       "testMethod": "testWithScenario",
       "displayName": "Test With Scenario",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -96,6 +98,7 @@
       "testMethod": "testWithScenarioHolder",
       "displayName": "Test With Scenario Holder",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -188,6 +191,7 @@
       "testMethod": "testWithHighlight",
       "displayName": "Test With Highlight",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -286,6 +290,7 @@
       "testMethod": "testWithSimpleFunctionSentenceValue",
       "displayName": "Test With Simple Function Sentence Value",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -337,6 +342,7 @@
       "testMethod": "testWithChainedFunctionSentenceValue",
       "displayName": "Test With Chained Function Sentence Value",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -388,6 +394,7 @@
       "testMethod": "testWithChainedFieldSentenceValue",
       "displayName": "Test With Chained Field Sentence Value",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -439,6 +446,7 @@
       "testMethod": "testWithChainedFunctionSentenceValueParameter",
       "displayName": "Test With Chained Function Sentence Value Parameter",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -539,6 +547,7 @@
       "testMethod": "testWithRenderedValueFunctionWithParameters",
       "displayName": "Test With Rendered Value Function With Parameters",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -590,6 +599,7 @@
       "testMethod": "parameterisedTestWithRenderedValueFunctionWithParameters",
       "displayName": "Parameterised Test With Rendered Value Function With Parameters",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [
@@ -645,6 +655,7 @@
       "testMethod": "testWithInfixStyleRenderedValueFunctionWithParameters",
       "displayName": "Test With Infix Style Rendered Value Function With Parameters",
       "issues": [],
+      "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
       "invocations": [

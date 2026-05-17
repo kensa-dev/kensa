@@ -10,6 +10,7 @@ import dev.kensa.util.findTestMethods
 import dev.kensa.util.hasAnnotation
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import dev.kensa.state.TestState.Disabled as DisabledState
@@ -42,4 +43,5 @@ val junit5Descriptor = FrameworkDescriptor(
     isJavaClassTest = isJavaClassTest,
     isJavaInterfaceTest = isJavaInterfaceTest,
     isKotlinTest = isKotlinTest,
+    tagsFor = { element -> element.getAnnotationsByType(Tag::class.java).map { it.value }.distinct() },
 )

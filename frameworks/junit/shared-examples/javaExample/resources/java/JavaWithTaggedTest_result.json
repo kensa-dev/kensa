@@ -1,0 +1,98 @@
+{
+  "testClass": "dev.kensa.example.JavaWithTaggedTest",
+  "displayName": "Java With Tagged Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "tags": [
+    "smoke",
+    "regression"
+  ],
+  "tests": [
+    {
+      "testMethod": "passingTest",
+      "displayName": "Passing Test",
+      "issues": [],
+      "tags": [
+        "slow"
+      ],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 21,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
+            },
+            {
+              "lineNumber": 23,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some action"
+                }
+              ]
+            },
+            {
+              "lineNumber": 25,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the extracted value is"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "aStringValue"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "passingTest()"
+        }
+      ]
+    }
+  ]
+}

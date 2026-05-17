@@ -13,4 +13,5 @@ data class FrameworkDescriptor(
     val isJavaClassTest: (Java20Parser.MethodDeclarationContext) -> Boolean,
     val isJavaInterfaceTest: (Java20Parser.InterfaceMethodDeclarationContext) -> Boolean,
     val isKotlinTest: (KotlinParser.FunctionDeclarationContext) -> Boolean,
+    val tagsFor: (AnnotatedElement) -> List<String> = { emptyList() },
 )

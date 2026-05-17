@@ -103,6 +103,7 @@ export interface Test {
     testMethod: string
     displayName: string
     issues: string[]
+    tags?: string[]
     state: TestState
     autoOpenTab?: TabType
     invocations: Invocation[]
@@ -117,5 +118,6 @@ export interface TestDetail {
     notes: string | null
     packageName: string
     issues: string[]
+    tags?: string[]
     tests: Test[]
 }

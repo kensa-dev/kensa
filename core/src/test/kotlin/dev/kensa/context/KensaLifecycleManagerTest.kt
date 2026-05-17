@@ -85,7 +85,7 @@ internal class KensaLifecycleManagerTest {
     @Test
     fun `writeTestResult is no-op when output disabled`(@TempDir tempDir: Path) {
         val manager = createManager(tempDir, outputEnabled = false)
-        val container = TestContainer(String::class.java, "Test", emptyMap(), null, emptyList())
+        val container = TestContainer(String::class.java, "Test", emptyMap(), null, emptyList(), emptyList())
 
         manager.writeTestResult(container)
     }
