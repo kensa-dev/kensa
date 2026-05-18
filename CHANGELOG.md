@@ -3,6 +3,7 @@
 ### v0.8.2
 
 New features:
+  - **Framework-native tags surfaced in reports.** JUnit `@Tag`, Kotest `@Tags`, and TestNG `@Test(groups = ...)` now flow through to the HTML report as badges on each test (alongside `@Issue` badges) and as a multi-select cloud in the sidebar with OR-logic filtering. Click a badge to filter by that tag; Cmd/Ctrl/Shift-click to add to the current selection.
   - **`sequenceDiagram { }` Kotlin DSL** on `Configuration` for declaring participants, boxes, title, hide-unlinked, and a fallback identity. Declaration order is left-to-right on the rendered diagram. Each participant call (`participant`, `actor`, `boundary`, `control`, `entity`, `database`, `collections`, `queue`) returns a handle so `.withColour(...)` and `.withAlias(...)` chain inline. `box(title) { ... }` wraps nested participants. [Docs](https://kensa.dev/docs/api/configuration#sequence-diagrams).
   - **`primary.<type>(name)` fallback identity.** A test that captures only dividers (`SD-MARKER` / `==Something==`) or has no participants previously produced markup PlantUML couldn't recognise as a sequence diagram — falling into the error path that pulls in QR-code (`zxing`) classes stripped from the shadow JAR. Configure `sequenceDiagram { primary.actor("User") }` to inject a single participant for these cases. Only emitted when no participants are declared and no real arrow interactions are captured.
 
