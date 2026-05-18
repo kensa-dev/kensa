@@ -37,7 +37,7 @@ class ResultWriter(private val configuration: Configuration, private val compone
         println(
             """
                 Kensa Output :
-                ${configuration.outputDir.resolve(if (configuration.dataOnly) "indices.json" else "index.html")}
+                ${configuration.outputDir.toAbsolutePath().resolve(if (configuration.dataOnly) "indices.json" else "index.html")}
             """.trimIndent()
         )
     }
