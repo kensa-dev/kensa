@@ -1,5 +1,11 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.3
+
+New features:
+  - **Sidebar tree expand/collapse toolbar.** Two icon buttons live inline with the Test Explorer group label: expand-all (`⌥+]`) and collapse-all (`⌥+[`). Expansion state persists to localStorage so the tree's open/closed shape survives reload. Newly-seen folder ids that aren't yet in storage stay expanded by default — no surprises after a build adds packages.
+  - **Parameterised test display.** Invocation card headers no longer truncate parameter lists. A hybrid summary picks one of three shapes per invocation: the backend-supplied `displayName` when present (e.g. JUnit's `[1] arg1, arg2`); an inline comma-join when there are ≤3 parameters and the joined string fits in 80 characters; or a `N params` count chip otherwise. When the header had to drop information the expanded card body grows a structured parameters table; when the header already listed everything the table is suppressed to avoid redundancy. Above the per-invocation cards a cross-invocation matrix renders whenever a test has ≥2 invocations and every invocation carries ≥2 parameters — clicking a row scrolls to and expands the matching card. Values flow through a small client-side classifier that colours numbers / booleans / `null` / strings / JSON code-style.
+
 ### v0.8.2
 
 New features:
