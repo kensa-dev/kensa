@@ -3,6 +3,7 @@ import {CheckCircle2, ChevronDown, ChevronRight, CircleMinus, XCircle} from 'luc
 import {cn} from "@/lib/utils";
 import {SectionRenderer} from './SectionRenderer';
 import {InvocationCard} from "@/components/InvocationCard";
+import {InvocationParameterMatrix} from "@/components/InvocationParameterMatrix";
 import {IssueBadge} from './IssueBadge';
 import {TagList} from './TagList';
 import {Invocation, Test, TestState} from "@/types/Test";
@@ -49,15 +50,38 @@ interface TestCardProps {
     testClass: string;
 }
 
+const initialExpandedIdx = (test: Test, initialExpandedInvocation: number): number | null => {
+    if (initialExpandedInvocation >= 0 && initialExpandedInvocation < test.invocations.length) {
+        return initialExpandedInvocation;
+    }
+    const failedIdx = test.invocations.findIndex((inv) => inv.state === 'Failed');
+    if (failedIdx >= 0) return failedIdx;
+    return test.invocations.length > 0 ? 0 : null;
+};
+
 export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1, testClass }: TestCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
+    const [expandedIdx, setExpandedIdx] = React.useState<number | null>(() => initialExpandedIdx(test, initialExpandedInvocation));
 
     React.useEffect(() => {
         setIsExpanded(initialExpanded);
     }, [initialExpanded]);
 
+    const invocationRefs = React.useRef<Map<number, HTMLDivElement | null>>(new Map());
+
+    React.useEffect(() => {
+        if (expandedIdx === null) return;
+        const node = invocationRefs.current.get(expandedIdx);
+        if (node) {
+            node.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+    }, [expandedIdx]);
+
     const state = test.state;
     const isDisabled = state === 'Disabled';
+
+    const hasParams = test.invocations.length > 0 && test.invocations.every((inv) => inv.parameters && inv.parameters.length >= 2);
+    const showMatrix = test.invocations.length >= 2 && hasParams;
 
     return (
         <div className={cn(
@@ -98,6 +122,12 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                     "p-4 space-y-4",
                     bodyBg[state]
                 )}>
+                    {showMatrix && (
+                        <InvocationParameterMatrix
+                            invocations={test.invocations}
+                            onInvocationSelect={(idx) => setExpandedIdx(idx)}
+                        />
+                    )}
                     <div className="space-y-4">
                         {test.invocations.map((invocation: Invocation, invIdx: number) => {
                             const isParameterized = invocation.parameters && invocation.parameters.length > 0;
@@ -106,11 +136,19 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                                 return (
                                     <InvocationCard
                                         key={invIdx}
+                                        ref={(node) => {
+                                            if (node) {
+                                                invocationRefs.current.set(invIdx, node);
+                                            } else {
+                                                invocationRefs.current.delete(invIdx);
+                                            }
+                                        }}
                                         invocation={invocation}
                                         parseErrors={test.parseErrors}
                                         autoOpenTab={test.autoOpenTab}
                                         isLast={invIdx === test.invocations.length - 1}
-                                        initialExpanded={initialExpandedInvocation >= 0 ? invIdx === initialExpandedInvocation : invocation.state === 'Failed'}
+                                        expanded={expandedIdx === invIdx}
+                                        onToggle={() => setExpandedIdx(expandedIdx === invIdx ? null : invIdx)}
                                         testClass={testClass}
                                     />
                                 );
