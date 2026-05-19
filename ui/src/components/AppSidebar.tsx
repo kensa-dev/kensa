@@ -18,6 +18,8 @@ import {tagMatch} from "@/util/tagMatch"
 import {hasOpenDialog} from "@/util/escapeGuard"
 import {setStateFilter} from "@/util/stateFilterToggle"
 import {useLocation} from "react-router-dom"
+import {TreeExpansionProvider, useTreeExpansion} from "@/hooks/useTreeExpansion"
+import {SidebarTreeToolbar} from "@/components/SidebarTreeToolbar"
 
 const SourceMetaContext = React.createContext<Record<string, { generatedAt?: string }>>({});
 
@@ -378,6 +380,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
 
     return (
         <SourceMetaContext.Provider value={sourceMetaById ?? {}}>
+        <TreeExpansionProvider nodes={filteredIndices}>
         <Sidebar className="w-full border-none">
             <SidebarHeader className="p-3 pb-0 gap-3">
                 <div className="flex items-center justify-between px-1">
@@ -554,12 +557,16 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
                         </PopoverContent>
                     </Popover>
                 </div>
+
             </SidebarHeader>
 
             <SidebarContent className="px-2 gap-1">
                 <SidebarGroup className="p-1">
-                    <SidebarGroupLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/90 h-7 px-2">
-                        Test Explorer
+                    <SidebarGroupLabel className="flex items-center justify-between h-7 px-2 text-[10px] uppercase tracking-widest font-bold text-muted-foreground/90">
+                        <span>Test Explorer</span>
+                        <div className="group-data-[collapsible=icon]:hidden">
+                            <SidebarTreeToolbar/>
+                        </div>
                     </SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
                         {filteredIndices.map((node) => (
@@ -578,6 +585,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
                 <ReportMeta/>
             </SidebarFooter>
         </Sidebar>
+        </TreeExpansionProvider>
         </SourceMetaContext.Provider>
     );
 }
@@ -738,7 +746,8 @@ interface CollapsibleMenuNodeProps {
 }
 
 function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconTone, childCounts, labelClassName, children, testMethodMap, matchingMethodsMap, generatedAt}: CollapsibleMenuNodeProps) {
-    const [open, setOpen] = React.useState(true);
+    const {isCollapsed, setCollapsed} = useTreeExpansion();
+    const open = !isCollapsed(node.id);
     const sortedChildren = React.useMemo(() =>
         [...children].sort((a, b) => {
             const aFolder = a.type !== 'test';
@@ -749,10 +758,13 @@ function CollapsibleMenuNode({node, onSelect, selectedId, stateCountsById, iconT
     );
 
     return (
-        <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
+        <Collapsible open={open} onOpenChange={(o) => setCollapsed(node.id, !o)} className="group/collapsible">
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                    <SidebarMenuButton size="sm" className={labelClassName}>
+                    <SidebarMenuButton
+                        size="sm"
+                        className={labelClassName}
+                    >
                         <ChevronRight
                             className={cn(
                                 "h-3 w-3 transition-transform duration-200 opacity-50",
@@ -837,7 +849,8 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
 
         return (
             <CollapsibleMenuNode
-                node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
+                node={node} onSelect={onSelect} selectedId={selectedId}
+                stateCountsById={stateCountsById}
                 iconTone={iconTone} childCounts={childCounts}
                 labelClassName="text-[13px] font-bold text-foreground"
                 children={projectChildren}
@@ -851,7 +864,8 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
     if (node.type === 'package') {
         return (
             <CollapsibleMenuNode
-                node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById}
+                node={node} onSelect={onSelect} selectedId={selectedId}
+                stateCountsById={stateCountsById}
                 iconTone={iconTone} childCounts={childCounts}
                 labelClassName="text-[13px] text-muted-foreground hover:text-foreground"
                 children={node.children || []}
