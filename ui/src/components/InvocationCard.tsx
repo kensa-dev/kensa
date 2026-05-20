@@ -14,10 +14,11 @@ interface InvocationCardProps {
     expanded: boolean;
     onToggle: () => void;
     testClass: string;
+    index?: number;
 }
 
 export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardProps>(
-    ({invocation, parseErrors, autoOpenTab, isLast, expanded, onToggle, testClass}, ref) => {
+    ({invocation, parseErrors, autoOpenTab, isLast, expanded, onToggle, testClass, index}, ref) => {
         const isPassed = invocation.state === 'Passed';
         const summary = summarizeInvocation(invocation);
 
@@ -38,6 +39,11 @@ export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardPro
                 >
                     <div className="flex items-center gap-3 overflow-hidden">
                         {expanded ? <ChevronDown size={14} className="shrink-0 opacity-50"/> : <ChevronRight size={14} className="shrink-0 opacity-50"/>}
+                        {index !== undefined && (
+                            <span className="text-[10px] font-mono font-bold text-muted-foreground/70 shrink-0 tabular-nums">
+                                #{index + 1}
+                            </span>
+                        )}
                         {summary.kind === 'chip' ? (
                             <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground font-bold shrink-0">
                                 {summary.count} params

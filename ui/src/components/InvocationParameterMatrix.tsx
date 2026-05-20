@@ -42,14 +42,14 @@ const lookupParam = (parameters: NameAndValue[], name: string): string | undefin
     return undefined;
 };
 
-export const InvocationParameterMatrix = ({invocations, onInvocationSelect}: InvocationParameterMatrixProps) => {
+export const InvocationParameterMatrix = React.forwardRef<HTMLDivElement, InvocationParameterMatrixProps>(({invocations, onInvocationSelect}, ref) => {
     const [expanded, setExpanded] = React.useState(true);
     const paramNames = React.useMemo(() => collectParamNames(invocations), [invocations]);
 
     if (paramNames.length === 0) return null;
 
     return (
-        <div className="rounded-md border border-border/40 mb-3">
+        <div ref={ref} className="rounded-md border border-border/40 mb-3 sticky top-0 z-20 bg-background">
             <button
                 type="button"
                 onClick={() => setExpanded(!expanded)}
@@ -59,8 +59,8 @@ export const InvocationParameterMatrix = ({invocations, onInvocationSelect}: Inv
                 <span>Parameters across {invocations.length} invocations</span>
             </button>
             {expanded && (
-                <div className="overflow-x-auto border-t border-border/40">
-                    <Table className="text-[13px]">
+                <div className="overflow-auto max-h-[40vh] border-t border-border/40">
+                    <Table className="text-[12px]">
                         <TableHeader>
                             <TableRow className="border-b border-border/40 hover:bg-transparent">
                                 <TableHead className="sticky left-0 bg-background px-4 py-2 font-medium text-muted-foreground/80 text-[11px] z-10 w-[1%] whitespace-nowrap">
@@ -111,4 +111,6 @@ export const InvocationParameterMatrix = ({invocations, onInvocationSelect}: Inv
             )}
         </div>
     );
-};
+});
+
+InvocationParameterMatrix.displayName = "InvocationParameterMatrix";

@@ -68,13 +68,26 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
     }, [initialExpanded]);
 
     const invocationRefs = React.useRef<Map<number, HTMLDivElement | null>>(new Map());
+    const matrixRef = React.useRef<HTMLDivElement | null>(null);
 
     React.useEffect(() => {
         if (expandedIdx === null) return;
-        const node = invocationRefs.current.get(expandedIdx);
-        if (node) {
-            node.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
+        requestAnimationFrame(() => {
+            const node = invocationRefs.current.get(expandedIdx);
+            if (!node) return;
+            let scroller: HTMLElement | null = node.parentElement;
+            while (scroller) {
+                const oy = getComputedStyle(scroller).overflowY;
+                if (oy === 'auto' || oy === 'scroll') break;
+                scroller = scroller.parentElement;
+            }
+            if (!scroller) return;
+            const matrixHeight = matrixRef.current?.getBoundingClientRect().height ?? 0;
+            const nodeTop = node.getBoundingClientRect().top;
+            const scrollerTop = scroller.getBoundingClientRect().top;
+            const target = scroller.scrollTop + nodeTop - scrollerTop - matrixHeight - 16;
+            scroller.scrollTo({top: target, behavior: 'smooth'});
+        });
     }, [expandedIdx]);
 
     const state = test.state;
@@ -85,7 +98,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
 
     return (
         <div className={cn(
-            "bg-card border rounded-xl shadow-sm overflow-hidden transition-all",
+            "bg-card border rounded-xl shadow-sm transition-all",
             cardBorder[state]
         )}>
             <div
@@ -119,11 +132,12 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
 
             {!isDisabled && isExpanded && (
                 <div className={cn(
-                    "p-4 space-y-4",
+                    "p-4 space-y-4 rounded-b-xl",
                     bodyBg[state]
                 )}>
                     {showMatrix && (
                         <InvocationParameterMatrix
+                            ref={matrixRef}
                             invocations={test.invocations}
                             onInvocationSelect={(idx) => setExpandedIdx(idx)}
                         />
@@ -150,6 +164,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                                         expanded={expandedIdx === invIdx}
                                         onToggle={() => setExpandedIdx(expandedIdx === invIdx ? null : invIdx)}
                                         testClass={testClass}
+                                        index={test.invocations.length >= 2 ? invIdx : undefined}
                                     />
                                 );
                             }
