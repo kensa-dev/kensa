@@ -22,6 +22,18 @@ dependencies {
         api(project(":framework-junit6"))
         api(project(":framework-kotest"))
         api(project(":framework-testng"))
+        api(project(":framework-uitesting"))
+        api(project(":framework-uitesting-junit5"))
+        api(project(":framework-uitesting-junit6"))
+        api(project(":framework-playwright"))
+        api(project(":framework-playwright-junit5"))
+        api(project(":framework-playwright-junit6"))
+        api(project(":framework-selenium"))
+        api(project(":framework-selenium-junit5"))
+        api(project(":framework-selenium-junit6"))
+        api(project(":docker-logs"))
+        api(project(":integration-spring-boot-starter"))
+        api(project(":integration-spring-boot-starter-web"))
     }
 }
 
