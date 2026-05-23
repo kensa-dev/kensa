@@ -2,7 +2,7 @@ import * as React from "react"
 import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
 import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, Network, Search, X} from "lucide-react"
-import {buildTree} from "@/utils/treeUtils"
+import {expandProjectChildren} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
 import {Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub,} from "@/components/ui/sidebar"
@@ -340,24 +340,9 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
         };
     }, [indices, queryMeta, inputValue]);
 
-    // Pre-build the package tree under each project root so 'pkg:' folder IDs are
-    // visible to TreeExpansionProvider — otherwise collapseAll/expandAll can't see
-    // them and only the project roots respond to the toolbar buttons.
-    const renderedIndices = React.useMemo(() =>
-        filteredIndices.map(node => {
-            if (node.type !== 'project') return node;
-            const allChildren = node.children || [];
-            const sysviewChildren = allChildren.filter(c => c.type === 'system-view');
-            const testChildren = allChildren.filter(c => c.type !== 'system-view');
-            return {
-                ...node,
-                children: [
-                    ...sysviewChildren,
-                    ...buildTree(testChildren, packageDisplay, packageDisplayRoot),
-                ],
-            };
-        }),
-        [filteredIndices, packageDisplay, packageDisplayRoot]
+    const renderedIndices = React.useMemo(
+        () => expandProjectChildren(filteredIndices, packageDisplay, packageDisplayRoot),
+        [filteredIndices, packageDisplay, packageDisplayRoot],
     );
 
     const rawGlobalCounts = React.useMemo(() => countStates(indices), [indices]);
@@ -402,7 +387,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
 
     return (
         <SourceMetaContext.Provider value={sourceMetaById ?? {}}>
-        <TreeExpansionProvider nodes={renderedIndices}>
+        <TreeExpansionProvider nodes={renderedIndices} searchActive={Boolean(searchQuery || inputValue)}>
         <Sidebar className="w-full border-none">
             <SidebarHeader className="p-3 pb-0 gap-3">
                 <div className="flex items-center justify-between px-1">

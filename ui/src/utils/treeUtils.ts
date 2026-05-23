@@ -75,3 +75,26 @@ export const buildTree = (indices: Indices, packageDisplay: string, packageDispl
 
     return buildPackageTree(indices, commonBase);
 };
+
+// Materialise each project root's package tree up-front. Without this the
+// 'pkg:*' folder ids only exist inside the renderer, so expand/collapse-all
+// (which collects folder ids from the tree they're given) misses every
+// package — only project roots respond.
+export const expandProjectChildren = (
+    nodes: Indices,
+    packageDisplay: string,
+    packageDisplayRoot?: string,
+): Indices =>
+    nodes.map(node => {
+        if (node.type !== 'project') return node;
+        const allChildren = node.children || [];
+        const sysviewChildren = allChildren.filter(c => c.type === 'system-view');
+        const testChildren = allChildren.filter(c => c.type !== 'system-view');
+        return {
+            ...node,
+            children: [
+                ...sysviewChildren,
+                ...buildTree(testChildren, packageDisplay, packageDisplayRoot),
+            ],
+        };
+    });

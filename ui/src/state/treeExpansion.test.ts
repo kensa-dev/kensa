@@ -7,6 +7,7 @@ import {
     expandAll,
     fromPersisted,
     isCollapsed,
+    MAX_PERSISTED,
     setCollapsed,
     toPersisted,
 } from './treeExpansion';
@@ -19,6 +20,16 @@ describe('isCollapsed', () => {
     it('returns true for an id present in the collapsed set', () => {
         const state = setCollapsed(EMPTY, 'pkg:a', true);
         expect(isCollapsed(state, 'pkg:a')).toBe(true);
+    });
+
+    it('returns false when searchActive=true, even if id is in the collapsed set', () => {
+        const state = setCollapsed(EMPTY, 'pkg:a', true);
+        expect(isCollapsed(state, 'pkg:a', { searchActive: true })).toBe(false);
+    });
+
+    it('honours the collapsed set when searchActive=false', () => {
+        const state = setCollapsed(EMPTY, 'pkg:a', true);
+        expect(isCollapsed(state, 'pkg:a', { searchActive: false })).toBe(true);
     });
 });
 
@@ -208,5 +219,24 @@ describe('toPersisted / fromPersisted', () => {
     it('rehydrates collapsed strings into the set', () => {
         const restored = fromPersisted({ version: 1, collapsed: ['a', 'b'] });
         expect([...restored.collapsed].sort()).toEqual(['a', 'b']);
+    });
+
+    it('caps oversized persisted lists to MAX_PERSISTED', () => {
+        const huge = Array.from({ length: MAX_PERSISTED + 500 }, (_, i) => `id-${i}`);
+        const restored = fromPersisted({ version: 1, collapsed: huge });
+        expect(restored.collapsed.size).toBe(MAX_PERSISTED);
+    });
+
+    it('keeps the tail entries when capping (most-recently-added wins)', () => {
+        const huge = Array.from({ length: MAX_PERSISTED + 3 }, (_, i) => `id-${i}`);
+        const restored = fromPersisted({ version: 1, collapsed: huge });
+        expect(restored.collapsed.has(`id-${MAX_PERSISTED + 2}`)).toBe(true);
+        expect(restored.collapsed.has('id-0')).toBe(false);
+    });
+
+    it('preserves all entries when under the cap', () => {
+        const small = Array.from({ length: 10 }, (_, i) => `id-${i}`);
+        const restored = fromPersisted({ version: 1, collapsed: small });
+        expect(restored.collapsed.size).toBe(10);
     });
 });
