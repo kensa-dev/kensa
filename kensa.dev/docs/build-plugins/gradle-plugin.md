@@ -23,6 +23,7 @@ The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was 
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.3      | 0.8.3              | 0.8.0          | Adds multi-module site aggregation — applying the plugin to the rootProject with `site = true` aggregates every kensa-enabled subproject's sources into a single site at `<rootDir>/build/kensa-site/`. See [Site Mode — Multi-module builds](./site-mode.md#multi-module-builds). |
 | 0.9.2      | 0.8.3              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.3 so site-mode aggregation picks up the parameterised test display, sidebar tree expand/collapse toolbar, and absolute-path console banner without each project having to override. |
 | 0.9.0–0.9.1 | 0.8.0             | 0.8.0          | Plugin and kensa-core versioned independently; site-mode ergonomics (sourceTitles DSL, auto-assemble) added in 0.9.1 |
 | 0.7.x      | 0.7.x              | —              | Same-version pairing (no override)   |
@@ -48,8 +49,8 @@ Configure via the `kensa { … }` extension:
 | `enabled` | `Boolean` | `true` | Master switch. When `false`, the compiler plugin is not applied and no kensa-core dep is added. |
 | `debug` | `Boolean` | `false` | Forwards `debug=true` to the compiler plugin (verbose logs during compilation). |
 | `sourceSets` | `Set<String>` | `setOf("test")` | Which sourcesets/test-tasks Kensa attaches to. |
-| `site` | `Boolean` | `false` | Enable site mode (see [Site Mode](./site-mode.md)). |
-| `siteRoot` | `Directory` | `build/kensa-site` | Site-mode output root. |
+| `site` | `Boolean` | `false` | Enable site mode (see [Site Mode](./site-mode.md)). On the rootProject of a multi-project build, also acts as the opt-in for [multi-module aggregation](./site-mode.md#multi-module-builds) (since 0.9.3). |
+| `siteRoot` | `Directory` | `build/kensa-site` | Site-mode output root. In multi-module aggregator mode this is the rootProject's path; contributor subprojects' siteRoot is overridden to write into this shared directory. |
 | `kensaCoreVersion` | `String` | *bundled default* | Override the `kensa-core` / `kensa-compiler-plugin` version the plugin resolves. See [compatibility matrix](#kensa-core-compatibility). |
 | `sourceTitles` | `Map<String, String>` | empty | Per-source display labels for site mode, keyed by source id. Entries override the `titleText` the test runtime wrote to that source's `configuration.json`. See [Site-mode source titles](#site-mode-source-titles). Added in 0.9.1. |
 
@@ -134,6 +135,8 @@ If two configured Test tasks resolve to the same `kensa.source.id`, the build fa
 Kensa site mode: source id collision on 'foo' (multiple sourcesets / test tasks resolve to the same kensa.source.id).
 Override one explicitly: tasks.named<Test>("<name>") { systemProperty("kensa.source.id", "<unique>") }
 ```
+
+In a multi-module aggregator build, contributors' source ids are automatically prefixed by a slug derived from the project path (`:web` → `web__test`), so two subprojects can both have a `test` source set without colliding. See [Site Mode — Namespaced source ids](./site-mode.md#namespaced-source-ids).
 
 ## Maven plugin
 

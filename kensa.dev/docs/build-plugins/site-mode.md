@@ -119,6 +119,110 @@ tasks.named<Test>("uiTest") {
 }
 ```
 
+## Multi-module builds
+
+Since plugin **0.9.3**, site mode can aggregate sources across an entire Gradle multi-project build into one viewable site at the rootProject. No new plugin id, no enumeration of participating subprojects — apply the plugin where it's needed and turn `site = true` on at the root.
+
+```kotlin title="rootProject/build.gradle.kts"
+plugins {
+    id("dev.kensa.gradle-plugin")
+}
+
+kensa {
+    site = true
+    // Optional cross-module title overrides, keyed by namespaced id:
+    sourceTitles["web__test"]         = "Web tests"
+    sourceTitles["api__test"]         = "API tests"
+    sourceTitles["libs-billing__test"]= "Billing tests"
+}
+```
+
+```kotlin title=":web/build.gradle.kts (subproject — unchanged from single-project usage)"
+plugins {
+    id("dev.kensa.gradle-plugin")
+}
+
+kensa {
+    site = true
+    sourceSets = setOf("test", "uiTest")
+    // Optional contributor-local titles (override per source set name, not namespaced id):
+    sourceTitles["uiTest"] = "Web UI"
+}
+```
+
+Run `./gradlew test` — `:assembleKensaSite` is automatically finalized by every contributing Test task across modules, and `<rootDir>/build/kensa-site/` ends up with one aggregated manifest:
+
+```
+<rootDir>/build/kensa-site/
+├── index.html
+├── kensa.js
+├── logo.svg
+├── manifest.json
+└── sources/
+    ├── api__test/
+    ├── libs-billing__test/
+    ├── web__test/
+    └── web__uiTest/
+```
+
+### Role discovery
+
+The plugin decides each project's role automatically once every project has been evaluated:
+
+| Project context                                                                            | Role        |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| Is `rootProject`, `site = true`, ≥1 subproject also applies the plugin with `site = true`  | Aggregator  |
+| Not root, `site = true`, root is Aggregator                                                | Contributor |
+| `site = true` with no aggregator on root (single-project, or root doesn't apply the plugin) | Standalone  |
+| `site = false` (default)                                                                   | (no site)   |
+
+Subprojects that don't apply `dev.kensa.gradle-plugin` simply never register — they're not part of the site. Subprojects with `site = false` likewise don't contribute, even if they apply the plugin.
+
+### Namespaced source ids
+
+Each contributor's sources are identified by `<slug>__<sourceSet>` in the aggregated manifest, where slug strips the leading `:` from the project path and replaces inner `:` with `-`:
+
+| Project path     | Source set | Namespaced id           |
+| ---------------- | ---------- | ----------------------- |
+| `:web`           | `test`     | `web__test`             |
+| `:web`           | `uiTest`   | `web__uiTest`           |
+| `:libs:billing`  | `test`     | `libs-billing__test`    |
+| `:` (root's own) | `test`     | `<rootProjectName>__test` |
+
+`__` is reserved as the separator — a contributor source-set name (or contributor `sourceTitles` key) containing `__` is rejected at configuration time.
+
+### Title precedence
+
+Aggregator mode adds one more rung at the top of the existing [title precedence](./gradle-plugin.md#site-mode-source-titles):
+
+1. **Root `kensa.sourceTitles["<slug>__<sourceSet>"]`** — namespaced key, wins everything.
+2. **Contributor `kensa.sourceTitles["<sourceSet>"]`** — bare source-set name, carried into the aggregator from the registering subproject.
+3. Per-source `configuration.json#titleText` (from `Kensa.konfigure { titleText = ... }` or the runtime default).
+4. The namespaced id itself.
+
+### kensa-core version consistency
+
+Each contributor's resolved `kensa.kensaCoreVersion` is captured at registration. `:assembleKensaSite` fails fast if any contributor's version differs from the aggregator's, naming the divergent modules:
+
+```
+Kensa site: kensa-core version mismatch. Aggregator: 0.8.3. :legacy reports 0.8.0.
+Align kensa.kensaCoreVersion across modules, or override kensa.kensaCoreVersion on the root.
+```
+
+This prevents shipping a site whose shell (resolved on the root) doesn't match a contributor's bundle format.
+
+### Partial runs
+
+`./gradlew :web:test` writes only `web__test`'s bundle and finalizes the root `:assembleKensaSite`. The aggregated manifest lists every source that's present on disk — other modules' previously-produced bundles stay and remain listed. If you removed a subproject from `settings.gradle.kts` between runs, its `sources/<id>/` directory is pruned on the next assembly (same stale-cleanup semantics as single-project mode, applied across the aggregate set).
+
+### Single-project unchanged
+
+A single-project build (no participating subprojects) falls through to the Standalone path — byte-identical output to pre-0.9.3 site mode. No namespaced ids, no new task names, no manifest schema change.
+
+:::note[Maven]
+The Maven plugin is single-module today — each `assemble-site` mojo execution produces its own per-module site. Reactor-level aggregation is a future feature.
+:::
+
 ## CI / hosted use
 
 The site is fully self-contained and uses **relative URLs** in the manifest, so it works behind any static host without extra configuration:
