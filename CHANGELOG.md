@@ -1,5 +1,15 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.4
+
+New features:
+  - **Sidebar tree auto-expands while filtering.** Typing in the test filter now reveals matches inside user-collapsed folders without touching the persisted shape — clear the filter and your collapse/expand state is restored exactly as it was. Builds on the v0.8.3 expand/collapse toolbar.
+
+Fixes:
+  - **Collapse-all now collapses every folder, not just project roots.** The `⌥+[` toolbar button only added per-source project roots to the collapsed set; package nodes were built dynamically per-render and never reached the expansion state, so opening a collapsed root revealed every nested package already expanded. The package tree is now materialised before expansion state sees it, matching IntelliJ behaviour: collapse-all → opening the root shows only its top-level entries; expand-all opens every folder.
+  - **Persisted tree state is bounded.** `kensa-tree-collapsed` in localStorage now caps at 5000 entries, dropping the oldest on load. Prevents unbounded growth in long-lived workspaces where folder ids churn (heavy package refactors, frequent `packageDisplay` mode switches).
+  - **All Kensa modules now appear in the BOM.** Modules added after the BOM's last refresh were missing from `kensa-bom`, so importing the BOM didn't constrain their versions.
+
 ### v0.8.3
 
 New features:
