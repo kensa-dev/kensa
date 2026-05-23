@@ -76,6 +76,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied}: AppSidebarProps) {
+    const {packageDisplay, packageDisplayRoot} = useConfig();
+
     const allIssues = React.useMemo(() => {
         const issues = new Set<string>();
         const collect = (nodes: Indices) => {
@@ -338,6 +340,26 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
         };
     }, [indices, queryMeta, inputValue]);
 
+    // Pre-build the package tree under each project root so 'pkg:' folder IDs are
+    // visible to TreeExpansionProvider — otherwise collapseAll/expandAll can't see
+    // them and only the project roots respond to the toolbar buttons.
+    const renderedIndices = React.useMemo(() =>
+        filteredIndices.map(node => {
+            if (node.type !== 'project') return node;
+            const allChildren = node.children || [];
+            const sysviewChildren = allChildren.filter(c => c.type === 'system-view');
+            const testChildren = allChildren.filter(c => c.type !== 'system-view');
+            return {
+                ...node,
+                children: [
+                    ...sysviewChildren,
+                    ...buildTree(testChildren, packageDisplay, packageDisplayRoot),
+                ],
+            };
+        }),
+        [filteredIndices, packageDisplay, packageDisplayRoot]
+    );
+
     const rawGlobalCounts = React.useMemo(() => countStates(indices), [indices]);
 
     const stateCountsById = React.useMemo(() => {
@@ -380,7 +402,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
 
     return (
         <SourceMetaContext.Provider value={sourceMetaById ?? {}}>
-        <TreeExpansionProvider nodes={filteredIndices}>
+        <TreeExpansionProvider nodes={renderedIndices}>
         <Sidebar className="w-full border-none">
             <SidebarHeader className="p-3 pb-0 gap-3">
                 <div className="flex items-center justify-between px-1">
@@ -569,7 +591,7 @@ export function AppSidebar({indices, sourceMetaById, searchQuery, onSearchChange
                         </div>
                     </SidebarGroupLabel>
                     <SidebarMenu className="gap-0.5">
-                        {filteredIndices.map((node) => (
+                        {renderedIndices.map((node) => (
                             <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById} testMethodMap={testMethodMap} matchingMethodsMap={matchingMethodsMap}/>
                         ))}
                     </SidebarMenu>
@@ -817,7 +839,6 @@ interface RecursiveMenuItemProps {
 }
 
 const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById, testMethodMap, matchingMethodsMap}: RecursiveMenuItemProps) {
-    const {packageDisplay, packageDisplayRoot} = useConfig();
     const sourceMetaById = React.useContext(SourceMetaContext);
     const location = useLocation();
     const isSelected = selectedId === node.id;
@@ -836,24 +857,13 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
     if (node.type === 'project') {
         const generatedAt = node.sourceId ? sourceMetaById[node.sourceId]?.generatedAt : undefined;
 
-        // Sysview entries are pseudo-children that shouldn't be funnelled through `buildTree`
-        // (which filters by testClass and would drop them) — pre-extract them and prepend to the
-        // built package tree so the source's System View shows up at the top of its tree.
-        const allChildren = node.children || [];
-        const sysviewChildren = allChildren.filter(c => c.type === 'system-view');
-        const testChildren = allChildren.filter(c => c.type !== 'system-view');
-        const projectChildren = [
-            ...sysviewChildren,
-            ...buildTree(testChildren, packageDisplay, packageDisplayRoot),
-        ];
-
         return (
             <CollapsibleMenuNode
                 node={node} onSelect={onSelect} selectedId={selectedId}
                 stateCountsById={stateCountsById}
                 iconTone={iconTone} childCounts={childCounts}
                 labelClassName="text-[13px] font-bold text-foreground"
-                children={projectChildren}
+                children={node.children || []}
                 testMethodMap={testMethodMap}
                 matchingMethodsMap={matchingMethodsMap}
                 generatedAt={generatedAt}
