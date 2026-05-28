@@ -9,7 +9,7 @@ interface IssueListProps {
     testState: TestState;
 }
 
-export const IssueList = ({issues = [], limit = 5, testState}: IssueListProps) => {
+export const IssueList = ({issues = [], limit = 3, testState}: IssueListProps) => {
     if (!issues || issues.length === 0) return null;
 
     const hasMore = issues.length > limit;
@@ -49,6 +49,8 @@ export const IssueList = ({issues = [], limit = 5, testState}: IssueListProps) =
                     <PopoverTrigger asChild>
                         <button
                             type="button"
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
                             className={cn(
                                 moreBadgeClasses,
                                 "inline-flex items-center justify-center",

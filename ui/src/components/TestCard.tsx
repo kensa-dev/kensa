@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils";
 import {SectionRenderer} from './SectionRenderer';
 import {InvocationCard} from "@/components/InvocationCard";
 import {InvocationParameterMatrix} from "@/components/InvocationParameterMatrix";
-import {IssueBadge} from './IssueBadge';
+import {IssueList} from './IssueList';
 import {TagList} from './TagList';
 import {Invocation, Test, TestState} from "@/types/Test";
 
@@ -115,9 +115,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                 </h3>
 
                 <div className="flex items-center gap-1.5 ml-4">
-                    {test.issues?.map((issue: string) => (
-                        <IssueBadge key={issue} issue={issue} testState={state} />
-                    ))}
+                    <IssueList issues={test.issues} testState={state} />
                     <TagList tags={test.tags} />
                     {!isDisabled && !isExpanded && test.invocations.length > 1 && (
                         <span className="text-[10px] font-mono text-muted-foreground/60 tabular-nums">
