@@ -2,6 +2,7 @@ package dev.kensa.parse
 
 import dev.kensa.parse.java.Java20Parser
 import dev.kensa.parse.kotlin.KotlinParser
+import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 
 private fun Java20Parser.MethodHeaderContext.parameterNamesAndTypes() =
@@ -13,6 +14,11 @@ private fun Java20Parser.MethodHeaderContext.parameterNamesAndTypes() =
         }
     }
 
+// Sever the captured body from the rest of the parse tree so retaining a
+// MethodDeclarationContext does not pin the whole source file's AST and token
+// stream. See docs/superpowers/plans/2026-05-28-parser-cache-ast-detachment.md.
+private fun <T : ParserRuleContext> T.detachedFromParent(): T = apply { parent = null }
+
 interface MethodDeclarationContext {
     val name: String
     val body: ParseTree
@@ -22,54 +28,58 @@ interface MethodDeclarationContext {
     val endLine: Int
 }
 
-class JavaMethodDeclarationContext(private val delegate: Java20Parser.MethodDeclarationContext) : MethodDeclarationContext {
-    override val name: String by lazy {
-        delegate.methodHeader().methodDeclarator().identifier().text
+class JavaMethodDeclarationContext private constructor(
+    override val name: String,
+    override val body: ParseTree,
+    override val parameterNamesAndTypes: List<Pair<String, String>>,
+    override val startLine: Int,
+    override val endLine: Int,
+) : MethodDeclarationContext {
+    companion object {
+        operator fun invoke(delegate: Java20Parser.MethodDeclarationContext) = JavaMethodDeclarationContext(
+            name = delegate.methodHeader().methodDeclarator().identifier().text,
+            body = delegate.methodBody().detachedFromParent(),
+            parameterNamesAndTypes = delegate.methodHeader().parameterNamesAndTypes(),
+            startLine = delegate.start.line,
+            endLine = delegate.stop?.line ?: delegate.start.line,
+        )
     }
-
-    override val body: ParseTree by lazy {
-        delegate.methodBody()
-    }
-
-    override val parameterNamesAndTypes: List<Pair<String, String>> by lazy {
-        delegate.methodHeader().parameterNamesAndTypes()
-    }
-
-    override val startLine: Int get() = delegate.start.line
-    override val endLine: Int get() = delegate.stop?.line ?: delegate.start.line
 }
 
-class JavaInterfaceDeclarationContext(private val delegate: Java20Parser.InterfaceMethodDeclarationContext) : MethodDeclarationContext {
-    override val name: String by lazy {
-        delegate.methodHeader().methodDeclarator().identifier().text
+class JavaInterfaceDeclarationContext private constructor(
+    override val name: String,
+    override val body: ParseTree,
+    override val parameterNamesAndTypes: List<Pair<String, String>>,
+    override val startLine: Int,
+    override val endLine: Int,
+) : MethodDeclarationContext {
+    companion object {
+        operator fun invoke(delegate: Java20Parser.InterfaceMethodDeclarationContext) = JavaInterfaceDeclarationContext(
+            name = delegate.methodHeader().methodDeclarator().identifier().text,
+            body = delegate.methodBody().detachedFromParent(),
+            parameterNamesAndTypes = delegate.methodHeader().parameterNamesAndTypes(),
+            startLine = delegate.start.line,
+            endLine = delegate.stop?.line ?: delegate.start.line,
+        )
     }
-
-    override val body: ParseTree by lazy { delegate.methodBody() }
-
-    override val parameterNamesAndTypes: List<Pair<String, String>> by lazy {
-        delegate.methodHeader().parameterNamesAndTypes()
-    }
-
-    override val startLine: Int get() = delegate.start.line
-    override val endLine: Int get() = delegate.stop?.line ?: delegate.start.line
 }
 
-class KotlinMethodDeclarationContext(private val delegate: KotlinParser.FunctionDeclarationContext) : MethodDeclarationContext {
-    override val name: String by lazy {
-        delegate.simpleIdentifier().text.replace("`", "")
+class KotlinMethodDeclarationContext private constructor(
+    override val name: String,
+    override val body: ParseTree,
+    override val parameterNamesAndTypes: List<Pair<String, String>>,
+    override val startLine: Int,
+    override val endLine: Int,
+) : MethodDeclarationContext {
+    companion object {
+        operator fun invoke(delegate: KotlinParser.FunctionDeclarationContext) = KotlinMethodDeclarationContext(
+            name = delegate.simpleIdentifier().text.replace("`", ""),
+            body = delegate.functionBody().detachedFromParent(),
+            parameterNamesAndTypes = delegate.functionValueParameters().functionValueParameter()
+                .map { it.parameter() }
+                .map { it.simpleIdentifier().text to it.type().text.trim().trimEnd('?') },
+            startLine = delegate.start.line,
+            endLine = delegate.stop?.line ?: delegate.start.line,
+        )
     }
-
-    override val body: ParseTree by lazy {
-        delegate.functionBody()
-    }
-
-    override val parameterNamesAndTypes: List<Pair<String, String>> by lazy {
-        delegate.functionValueParameters().functionValueParameter()
-            .map { it.parameter() }
-            .map { it.simpleIdentifier().text to it.type().text.trim().trimEnd('?') }
-            .toList()
-    }
-
-    override val startLine: Int get() = delegate.start.line
-    override val endLine: Int get() = delegate.stop?.line ?: delegate.start.line
 }
