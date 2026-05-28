@@ -8,8 +8,10 @@ import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Party
 import dev.kensa.state.SetupStrategy
 import io.kotest.matchers.comparables.shouldBeGreaterThan
+import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
@@ -53,7 +55,7 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
-    fun `create does not inject primary participant when umlDirectives already declare participants`() {
+    fun `create prepends primary participant ahead of declared participants`() {
         val interactions = interactions()
         interactions.divider("Something")
 
@@ -61,18 +63,42 @@ internal class SequenceDiagramFactoryTest {
 
         markup.shouldNotBeNull()
         markup shouldContain "participant Existing"
-        markup shouldNotContain "participant Primary"
+        markup shouldContain "participant Primary"
+        markup.indexOf("participant Primary") shouldBeLessThan markup.indexOf("participant Existing")
     }
 
     @Test
-    fun `create does not inject primary participant when real interactions exist`() {
+    fun `create does not double-emit primary participant when also declared at top level`() {
+        val interactions = interactions()
+        interactions.divider("Something")
+
+        val markup = buildMarkup(participant("Service").asUml(), participant("Service"), interactions)
+
+        markup.shouldNotBeNull()
+        (markup.split("participant Service").size - 1) shouldBe 1
+    }
+
+    @Test
+    fun `create does not double-emit primary participant when also declared inside a surroundingBox`() {
+        val interactions = interactions()
+        interactions.divider("Something")
+
+        val directives = listOf(surroundingBox("Frontend", participant("Service")))
+        val markup = buildMarkup(directives.flatMap { it.asUml() }, participant("Service"), interactions)
+
+        markup.shouldNotBeNull()
+        (markup.split("participant Service").size - 1) shouldBe 1
+    }
+
+    @Test
+    fun `create prepends primary participant alongside real interactions`() {
         val interactions = interactions()
         capture(interactions, "A", "B")
 
         val markup = buildMarkup(emptyList(), participant("Primary"), interactions)
 
         markup.shouldNotBeNull()
-        markup shouldNotContain "participant Primary"
+        markup shouldContain "participant Primary"
         markup shouldContain "A"
         markup shouldContain "B"
     }

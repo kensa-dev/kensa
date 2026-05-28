@@ -305,26 +305,21 @@ sequenceDiagram {
 }
 ```
 
-### Primary Participant (Fallback)
+### Primary Participant
 
-Some tests capture only a divider (`SD-MARKER` value such as `==Setup==`) or no interactions at all. Without at least one participant, PlantUML cannot recognise the markup as a sequence diagram and rendering fails. Configure a **primary** participant as a fallback identity for these cases:
+Mark a participant as **primary** to pin it as the leftmost participant in the diagram and to guarantee it is rendered even when a test captures only a divider (`SD-MARKER` value such as `==Setup==`) or no interactions at all — situations where PlantUML would otherwise fail to recognise the markup.
 
 ```kotlin
 sequenceDiagram {
     primary.actor("SUT").withColour("#LightGreen")
+    participant("OrderService")
+    database("Ledger")
 }
 ```
 
-The primary is only emitted when both conditions hold:
+The primary is prepended to the participants emitted in the diagram, so a single declaration is enough — no need to also list the same name via `participant("SUT")`. If you do declare a participant with the same name elsewhere (top level or inside a `box { }`), the primary is suppressed so it is not double-emitted; your explicit declaration wins (and keeps its position).
 
-- No participants are declared in the block, **and**
-- No real arrow interactions (e.g. `A -> B`) have been captured.
-
-If either real participants or real interactions exist, the primary is ignored. `primary.<type>(name)` accepts the same eight participant kinds as the top-level methods and returns the same handle for `.withColour(...)` / `.withAlias(...)` chaining. Setting `primary` twice overwrites the previous value — only one primary is honoured.
-
-:::tip
-Most tests already declare participants or capture real interactions, so the primary is rarely needed. It exists as a safety net for tests that capture only structural markers.
-:::
+`primary.<type>(name)` accepts the same eight participant kinds as the top-level methods and returns the same handle for `.withColour(...)` / `.withAlias(...)` chaining. Setting `primary` twice overwrites the previous value — only one primary is honoured.
 
 ### Replacement Semantics
 

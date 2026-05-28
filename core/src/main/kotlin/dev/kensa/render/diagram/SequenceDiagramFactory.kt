@@ -16,6 +16,7 @@ private val valuePatterns = listOf(
     "^\\.\\.\\..*\\.\\.\\.$".toRegex(),
     "^==.*==$".toRegex()
 )
+private val participantNamePattern = "^(participant|actor|boundary|control|entity|database|collections|queue)\\s+(\\S+)".toRegex()
 
 private const val SETUP_GROUP_COLOUR = "#ECECEC"
 private const val TEST_GROUP_COLOUR = "#FFFFFF"
@@ -40,12 +41,9 @@ internal fun buildMarkup(participants: List<String>, primary: UmlParticipant?, i
     val events = eventsFrom(interactions)
     if (events.isEmpty()) return null
 
-    val effective = when {
-        participants.isNotEmpty() -> participants
-        hasRealInteractions(interactions) -> emptyList()
-        primary != null -> primary.asUml()
-        else -> return null
-    }
+    val effective = mergePrimary(primary, participants)
+
+    if (effective.isEmpty() && !hasRealInteractions(interactions)) return null
 
     return (effective + events).joinToString(
         "\n",
@@ -60,6 +58,16 @@ internal fun buildMarkup(participants: List<String>, primary: UmlParticipant?, i
         "\n@enduml"
     )
 }
+
+private fun mergePrimary(primary: UmlParticipant?, participants: List<String>): List<String> {
+    if (primary == null) return participants
+    val primaryLines = primary.asUml()
+    val primaryName = participantNames(primaryLines).singleOrNull() ?: return primaryLines + participants
+    return if (primaryName in participantNames(participants)) participants else primaryLines + participants
+}
+
+private fun participantNames(lines: List<String>): Set<String> =
+    lines.mapNotNullTo(mutableSetOf()) { participantNamePattern.find(it)?.groupValues?.get(2) }
 
 private fun hasRealInteractions(interactions: CapturedInteractions): Boolean =
     interactions.entrySet().any { keyPattern.matches(it.key.lowercase(Locale.getDefault())) }
