@@ -37,7 +37,7 @@ export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardPro
                     )}
                     onClick={onToggle}
                 >
-                    <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="flex items-center gap-3 overflow-hidden min-w-0">
                         {expanded ? <ChevronDown size={14} className="shrink-0 opacity-50"/> : <ChevronRight size={14} className="shrink-0 opacity-50"/>}
                         {index !== undefined && (
                             <span className="text-[10px] font-mono font-bold text-muted-foreground/70 shrink-0 tabular-nums">
@@ -49,12 +49,12 @@ export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardPro
                                 {summary.count} params
                             </span>
                         ) : (
-                            <span className="text-[11px] font-mono tracking-tight font-semibold">
+                            <span className="text-[11px] font-mono tracking-tight font-semibold min-w-0 truncate" title={summary.text}>
                                 {summary.text}
                             </span>
                         )}
                     </div>
-                    {invocation.elapsedTime && <span className="text-[10px] font-mono opacity-40">{invocation.elapsedTime}</span>}
+                    {invocation.elapsedTime && <span className="text-[10px] font-mono opacity-40 shrink-0 ml-2">{invocation.elapsedTime}</span>}
                 </div>
 
                 {expanded && (
