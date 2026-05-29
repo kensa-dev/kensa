@@ -12,6 +12,46 @@ describe('summarizeInvocation', () => {
             const result = summarizeInvocation({ displayName: '', parameters: [] });
             expect(result).toEqual({ kind: 'empty', text: 'Invocation' });
         });
+
+        it('strips a redundant leading [N] index prefix', () => {
+            const result = summarizeInvocation({
+                displayName: '[1] scenario=happy path, region=EMEA',
+                parameters: [{ region: 'EMEA' }],
+            });
+            expect(result).toEqual({ kind: 'displayName', text: 'scenario=happy path, region=EMEA' });
+        });
+
+        it('strips multi-digit index prefixes', () => {
+            const result = summarizeInvocation({
+                displayName: '[12] name=foo',
+                parameters: [{ name: 'foo' }],
+            });
+            expect(result).toEqual({ kind: 'displayName', text: 'name=foo' });
+        });
+
+        it('only strips a leading index, leaving later bracketed text intact', () => {
+            const result = summarizeInvocation({
+                displayName: '[1] [tagged] value',
+                parameters: [{ a: '1' }],
+            });
+            expect(result).toEqual({ kind: 'displayName', text: '[tagged] value' });
+        });
+
+        it('preserves a bare bracketed value with no trailing space (e.g. a Kotest list toString)', () => {
+            const result = summarizeInvocation({
+                displayName: '[123]',
+                parameters: [],
+            });
+            expect(result).toEqual({ kind: 'displayName', text: '[123]' });
+        });
+
+        it('falls through to params when the index prefix leaves nothing', () => {
+            const result = summarizeInvocation({
+                displayName: '[1] ',
+                parameters: [{ region: 'EMEA' }],
+            });
+            expect(result).toEqual({ kind: 'inline', text: 'region: EMEA' });
+        });
     });
 
     describe('empty params', () => {
