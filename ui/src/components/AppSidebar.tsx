@@ -902,13 +902,13 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
                     onSelect(node, method, allMethods);
                 }}
                 className={cn(
-                    "text-[13px] transition-all",
+                    "text-[13px] transition-all pl-6",
                     isSelected ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground",
                     node.state === 'Failed' && !isSelected && "text-failure font-medium",
                     node.state === 'Disabled' && !isSelected && "text-disabled opacity-70"
                 )}
             >
-                <Diamond className={cn(
+                <Diamond strokeWidth={2.5} className={cn(
                     "h-3 w-3 shrink-0",
                     isSelected ? "fill-current" : "",
                     iconTone)}/>
