@@ -87,7 +87,12 @@ class KensaLifecycleManager private constructor(
 
     fun writeAllResults() {
         if (!isOutputEnabled) return
-        resultWriter.value.write(kensaContext.testContainers)
+        val containers = kensaContext.testContainers
+        // No Kensa tests participated in this run - don't touch the output dir.
+        // Accessing resultWriter.value here would force ResultWriter.init, which
+        // recreates (wipes) the output dir and writes an empty report.
+        if (containers.isEmpty()) return
+        resultWriter.value.write(containers)
     }
 
     companion object {

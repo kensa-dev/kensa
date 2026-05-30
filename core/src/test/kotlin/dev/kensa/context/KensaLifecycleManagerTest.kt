@@ -5,10 +5,14 @@ import dev.kensa.KensaConfigurationProvider
 import dev.kensa.state.TestState
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.paths.shouldExist
+import io.kotest.matchers.paths.shouldNotExist
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.writeText
 
 internal class KensaLifecycleManagerTest {
 
@@ -80,6 +84,41 @@ internal class KensaLifecycleManagerTest {
         val manager = createManager(tempDir, outputEnabled = false)
 
         manager.writeAllResults()
+    }
+
+    @Test
+    fun `writeAllResults writes nothing and leaves output dir untouched when no tests ran`(@TempDir tempDir: Path) {
+        val manager = createManager(tempDir) // output enabled, but no beforeClass / skipClass called
+
+        manager.writeAllResults()
+
+        tempDir.resolve("kensa-output").shouldNotExist()
+    }
+
+    @Test
+    fun `writeAllResults preserves a prior report when no tests ran`(@TempDir tempDir: Path) {
+        val outputDir = tempDir.resolve("kensa-output").also { it.createDirectories() }
+        val sentinel = outputDir.resolve("index.html")
+        sentinel.writeText("previous report")
+
+        val manager = createManager(tempDir) // output enabled, but no tests participate
+
+        manager.writeAllResults()
+
+        sentinel.shouldExist()
+        sentinel.toFile().readText() shouldBe "previous report"
+    }
+
+    @Test
+    fun `writeAllResults produces report when a test class participated`(@TempDir tempDir: Path) {
+        val manager = createManager(tempDir)
+        manager.beforeClass(DummyTest::class.java, "Dummy Test")
+
+        manager.writeAllResults()
+
+        val outputDir = tempDir.resolve("kensa-output")
+        outputDir.resolve("index.html").shouldExist()
+        outputDir.resolve("indices.json").shouldExist()
     }
 
     @Test
