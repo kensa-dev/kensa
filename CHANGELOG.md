@@ -1,5 +1,21 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.5
+
+Changed:
+  - **`primary` participant now renders as the leftmost participant.** Previously `primary.participant(...)` was only emitted as an empty-diagram fallback for marker-only tests — configuring `primary.actor("SUT")` alongside other participants required re-declaring "SUT" via `participant("SUT")` to actually see it. `SequenceDiagramFactory` now prepends the primary's line to the participants list whenever it is set, so `primary` means what it reads as: the leftmost participant. When the same name is already declared (top-level or inside a `box { }`) the primary is suppressed so the explicit declaration wins and keeps its position. [Docs](https://kensa.dev/docs/api/configuration#sequence-diagrams).
+  - **Test headers cap inline issue badges.** A test card header now renders at most three `@Issue` badges inline; any beyond that fold into a `+N more` popover listing the full set in a scrollable grid, so long issue lists no longer push the header layout around. Badges still link to the issue tracker, and the popover trigger does not toggle the test card.
+  - **Tidier parameterised invocation headers.** Long backend display names now truncate to a single line (full text on hover) instead of wrapping and growing the header box, and a leading JUnit-style `[N] ` index prefix is stripped from the name since the card already carries a `#N` badge (a bare `[123]` with no trailing space — e.g. a Kotest list `toString` — is left intact).
+  - **Sidebar test leaves read as leaves.** Test rows are inset past the absent-chevron gutter and the leaf diamond's stroke is thickened, so individual tests no longer blend in with the container folders above them.
+
+Performance:
+  - **Parsing no longer serialises on hash-bin collisions.** The per-method and per-class parser caches moved off `ConcurrentHashMap.computeIfAbsent`, which holds the bin lock for the entire duration of a (potentially slow) parse and blocks unrelated threads whose keys land in the same bin. They now use a `CompletableFuture`-based memoize that reserves the slot and runs the parse outside the lock, so concurrent first-time parses of different classes/methods proceed in parallel.
+  - **Lower retained heap from cached parse trees.** `MethodDeclarationContext` now severs the parsed method body from its parent chain, so a cached `ParsedMethod` no longer pins the entire enclosing AST in memory.
+
+Fixes:
+  - **No report written when no tests ran.** `writeAllResults` forced the lazy `ResultWriter` even with an empty test set, which recreated (wiped) the output directory and wrote an empty report — destroying any report from a previous run. It now returns early when no test containers were recorded, leaving the output directory untouched on a zero-test run. Covers every framework adapter (JUnit 5/6, TestNG, Kotest), which all funnel through the same call.
+  - **Breadcrumb no longer nests `<li>` inside `<li>`.** The package breadcrumb in the detail header rendered its separator as an `<li>` inside the item `<li>`, tripping React's `validateDOMNesting` warning. The separator is now a sibling of the item under the list.
+
 ### v0.8.4
 
 New features:
