@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Beaker, Loader2, Moon, PanelLeft, Sun} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar';
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
@@ -544,20 +544,22 @@ const App = () => {
                                                                 onSearchChange(isActive ? without.join(' ').trim() : [...without, pkgToken].join(' ').trim());
                                                             };
                                                             return i < arr.length - 1 ? (
-                                                                <BreadcrumbItem key={i}>
-                                                                    <button
-                                                                        onClick={toggle}
-                                                                        className={cn(
-                                                                            "transition-colors underline-offset-2",
-                                                                            isActive
-                                                                                ? "text-indigo-500 dark:text-indigo-400 underline"
-                                                                                : "text-neutral-600 dark:text-neutral-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:underline"
-                                                                        )}
-                                                                    >
-                                                                        {segment}
-                                                                    </button>
+                                                                <Fragment key={i}>
+                                                                    <BreadcrumbItem>
+                                                                        <button
+                                                                            onClick={toggle}
+                                                                            className={cn(
+                                                                                "transition-colors underline-offset-2",
+                                                                                isActive
+                                                                                    ? "text-indigo-500 dark:text-indigo-400 underline"
+                                                                                    : "text-neutral-600 dark:text-neutral-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:underline"
+                                                                            )}
+                                                                        >
+                                                                            {segment}
+                                                                        </button>
+                                                                    </BreadcrumbItem>
                                                                     <BreadcrumbSeparator />
-                                                                </BreadcrumbItem>
+                                                                </Fragment>
                                                             ) : (
                                                                 <BreadcrumbItem key={i}>
                                                                     <BreadcrumbPage className="font-mono text-[10px] font-semibold text-neutral-700 dark:text-neutral-200">{segment}</BreadcrumbPage>
