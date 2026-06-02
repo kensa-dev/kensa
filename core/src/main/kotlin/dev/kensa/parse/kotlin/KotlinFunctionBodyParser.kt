@@ -1,6 +1,7 @@
 package dev.kensa.parse.kotlin
 
 import dev.kensa.parse.Event.*
+import dev.kensa.parse.LocatedEvent.IgnoreLines
 import dev.kensa.parse.kotlin.KotlinLexer.*
 import dev.kensa.parse.kotlin.KotlinParser.ValueArgumentContext
 import dev.kensa.parse.Location
@@ -8,12 +9,14 @@ import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
 import dev.kensa.parse.ParseContext.Companion.asNote
+import dev.kensa.parse.ParseContext.Companion.asEnterBodyExpression
 import dev.kensa.parse.ParseContext.Companion.asEnterExpression
 import dev.kensa.parse.ParseContext.Companion.asEnterStatement
 import dev.kensa.parse.ParseContext.Companion.asMultilineString
 import dev.kensa.parse.ParseContext.Companion.asNullLiteral
 import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
 import dev.kensa.parse.ParseContext.Companion.asOperator
+import dev.kensa.parse.ParseContext.Companion.asIgnoreHint
 import dev.kensa.parse.ParseContext.Companion.asReplaceSentenceHint
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
@@ -28,6 +31,13 @@ class KotlinFunctionBodyParser(
 ) : KotlinParserBaseListener() {
 
     private var replacedStatementDepth = 0
+    private var renderableBody: RenderableBody? = null
+
+    private class RenderableBody(
+        val expression: KotlinParser.ExpressionContext,
+        val start: ParserRuleContext,
+        val suppressedCallee: KotlinParser.SimpleIdentifierContext?,
+    )
 
     override fun enterEveryRule(ctx: ParserRuleContext) {}
     override fun exitEveryRule(ctx: ParserRuleContext) {}
@@ -97,10 +107,12 @@ class KotlinFunctionBodyParser(
     override fun enterFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
         if (replacedStatementDepth > 0) return
         stateMachine.apply(EnterMethod)
+        renderableBody = ctx.asRenderableBody()
     }
 
     override fun exitFunctionBody(ctx: KotlinParser.FunctionBodyContext) {
         if (replacedStatementDepth > 0) return
+        renderableBody = null
         stateMachine.apply(ExitMethod)
     }
 
@@ -138,6 +150,10 @@ class KotlinFunctionBodyParser(
 
     override fun enterExpression(ctx: KotlinParser.ExpressionContext) {
         if (replacedStatementDepth > 0) return
+        renderableBody?.takeIf { ctx === it.expression }?.let {
+            stateMachine.apply(it.start.asEnterBodyExpression())
+            return
+        }
         return with(parseContext) {
             when {
                 ctx.matchesFixturesExpression() -> ctx.asFixture()
@@ -156,6 +172,10 @@ class KotlinFunctionBodyParser(
 
     override fun enterSimpleIdentifier(ctx: KotlinParser.SimpleIdentifierContext) {
         if (replacedStatementDepth > 0) return
+        ctx.asIgnoreHint()?.also { lineCount ->
+            stateMachine.apply(IgnoreLines(Location(ctx.start.line, ctx.start.charPositionInLine), lineCount))
+        }
+        if (ctx === renderableBody?.suppressedCallee) return
         with(parseContext) {
             stateMachine.apply(
                 ctx.asParameter()
@@ -200,11 +220,11 @@ class KotlinFunctionBodyParser(
 
     override fun visitTerminal(node: TerminalNode) {
         if (replacedStatementDepth > 0) return
-        with(parseContext) {
             with(node) {
                 when (symbol.type) {
                     RPAREN, RCURL -> node.asNote()?.also { stateMachine.apply(it) }
-                    ASSIGNMENT, ARROW -> stateMachine.apply(asOperator())
+                    ASSIGNMENT -> if (node.parent !is KotlinParser.FunctionBodyContext) stateMachine.apply(asOperator())
+                    ARROW -> stateMachine.apply(asOperator())
                     BooleanLiteral -> stateMachine.apply(asBooleanLiteral())
                     CharacterLiteral -> stateMachine.apply(asCharacterLiteral())
                     LineStrText -> stateMachine.apply(asStringLiteral())
@@ -213,8 +233,37 @@ class KotlinFunctionBodyParser(
                     NullLiteral -> stateMachine.apply(asNullLiteral())
                 }
             }
-        }
     }
+
+    private fun KotlinParser.FunctionBodyContext.asRenderableBody(): RenderableBody? {
+        val expression = expression() ?: return null
+        val wrappingCall = expression.singleWrappingCall()
+        if (wrappingCall != null && wrappingCall.delegatesToLambda()) return null
+        return RenderableBody(
+            expression = expression,
+            start = wrappingCall?.firstValueArgument() ?: expression,
+            suppressedCallee = wrappingCall?.callee(),
+        )
+    }
+
+    private fun KotlinParser.ExpressionContext.singleWrappingCall(): KotlinParser.PostfixUnaryExpressionContext? {
+        var ctx: ParserRuleContext = this
+        while (ctx !is KotlinParser.PostfixUnaryExpressionContext) {
+            if (ctx.childCount != 1) return null
+            ctx = ctx.getChild(0) as? ParserRuleContext ?: return null
+        }
+        if (ctx.primaryExpression()?.simpleIdentifier() == null) return null
+        return ctx.takeIf { it.postfixUnarySuffix().singleOrNull()?.callSuffix() != null }
+    }
+
+    private fun KotlinParser.PostfixUnaryExpressionContext.callee(): KotlinParser.SimpleIdentifierContext? =
+        primaryExpression()?.simpleIdentifier()
+
+    private fun KotlinParser.PostfixUnaryExpressionContext.delegatesToLambda(): Boolean =
+        postfixUnarySuffix().singleOrNull()?.callSuffix()?.annotatedLambda() != null
+
+    private fun KotlinParser.PostfixUnaryExpressionContext.firstValueArgument(): ValueArgumentContext? =
+        postfixUnarySuffix().singleOrNull()?.callSuffix()?.valueArguments()?.valueArgument()?.firstOrNull()
 
     private fun ParserRuleContext.hasArguments(): Boolean {
         fun ParserRuleContext.findValueArguments(): Boolean {

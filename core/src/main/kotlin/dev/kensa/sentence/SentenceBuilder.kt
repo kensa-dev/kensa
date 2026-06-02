@@ -19,6 +19,9 @@ import kotlin.contracts.contract
 
 class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Location, private val dictionary: Dictionary, private val tabSize: Int) {
     var lastLocation = startingLocation
+    var ignoredLines: Set<Int> = emptySet()
+
+    private fun isIgnored(location: Location) = location.lineNumber in ignoredLines
 
     private val tokens: MutableList<TemplateToken> = ArrayList()
     private val scanner: TokenScanner = TokenScanner(dictionary)
@@ -26,6 +29,11 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     private var currentExpandableLocation: Location? = null
 
     fun beginExpandableSentence(location: Location, placeholder: String, sentences: List<TemplateSentence>) {
+        if (isIgnored(location)) {
+            currentExpandableLocation = location
+            currentExpandableTemplateToken = null
+            return
+        }
         currentExpandableLocation = location
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
 
@@ -67,6 +75,11 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     }
 
     private fun pushExpandable(location: Location, token: TemplateToken) {
+        if (isIgnored(location)) {
+            currentExpandableLocation = location
+            currentExpandableTemplateToken = null
+            return
+        }
         currentExpandableLocation = location
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         currentExpandableTemplateToken = token
@@ -74,6 +87,10 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     }
 
     fun finishExpandable(parameterEvents: List<LocatedEvent> = emptyList()) {
+        if (currentExpandableTemplateToken == null) {
+            currentExpandableLocation = null
+            return
+        }
         var lastLocation = requireForExpandable(currentExpandableLocation)
         val currentTemplate = requireForExpandable(currentExpandableTemplateToken)
 
@@ -128,6 +145,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     fun append(event: BooleanLiteral) = appendLiteral(event, event.value, BooleanLiteral)
 
     fun append(event: StringLiteral) {
+        if (isIgnored(event.location)) return
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
         if (dictionary.isAcronym(event.value)) {
             tokens.append(event.value, StringLiteral, Type.Acronym)
@@ -141,6 +159,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     }
 
     fun append(event: Note) {
+        if (isIgnored(event.location)) return
         if (isNoteBlock) {
             val lastIndex = tokens.indexOfLast { it.types.contains(Note) }
             if (lastIndex < 0) {
@@ -162,21 +181,25 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     fun append(event: Operator) = appendLiteral(event, event.text, Operator)
 
     fun appendFixturesValue(location: Location, name: String, path: String) {
+        if (isIgnored(location)) return
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         tokens.add(SimpleTemplateToken("$name:$path", types = setOf(FixturesValue)))
     }
 
     fun appendOutputsByNameValue(location: Location, name: String, path: String) {
+        if (isIgnored(location)) return
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         tokens.add(SimpleTemplateToken("$name:$path", types = setOf(OutputsValueByName)))
     }
 
     fun appendOutputsByKeyValue(location: Location, name: String, path: String) {
+        if (isIgnored(location)) return
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         tokens.add(SimpleTemplateToken("$name:$path", types = setOf(OutputsValueByKey)))
     }
 
     fun append(location: Location, event: RenderedValue) {
+        if (isIgnored(location)) return
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
         tokens.add(RenderedValueToken(event.name))
     }
@@ -196,6 +219,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     fun append(event: Method) = appendNamedValue(event, event.name, MethodValue)
 
     fun append(event: Identifier) {
+        if (isIgnored(event.location)) return
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
 
         val (scanned, indices) = scanner.scan(event.name, isFirstInSentence())
@@ -240,16 +264,19 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         }
 
     private fun appendLiteral(event: LocatedEvent, value: String, type: Type) {
+        if (isIgnored(event.location)) return
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
         tokens.append(value, type)
     }
 
     private fun appendPathExpression(event: ChainedCallExpression, tokenType: Type) {
+        if (isIgnored(event.location)) return
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
         tokens.add(event.asSentenceToken(tokenType))
     }
 
     private fun appendNamedValue(event: LocatedEvent, name: String, tokenType: Type) {
+        if (isIgnored(event.location)) return
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
         tokens.add(SimpleTemplateToken("$name:", types = setOf(tokenType)))
     }

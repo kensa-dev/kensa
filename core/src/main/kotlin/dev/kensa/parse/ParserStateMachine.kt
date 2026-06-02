@@ -13,6 +13,8 @@ import dev.kensa.parse.state.StateMachineBuilder
 import dev.kensa.parse.state.StateMachineBuilder.Companion.aStateMachine
 import dev.kensa.sentence.SentenceBuilder
 import dev.kensa.sentence.TemplateToken.ErrorTemplateToken
+import dev.kensa.sentence.TemplateToken.Type.Indent
+import dev.kensa.sentence.TemplateToken.Type.NewLine
 import dev.kensa.sentence.TemplateSentence
 
 class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) -> SentenceBuilder) {
@@ -28,14 +30,20 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
     private var statementEntryState: State? = null
     private var currentStatementLocation: Location? = null
 
+    private val ignoredLines: MutableSet<Int> = HashSet()
+
     private lateinit var sentenceBuilder: SentenceBuilder
 
     private fun beginSentence(isNoteSentence: Boolean, location: Location) {
-        sentenceBuilder = createSentenceBuilder(isNoteSentence, location)
+        sentenceBuilder = createSentenceBuilder(isNoteSentence, location).apply { ignoredLines = this@ParserStateMachine.ignoredLines }
     }
 
     private fun finishSentence() {
-        _sentences += sentenceBuilder.build()
+        val sentence = sentenceBuilder.build()
+        val hasVisibleTokens = sentence.tokens.any { token -> token.types.none { it == NewLine || it == Indent } }
+        if (hasVisibleTokens || sentence.lineNumber !in ignoredLines) {
+            _sentences += sentence
+        }
     }
 
     private fun beginOrContinueNoteSentence(location: Location) {
@@ -63,6 +71,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
             on<ExitMethod>(transitionTo(End))
             on<EnterBlock> { currentState, _ ->
                 TestBlock(currentState)
+            }
+            on<EnterBodyExpression> { currentState, event ->
+                beginSentence(false, event.location)
+                InExpression(currentState)
             }
             on<EnterExpression> { currentState, _ ->
                 ExpressionFn(currentState)
@@ -245,7 +257,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 InExpression(currentState)
             }
             on<ExitExpression> { currentState, _ ->
-                currentState.parentState
+                currentState.parentState.also { if (it is InMethod) finishSentence() }
             }
             on<RenderedValue> { currentState, event ->
                 sentenceBuilder.append(event.location, event)
@@ -497,6 +509,11 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
     fun apply(event: Event) {
         if (skipDepth > 0) {
             handleSkipping(event)
+            return
+        }
+        if (event is IgnoreLines) {
+            val from = event.location.lineNumber
+            (from until from + event.count).forEach { ignoredLines.add(it) }
             return
         }
         if (event is EnterStatement) {

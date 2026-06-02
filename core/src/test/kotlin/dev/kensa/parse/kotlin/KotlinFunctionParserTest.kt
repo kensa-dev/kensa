@@ -19,7 +19,10 @@ import io.kotest.assertions.asClue
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -1067,6 +1070,125 @@ internal class KotlinFunctionParserTest {
         private fun parseMethod(methodName: String): List<TemplateSentence> {
             val parser = createParserFor(aFunctionNamed(methodName))
             val method = KotlinWithReplaceSentence::class.java.findMethod(methodName)
+            return parser.parse(method).sentences
+        }
+    }
+
+    @Nested
+    inner class ExpressionExpandable {
+
+        @Test
+        fun `renders expression-bodied expandable sentence`() {
+            val parser = createParserFor(aFunctionNamed("simpleTest"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("simpleTest")
+            val parsedMethod = parser.parse(method)
+
+            val sentences = parsedMethod.expandableMethods["theCorrectDetails"].shouldNotBeNull().sentences
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens.map { it.template }.shouldContainAll("aFirstName:", "aLastName:", "John", "Smith")
+        }
+
+        @Test
+        fun `strips wrapping arrayOf call from expression-bodied expandable`() {
+            val parser = createParserFor(aFunctionNamed("simpleTest"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("simpleTest")
+            val parsedMethod = parser.parse(method)
+
+            val tokens = parsedMethod.expandableMethods["theCorrectDetails"].shouldNotBeNull().sentences[0].tokens
+            tokens.shouldBe(
+                listOf(
+                    FieldValue.asTemplateToken("aFirstName:"),
+                    Word.asTemplateToken("of"),
+                    StringLiteral.asTemplateToken("John"),
+                    FieldValue.asTemplateToken("aLastName:"),
+                    Word.asTemplateToken("of"),
+                    StringLiteral.asTemplateToken("Smith"),
+                )
+            )
+        }
+
+        @Test
+        fun `strips wrapping call with non-stdlib name`() {
+            val parser = createParserFor(aFunctionNamed("simpleTest"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("simpleTest")
+            val parsedMethod = parser.parse(method)
+
+            val tokens = parsedMethod.expandableMethods["theCorrectDetailsViaMatchers"].shouldNotBeNull().sentences[0].tokens
+            tokens.shouldBe(
+                listOf(
+                    FieldValue.asTemplateToken("aFirstName:"),
+                    FieldValue.asTemplateToken("aLastName:"),
+                )
+            )
+        }
+
+        @Test
+        fun `leaves binary expression body unchanged`() {
+            val parser = createParserFor(aFunctionNamed("simpleTest"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("simpleTest")
+            val parsedMethod = parser.parse(method)
+
+            val tokens = parsedMethod.expandableMethods["aCombinationOfCalls"].shouldNotBeNull().sentences[0].tokens
+            tokens.map { it.template }.shouldContainAll("an", "a", "b")
+        }
+
+        @Test
+        fun `renders expression-bodied test method`() {
+            val parser = createParserFor(aFunctionNamed("expressionBodiedTest"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("expressionBodiedTest")
+            val parsedMethod = parser.parse(method)
+
+            parsedMethod.sentences.shouldHaveSize(1)
+            parsedMethod.sentences[0].tokens.shouldNotBeEmpty()
+        }
+    }
+
+    @Nested
+    inner class Ignore {
+
+        @Test
+        fun `ignores a single statement`() {
+            val sentences = parseMethod("ignoresSingleStatement")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+            )).tokens
+        }
+
+        @Test
+        fun `ignores arrayOf line in block-body expandable`() {
+            val parser = createParserFor(aFunctionNamed("ignoresSingleStatement"))
+            val method = KotlinWithIgnoreHint::class.java.findMethod("ignoresSingleStatement")
+            val tokens = parser.parse(method).expandableMethods["blockBodyExpandable"].shouldNotBeNull().sentences[0].tokens
+            tokens.map { it.template }.shouldNotContain("ignored")
+            tokens.map { it.template }.shouldContainAll("aFirstName:", "aLastName:", "John", "Smith")
+        }
+
+        @Test
+        fun `ignores two statements`() {
+            val sentences = parseMethod("ignoresTwoStatements")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+            )).tokens
+        }
+
+        @Test
+        fun `renders value below ignored line`() {
+            val sentences = parseMethod("rendersValueBelowIgnoredLine")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("tracking"),
+                Word.asTemplateToken("id"),
+                Word.asTemplateToken("is"),
+                FieldValue.asTemplateToken("trackingId:"),
+            )).tokens
+        }
+
+        private fun parseMethod(methodName: String): List<TemplateSentence> {
+            val parser = createParserFor(aFunctionNamed(methodName))
+            val method = KotlinWithIgnoreHint::class.java.findMethod(methodName)
             return parser.parse(method).sentences
         }
     }

@@ -119,6 +119,12 @@ class ParseContext(
                 ?.takeIf { it.startsWith("ReplaceSentence:") }
                 ?.removePrefix("ReplaceSentence:")
                 ?.trim()
+
+        internal fun ParserRuleContext.asIgnoreHint(): Int? = (start as? KensaToken)?.asIgnoreHint()
+
+        private fun KensaToken.asIgnoreHint(): Int? =
+            hint.takeIf { it == "Ignore" || it.startsWith("Ignore:") }
+                ?.let { if (it == "Ignore") 1 else it.removePrefix("Ignore:").trim().toIntOrNull() ?: 1 }
         internal fun ParseTree.asOperator() = Operator(location, text)
         internal fun ParseTree.asBooleanLiteral() = BooleanLiteral(location, text)
         internal fun ParseTree.asCharacterLiteral() = CharacterLiteral(location, text)
@@ -128,6 +134,7 @@ class ParseContext(
         internal fun ParseTree.asMultilineString() = MultilineString(asTextBlock())
 
         internal fun ParseTree.asEnterStatement() = EnterStatement(location)
+        internal fun ParseTree.asEnterBodyExpression() = EnterBodyExpression(location)
         internal fun ParseTree.asEnterExpression() = EnterExpression(location)
         internal fun ParseTree.asMethodInvocation() = EnterMethodInvocation(location)
 

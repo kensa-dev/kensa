@@ -30,8 +30,10 @@ sealed class Event {
 sealed class LocatedEvent(val location: Location) : Event() {
 
     class EnterStatement(location: Location) : LocatedEvent(location)
+    class EnterBodyExpression(location: Location) : LocatedEvent(location)
     class EnterMethodInvocation(location: Location) : LocatedEvent(location)
     class EnterExpression(location: Location) : LocatedEvent(location)
+    class IgnoreLines(location: Location, val count: Int) : LocatedEvent(location)
 
     sealed class PathExpression(location: Location, val name: String, val path: String) : LocatedEvent(location) {
         class FixturesExpression(location: Location, name: String, path: String) : PathExpression(location, name, path)

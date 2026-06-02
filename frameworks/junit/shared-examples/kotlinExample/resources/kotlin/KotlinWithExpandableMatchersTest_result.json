@@ -1,0 +1,173 @@
+{
+    "testClass": "dev.kensa.example.KotlinWithExpandableMatchersTest",
+    "displayName": "Kotlin With Expandable Matchers Test",
+    "state": "Passed",
+    "notes": null,
+    "packageName": "dev.kensa.example",
+    "issues": [],
+    "tags": [],
+    "tests": [
+        {
+            "testMethod": "matchesTheCorrectDetails",
+            "displayName": "Matches The Correct Details",
+            "issues": [],
+            "tags": [],
+            "state": "Passed",
+            "autoOpenTab": "None",
+            "invocations": [
+                {
+                    "highlights": [],
+                    "sentences": [
+                        {
+                            "lineNumber": 27,
+                            "tokens": [
+                                {
+                                    "types": [
+                                        "tk-kw"
+                                    ],
+                                    "value": "When"
+                                },
+                                {
+                                    "types": [
+                                        "tk-ex"
+                                    ],
+                                    "value": "the Correct Details",
+                                    "parameterTokens": [],
+                                    "tokens": [
+                                        [
+                                            {
+                                                "types": [
+                                                    "tk-fv"
+                                                ],
+                                                "value": "John"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-wd"
+                                                ],
+                                                "value": "of"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-sl"
+                                                ],
+                                                "value": "John"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-fv"
+                                                ],
+                                                "value": "Smith"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-wd"
+                                                ],
+                                                "value": "of"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-sl"
+                                                ],
+                                                "value": "Smith"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "lineNumber": 29,
+                            "tokens": [
+                                {
+                                    "types": [
+                                        "tk-kw"
+                                    ],
+                                    "value": "When"
+                                },
+                                {
+                                    "types": [
+                                        "tk-ex"
+                                    ],
+                                    "value": "the Fixture Backed Details",
+                                    "parameterTokens": [],
+                                    "tokens": [
+                                        [
+                                            {
+                                                "types": [
+                                                    "tk-wd"
+                                                ],
+                                                "value": "matchers"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-nl"
+                                                ],
+                                                "value": ""
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-in"
+                                                ],
+                                                "value": ""
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-in"
+                                                ],
+                                                "value": ""
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-in"
+                                                ],
+                                                "value": ""
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-fv"
+                                                ],
+                                                "value": "John"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-wd"
+                                                ],
+                                                "value": "of"
+                                            },
+                                            {
+                                                "types": [
+                                                    "tk-fx"
+                                                ],
+                                                "value": "aFixtureValue"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "parameters": [],
+                    "capturedInteractions": [],
+                    "capturedOutputs": [],
+                    "fixtures": [
+                        {
+                            "KotlinMatcherFixture": "aFixtureValue"
+                        }
+                    ],
+                    "fixtureSpecs": [
+                        {
+                            "key": "KotlinMatcherFixture",
+                            "parents": []
+                        }
+                    ],
+                    "sequenceDiagram": null,
+                    "componentDiagram": null,
+                    "state": "Passed",
+                    "executionException": {},
+                    "displayName": "matchesTheCorrectDetails()"
+                }
+            ]
+        }
+    ]
+}
