@@ -1,5 +1,11 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.6
+
+New features:
+  - **Expression-bodied `@ExpandableSentence` and test functions now render.** A function written with an expression body — `fun theDetails() = arrayOf(aField of "John", ...)` — previously produced an empty expandable popup, because an expression body emits no statement for the source parser to turn into a sentence. Expression bodies now render through the same path as block bodies. When the whole body is a single wrapping call (`arrayOf(...)`, `listOf(...)`, or any `builder(args)`) the call itself is stripped so only its contents render — a matcher/element list reads as a clean list without the surrounding builder. Lambda-delegating bodies (`= with(context) { ... }`, `= test { ... }`) are untouched and keep rendering their lambda statements; block bodies are unchanged.
+  - **`/*+ Ignore */` source hint.** A `/*+ Ignore */` comment on its own line drops the rendered tokens on the next source line from the report sentence; `/*+ Ignore:n */` drops the next `n` lines. It works anywhere in a test or `@ExpandableSentence` body — a manual way to hide distracting plumbing (a wrapping `return arrayOf(` line, a gnarly builder chain) from the sentence without changing the test. Complements the existing `/*+ ReplaceSentence: ... */` hint.
+
 ### v0.8.5
 
 Changed:
