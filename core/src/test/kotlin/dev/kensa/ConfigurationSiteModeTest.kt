@@ -83,4 +83,19 @@ class ConfigurationSiteModeTest {
         KensaConfigurator(config).withOutputDir(Path("/some/build/dir"))
         config.outputDir.toString() shouldBe "/some/build/dir/kensa-output"
     }
+
+    @Test
+    fun `withProgramme and withService set the configuration values`() {
+        val config = Configuration()
+        KensaConfigurator(config).withProgramme("Nexus").withService("Checkout")
+        config.programme shouldBe "Nexus"
+        config.service shouldBe "Checkout"
+    }
+
+    @Test
+    fun `programme and service default to null`() {
+        val config = Configuration()
+        config.programme shouldBe null
+        config.service shouldBe null
+    }
 }

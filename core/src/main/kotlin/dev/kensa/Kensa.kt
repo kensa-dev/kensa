@@ -83,6 +83,9 @@ class KensaConfigurator(private val configuration: Configuration) {
     fun withPackageDisplayMode(packageDisplay: PackageDisplay): KensaConfigurator = apply { configuration.packageDisplay = packageDisplay }
     fun withPackageDisplayRoot(root: String): KensaConfigurator = apply { configuration.packageDisplayRoot = root }
 
+    fun withProgramme(programme: String): KensaConfigurator = apply { configuration.programme = programme }
+    fun withService(service: String): KensaConfigurator = apply { configuration.service = service }
+
     fun withSourceLocations(vararg locations: Path): KensaConfigurator = apply { configuration.sourceLocations = locations.toList() }
 }
 
@@ -164,6 +167,8 @@ class Configuration {
     var autoExpandNotes: Boolean = false
     var packageDisplay: PackageDisplay = PackageDisplay.HideCommonPackages
     var packageDisplayRoot: String? = null
+    var programme: String? = null
+    var service: String? = null
     var setupStrategy: SetupStrategy = SetupStrategy.Ungrouped
     var titleText: String = System.getProperty(KENSA_SOURCE_TITLE, "Index")
 

@@ -70,6 +70,8 @@ class ResultWriter(private val configuration: Configuration, private val compone
                 .add("flattenPackages", flattenOutputPackages)
                 .add("packageDisplay", packageDisplay.name)
                 .add("packageDisplayRoot", packageDisplayRoot)
+                .add("programme", programme)
+                .add("service", service)
                 .add("kensaVersion", kensaVersion)
                 .add("generatedAt", Instant.now().toString())
                 .add("sectionOrder", Json.array().apply {
