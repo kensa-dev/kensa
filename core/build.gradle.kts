@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 apply(plugin = "com.gradleup.shadow")
 
@@ -108,12 +107,6 @@ tasks {
                     "Implementation-Version" to rootProject.version
                 )
             )
-        }
-    }
-
-    named<KotlinCompile>("compileExampleKotlin") {
-        compilerOptions {
-            freeCompilerArgs.addAll("-Xcontext-parameters")
         }
     }
 

@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### Unreleased
+
+Changed:
+  - **Built against Kotlin 2.4.0.** The Kotlin compiler plugin (`@ExpandableSentence` / `@RenderedValue` value capture) is binary-locked to the compiler version that runs it: Kotlin 2.4.0 changed the IR extension-registration API (`IrGenerationExtension`'s descriptor supertype `ProjectExtensionDescriptor` → `ExtensionPointDescriptor`), so a plugin built against an earlier Kotlin fails under the 2.4.0 compiler with a `ClassCastException`. Kensa now compiles against Kotlin 2.4.0 and requires consumers to be on Kotlin 2.4.0; projects still on Kotlin 2.3.x should stay on the previous Kensa release. Context parameters are stable in 2.4.0, so the deprecated `-Xcontext-parameters` flag has been dropped from the build.
+
 ### v0.8.6
 
 New features:

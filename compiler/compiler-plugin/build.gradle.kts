@@ -53,16 +53,7 @@ tasks {
 
         compilerOptions {
             verbose.set(true)
-            freeCompilerArgs.addAll(
-                "-Xplugin=${pluginJarPath.get()}",
-                "-Xcontext-parameters"
-            )
-        }
-    }
-
-    named<KotlinCompile>("compileTestKotlin") {
-        compilerOptions {
-            freeCompilerArgs.add("-Xcontext-parameters")
+            freeCompilerArgs.add("-Xplugin=${pluginJarPath.get()}")
         }
     }
 }

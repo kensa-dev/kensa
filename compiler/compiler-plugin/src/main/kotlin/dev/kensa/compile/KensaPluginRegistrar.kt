@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.*
 import org.jetbrains.kotlin.config.CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.CompilerConfigurationKey.create
+import org.jetbrains.kotlin.config.CompilerConfigurationKey
 
 const val PLUGIN_ID = "dev.kensa.compiler-plugin"
 
@@ -36,8 +36,8 @@ class KensaPluginRegistrar : CompilerPluginRegistrar() {
 class KensaCommandLineProcessor : CommandLineProcessor {
     companion object {
 
-        val ENABLED_KEY = create<Boolean>("enabled")
-        val DEBUG_KEY = create<Boolean>("debug")
+        val ENABLED_KEY = CompilerConfigurationKey.create<Boolean>("enabled")
+        val DEBUG_KEY = CompilerConfigurationKey.create<Boolean>("debug")
         
         val ENABLED_OPTION = CliOption(
             optionName = "enabled",

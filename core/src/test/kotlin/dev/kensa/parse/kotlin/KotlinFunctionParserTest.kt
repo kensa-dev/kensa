@@ -651,10 +651,10 @@ internal class KotlinFunctionParserTest {
                             it.isParameterizedTestDescription.shouldBeFalse()
                         }
                     }
-                    assertSoftly(get("internalExpandable\$core_example")) {
+                    assertSoftly(get("internalExpandable\$dev_kensa_core_example")) {
                         shouldNotBeNull()
                         asClue {
-                            it.name shouldBe "internalExpandable\$core_example"
+                            it.name shouldBe "internalExpandable\$dev_kensa_core_example"
                             it.isHighlight.shouldBeFalse()
                             it.isRenderedValue.shouldBeFalse()
                             it.isParameterizedTestDescription.shouldBeFalse()
@@ -771,7 +771,7 @@ internal class KotlinFunctionParserTest {
 
         @Test
         internal fun `parses internal function`() {
-            val functionName = "simpleTest\$core_example"
+            val functionName = "simpleTest\$dev_kensa_core_example"
             val parser = createParserFor(aFunctionNamed(functionName))
 
             val expectedSentence = TemplateSentence(
