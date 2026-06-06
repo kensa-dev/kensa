@@ -5,6 +5,7 @@ import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonValue
 import com.eclipsesource.json.WriterConfig.MINIMAL
 import dev.kensa.KensaException
+import dev.kensa.context.OrgFlowSpec
 import dev.kensa.context.TestContainer
 import dev.kensa.fixture.FixtureSpec
 import dev.kensa.render.Renderers
@@ -100,6 +101,8 @@ object JsonTransforms {
                     })
                 }
 
+                testMethodContainer.orgFlow?.let { methodJson.add("orgFlow", orgFlowAsJson(it)) }
+
                 methodJson
             })
     }
@@ -117,6 +120,16 @@ object JsonTransforms {
             .add("key", spec.key)
             .add("parents", asJsonArray(spec.parents))
     }
+
+    private fun orgFlowAsJson(spec: OrgFlowSpec): JsonValue =
+        jsonObject()
+            .add("category", spec.category)
+            .add("name", spec.flowName)
+            .add("attributes", attributesAsJson(spec.attributes))
+
+    private fun attributesAsJson(attributes: Map<String, String>): JsonValue =
+        attributes.entries.sortedBy { it.key }
+            .fold(jsonObject()) { obj, (k, v) -> obj.add(k, v) }
 
     fun <T, R, V> ((T) -> R).andThen(other: (R) -> V): ((T) -> V) = { other(this(it)) }
 

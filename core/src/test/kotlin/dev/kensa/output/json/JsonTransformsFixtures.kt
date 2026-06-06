@@ -1,6 +1,7 @@
 package dev.kensa.output.json
 
 import dev.kensa.Tab
+import dev.kensa.context.OrgFlowSpec
 import dev.kensa.context.TestContainer
 import dev.kensa.fixture.Fixtures
 import dev.kensa.fixture.FixtureSpec
@@ -60,6 +61,7 @@ internal fun fakeTestMethodContainer(
     displayName: String = method.name,
     issues: List<String> = emptyList(),
     tags: List<String> = emptyList(),
+    orgFlow: OrgFlowSpec? = null,
     state: TestState = TestState.Passed,
     autoOpenTab: Tab = Tab.None,
     invocations: List<TestInvocation> = emptyList(),
@@ -69,6 +71,7 @@ internal fun fakeTestMethodContainer(
     on { it.displayName } doReturn displayName
     on { it.issues } doReturn issues
     on { it.tags } doReturn tags
+    on { it.orgFlow } doReturn orgFlow
     on { it.state } doReturn state
     on { it.autoOpenTab } doReturn autoOpenTab
     on { it.invocations } doReturn invocations

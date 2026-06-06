@@ -1,13 +1,14 @@
 package dev.kensa.state
 
 import dev.kensa.Tab
+import dev.kensa.context.OrgFlowSpec
 import dev.kensa.context.TestContext
 import dev.kensa.parse.ParseError
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
-class TestMethodContainer(private val testInvocationFactory: TestInvocationFactory, val method: Method, val displayName: String, val issues: List<String>, val tags: List<String>, private val initialState: TestState, val autoOpenTab: Tab) {
+class TestMethodContainer(private val testInvocationFactory: TestInvocationFactory, val method: Method, val displayName: String, val issues: List<String>, val tags: List<String>, val orgFlow: OrgFlowSpec?, private val initialState: TestState, val autoOpenTab: Tab) {
     val invocationContexts = mutableMapOf<UUID, TestInvocationContext>()
     private val _invocations = mutableListOf<TestInvocation>()
     val invocations: List<TestInvocation> get() = _invocations

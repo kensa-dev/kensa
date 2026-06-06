@@ -43,6 +43,7 @@ class TestContainerFactory(
             deriveDisplayName { derivedTestName(configuration.dictionary.protectedPhraseValues) },
             issues(),
             tags(),
+            orgFlowOf(this),
             initialState(),
             autoOpenTab(autoOpenTab)
         )

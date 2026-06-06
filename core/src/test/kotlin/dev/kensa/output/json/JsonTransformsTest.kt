@@ -4,6 +4,7 @@ import com.eclipsesource.json.Json
 import com.eclipsesource.json.JsonValue
 import com.eclipsesource.json.WriterConfig
 import dev.kensa.KensaException
+import dev.kensa.context.SimpleOrgFlowSpec
 import dev.kensa.fixture.FixtureSpec
 import dev.kensa.parse.ParseError
 import dev.kensa.parse.RenderError
@@ -106,6 +107,25 @@ class JsonTransformsTest {
             tags.size() shouldBe 2
             tags[0].asString() shouldBe "smoke"
             tags[1].asString() shouldBe "regression"
+        }
+
+        @Test
+        fun `serialises the method orgFlow object`() {
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(
+                fakeTestMethodContainer(method = alpha,
+                    orgFlow = SimpleOrgFlowSpec("Provide", "Provide with Cancel", mapOf("product" to "FTTP")))))
+            val test = render(container).get("tests").asArray()[0].asObject()
+            val orgFlow = test.get("orgFlow").asObject()
+            orgFlow.getString("category", null) shouldBe "Provide"
+            orgFlow.getString("name", null) shouldBe "Provide with Cancel"
+            orgFlow.get("attributes").asObject().getString("product", null) shouldBe "FTTP"
+        }
+
+        @Test
+        fun `omits orgFlow when absent`() {
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(
+                fakeTestMethodContainer(method = alpha)))
+            render(container).get("tests").asArray()[0].asObject().get("orgFlow") shouldBe null
         }
     }
 

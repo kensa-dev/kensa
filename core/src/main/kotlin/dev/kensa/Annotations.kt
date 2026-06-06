@@ -242,3 +242,20 @@ annotation class AutoOpenTab(val value: Tab)
 @Target(FUNCTION, CLASS)
 annotation class UseSetupStrategy(val value: SetupStrategy)
 
+/**
+ * Marks a test as the canonical slice of a named org-wide business flow (Kura flow-grouping).
+ * One tag per test — the test-to-flow relationship is 1:1.
+ */
+@Retention(RUNTIME)
+@Target(FUNCTION)
+annotation class OrgFlow(val category: String, val name: String, val product: String = "")
+
+/**
+ * Meta-annotation. Put it on a consumer-defined annotation whose single member is a typed
+ * enum implementing [dev.kensa.context.OrgFlowSpec], e.g.
+ *   @OrgFlowMarker @Target(FUNCTION) annotation class Flow(val value: CheckoutFlow)
+ * Kensa resolves the test's org-flow from that enum constant.
+ */
+@Retention(RUNTIME)
+@Target(ANNOTATION_CLASS)
+annotation class OrgFlowMarker
