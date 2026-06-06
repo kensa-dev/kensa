@@ -11,6 +11,7 @@ class Attributes private constructor(private val attributes: Map<String, Any?>) 
         const val InteractionId = "InteractionId"
         const val Group = "Group"
         const val Arrow = "ArrowStyle"
+        const val Seam = "Seam"
     }
 
     val isEmpty: Boolean

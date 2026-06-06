@@ -5,6 +5,7 @@ import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.state.CapturedInteractionsTest.GOTParty.*
 import dev.kensa.util.Attributes
 import dev.kensa.util.KensaMap
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -124,6 +125,46 @@ internal class CapturedInteractionsTest {
             capture(from(Jon).to(Daenerys).with("I will not bend the knee", "Defiant statement"))
 
             containsKey("Defiant statement from Jon to Daenerys").shouldBeTrue()
+        }
+    }
+
+    @Test
+    fun `inbound seam derives the to-party from its owner`() {
+        with(interactions) {
+            capture(from(Ygritte).seam(Inbound("got:raven", "Raven", Jon)).with("content", "Raven"))
+            containsKey("Raven from Ygritte to Jon").shouldBeTrue()
+        }
+    }
+
+    @Test
+    fun `seam is recorded as an interaction attribute`() {
+        val seam = Inbound("got:raven", "Raven", Jon)
+        with(interactions) {
+            capture(from(Ygritte).seam(seam).with("content", "Raven"))
+            entrySet().single().attributes.get<SeamDefinition>(Attributes.Key.Seam) shouldBe seam
+        }
+    }
+
+    @Test
+    fun `outbound seam requires the from-party to be its owner`() {
+        shouldThrow<IllegalArgumentException> {
+            from(Ygritte).seam(Outbound("got:decree", "Royal Decree", Jon))
+        }
+    }
+
+    @Test
+    fun `inbound seam rejects a pre-set to-party that does not match its owner`() {
+        shouldThrow<IllegalArgumentException> {
+            from(Ygritte).to(Daenerys).seam(Inbound("got:raven", "Raven", Jon))
+        }
+    }
+
+    @Test
+    fun `outbound seam records interaction when from-party matches owner`() {
+        val seam = Outbound("got:decree", "Royal Decree", Jon)
+        with(interactions) {
+            capture(from(Jon).to(Daenerys).seam(seam).with("content", "Royal Decree"))
+            entrySet().single().attributes.get<SeamDefinition>(Attributes.Key.Seam) shouldBe seam
         }
     }
 

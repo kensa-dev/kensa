@@ -12,6 +12,8 @@ import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.RenderedToken
 import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
+import dev.kensa.state.Inbound
+import dev.kensa.state.SeamDefinition
 import dev.kensa.state.TestInvocation
 import dev.kensa.state.TestMethodContainer
 import dev.kensa.util.Attributes
@@ -247,15 +249,27 @@ object JsonTransforms {
             val from = match?.groupValues?.getOrNull(2)?.trim()
             val to = match?.groupValues?.getOrNull(3)?.trim()
 
-            jsonObject()
+            val seam = it.attributes.get<SeamDefinition>(Attributes.Key.Seam)
+
+            val obj = jsonObject()
                 .add("id", implicitId)
                 .add("name", it.key)
                 .add("from", from)
                 .add("to", to)
                 .add("rendered", renderedInteractionAsJson(it.value!!, it.attributes, renderers))
                 .add("attributes", asJsonArray(it.attributes, entryAsJson(renderers)))
+            seam?.let { s -> obj.add("seam", seamAsJson(s)) }
+            obj
         }
     }
+
+    private fun seamAsJson(seam: SeamDefinition): JsonValue =
+        jsonObject()
+            .add("id", seam.id)
+            .add("name", seam.name)
+            .add("owner", seam.owner.asString())
+            .add("direction", if (seam is Inbound) "inbound" else "outbound")
+            .add("correlationFixtures", asJsonArray(seam.correlationFixtures))
 
     private fun renderedInteractionAsJson(value: Any, attributes: Attributes, renderers: Renderers): JsonValue =
         jsonObject()

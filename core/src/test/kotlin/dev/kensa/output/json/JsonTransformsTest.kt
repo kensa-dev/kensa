@@ -13,6 +13,8 @@ import dev.kensa.render.diagram.SequenceDiagram
 import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.RenderedToken
 import dev.kensa.state.CapturedInteractions
+import dev.kensa.state.Inbound
+import dev.kensa.state.Party
 import dev.kensa.state.TestState
 import dev.kensa.util.Attributes
 import dev.kensa.util.NamedValue
@@ -314,6 +316,34 @@ class JsonTransformsTest {
                 .get("capturedInteractions").asArray()[0].asObject()
 
             interaction.getString("id", null) shouldBe "id-42"
+        }
+
+        @Test
+        fun `serialises the seam on an interaction`() {
+            val topolino = object : Party { override fun asString() = "Topolino" }
+            val seam = Inbound("topolino:newLineProvide", "New Line Provide", topolino, listOf("orderId"))
+
+            val container = fakeTestContainer(
+                testClass = sampleClass,
+                methodContainers = listOf(
+                    fakeTestMethodContainer(method = alpha, invocations = listOf(
+                        fakeTestInvocation(interactions = setOf(interactionEntry(
+                            key = "Provide from Orchestration to Topolino",
+                            attributes = Attributes.of(Attributes.Key.Seam, seam),
+                        )))
+                    ))
+                ),
+            )
+
+            val seamJson = render(container).get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("capturedInteractions").asArray()[0].asObject()
+                .get("seam").asObject()
+
+            seamJson.getString("id", null) shouldBe "topolino:newLineProvide"
+            seamJson.getString("owner", null) shouldBe "Topolino"
+            seamJson.getString("direction", null) shouldBe "inbound"
+            seamJson.get("correlationFixtures").asArray()[0].asString() shouldBe "orderId"
         }
     }
 
