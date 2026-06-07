@@ -7,6 +7,7 @@ export interface SourceEntry {
 export interface Manifest {
     schemaVersion: number;
     kensaVersion?: string;
+    hubVersion?: string;
     generatedAt?: string;
     sources: SourceEntry[];
 }
