@@ -2,7 +2,6 @@ package dev.kensa.example.adoptabot
 
 import dev.kensa.Kensa.konfigure
 import dev.kensa.Tab
-import dev.kensa.example.adoptabot.AdoptionStatus.Available
 import dev.kensa.fixture.FixtureContainer
 import dev.kensa.fixture.FixtureRegistry.registerFixtures
 import dev.kensa.fixture.fixture
@@ -92,17 +91,23 @@ class AdoptabotExtension : BeforeAllCallback, AutoCloseable {
     }
 }
 
-private val adoptableRobots = listOf(
-    Robot("1", "Bolt", Available),
-    Robot("2", "Chip", Available),
-    Robot("5", "Gizmo", Available),
-    Robot("6", "Cogs", Available),
-)
-
+/**
+ * Deterministic, distinctive fixture values, deliberately shared across multiple test classes so
+ * the suite-wide fixture search has real cross-test occurrences to find. Derived values reuse the
+ * same helpers the service uses ([adoptionReference], [adopterEmail], [membershipId]) so they
+ * always agree with the rendered payloads.
+ */
 object AdoptabotFixtures : FixtureContainer {
-    val SelectedRobotFx = fixture("SelectedRobot") { adoptableRobots.random().name }
-    val AdoptionPathFx = fixture("AdoptionPath", SelectedRobotFx) { name ->
-        val robot = adoptableRobots.first { it.name == name }
-        "/adopt/${robot.id}"
-    }
+    val RobotNameFx = fixture("RobotName") { "Bolt" }
+    val RobotIdFx = fixture("RobotId", RobotNameFx) { name -> robotNamed(name).id }
+    val AdoptionPathFx = fixture("AdoptionPath", RobotIdFx) { id -> "/adopt/$id" }
+
+    val ShelterNameFx = fixture("ShelterName") { "Old Foundry" }
+    val ShelterIdFx = fixture("ShelterId", ShelterNameFx) { name -> shelterNamed(name).id }
+
+    val AdopterNameFx = fixture("AdopterName") { "Ada Lovelace" }
+    val AdopterEmailFx = fixture("AdopterEmail", AdopterNameFx) { name -> adopterEmail(name) }
+    val MembershipIdFx = fixture("MembershipId", AdopterNameFx) { name -> membershipId(name) }
+
+    val AdoptionReferenceFx = fixture("AdoptionReference", RobotIdFx, AdopterNameFx) { id, name -> adoptionReference(id, name) }
 }

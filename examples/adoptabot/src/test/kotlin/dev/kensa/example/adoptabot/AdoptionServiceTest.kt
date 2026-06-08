@@ -7,11 +7,9 @@ import dev.kensa.Kensa.konfigure
 import dev.kensa.example.adoptabot.AdoptabotExtension.Companion.client
 import dev.kensa.example.adoptabot.AdoptabotExtension.Companion.port
 import dev.kensa.example.adoptabot.AdoptabotFixtures.AdoptionPathFx
-import dev.kensa.example.adoptabot.AdoptabotFixtures.SelectedRobotFx
+import dev.kensa.example.adoptabot.AdoptabotFixtures.RobotNameFx
 import dev.kensa.example.adoptabot.AdoptabotParty.AdoptionService
 import dev.kensa.example.adoptabot.AdoptabotParty.Client
-import dev.kensa.example.adoptabot.AdoptionStatus.Adopted
-import dev.kensa.example.adoptabot.AdoptionStatus.Available
 import dev.kensa.junit.KensaTest
 import dev.kensa.kotest.WithKotest
 import dev.kensa.render.Language.Json
@@ -124,7 +122,7 @@ class AdoptionServiceTest : KensaTest, WithKotest {
 
         then(
             theResponse(), shouldHaveStatus(OK)
-                .and(aBodyContaining(theAvailableRobots))
+                .and(aBodyContaining(availableRobots))
         )
     }
 
@@ -139,7 +137,7 @@ class AdoptionServiceTest : KensaTest, WithKotest {
     @Test
     fun canAdoptAnAvailableRobot() {
         given(someAvailableRobotsExist())
-        and(theChosenRobotIs(fixtures(SelectedRobotFx)))
+        and(theChosenRobotIs(fixtures(RobotNameFx)))
 
         whenever(aClientRequestsToAdoptAt(fixtures(AdoptionPathFx)))
 
@@ -214,7 +212,8 @@ class AdoptionServiceTest : KensaTest, WithKotest {
     }
 
     private fun someAvailableRobotsExist() = Action<GivensContext> {
-        robots = ArrayList(allRobots)
+        shelters = ArrayList(shelterCatalogue)
+        robots = ArrayList(robotCatalogue)
     }
 
     /**
@@ -293,12 +292,12 @@ class AdoptionServiceTest : KensaTest, WithKotest {
         /**
          * A randomly chosen available robot for testing adoption.
          */
-        val chosenAvailableRobot: Robot = theAvailableRobots.random()
+        val chosenAvailableRobot: Robot = availableRobots.random()
 
         /**
          * A randomly chosen unavailable robot for testing adoption failure.
          */
-        val chosenUnavailableRobot: Robot = theUnavailableRobots.random()
+        val chosenUnavailableRobot: Robot = adoptedRobots.random()
 
         /**
          * The response from the most recent request.
@@ -307,19 +306,6 @@ class AdoptionServiceTest : KensaTest, WithKotest {
     }
 
     companion object {
-        private val allRobots = listOf(
-            Robot("1", "Bolt", Available),
-            Robot("2", "Chip", Available),
-            Robot("3", "Sparks", Adopted),
-            Robot("4", "Buzz", Adopted),
-            Robot("5", "Gizmo", Available),
-            Robot("6", "Cogs", Available),
-        )
-
-        private val theUnavailableRobots = allRobots.filter { it.status != Available }
-
-        private val theAvailableRobots = allRobots.filter { it.status == Available }
-
         @JvmStatic
         @BeforeAll
         fun registerServices() {
