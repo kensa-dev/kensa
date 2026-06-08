@@ -7,6 +7,8 @@ import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms.toIndexJson
 import dev.kensa.output.json.JsonTransforms.toJsonString
 import dev.kensa.output.json.JsonTransforms.toJsonWith
+import dev.kensa.output.search.SearchIndexBuilder
+import dev.kensa.output.search.SearchIndexWriter
 import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.sentence.Acronym
 import dev.kensa.tabs.TabArtifactManager
@@ -26,7 +28,9 @@ class ResultWriter(private val configuration: Configuration, private val compone
     private val tabArtifactManager = TabArtifactManager()
 
     fun write(containers: List<TestContainer>) {
-        writeIndices(containers.sortedBy { it.testClass.name })
+        val sortedContainers = containers.sortedBy { it.testClass.name }
+        writeIndices(sortedContainers)
+        writeSearchIndex(sortedContainers)
         writeConfiguration()
         if (!configuration.dataOnly) {
             writeHtml()
@@ -107,6 +111,11 @@ class ResultWriter(private val configuration: Configuration, private val compone
             </html>
         """.trimIndent()
         configuration.outputDir.resolve("index.html").writeText(html)
+    }
+
+    private fun writeSearchIndex(containers: List<TestContainer>) {
+        val terms = SearchIndexBuilder(configuration.renderers).build(containers)
+        SearchIndexWriter().write(configuration.outputDir, terms)
     }
 
     private fun writeIndices(containers: List<TestContainer>) {
