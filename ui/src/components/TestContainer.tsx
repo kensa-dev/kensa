@@ -8,11 +8,12 @@ interface TestContainerProps {
     tests: Test[];
     testClass: string;
     testToExpand?: string;
+    invocationToExpand?: number;
     matchingMethods?: string[];
     onClearFilter?: () => void;
 }
 
-export const TestContainer = ({ tests, testClass, testToExpand, matchingMethods = [], onClearFilter }: TestContainerProps) => {
+export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpand = -1, matchingMethods = [], onClearFilter }: TestContainerProps) => {
     const cardRefs = React.useRef<(HTMLDivElement | null)[]>([]);
     const [expandedTestIndex, setExpandedTestIndex] = React.useState<number>(-1);
     const [expandedInvocationIndex, setExpandedInvocationIndex] = React.useState<number>(-1);
@@ -53,7 +54,7 @@ export const TestContainer = ({ tests, testClass, testToExpand, matchingMethods 
 
         if (methodIndex !== -1) {
             setExpandedTestIndex(methodIndex);
-            setExpandedInvocationIndex(-1);
+            setExpandedInvocationIndex(invocationToExpand);
             targetScrollIndex = methodIndex;
         } else {
             const firstFailedTestIndex = filteredTests.findIndex(t => t.state === 'Failed');
@@ -93,7 +94,7 @@ export const TestContainer = ({ tests, testClass, testToExpand, matchingMethods 
 
             return () => clearTimeout(timer);
         }
-    }, [filteredTests, testToExpand]);
+    }, [filteredTests, testToExpand, invocationToExpand]);
 
     const filteredCount = tests.length - filteredTests.length;
 

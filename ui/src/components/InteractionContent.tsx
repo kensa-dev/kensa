@@ -3,8 +3,9 @@ import {ChevronDown, ChevronUp, Copy, ExternalLink, FileJson, Info, Maximize2, S
 import hljs from 'highlight.js';
 import json from 'highlight.js/lib/languages/json';
 import xml from 'highlight.js/lib/languages/xml';
-import {cn, getAllTextNodes, removeHighlightSpans, applyKensaHighlights} from "@/lib/utils";
+import {applyKensaHighlights, applySuiteHighlights, cn, getAllTextNodes, removeHighlightSpans, SUITE_HIGHLIGHT_CLASS} from "@/lib/utils";
 import {DataTable} from "@/components/DataTable";
+import {useSuiteSearch} from "@/contexts/SuiteSearchContext";
 import {NameAndValues} from "@/types/Test";
 
 hljs.registerLanguage('json', json);
@@ -64,6 +65,7 @@ export const InteractionContent = ({
                                        onToggleMaximize,
                                    }: InteractionContentProps) => {
     const {rendered} = interaction;
+    const {highlightValue} = useSuiteSearch();
     const [searchQuery, setSearchQuery] = React.useState("");
     const [currentIndex, setCurrentIndex] = React.useState(0);
     const [isWrapped, setIsWrapped] = React.useState(false);
@@ -92,6 +94,13 @@ export const InteractionContent = ({
         removeHighlightSpans(root, 'kensa-highlight');
         applyKensaHighlights(root, highlights);
     }, [highlights, interaction, isWrapped]);
+
+    React.useLayoutEffect(() => {
+        const root = codeRef.current;
+        if (!root) return;
+        removeHighlightSpans(root, SUITE_HIGHLIGHT_CLASS);
+        if (highlightValue) applySuiteHighlights(root, [highlightValue]);
+    }, [highlightValue, highlights, interaction, isWrapped]);
 
     React.useLayoutEffect(() => {
         const root = codeRef.current;

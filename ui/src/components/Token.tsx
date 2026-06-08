@@ -3,11 +3,15 @@ import {cn} from "@/lib/utils";
 import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/hover-card";
 import {useConfig} from '@/contexts/ConfigContext';
 import {useFixtureHighlight} from '@/contexts/FixtureHighlightContext';
+import {useSuiteSearch} from '@/contexts/SuiteSearchContext';
 import Sentence from "@/components/Sentence";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {ErrorTokenData, ExpandableItem, Token as TokenType} from '@/types/Test';
 import {isRelatedFixture} from '@/util/fixtureHighlight';
+import {resolveGesture} from '@/util/suiteSearchGesture';
+import {fixtureNamesForValue} from '@/util/fixtureNameResolver';
+import {SuiteSearchContextMenu, type ContextMenuPosition} from '@/components/SuiteSearchContextMenu';
 
 interface ExpandableProps {
     token: TokenType;
@@ -288,25 +292,67 @@ const NoteToken = ({value}: NoteTokenProps) => {
 
 const FixtureToken = ({value}: { value: string }) => {
     const {selected, setSelected, fixtureSpecs, fixtures} = useFixtureHighlight();
+    const {mergedIndex, searchValue, searchFixture} = useSuiteSearch();
+
+    const [menuPosition, setMenuPosition] = React.useState<ContextMenuPosition | null>(null);
 
     const isSelected = selected === value;
     const isRelated = !isSelected && selected !== undefined &&
         isRelatedFixture(selected, value, fixtures, fixtureSpecs);
 
+    const fixtureNames = React.useMemo(
+        () => fixtureNamesForValue(value, mergedIndex, fixtures),
+        [value, mergedIndex, fixtures],
+    );
+
+    const handleClick = (e: React.MouseEvent) => {
+        if (resolveGesture(e) === 'fixture') {
+            e.preventDefault();
+            e.stopPropagation();
+            const name = fixtureNames[0];
+            if (name) searchFixture(name, value);
+            else searchValue(value);
+            return;
+        }
+        setSelected(isSelected ? undefined : value);
+    };
+
     return (
-        <span
-            className={cn(
-                'text-foreground font-medium px-0.5 py-0.5 rounded border cursor-pointer transition-colors duration-150',
-                isSelected
-                    ? 'bg-yellow-400/60 border-yellow-400/60'
-                    : isRelated
-                        ? 'bg-yellow-400/20 border-yellow-300/40 hover:bg-yellow-400/40'
-                        : 'bg-muted/20 border-border/15 hover:bg-yellow-400/30 hover:border-yellow-300/40'
-            )}
-            onClick={() => setSelected(isSelected ? undefined : value)}
-        >
-            {value}
-        </span>
+        <>
+            <span
+                className={cn(
+                    'text-foreground font-medium px-0.5 py-0.5 rounded border cursor-pointer transition-colors duration-150',
+                    isSelected
+                        ? 'bg-yellow-400/60 border-yellow-400/60'
+                        : isRelated
+                            ? 'bg-yellow-400/20 border-yellow-300/40 hover:bg-yellow-400/40'
+                            : 'bg-muted/20 border-border/15 hover:bg-yellow-400/30 hover:border-yellow-300/40'
+                )}
+                onClick={handleClick}
+                onContextMenu={(e) => {
+                    e.preventDefault();
+                    setMenuPosition({x: e.clientX, y: e.clientY});
+                }}
+            >
+                {value}
+            </span>
+            <SuiteSearchContextMenu
+                open={menuPosition !== null}
+                position={menuPosition}
+                fixtureNames={fixtureNames}
+                onFindValue={() => {
+                    setMenuPosition(null);
+                    searchValue(value);
+                }}
+                onFindFixture={(name) => {
+                    setMenuPosition(null);
+                    searchFixture(name, value);
+                }}
+                onOpenChange={(open) => {
+                    if (!open) setMenuPosition(null);
+                }}
+            />
+        </>
     );
 };
 

@@ -67,6 +67,10 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
         setIsExpanded(initialExpanded);
     }, [initialExpanded]);
 
+    React.useEffect(() => {
+        if (initialExpandedInvocation >= 0) setExpandedIdx(initialExpandedInvocation);
+    }, [initialExpandedInvocation]);
+
     const invocationRefs = React.useRef<Map<number, HTMLDivElement | null>>(new Map());
     const matrixRef = React.useRef<HTMLDivElement | null>(null);
 

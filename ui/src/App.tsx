@@ -3,7 +3,7 @@ import {Beaker, Loader2, Moon, PanelLeft, Sun} from 'lucide-react';
 import {AppSidebar} from './components/AppSidebar';
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import {cn, isNative, loadJson, useNavigateWithSearch} from "@/lib/utils";
+import {applySuiteHighlights, cn, isNative, loadJson, removeHighlightSpans, SUITE_HIGHLIGHT_CLASS, useNavigateWithSearch} from "@/lib/utils";
 import {loadManifestOrFallback} from "@/lib/manifestLoader";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
@@ -22,6 +22,11 @@ import {TooltipProvider} from "@/components/ui/tooltip";
 import {hasOpenDialog, shouldClearSearchOnEscape} from "@/util/escapeGuard";
 import {nextQueryAfterTagClick, selectedTagsFromQuery} from "@/util/tagClick";
 import {TagFilterProvider} from "@/contexts/TagFilterContext";
+import {SuiteSearchProvider, type SuiteSearchResult} from "@/contexts/SuiteSearchContext";
+import {SuiteSearchResults} from "@/components/SuiteSearchResults";
+import {mergeIndexes, type MergedIndex} from "@/lib/suiteSearch";
+import type {RawSearchIndex} from "@/types/SearchIndex";
+import {nodeIdForLocation} from "@/util/suiteSearchNav";
 
 const tagWithSourceId = (nodes: Indices, sourceId: string): Indices =>
     nodes.map(n => ({
@@ -50,12 +55,20 @@ const App = () => {
     const [commandQuery, setCommandQuery] = useState("");
     const [sourceConfigs, setSourceConfigs] = useState<Record<string, KensaConfig>>({});
     const [sourceUrls, setSourceUrls] = useState<Record<string, string>>({});
+    const [sourceTitles, setSourceTitles] = useState<Record<string, string>>({});
+    const [mergedSearchIndex, setMergedSearchIndex] = useState<MergedIndex>({terms: []});
+    const [suiteHighlightValue, setSuiteHighlightValue] = useState<string | null>(null);
+    const [selectedResultKey, setSelectedResultKey] = useState<string | null>(null);
+    const pendingSuiteHighlightRef = useRef<{testId: string; value: string} | null>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
-    const pendingTestToExpandRef = useRef<{testId: string, method: string} | null>(null);
+    const [testToExpandInvocation, setTestToExpandInvocation] = useState<number>(-1);
+    const pendingTestToExpandRef = useRef<{testId: string, method: string, invocation?: number} | null>(null);
     const searchQueryRef = useRef(searchQuery);
     const commandOpenRef = useRef(open);
+    const suiteHighlightRef = useRef<string | null>(null);
     searchQueryRef.current = searchQuery;
     commandOpenRef.current = open;
+    suiteHighlightRef.current = suiteHighlightValue;
 
     const navigate = useNavigateWithSearch();
     const location = useLocation();
@@ -88,6 +101,7 @@ const App = () => {
         } else {
             setTestToExpand("");
         }
+        setTestToExpandInvocation(-1);
 
         if (selectedIndex?.id) {
             const methods = matchingMethodsMap.get(selectedIndex.id) || [];
@@ -127,7 +141,8 @@ const App = () => {
                 });
                 const method = searchParams.get('method');
                 if (method) {
-                    pendingTestToExpandRef.current = { testId: node.id, method };
+                    const invocationParam = searchParams.get('invocation');
+                    pendingTestToExpandRef.current = { testId: node.id, method, invocation: invocationParam !== null ? Number(invocationParam) : undefined };
                 }
                 return;
             }
@@ -137,6 +152,7 @@ const App = () => {
     }, [location.pathname, location.search, indices]);
 
     const sidebarRef = useRef<ImperativePanelHandle>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     useEffect(() => {
@@ -173,10 +189,19 @@ const App = () => {
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key !== "Escape") return;
+
+            const dialogOpen = hasOpenDialog();
+
+            if (!dialogOpen && suiteHighlightRef.current) {
+                e.preventDefault();
+                setSuiteHighlightValue(null);
+                return;
+            }
+
             const clear = shouldClearSearchOnEscape({
                 hasQuery: !!searchQueryRef.current,
                 isCommandOpen: commandOpenRef.current,
-                isDialogOpen: hasOpenDialog(),
+                isDialogOpen: dialogOpen,
             });
             if (clear) {
                 e.preventDefault();
@@ -214,13 +239,23 @@ const App = () => {
                     `Indices tree (${source.id})`,
                     {baseUrl: source.url}
                 );
-                return {source, config, indicesData};
+                const searchIndex = await loadJson<RawSearchIndex>(
+                    'search-index.json',
+                    `Search index (${source.id})`,
+                    {baseUrl: source.url}
+                );
+                return {source, config, indicesData, searchIndex};
             }));
 
             const sourceConfigsMap: Record<string, KensaConfig> = {};
             const roots: Indices = [];
             const diagramsBySource: Record<string, string> = {};
-            for (const {source, config, indicesData} of perSource) {
+            const perSourceSearch: { sourceId: string; index: RawSearchIndex }[] = [];
+            for (const {source, config, indicesData, searchIndex} of perSource) {
+                perSourceSearch.push({
+                    sourceId: source.id,
+                    index: searchIndex ?? {schemaVersion: 1, terms: []},
+                });
                 if (config) sourceConfigsMap[source.id] = config;
                 const sourceIndices = indicesData?.indices ?? [];
                 const sourceDiagram = indicesData?.aggregateComponentDiagram;
@@ -255,10 +290,16 @@ const App = () => {
             }
 
             const urls: Record<string, string> = {};
-            for (const source of manifest.sources) urls[source.id] = source.url;
+            const titles: Record<string, string> = {};
+            for (const source of manifest.sources) {
+                urls[source.id] = source.url;
+                titles[source.id] = sourceConfigsMap[source.id]?.titleText || source.title || source.id;
+            }
 
             setSourceConfigs(sourceConfigsMap);
             setSourceUrls(urls);
+            setSourceTitles(titles);
+            setMergedSearchIndex(mergeIndexes(perSourceSearch));
             setIndices(roots);
             setAggregateComponentDiagramsBySource(diagramsBySource);
             // First source's config flows through ConfigContext until the user selects a test;
@@ -292,7 +333,13 @@ const App = () => {
 
                 if (pendingTestToExpandRef.current?.testId === selectedIndex.id) {
                     setTestToExpand(pendingTestToExpandRef.current.method);
+                    setTestToExpandInvocation(pendingTestToExpandRef.current.invocation ?? -1);
                     pendingTestToExpandRef.current = null;
+                }
+
+                if (pendingSuiteHighlightRef.current?.testId === selectedIndex.id) {
+                    setSuiteHighlightValue(pendingSuiteHighlightRef.current.value);
+                    pendingSuiteHighlightRef.current = null;
                 }
             }
 
@@ -307,6 +354,34 @@ const App = () => {
         const cfg = sourceConfigs[selectedIndex.sourceId];
         if (cfg) setConfig(cfg);
     }, [selectedIndex, sourceConfigs]);
+
+    useEffect(() => {
+        const root = contentRef.current;
+        if (!root) return;
+
+        removeHighlightSpans(root, SUITE_HIGHLIGHT_CLASS);
+        if (!suiteHighlightValue) return;
+
+        const apply = () => {
+            removeHighlightSpans(root, SUITE_HIGHLIGHT_CLASS);
+            applySuiteHighlights(root, [suiteHighlightValue]);
+        };
+
+        // Apply once now, then re-apply once if content (expanded methods, interactions)
+        // rendered after this commit. A live MutationObserver here ping-pongs with React
+        // re-renders (e.g. hover state reverting injected spans) and flickers, so we instead
+        // re-apply at most once, only when the highlight is still missing.
+        const frame = window.requestAnimationFrame(apply);
+        const settle = window.setTimeout(() => {
+            if (!root.querySelector('.' + SUITE_HIGHLIGHT_CLASS)) apply();
+        }, 400);
+
+        return () => {
+            window.cancelAnimationFrame(frame);
+            window.clearTimeout(settle);
+            removeHighlightSpans(root, SUITE_HIGHLIGHT_CLASS);
+        };
+    }, [suiteHighlightValue, testDetail, testToExpand, isLoading]);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -366,6 +441,23 @@ const App = () => {
         }
     }, [allTests, selectedIndex, navigate]);
 
+    const handleSuiteSearchNavigate = useCallback((location: SuiteSearchResult) => {
+        const nodeId = nodeIdForLocation(location);
+        pendingSuiteHighlightRef.current = {testId: nodeId, value: location.value};
+        setSelectedResultKey(`${nodeId}|${location.testMethod}|${location.invocation}`);
+
+        if (selectedIndex?.id === nodeId) {
+            setSuiteHighlightValue(location.value);
+            setTestToExpand(location.testMethod);
+            setTestToExpandInvocation(location.invocation);
+            pendingSuiteHighlightRef.current = null;
+        } else {
+            setSuiteHighlightValue(null);
+            pendingTestToExpandRef.current = {testId: nodeId, method: location.testMethod, invocation: location.invocation};
+            navigate(`/test/${nodeId}?method=${encodeURIComponent(location.testMethod)}&invocation=${location.invocation}`);
+        }
+    }, [selectedIndex, navigate]);
+
     const filteredCommandTests = useMemo(() => {
         if (!commandQuery) return allTests;
         const search = commandQuery.toLowerCase();
@@ -393,6 +485,7 @@ const App = () => {
     return (
         <ConfigContext.Provider value={config}>
             <SourceContext.Provider value={{baseUrl: activeSourceBaseUrl}}>
+            <SuiteSearchProvider mergedIndex={mergedSearchIndex} highlightValue={suiteHighlightValue} onHighlightValue={setSuiteHighlightValue}>
             <TooltipProvider>
             <SidebarProvider>
             <TagFilterProvider onTagClick={onTagClick} selectedTags={selectedTags}>
@@ -445,7 +538,7 @@ const App = () => {
                 </CommandDialog>
 
                 <div className="flex h-screen w-full bg-background font-sans overflow-hidden">
-                    <ResizablePanelGroup direction="horizontal" className="w-full h-full" autoSaveId="kensa-main-layout">
+                    <ResizablePanelGroup direction="horizontal" className="h-full flex-1 min-w-0" autoSaveId="kensa-main-layout">
 
                         <ResizablePanel
                             ref={sidebarRef}
@@ -479,6 +572,7 @@ const App = () => {
 
                                     if (selectedIndex?.id === node.id) {
                                         setTestToExpand(firstMatchingMethod || "");
+                                        setTestToExpandInvocation(-1);
                                         setMatchingMethods(allMatchingMethods);
                                     } else {
                                         pendingTestToExpandRef.current = {
@@ -491,6 +585,7 @@ const App = () => {
                                     }
                                 }}
                                 selectedId={selectedIndex?.id ?? null}
+                                selectedResultKey={selectedResultKey}
                                 isNative={isNativeMode}
                                 inputRef={searchInputRef}
                                 onFilterApplied={handleFilterApplied}
@@ -586,7 +681,7 @@ const App = () => {
                                     </button>
                                 </header>
 
-                                <main className="flex-1 overflow-y-auto bg-muted/30">
+                                <main ref={contentRef} className="flex-1 overflow-y-auto bg-muted/30">
                                     {isSystemView ? (
                                         <SystemViewPage aggregateComponentDiagram={systemViewDiagram}/>
                                     ) : selectedIndex ? (
@@ -607,6 +702,7 @@ const App = () => {
                                                             tests={testDetail.tests}
                                                             testClass={testDetail.testClass}
                                                             testToExpand={testToExpand}
+                                                            invocationToExpand={testToExpandInvocation}
                                                             matchingMethods={matchingMethods}
                                                             onClearFilter={() => {
                                                                 setMatchingMethods([]);
@@ -626,10 +722,12 @@ const App = () => {
                             </SidebarInset>
                         </ResizablePanel>
                     </ResizablePanelGroup>
+                    <SuiteSearchResults sourceTitles={sourceTitles} onNavigate={handleSuiteSearchNavigate} selectedNodeId={selectedIndex?.id ?? null} selectedResultKey={selectedResultKey} />
                 </div>
             </TagFilterProvider>
             </SidebarProvider>
             </TooltipProvider>
+            </SuiteSearchProvider>
             </SourceContext.Provider>
         </ConfigContext.Provider>
     );

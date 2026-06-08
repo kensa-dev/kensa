@@ -13,6 +13,7 @@ interface AppSidebarProps {
     onSearchChange: (query: string) => void;
     onSelect: (node: Index, firstMatchingMethod: string | null, allMatchingMethods: string[]) => void;
     selectedId: string | null;
+    selectedResultKey?: string | null;
     environment: string;
     onEnvChange: (env: string) => void;
     isNative?: boolean;

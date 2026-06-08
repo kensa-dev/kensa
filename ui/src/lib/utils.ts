@@ -112,7 +112,7 @@ export function removeHighlightSpans(root: HTMLElement, cls: string) {
     });
 }
 
-export function applyKensaHighlights(root: HTMLElement, highlights: string[]) {
+export function applyKensaHighlights(root: HTMLElement, highlights: string[], cls = 'kensa-highlight') {
     if (highlights.length === 0) return;
 
     const regExp = buildHighlightRegex(highlights);
@@ -124,6 +124,7 @@ export function applyKensaHighlights(root: HTMLElement, highlights: string[]) {
 
         const parent = node.parentNode;
         if (!parent) return;
+        if (parent instanceof Element && parent.classList.contains(cls)) return;
 
         const frag = document.createDocumentFragment();
         let lastIndex = 0;
@@ -133,7 +134,7 @@ export function applyKensaHighlights(root: HTMLElement, highlights: string[]) {
                 frag.appendChild(document.createTextNode(text.slice(lastIndex, result.index)));
             }
             const mark = document.createElement('span');
-            mark.className = 'kensa-highlight';
+            mark.className = cls;
             mark.textContent = result[0];
             frag.appendChild(mark);
             lastIndex = result.index + result[0].length;
@@ -143,4 +144,10 @@ export function applyKensaHighlights(root: HTMLElement, highlights: string[]) {
         }
         parent.replaceChild(frag, node);
     });
+}
+
+export const SUITE_HIGHLIGHT_CLASS = 'kensa-suite-highlight';
+
+export function applySuiteHighlights(root: HTMLElement, highlights: string[]) {
+    applyKensaHighlights(root, highlights, SUITE_HIGHLIGHT_CLASS);
 }

@@ -66,6 +66,7 @@ export interface TestExplorerProps {
     onSearchChange: (query: string) => void;
     onSelect: (node: Index, firstMatchingMethod: string | null, allMatchingMethods: string[]) => void;
     selectedId: string | null;
+    selectedResultKey?: string | null;
     environment: string;
     onEnvChange: (env: string) => void;
     isNative?: boolean;
@@ -73,7 +74,45 @@ export interface TestExplorerProps {
     onFilterApplied?: (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => void;
 }
 
-export function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, environment, onEnvChange, isNative, inputRef, onFilterApplied}: TestExplorerProps) {
+const findAncestorIds = (nodes: Indices, targetId: string, trail: string[] = []): string[] | null => {
+    for (const node of nodes) {
+        if (node.id === targetId) return trail;
+        if (node.children && node.children.length > 0) {
+            const found = findAncestorIds(node.children, targetId, [...trail, node.id]);
+            if (found) return found;
+        }
+    }
+    return null;
+};
+
+// Reveals the selected test in the tree when the selection changes from outside the explorer
+// (e.g. via the suite-search panel or command palette): expands its ancestor folders and scrolls
+// it into view. Runs only on selection change, so it never fights a user collapsing folders.
+function RevealSelectedNode({nodes, selectedId, revealTick}: {nodes: Indices; selectedId: string | null; revealTick: string | null}) {
+    const {setCollapsed} = useTreeExpansion();
+    const nodesRef = React.useRef(nodes);
+    nodesRef.current = nodes;
+    const setCollapsedRef = React.useRef(setCollapsed);
+    setCollapsedRef.current = setCollapsed;
+
+    React.useEffect(() => {
+        if (!selectedId) return;
+        const ancestors = findAncestorIds(nodesRef.current, selectedId);
+        if (ancestors) ancestors.forEach((id) => setCollapsedRef.current(id, false));
+        const timer = setTimeout(() => {
+            document
+                .querySelector('[data-sidebar="menu-button"][data-active="true"]')
+                ?.scrollIntoView({block: 'nearest'});
+        }, 80);
+        return () => clearTimeout(timer);
+        // revealTick (the precise result key) re-runs this when navigating between invocations of
+        // the same test, where selectedId alone does not change.
+    }, [selectedId, revealTick]);
+
+    return null;
+}
+
+export function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, selectedResultKey, environment, onEnvChange, isNative, inputRef, onFilterApplied}: TestExplorerProps) {
     const {packageDisplay, packageDisplayRoot} = useConfig();
 
     const allIssues = React.useMemo(() => {
@@ -386,6 +425,7 @@ export function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChan
     return (
         <SourceMetaContext.Provider value={sourceMetaById ?? {}}>
         <TreeExpansionProvider nodes={renderedIndices} searchActive={Boolean(searchQuery || inputValue)}>
+            <RevealSelectedNode nodes={renderedIndices} selectedId={selectedId} revealTick={selectedResultKey ?? null} />
             <div className="flex flex-col flex-1 min-h-0">
                 <div className="p-3 pt-0 group-data-[collapsible=icon]:hidden">
                     {isNative && (
