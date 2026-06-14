@@ -24,7 +24,7 @@ interface AppSidebarProps {
 export function AppSidebar(props: AppSidebarProps) {
     return (
         <Sidebar className="w-full border-none">
-            <SidebarHeader className="p-3 pb-0 gap-3">
+            <SidebarHeader className="p-3 pb-2 gap-3">
                 <div className="flex items-center justify-between px-1">
                     <div className="flex items-center gap-2">
                         <KensaLogo className="w-6 h-6 text-success drop-shadow-sm"/>

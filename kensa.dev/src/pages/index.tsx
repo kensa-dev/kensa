@@ -16,13 +16,15 @@ function HomepageHeader() {
             <div className="container">
                 <div className={styles.heroInner}>
                     <div className={styles.heroTitle}>
-                        <img
-                            src="/img/Logo.svg"
-                            alt="Kensa Logo"
-                            className={styles.heroLogo}
-                            width={64}
-                            height={64}
-                        />
+                        <span className={styles.heroLogoDisc}>
+                            <img
+                                src="/img/kensa-mark-white.svg"
+                                alt="Kensa Logo"
+                                className={styles.heroLogo}
+                                width={56}
+                                height={56}
+                            />
+                        </span>
                         <h1 className={styles.title}>{siteConfig.title}</h1>
                     </div>
                     <p className={styles.tagline}>
