@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.8
+
+New features:
+  - **Suite-wide fixture search.** Modifier-click (find by fixture name) or right-click (find by value or name) any fixture token in a report to search the whole suite. Matches dock in a resizable, non-modal panel grouped project → class → method → invocation, auto-revealing the active result in the left explorer and highlighting it in violet across sentences and interaction payloads, landing on the exact invocation. Backed by a new per-source `search-index.json` — a value-anywhere index over rendered sentences, givens/outputs and interaction payloads, with short, boolean and small-numeric values filtered out as noise — emitted in both data-only and full output modes.
+
 ### v0.8.7
 
 Changed:
