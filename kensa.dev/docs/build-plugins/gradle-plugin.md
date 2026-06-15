@@ -28,9 +28,10 @@ The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was 
 | 0.9.6      | 0.8.8              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.8. |
 | 0.9.5      | 0.8.7              | 0.8.0          | Built against **Kotlin 2.4.0** — the apply-time minimum Kotlin version is now 2.4.0 (the consuming project must apply Kotlin ≥ 2.4.0). Default `kensaCoreVersion` bumped to 0.8.7. |
 | 0.9.4      | 0.8.5              | 0.8.0          | Splits compiler-plugin source sets from output source sets — new `outputSourceSets` controls which Test tasks emit reports (`sourceSets` is now strictly compiler-plugin source sets). Default `kensaCoreVersion` bumped to 0.8.5, whose listener short-circuits when no Kensa tests ran so a transitive kensa-core no longer writes empty reports or prints the banner. |
-| 0.9.3      | 0.8.3              | 0.8.0          | Adds multi-module site aggregation — applying the plugin to the rootProject with `site = true` aggregates every kensa-enabled subproject's sources into a single site at `<rootDir>/build/kensa-site/`. See [Site Mode — Multi-module builds](./site-mode.md#multi-module-builds). |
+| 0.9.3      | 0.8.4              | 0.8.0          | Adds multi-module site aggregation — applying the plugin to the rootProject with `site = true` aggregates every kensa-enabled subproject's sources into a single site at `<rootDir>/build/kensa-site/`. See [Site Mode — Multi-module builds](./site-mode.md#multi-module-builds). Default `kensaCoreVersion` bumped to 0.8.4. |
 | 0.9.2      | 0.8.3              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.3 so site-mode aggregation picks up the parameterised test display, sidebar tree expand/collapse toolbar, and absolute-path console banner without each project having to override. |
-| 0.9.0–0.9.1 | 0.8.0             | 0.8.0          | Plugin and kensa-core versioned independently; site-mode ergonomics (sourceTitles DSL, auto-assemble) added in 0.9.1 |
+| 0.9.1      | 0.8.1              | 0.8.0          | Site-mode ergonomics: `sourceTitles` DSL, auto-assemble, per-source component diagrams. |
+| 0.9.0      | 0.8.0              | 0.8.0          | First decoupled release — plugin and kensa-core versioned independently. |
 | 0.7.x      | 0.7.x              | —              | Same-version pairing (no override)   |
 
 > v0.8.0 was withdrawn from the Gradle Plugin Portal — its POM declared an unpublished `dev.kensa:site-common` dep. Use 0.9.0 or later.
