@@ -69,10 +69,12 @@ Two lines in `build.gradle.kts`:
 
 ```kotlin
 kensa {
-    sourceSets = setOf("uiTest", "scenarioTest", "test")
+    outputSourceSets = setOf("uiTest", "scenarioTest", "test")
     site = true
 }
 ```
+
+`outputSourceSets` (since plugin **0.9.4**) lists the sourcesets whose Test tasks contribute per-source bundles to the site — it's what governs which sources appear. If any of those tests also use `@RenderedValue` / `@ExpandableSentence`, list those sourcesets in `sourceSets` too so the compiler plugin instruments them; the two properties are independent (see [Compiler-plugin vs output sourcesets](./gradle-plugin.md#compiler-plugin-vs-output-sourcesets)). On plugin ≤ 0.9.3 the single `sourceSets` property drove both.
 
 Then run the tests and assemble:
 
@@ -95,7 +97,7 @@ So `./gradlew uiTest assembleKensaSite` is a valid dev-loop command — just pro
 
 ### Stale source cleanup
 
-If you remove a sourceset from `sourceSets`, `assembleKensaSite` deletes its bundle from `sources/` on the next run. No manual cleanup needed.
+If you remove a sourceset from `outputSourceSets`, `assembleKensaSite` deletes its bundle from `sources/` on the next run. No manual cleanup needed.
 
 ## Source IDs and titles
 
@@ -144,7 +146,7 @@ plugins {
 
 kensa {
     site = true
-    sourceSets = setOf("test", "uiTest")
+    outputSourceSets = setOf("test", "uiTest")
     // Optional contributor-local titles (override per source set name, not namespaced id):
     sourceTitles["uiTest"] = "Web UI"
 }

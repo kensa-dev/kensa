@@ -7,9 +7,11 @@ description: The Kensa Gradle plugin wires the Kotlin compiler plugin, kensa-cor
 
 The plugin lives at `dev.kensa.gradle-plugin` on the [Gradle Plugin Portal](https://plugins.gradle.org/plugin/dev.kensa.gradle-plugin). It does three things:
 
-1. Applies the Kensa **Kotlin compiler plugin** to the configured sourcesets so `@RenderedValue` and `@ExpandableSentence` capture works at compile time.
-2. Adds an **implicit `dev.kensa:kensa-core`** runtime dependency to those compilations (so you don't have to declare it manually).
-3. When **site mode** is on, wires `kensa.output.root` / `kensa.source.id` system properties onto each sourceset's `Test` task and registers an `assembleKensaSite` task to produce a single multi-source viewable site.
+1. Applies the Kensa **Kotlin compiler plugin** to the `sourceSets` you list so `@RenderedValue` and `@ExpandableSentence` capture works at compile time.
+2. Adds an **implicit `dev.kensa:kensa-core`** runtime dependency to those compilations and to every `outputSourceSets` compilation (so you don't have to declare it manually).
+3. When **site mode** is on, wires `kensa.output.root` / `kensa.source.id` system properties onto each **output sourceset's** `Test` task and registers an `assembleKensaSite` task to produce a single multi-source viewable site.
+
+Since **0.9.4** the plugin separates *which sourcesets the compiler plugin instruments* (`sourceSets`) from *which Test tasks emit Kensa output / contribute site bundles* (`outputSourceSets`) — see [Compiler-plugin vs output sourcesets](#compiler-plugin-vs-output-sourcesets).
 
 ## Apply
 
@@ -23,6 +25,8 @@ The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was 
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.6      | 0.8.8              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.8. |
+| 0.9.5      | 0.8.7              | 0.8.0          | Built against **Kotlin 2.4.0** — the apply-time minimum Kotlin version is now 2.4.0 (the consuming project must apply Kotlin ≥ 2.4.0). Default `kensaCoreVersion` bumped to 0.8.7. |
 | 0.9.4      | 0.8.5              | 0.8.0          | Splits compiler-plugin source sets from output source sets — new `outputSourceSets` controls which Test tasks emit reports (`sourceSets` is now strictly compiler-plugin source sets). Default `kensaCoreVersion` bumped to 0.8.5, whose listener short-circuits when no Kensa tests ran so a transitive kensa-core no longer writes empty reports or prints the banner. |
 | 0.9.3      | 0.8.3              | 0.8.0          | Adds multi-module site aggregation — applying the plugin to the rootProject with `site = true` aggregates every kensa-enabled subproject's sources into a single site at `<rootDir>/build/kensa-site/`. See [Site Mode — Multi-module builds](./site-mode.md#multi-module-builds). |
 | 0.9.2      | 0.8.3              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.3 so site-mode aggregation picks up the parameterised test display, sidebar tree expand/collapse toolbar, and absolute-path console banner without each project having to override. |
@@ -49,7 +53,8 @@ Configure via the `kensa { … }` extension:
 |---|---|---|---|
 | `enabled` | `Boolean` | `true` | Master switch. When `false`, the compiler plugin is not applied and no kensa-core dep is added. |
 | `debug` | `Boolean` | `false` | Forwards `debug=true` to the compiler plugin (verbose logs during compilation). |
-| `sourceSets` | `Set<String>` | `setOf("test")` | Which sourcesets/test-tasks Kensa attaches to. |
+| `sourceSets` | `Set<String>` | `setOf("test")` | Sourcesets the **Kotlin compiler plugin** instruments (so `@RenderedValue` / `@ExpandableSentence` argument capture works at compile time). Set to `emptySet()` if no code in the project uses those features. Independent of `outputSourceSets`. |
+| `outputSourceSets` | `Set<String>` | `setOf("test")` | Sourcesets whose **Test tasks emit Kensa output** — the on-disk reports under `build/kensa` (HTML, JSON indices), the `Kensa Output : …` banner, and (in site mode) the per-source bundles contributed to the assembled site. A sourceset listed here gets `dev.kensa:kensa-core` on its runtime classpath even when the compiler plugin is not applied to it. Independent of `sourceSets`. Added in 0.9.4. |
 | `site` | `Boolean` | `false` | Enable site mode (see [Site Mode](./site-mode.md)). On the rootProject of a multi-project build, also acts as the opt-in for [multi-module aggregation](./site-mode.md#multi-module-builds) (since 0.9.3). |
 | `siteRoot` | `Directory` | `build/kensa-site` | Site-mode output root. In multi-module aggregator mode this is the rootProject's path; contributor subprojects' siteRoot is overridden to write into this shared directory. |
 | `kensaCoreVersion` | `String` | *bundled default* | Override the `kensa-core` / `kensa-compiler-plugin` version the plugin resolves. See [compatibility matrix](#kensa-core-compatibility). |
@@ -61,17 +66,43 @@ Example with multiple sourcesets in site mode:
 https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L9-L12
 ```
 
+## Compiler-plugin vs output sourcesets
+
+Since **0.9.4** the plugin keeps two independent concerns apart:
+
+- **`sourceSets`** — sourcesets the **Kotlin compiler plugin** instruments. Needed only where source code uses the `@RenderedValue` / `@ExpandableSentence` argument-capture features.
+- **`outputSourceSets`** — sourcesets whose **Test tasks emit Kensa output** (reports, banner, and the per-source bundles in site mode).
+
+They're independent because the two concerns are: a project can keep `@ExpandableSentence` support code in `main` (needing the compiler plugin there) while only its `test` Test task produces reports. A sourceset listed in `outputSourceSets` gets `kensa-core` on its runtime classpath even if the compiler plugin is not applied to it.
+
+| Pattern | `sourceSets` | `outputSourceSets` |
+|---|---|---|
+| No compiler-plugin features used — just `KensaTest` + the runtime | `emptySet()` | `setOf("test")` |
+| `@ExpandableSentence` support code in `main`; tests only consume it | `setOf("main")` | `setOf("test")` |
+| Expandable code across multiple sets, multiple output Test tasks | `setOf("main", "test", "acceptanceTest")` | `setOf("test", "acceptanceTest")` |
+
+```kotlin
+kensa {
+    sourceSets = setOf("main")                       // compiler plugin here
+    outputSourceSets = setOf("test", "acceptanceTest") // these Test tasks emit / contribute bundles
+}
+```
+
+:::note[Migrating from ≤ 0.9.3]
+Before 0.9.4 the single `sourceSets` property drove both concerns. If you previously set `sourceSets = setOf("test", "acceptanceTest")` to wire **both** Test tasks for Kensa output, also set `outputSourceSets = setOf("test", "acceptanceTest")` — `sourceSets` no longer drives output/site wiring. Projects on the default config (`test` for both) need no change.
+:::
+
 ## Behaviour
 
-For each name in `sourceSets`, the plugin looks up a `Test` task with the same name. When found:
+The compiler plugin is applied only to compilations whose name appears in **`sourceSets`**. Other sourcesets compile normally without Kensa.
 
-- A `dev.kensa:kensa-core` dependency is added to that compilation's classpath via Kotlin's compiler-plugin support.
+For each name in **`outputSourceSets`**, the plugin looks up a `Test` task with the same name. When found:
+
+- `dev.kensa:kensa-core` is on that Test task's runtime classpath (added directly for output-only sourcesets that the compiler plugin doesn't already cover).
 - If `site = true`:
   - `kensa.output.root` / `kensa.source.id` are passed to the test task's JVM via a `CommandLineArgumentProvider` (since 0.9.1). The per-source bundle dir is declared as a Test `@OutputDirectory` — Gradle tracks it correctly, UP-TO-DATE checks become accurate, and absolute paths don't enter the cache key (friendly to shared / remote Gradle build caches).
   - `kensa.source.id` defaults to the sourceset name, unless you've already set it explicitly — see [overrides](#per-source-overrides).
   - The `assembleKensaSite` task is registered. Each configured Test task is `finalizedBy(assembleKensaSite)`, so running any of them refreshes the site automatically (since 0.9.1). `assembleKensaSite` itself uses `mustRunAfter` (not `dependsOn`) — invoking it standalone aggregates whatever bundles are on disk without re-running tests.
-
-The compiler plugin is only applied to compilations whose name appears in `sourceSets`. Other sourcesets compile normally without Kensa.
 
 ### Site-mode source titles
 
@@ -80,7 +111,7 @@ Set per-source display labels via the `sourceTitles` map. Entries here override 
 ```kotlin
 kensa {
     site = true
-    sourceSets = setOf("test", "uiTest")
+    outputSourceSets = setOf("test", "uiTest")
     sourceTitles["uiTest"] = "UI Tests"
     sourceTitles["test"] = "Unit Tests"
 }
@@ -91,7 +122,7 @@ Or set the whole map at once:
 ```kotlin
 kensa {
     site = true
-    sourceSets = setOf("test", "uiTest")
+    outputSourceSets = setOf("test", "uiTest")
     sourceTitles = mapOf(
         "uiTest" to "UI Tests",
         "test"   to "Unit Tests",
