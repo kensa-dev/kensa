@@ -9,20 +9,30 @@ import dev.kensa.state.Party
 
 class SequenceDiagramConfiguration {
 
+    private val lock = Any()
     internal val directives: MutableList<UmlDirective> = mutableListOf()
     val primary: PrimaryConfiguration = PrimaryConfiguration()
 
+    internal fun directivesSnapshot(): List<UmlDirective> = synchronized(lock) { directives.toList() }
+
+    internal fun replaceDirectives(value: List<UmlDirective>) {
+        synchronized(lock) {
+            directives.clear()
+            directives.addAll(value)
+        }
+    }
+
     internal fun reset() {
-        directives.clear()
+        synchronized(lock) { directives.clear() }
         primary.reset()
     }
 
     fun title(text: String, vararg otherLines: String) {
-        directives.add(UmlTitle.title(text, *otherLines))
+        synchronized(lock) { directives.add(UmlTitle.title(text, *otherLines)) }
     }
 
     fun hideUnlinked() {
-        directives.add(UmlHideUnlinked.hideUnlinkedParticipants())
+        synchronized(lock) { directives.add(UmlHideUnlinked.hideUnlinkedParticipants()) }
     }
 
     fun participant(name: String): ParticipantHandle = addAndTrack(UmlParticipant.participant(name))
@@ -48,13 +58,15 @@ class SequenceDiagramConfiguration {
         val built = UmlBox.surroundingBox(title, *box.snapshot().toTypedArray()).let {
             if (colour.isNotEmpty()) it.withColour(colour) else it
         }
-        directives.add(built)
+        synchronized(lock) { directives.add(built) }
     }
 
     private fun addAndTrack(initial: UmlParticipant): ParticipantHandle {
-        val index = directives.size
-        directives.add(initial)
-        return ParticipantHandle(initial) { update -> directives[index] = update }
+        val index = synchronized(lock) {
+            directives.add(initial)
+            directives.size - 1
+        }
+        return ParticipantHandle(initial) { update -> synchronized(lock) { directives[index] = update } }
     }
 
     class ParticipantHandle internal constructor(

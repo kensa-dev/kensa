@@ -156,10 +156,9 @@ class Configuration {
         "Use sequenceDiagram { } instead. Assigning umlDirectives clears prior directives and invalidates any retained ParticipantHandle from a previous sequenceDiagram block."
     )
     var umlDirectives: List<UmlDirective>
-        get() = sequenceDiagram.directives.toList()
+        get() = sequenceDiagram.directivesSnapshot()
         set(value) {
-            sequenceDiagram.directives.clear()
-            sequenceDiagram.directives.addAll(value)
+            sequenceDiagram.replaceDirectives(value)
         }
     var issueTrackerUrl: URL = URI.create("http://empty").toURL()
     var tabSize: Int = 4

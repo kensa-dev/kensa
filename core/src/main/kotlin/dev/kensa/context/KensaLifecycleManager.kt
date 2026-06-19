@@ -154,7 +154,7 @@ class KensaLifecycleManager private constructor(
                         )
                     )
                 ),
-                SequenceDiagramFactory(configuration.sequenceDiagram.directives) { configuration.sequenceDiagram.primary.participant },
+                SequenceDiagramFactory({ configuration.sequenceDiagram.directivesSnapshot() }) { configuration.sequenceDiagram.primary.participant },
                 componentDiagramFactory
             )
     }

@@ -22,12 +22,12 @@ private const val SETUP_GROUP_COLOUR = "#ECECEC"
 private const val TEST_GROUP_COLOUR = "#FFFFFF"
 
 class SequenceDiagramFactory(
-    private val umlDirectives: List<UmlDirective>,
+    private val directivesProvider: () -> List<UmlDirective>,
     private val primaryProvider: () -> UmlParticipant? = { null }
 ) {
 
     fun create(interactions: CapturedInteractions): SequenceDiagram? =
-        buildMarkup(umlDirectives.flatMap { it.asUml() }, primaryProvider(), interactions)
+        buildMarkup(directivesProvider().flatMap { it.asUml() }, primaryProvider(), interactions)
             ?.let { SequenceDiagram(renderSvg(it)) }
 
     private fun renderSvg(plantUmlMarkup: String): String =

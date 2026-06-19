@@ -28,14 +28,14 @@ internal class SequenceDiagramFactoryTest {
 
     @Test
     fun `create returns null when interactions are empty`() {
-        val factory = SequenceDiagramFactory(emptyList())
+        val factory = SequenceDiagramFactory({ emptyList() })
 
         factory.create(interactions()).shouldBeNull()
     }
 
     @Test
     fun `create returns null when only SD-MARKER entries exist and no primary participant configured`() {
-        val factory = SequenceDiagramFactory(emptyList())
+        val factory = SequenceDiagramFactory({ emptyList() })
         val interactions = interactions()
         interactions.divider("Something")
 
@@ -154,7 +154,7 @@ internal class SequenceDiagramFactoryTest {
         val interactions = interactions()
         capture(interactions, "Alpha", "Bravo")
 
-        val diagram = SequenceDiagramFactory(directives).create(interactions)
+        val diagram = SequenceDiagramFactory({ directives }).create(interactions)
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
@@ -171,7 +171,7 @@ internal class SequenceDiagramFactoryTest {
     @Test
     fun `factory observes umlDirectives populated via deprecated setter after factory construction`() {
         val configuration = Configuration()
-        val factory = SequenceDiagramFactory(configuration.sequenceDiagram.directives)
+        val factory = SequenceDiagramFactory({ configuration.sequenceDiagram.directivesSnapshot() })
         val interactions = interactions()
         capture(interactions, "Echo", "Foxtrot")
 
@@ -189,7 +189,7 @@ internal class SequenceDiagramFactoryTest {
     @Test
     fun `factory observes sequenceDiagram block applied after factory construction`() {
         val configuration = Configuration()
-        val factory = SequenceDiagramFactory(configuration.sequenceDiagram.directives)
+        val factory = SequenceDiagramFactory({ configuration.sequenceDiagram.directivesSnapshot() })
         val interactions = interactions()
         capture(interactions, "Echo", "Foxtrot")
 
@@ -214,7 +214,7 @@ internal class SequenceDiagramFactoryTest {
         val interactions = interactions()
         capture(interactions, "Alpha", "Charlie")
 
-        val diagram = SequenceDiagramFactory(directives).create(interactions)
+        val diagram = SequenceDiagramFactory({ directives }).create(interactions)
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
