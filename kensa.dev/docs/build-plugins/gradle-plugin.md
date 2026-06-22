@@ -25,6 +25,7 @@ The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was 
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.7      | 0.8.8              | 0.8.0          | Fixes site-mode `:assembleKensaSite` failing to resolve kensa-core on aggregator roots — `kensaShellResources` now pins `org.gradle.dependency.bundling=external` to disambiguate the plain and shadowed variants. No `kensaCoreVersion` change. |
 | 0.9.6      | 0.8.8              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.8. |
 | 0.9.5      | 0.8.7              | 0.8.0          | Built against **Kotlin 2.4.0** — the apply-time minimum Kotlin version is now 2.4.0 (the consuming project must apply Kotlin ≥ 2.4.0). Default `kensaCoreVersion` bumped to 0.8.7. |
 | 0.9.4      | 0.8.5              | 0.8.0          | Splits compiler-plugin source sets from output source sets — new `outputSourceSets` controls which Test tasks emit reports (`sourceSets` is now strictly compiler-plugin source sets). Default `kensaCoreVersion` bumped to 0.8.5, whose listener short-circuits when no Kensa tests ran so a transitive kensa-core no longer writes empty reports or prints the banner. |
