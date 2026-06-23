@@ -139,6 +139,8 @@ Precedence when more than one path declares a title for the same source id:
 3. `kensa.source.title` system property — legacy, soft-deprecated since 0.9.1.
 4. `"Index"` / source id fallback when none of the above is set.
 
+The build DSL wins because the site is a curated whole — only the build sees every source and can label them coherently, and a CI/platform owner may need to relabel a source whose code they don't own; code-side `titleText` stays the fallback. When both a build entry and a *different, non-default* code-side title exist, `:assembleKensaSite` warns that the build value won — set the title in one place to clear it.
+
 ### Per-source overrides
 
 Any per-task `systemProperty` you set in your build script flows through to the test task's JVM as a `-D` argument. Source-id overrides still work the same way — useful for CI-driven id schemes:

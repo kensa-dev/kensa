@@ -202,6 +202,10 @@ Aggregator mode adds one more rung at the top of the existing [title precedence]
 3. Per-source `configuration.json#titleText` (from `Kensa.konfigure { titleText = ... }` or the runtime default).
 4. The namespaced id itself.
 
+**Why build-declared titles win over code-side `titleText`.** The aggregated site is a *curated whole*: only the build — and ultimately the root — sees every source across every module and can label them coherently without collisions. A platform/CI owner often needs to relabel a source whose module code they don't own, so the build keeps final say. Code-side `titleText` remains the fallback (rung 3) for sources the build doesn't name.
+
+This means a source with **both** a code-side `titleText` and a build `sourceTitles` entry uses the build value — the code-side one is discarded. To avoid silent surprise, `:assembleKensaSite` warns when a build title overrides a *different, non-default* code-side title; set the title in one place to clear it.
+
 ### kensa-core version consistency
 
 Each contributor's resolved `kensa.kensaCoreVersion` is captured at registration. `:assembleKensaSite` fails fast if any contributor's version differs from the aggregator's, naming the divergent modules:
