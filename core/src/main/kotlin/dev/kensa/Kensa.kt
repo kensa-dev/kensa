@@ -144,6 +144,13 @@ class Configuration {
             root.resolve(KENSA_OUTPUT_DIR)
         }
     }
+        // In site mode (kensa.source.id set, dataOnly) the per-source bundle dir is authoritative.
+        // Ignore direct overrides so a custom ConfigurationProvider can't clobber it. The property
+        // initializer above bypasses this setter, so the site path is still established.
+        set(value) {
+            if (dataOnly) return
+            field = value
+        }
     var flattenOutputPackages: Boolean = false
     var isOutputEnabled: Boolean = if (System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
         System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }

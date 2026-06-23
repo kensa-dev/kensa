@@ -85,6 +85,26 @@ class ConfigurationSiteModeTest {
     }
 
     @Test
+    fun `direct outputDir assignment is ignored when dataOnly is true`() {
+        System.setProperty("kensa.output.root", "/tmp/kensa-site-test")
+        System.setProperty("kensa.source.id", "uiTest")
+
+        val config = Configuration()
+        val before = config.outputDir
+        config.outputDir = Path("/somewhere/else")
+        config.outputDir shouldBe before
+    }
+
+    @Test
+    fun `direct outputDir assignment applies when dataOnly is false`() {
+        System.clearProperty("kensa.source.id")
+
+        val config = Configuration()
+        config.outputDir = Path("/some/build/dir")
+        config.outputDir.toString() shouldBe "/some/build/dir"
+    }
+
+    @Test
     fun `withProgramme and withService set the configuration values`() {
         val config = Configuration()
         KensaConfigurator(config).withProgramme("Nexus").withService("Checkout")
