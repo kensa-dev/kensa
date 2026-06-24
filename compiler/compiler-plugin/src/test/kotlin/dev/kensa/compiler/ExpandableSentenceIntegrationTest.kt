@@ -6,6 +6,7 @@ import dev.kensa.context.RealExpandableInvocation
 import dev.kensa.parse.MethodParameters
 import dev.kensa.parse.ParsedExpandableMethod
 import example.ExpandableSentences
+import example.MyValueClass
 import example.Service
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -30,6 +31,7 @@ class ExpandableSentenceIntegrationTest {
             expandableCase("doubleParam", invoke = { instance.doubleParam(1.5) }, args = listOf(1.5), service = service),
             expandableCase("charParam", invoke = { instance.charParam('z') }, args = listOf('z'), service = service),
             expandableCase("expressionBody", invoke = { instance.expressionBody("e") }, args = listOf("e"), service = service),
+            expandableCase("valueClassParam", invoke = { instance.valueClassParam(MyValueClass("test arg")) }, args = listOf(MyValueClass("test arg")), service = service),
             expandableCase(
                 "onExtensionReceiver",
                 invoke = { with(instance) { "ext".onExtensionReceiver() } },
