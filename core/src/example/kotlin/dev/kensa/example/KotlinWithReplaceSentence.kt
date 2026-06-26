@@ -33,13 +33,28 @@ class KotlinWithReplaceSentence {
         whenever { doSomething() }
     }
 
+    fun replacedWithNullSafeChainedFixturesInterpolation() {
+        /*+ ReplaceSentence: given the order {fixtures[trackingId]?.value} is pending */
+        given {}
+    }
+
     fun replacedWithOutputsByKeyInterpolation() {
         /*+ ReplaceSentence: given the result {outputs("trackingKey").value} is received */
         given {}
     }
 
+    fun replacedWithNullSafeOutputsByKeyInterpolation() {
+        /*+ ReplaceSentence: given the result {outputs("trackingKey")?.value} is received */
+        given {}
+    }
+
     fun replacedWithOutputsByNameInterpolation() {
         /*+ ReplaceSentence: given the result {outputs[trackingName].value} is received */
+        given {}
+    }
+
+    fun replacedWithNullSafeOutputsByNameInterpolation() {
+        /*+ ReplaceSentence: given the result {outputs[trackingName]?.value} is received */
         given {}
     }
 

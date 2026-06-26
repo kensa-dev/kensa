@@ -27,6 +27,10 @@ class KotlinWithFixtures {
         assertThat(theExtractedCharacter()) isEqualTo fixtures(MyFixture).toString().last()
     }
 
+    fun testWithNullSafeChainedFixture() {
+        assertThat(theExtractedCharacter()) isEqualTo fixtures(MyFixture)?.toString()?.last()
+    }
+
     private fun whenever(action: MyBlock) = Unit
 
     private fun somethingWith(block: MyBlock.() -> Unit) = MyBlock().apply(block)

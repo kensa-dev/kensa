@@ -36,6 +36,22 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches null-safe property access chain`() {
+            val result = RegexPatterns.chainedCallPattern.matchEntire("a?.b?.c.d").shouldNotBeNull()
+            result.groupValues[1] shouldBe "a"
+            result.groupValues[2] shouldBe ""
+            result.groupValues[3] shouldBe "b?.c.d"
+        }
+
+        @Test
+        fun `matches null-safe parameterless calls`() {
+            val result = RegexPatterns.chainedCallPattern.matchEntire("target.foo()?.bar").shouldNotBeNull()
+            result.groupValues[1] shouldBe "target"
+            result.groupValues[2] shouldBe ""
+            result.groupValues[3] shouldBe "foo()?.bar"
+        }
+
+        @Test
         fun `matches standalone identifier with no chain`() {
             val result = RegexPatterns.chainedCallPattern.matchEntire("target").shouldNotBeNull()
             result.groupValues[1] shouldBe "target"
@@ -102,6 +118,13 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches null-safe chain`() {
+            val result = RegexPatterns.fixturesPattern.matchEntire("fixtures[MyFixture]?.foo?.bar").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyFixture"
+            result.groupValues[2] shouldBe "foo?.bar"
+        }
+
+        @Test
         fun `matches single-level qualified target`() {
             val result = RegexPatterns.fixturesPattern.matchEntire("fixtures(MoreJavaTestFixtures.BOOLEAN_FIXTURE)").shouldNotBeNull()
             result.groupValues[1] shouldBe "BOOLEAN_FIXTURE"
@@ -153,6 +176,13 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches null-safe chain`() {
+            val result = RegexPatterns.outputsByNamePattern.matchEntire("outputs[MyOutput]?.foo?.bar").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyOutput"
+            result.groupValues[2] shouldBe "foo?.bar"
+        }
+
+        @Test
         fun `does not match curly bracket syntax`() {
             RegexPatterns.outputsByNamePattern.matchEntire("outputs{MyOutput}").shouldBeNull()
         }
@@ -185,6 +215,13 @@ internal class RegexPatternsTest {
             val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs("myKey").foo().bar""").shouldNotBeNull()
             result.groupValues[1] shouldBe "myKey"
             result.groupValues[2] shouldBe "foo().bar"
+        }
+
+        @Test
+        fun `matches null-safe chain`() {
+            val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs("myKey")?.foo?.bar""").shouldNotBeNull()
+            result.groupValues[1] shouldBe "myKey"
+            result.groupValues[2] shouldBe "foo?.bar"
         }
 
         @Test

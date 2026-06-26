@@ -449,6 +449,34 @@ internal class KotlinFunctionParserTest {
                 sentences.first().tokens shouldBe expectedSentence.tokens
             }
         }
+
+        @Test
+        fun `replaces scenario value in sentence when using null-safe chained fixture`() {
+            val functionName = "testWithNullSafeChainedFixture"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val javaClass = KotlinWithFixtures::class.java
+            val method = javaClass.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            val expectedSentence = TemplateSentence(
+                listOf(
+                    Word.asTemplateToken("assert"),
+                    Word.asTemplateToken("that"),
+                    Word.asTemplateToken("the"),
+                    Word.asTemplateToken("extracted"),
+                    Word.asTemplateToken("character"),
+                    Word.asTemplateToken("is"),
+                    Word.asTemplateToken("equal"),
+                    Word.asTemplateToken("to"),
+                    FixturesValue.asTemplateToken("MyFixture:toString()?.last()")
+                )
+            )
+
+            with(parsedMethod) {
+                sentences.first().tokens shouldBe expectedSentence.tokens
+            }
+        }
     }
 
     @Nested
@@ -982,6 +1010,20 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
+        fun `replaces sentence with null-safe chained fixtures interpolation`() {
+            val sentences = parseMethod("replacedWithNullSafeChainedFixturesInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("order"),
+                FixturesValue.asTemplateToken("trackingId:value"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("pending"),
+            )).tokens
+        }
+
+        @Test
         fun `replaces sentence with outputs-by-key interpolation`() {
             val sentences = parseMethod("replacedWithOutputsByKeyInterpolation")
             sentences.shouldHaveSize(1)
@@ -996,8 +1038,36 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
+        fun `replaces sentence with null-safe outputs-by-key interpolation`() {
+            val sentences = parseMethod("replacedWithNullSafeOutputsByKeyInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("result"),
+                OutputsValueByKey.asTemplateToken("trackingKey:value"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("received"),
+            )).tokens
+        }
+
+        @Test
         fun `replaces sentence with outputs-by-name interpolation`() {
             val sentences = parseMethod("replacedWithOutputsByNameInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("result"),
+                OutputsValueByName.asTemplateToken("trackingName:value"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("received"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with null-safe outputs-by-name interpolation`() {
+            val sentences = parseMethod("replacedWithNullSafeOutputsByNameInterpolation")
             sentences.shouldHaveSize(1)
             sentences[0].tokens shouldBe TemplateSentence(listOf(
                 Keyword.asTemplateToken("Given"),

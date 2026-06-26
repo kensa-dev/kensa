@@ -100,6 +100,25 @@ internal class ReflectTest {
     }
 
     @Nested
+    inner class PathResolution {
+
+        @Test
+        internal fun `resolves a null-safe property access path stripping the safe-call operator`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b?.c.d") shouldBe "value"
+        }
+
+        @Test
+        internal fun `resolves a null-safe parameterless call`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b?.c?.fetch()") shouldBe "value"
+        }
+
+        @Test
+        internal fun `null-safe path short-circuits to null when an intermediate is null`() {
+            resolvePath(Outer(null), "b?.c.d") shouldBe null
+        }
+    }
+
+    @Nested
     inner class ClassIdentification {
 
         @Test
@@ -252,4 +271,13 @@ internal class ReflectTest {
             SomeKotlinSubClass::class.java.allFields.map { it.name }.shouldContainExactlyInAnyOrder("valueSupplier", "aProperty", "field1", "superField")
         }
     }
+
+    private class Inner(val d: String) {
+        fun fetch(): String = d
+    }
+
+    private class Middle(val c: Inner?)
+
+    private class Outer(val b: Middle?)
 }
+

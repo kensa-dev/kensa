@@ -399,7 +399,8 @@ fun resolvePath(startingValue: Any, path: String?): Any? {
     var currentValue: Any? = startingValue
 
     for (segment in segments) {
-        currentValue = currentValue?.let { resolveSegment(it, segment) } ?: return null
+        val cleanSegment = segment.removeSuffix("?")
+        currentValue = currentValue?.let { resolveSegment(it, cleanSegment) } ?: return null
     }
 
     return currentValue
