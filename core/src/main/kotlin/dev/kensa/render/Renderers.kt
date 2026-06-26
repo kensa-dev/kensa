@@ -50,7 +50,7 @@ class Renderers {
         } else {
             valueRendererFor(value::class)?.render(value) ?: value.toString()
         }
-    } ?: "NULL"
+    } ?: "null"
 
     private fun valueRendererFor(kClass: KClass<*>): ValueRenderer<Any>? =
         valueRenderers.entries

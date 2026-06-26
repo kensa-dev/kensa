@@ -21,7 +21,7 @@ internal class ValueRenderersTest {
 
     @Test
     internal fun `handles null`() {
-        renderers.renderValue(null) shouldBe "NULL"
+        renderers.renderValue(null) shouldBe "null"
     }
 
     @Test
@@ -81,7 +81,7 @@ internal class ValueRenderersTest {
 
         renderers.addValueRenderer(String::class) { value -> "<$value>" }
 
-        renderers.renderValue(list) shouldBe "[<1>, <2>, <3>, <4>, <5>, NULL]"
+        renderers.renderValue(list) shouldBe "[<1>, <2>, <3>, <4>, <5>, null]"
     }
 
     @Test

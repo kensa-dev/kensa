@@ -169,7 +169,7 @@ class TokenRendererTest {
             val expected = listOf(
                 aRenderedValueOf("***arg1***", setOf("tk-pv", "tk-hl")),
                 aRenderedValueOf("Word", setOf("tk-wd")),
-                aRenderedValueOf("NULL", setOf("tk-pv")),
+                aRenderedValueOf("null", setOf("tk-pv")),
                 aRenderedValueOf("***20***", setOf("tk-pv")),
                 aRenderedValueOf("true", setOf("tk-pv")),
                 aRenderedValueOf("M", setOf("tk-pv", "tk-hl")),
@@ -198,7 +198,7 @@ class TokenRendererTest {
             val expected = listOf(
                 aRenderedValueOf("***method1***", setOf("tk-mv", "tk-hl")),
                 aRenderedValueOf("Word", setOf("tk-wd")),
-                aRenderedValueOf("NULL", setOf("tk-mv")),
+                aRenderedValueOf("null", setOf("tk-mv")),
                 aRenderedValueOf("***20***", setOf("tk-mv")),
                 aRenderedValueOf("true", setOf("tk-mv")),
                 aRenderedValueOf("M", setOf("tk-mv", "tk-hl")),
@@ -227,7 +227,7 @@ class TokenRendererTest {
             val expected = listOf(
                 aRenderedValueOf("***prop1***", setOf("tk-fv", "tk-hl")),
                 aRenderedValueOf("Word", setOf("tk-wd")),
-                aRenderedValueOf("NULL", setOf("tk-fv")),
+                aRenderedValueOf("null", setOf("tk-fv")),
                 aRenderedValueOf("***20***", setOf("tk-fv")),
                 aRenderedValueOf("true", setOf("tk-fv")),
                 aRenderedValueOf("M", setOf("tk-fv", "tk-hl")),
@@ -346,14 +346,14 @@ class TokenRendererTest {
         }
 
         @Test
-        fun `renders a captured null return value as NULL`() {
+        fun `renders a captured null return value as null`() {
             bindContextWithCapturedValue("method3", null)
 
             val token = renderSingle(ExpandableValueTemplateToken("method3", setOf(Expandable), "method3"))
 
             token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
             token.expandableTokens shouldContainExactly listOf(
-                listOf(RenderedToken.RenderedValueToken("NULL", setOf("tk-wd")))
+                listOf(RenderedToken.RenderedValueToken("null", setOf("tk-wd")))
             )
         }
 

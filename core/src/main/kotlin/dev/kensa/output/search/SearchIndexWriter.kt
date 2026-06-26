@@ -113,7 +113,7 @@ class SearchIndexBuilder(private val renderers: Renderers) {
 
     private fun isNoise(value: String): Boolean {
         if (value.isBlank()) return true
-        if (value == "NULL") return true
+        if (value == "null") return true
         if (value.length < 4) return true
         if (value.equals("true", ignoreCase = true) || value.equals("false", ignoreCase = true)) return true
         if (value.all { it.isDigit() } && value.length < 4) return true

@@ -175,6 +175,7 @@ class SearchIndexWriterTest {
                 NamedValue("flagFx", true),
                 NamedValue("statusFx", "OK"),
                 NamedValue("shortFx", "abc"),
+                NamedValue("nullFx", null),
                 NamedValue("zipFx", 12345),
                 NamedValue("idFx", "order-abc"),
             ),

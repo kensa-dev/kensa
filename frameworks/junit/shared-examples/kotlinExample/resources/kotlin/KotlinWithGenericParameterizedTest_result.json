@@ -94,7 +94,7 @@
           ],
           "parameters": [
             {
-              "param": "NULL"
+              "param": "null"
             }
           ],
           "capturedInteractions": [],
@@ -136,7 +136,7 @@
           ],
           "parameters": [
             {
-              "param": "NULL"
+              "param": "null"
             }
           ],
           "capturedInteractions": [],
