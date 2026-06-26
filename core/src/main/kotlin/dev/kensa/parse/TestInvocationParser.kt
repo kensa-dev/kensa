@@ -28,7 +28,7 @@ class TestInvocationParser(private val configuration: Configuration) {
             parsedMethod.parameters.descriptors
                 .filterValues { !it.isParameterizedTestDescription }
                 .map { (key, value) ->
-                    NamedValue(key, configuration.renderers.renderValue(value.resolveValue(testInvocationContext.arguments)))
+                    NamedValue(key, value.resolveValue(testInvocationContext.arguments))
                 }
         }.getOrElse { e ->
             errors += RenderError("ValueResolution", e.message ?: e.javaClass.name)
@@ -36,9 +36,11 @@ class TestInvocationParser(private val configuration: Configuration) {
         }
 
         val highlightedParameterValues = runCatching {
-            namedParameterValues.filter { namedValue: NamedValue ->
-                parsedMethod.parameters.descriptors[namedValue.name]?.isHighlight ?: false
-            }
+            namedParameterValues
+                .filter { namedValue: NamedValue ->
+                    parsedMethod.parameters.descriptors[namedValue.name]?.isHighlight ?: false
+                }
+                .map { namedValue -> NamedValue(namedValue.name, configuration.renderers.renderValue(namedValue.value)) }
         }.getOrElse { e ->
             errors += RenderError("ValueResolution", e.message ?: e.javaClass.name)
             emptyList()
@@ -97,7 +99,7 @@ class TestInvocationParser(private val configuration: Configuration) {
         // Resolve parameterized test description
         val parameterizedTestDescription = runCatching {
             parsedMethod.parameters.descriptors.values.find { it.isParameterizedTestDescription }
-                ?.resolveValue(testInvocationContext.arguments, null)?.toString()
+                ?.resolveValue(testInvocationContext.arguments, null)?.let { configuration.renderers.renderValue(it) }
         }.getOrElse { e ->
             errors += RenderError("ValueResolution", e.message ?: e.javaClass.name)
             null

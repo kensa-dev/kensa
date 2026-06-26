@@ -32,7 +32,7 @@ class SearchIndexBuilder(private val renderers: Renderers) {
             container.orderedMethodContainers.forEach { methodContainer ->
                 val testMethod = methodContainer.method.name
                 methodContainer.invocations.forEachIndexed { invocationIndex, invocation ->
-                    invocation.fixturesNamesAndValues.forEach { nv ->
+                    (invocation.fixturesNamesAndValues + invocation.parameters).forEach { nv ->
                         val rendered = renderers.renderValue(nv.value)
                         if (!isNoise(rendered)) {
                             namesByValue.getOrPut(rendered) { sortedSetOf() }.add(nv.name)
@@ -68,6 +68,7 @@ class SearchIndexBuilder(private val renderers: Renderers) {
         }
         invocation.outputNamesAndValues.forEach { parts.add(renderers.renderValue(it.value)) }
         invocation.fixturesNamesAndValues.forEach { parts.add(renderers.renderValue(it.value)) }
+        invocation.parameters.forEach { parts.add(renderers.renderValue(it.value)) }
         invocation.interactions
             .filter { it.key != sdMarkerKey && !it.key.matches(braceKeyPattern) }
             .forEach { entry -> collectInteractionText(entry, parts) }

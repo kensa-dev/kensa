@@ -10,6 +10,9 @@ import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.RenderedToken
 import dev.kensa.util.NamedValue
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.paths.shouldExist
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -186,6 +189,21 @@ class SearchIndexWriterTest {
         val values = SearchIndexBuilder(renderers).build(listOf(container)).map { it.value }
 
         values shouldBe listOf("12345", "order-abc")
+    }
+
+    @Test
+    fun `parameter values are searchable and located`() {
+        val invocation = fakeTestInvocation(
+            parameters = listOf(NamedValue("orderId", "order-xyz-123")),
+        )
+        val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))
+        val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+        val terms = SearchIndexBuilder(renderers).build(listOf(container))
+
+        val term = terms.find { it.value == "order-xyz-123" }.shouldNotBeNull()
+        term.names shouldContain "orderId"
+        term.locations.shouldHaveSize(1)
     }
 
     @Test
