@@ -48,5 +48,12 @@ class Fixtures {
             } as T
         }
 
+    internal fun <T> seed(fixture: Fixture<T>, value: T) {
+        synchronized(lock) {
+            keyToValue[fixture.key] = value
+            keyToFixture[fixture.key] = fixture
+        }
+    }
+
     private fun <T> createFixtureValue(fixture: Fixture<T>): T = fixture.createValue(this)
 }

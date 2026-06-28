@@ -1,6 +1,8 @@
 package dev.kensa.fixture
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.throwable.shouldHaveMessage
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 import java.time.DayOfWeek.MONDAY
@@ -139,6 +141,53 @@ class FixturesTest {
         fixtures[dateFixture]
 
         fixtures.specs() shouldBe listOf(FixtureSpec("date", emptyList()))
+    }
+
+    @Test
+    fun `seed short-circuits the factory and is reflected in specs`() {
+        val greeting = parameterFixture("greeting", from = "userName") { name: String -> "Hello, $name" }
+
+        val fixtures = Fixtures()
+        fixtures.seed(greeting, "Hello, Alice")
+
+        fixtures[greeting] shouldBe "Hello, Alice"
+        fixtures.specs() shouldBe listOf(FixtureSpec("greeting", emptyList()))
+    }
+
+    @Test
+    fun `createParameterFixture builds a guarded parameter fixture from the Java crossover`() {
+        val greeting = createParameterFixture<String, String>("greeting", "userName") { name -> "Hello, $name" }
+
+        greeting.key shouldBe "greeting"
+        greeting.from shouldBe "userName"
+        greeting.deriveFrom("alice") shouldBe "Hello, alice"
+
+        shouldThrow<IllegalStateException> {
+            Fixtures()[greeting]
+        }.shouldHaveMessage("Parameter fixture 'greeting' must be seeded from test parameter 'userName' — it cannot be resolved without a parameterised invocation.")
+    }
+
+    @Test
+    fun `resolving an un-seeded parameter fixture throws a clear error`() {
+        val greeting = parameterFixture("greeting", from = "userName") { name: String -> "Hello, $name" }
+
+        val fixtures = Fixtures()
+
+        shouldThrow<IllegalStateException> {
+            fixtures[greeting]
+        }.shouldHaveMessage("Parameter fixture 'greeting' must be seeded from test parameter 'userName' — it cannot be resolved without a parameterised invocation.")
+    }
+
+    @Test
+    fun `highlighted parameter fixture value appears in highlightedValues once seeded`() {
+        val greeting = parameterFixture("greeting", from = "userName", highlighted = true) { name: String -> "Hello, $name" }
+
+        val fixtures = Fixtures()
+        fixtures.seed(greeting, "Hello, Alice")
+
+        val values = fixtures.highlightedValues()
+        values.map { it.name } shouldBe listOf("greeting")
+        values.map { it.value } shouldBe listOf("Hello, Alice")
     }
 
     @Test

@@ -2,6 +2,10 @@ package dev.kensa.context
 
 import dev.kensa.Configuration
 import dev.kensa.KensaConfigurationProvider
+import dev.kensa.example.KotlinWithParameters
+import dev.kensa.fixture.FixtureContainer
+import dev.kensa.fixture.FixtureRegistry
+import dev.kensa.fixture.parameterFixture
 import dev.kensa.state.TestState
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -129,17 +133,49 @@ internal class KensaLifecycleManagerTest {
         manager.writeTestResult(container)
     }
 
-private fun createManager(tempDir: Path, outputEnabled: Boolean = true): KensaLifecycleManager {
+    @Test
+    fun `startInvocation seeds parameter fixtures from arguments before the body runs`(@TempDir tempDir: Path) {
+        FixtureRegistry.clearFixtures()
+        FixtureRegistry.registerFixtures(LifecycleSeederFixtures)
+        try {
+            val method = KotlinWithParameters::class.java.declaredMethods.first { it.name == "parameterizedTest" }
+            val descriptor = testDescriptor.copy(
+                findTestMethods = { setOf(method) },
+                isKotlinTest = { it.simpleIdentifier().text == "parameterizedTest" },
+            )
+            val manager = createManager(tempDir, descriptor = descriptor) {
+                sourceLocations = listOf(java.nio.file.Path.of("src/example/kotlin"))
+            }
+            manager.beforeClass(KotlinWithParameters::class.java, "Kotlin With Parameters")
+            manager.beforeTest(KotlinWithParameters::class.java, method)
+
+            manager.startInvocation(KotlinWithParameters(), KotlinWithParameters::class.java, method, listOf("alice", 1), "test")
+
+            TestContextHolder.testContext().fixtures[LifecycleSeederFixtures.greeting] shouldBe "Hello, alice"
+
+            manager.endInvocation(KotlinWithParameters::class.java, method, null, null)
+        } finally {
+            FixtureRegistry.clearFixtures()
+        }
+    }
+
+    private fun createManager(tempDir: Path, outputEnabled: Boolean = true, descriptor: FrameworkDescriptor = testDescriptor, configure: Configuration.() -> Unit = {}): KensaLifecycleManager {
         TestConfigProvider.configuration = Configuration().apply {
             outputDir = tempDir.resolve("kensa-output")
             isOutputEnabled = outputEnabled
+            configure()
         }
         System.setProperty(KensaLifecycleManager.CONFIGURATION_PROVIDER_PROPERTY, TestConfigProvider::class.java.name)
         try {
-            return KensaLifecycleManager.initialise(testDescriptor)
+            return KensaLifecycleManager.initialise(descriptor)
         } finally {
             System.clearProperty(KensaLifecycleManager.CONFIGURATION_PROVIDER_PROPERTY)
         }
+    }
+
+    @Suppress("unused")
+    object LifecycleSeederFixtures : FixtureContainer {
+        val greeting = parameterFixture("greeting", from = "first") { name: String -> "Hello, $name" }
     }
 
     @Suppress("unused")

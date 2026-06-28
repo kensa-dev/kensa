@@ -89,6 +89,18 @@ class FixtureRegistryTest {
     }
 
     @Test
+    fun `should register parameter fixtures and expose them via accessor`() {
+        registerFixtures(ParameterFixtureContainer)
+
+        lookupFixture<String>("greeting").shouldNotBeNull().should {
+            it.key shouldBe "greeting"
+            it.shouldBeInstanceOf<ParameterFixture<String>>()
+        }
+
+        FixtureRegistry.parameterFixtures().map { it.key } shouldBe listOf("greeting")
+    }
+
+    @Test
     fun `should register all sub-container fixtures when registering a FixtureSuite`() {
         registerFixtures(TestFixtureSuite)
 
@@ -144,5 +156,10 @@ class FixtureRegistryTest {
 
     object TestFixtureSuite : FixtureSuite {
         override val containers = listOf(SuiteContainerA, SuiteContainerB)
+    }
+
+    @Suppress("unused")
+    object ParameterFixtureContainer : FixtureContainer {
+        val greeting = parameterFixture("greeting", from = "userName") { name: String -> "Hello, $name" }
     }
 }

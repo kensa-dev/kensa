@@ -4,6 +4,7 @@ import dev.kensa.*
 import dev.kensa.attachments.Attachments
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
+import dev.kensa.parse.RenderError
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.SetupStrategy
 import dev.kensa.util.findAnnotation
@@ -18,6 +19,7 @@ class TestContext(
 ) : WithFixturesAndOutputs {
 
     override val fixturesAndOutputs = FixturesAndOutputs(fixtures, outputs)
+    val renderErrors = mutableListOf<RenderError>()
     val givensContext = GivensContext(fixtures, outputs)
     val actionContext = ActionContext(fixtures, interactions, outputs)
     val collectorContext = CollectorContext(fixtures, interactions, outputs)

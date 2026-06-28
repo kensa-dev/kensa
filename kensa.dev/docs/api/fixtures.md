@@ -120,6 +120,53 @@ new SecondaryFixture<>(
 </TabItem>
 </Tabs>
 
+### Parameter-Derived Fixtures
+
+A parameter fixture derives its value **per invocation** from a named parameter of a parameterised test. Like every fixture it is registered by name, so it still resolves in `fixtures[…]` interpolation and renders by its display name — but instead of a fixed factory it is bound to a test parameter (by name) and a transform. Kensa seeds it from the invocation's arguments *before the test body runs*, so the value is available both in the test body and in the rendered sentence.
+
+<Tabs>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+object GreetingFixtures : FixtureContainer {
+    // bound to the `userName` parameter; the transform runs once per invocation
+    val Greeting = parameterFixture("Greeting", from = "userName") { name: String ->
+        "Hello, ${name.replaceFirstChar(Char::uppercase)}"
+    }
+}
+
+@ParameterizedTest
+@ValueSource(strings = ["alice", "bob"])
+fun `greets the user`(userName: String) {
+    then(theBanner(), equalTo(fixtures[Greeting]))   // "Hello, Alice" / "Hello, Bob"
+}
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+public class GreetingFixtures implements FixtureContainer {
+    public static final ParameterFixture<String> GREETING =
+        createParameterFixture("Greeting", "userName", (String name) -> "Hello, " + name);
+}
+
+@ParameterizedTest
+@ValueSource(strings = {"alice", "bob"})
+void greetsTheUser(String userName) {
+    then(theBanner(), is(fixtures(GREETING)));   // "Hello, alice" / "Hello, bob"
+}
+```
+
+</TabItem>
+</Tabs>
+
+The `from` value must match the test method's parameter name. The fixture is seeded only for invocations that actually supply that parameter; reading it in any other context raises a clear error. Secondary fixtures may depend on a parameter fixture — they resolve the seeded value like any other parent.
+
+:::note
+A parameter fixture derives from a single parameter. Reach for one when a value must be **both** computed from a test argument **and** referenced by name in the report; for a value you only need inside the test, use the parameter directly or a [captured output](./outputs).
+:::
+
 ---
 
 ## Using Fixtures in Tests
@@ -285,6 +332,9 @@ fun <T, P1, P2> fixture(key: String, parent1: Fixture<P1>, parent2: Fixture<P2>,
 
 // Secondary — 3 parents
 fun <T, P1, P2, P3> fixture(key: String, parent1: Fixture<P1>, parent2: Fixture<P2>, parent3: Fixture<P3>, highlighted: Boolean = false, factory: (P1, P2, P3) -> T): SecondaryFixture<T>
+
+// Parameter-derived — bound to a test parameter by name
+fun <T, P> parameterFixture(key: String, from: String, highlighted: Boolean = false, transform: (P) -> T): ParameterFixture<T>
 ```
 
 ### `createFixture()` factory (Java)
@@ -294,6 +344,10 @@ createFixture(String key, Supplier<T> factory)
 createFixture(String key, boolean highlighted, Supplier<T> factory)
 createFixture(String key, Fixture<P1> parent, Function<P1, T> factory)
 createFixture(String key, Fixture<P1> parent1, Fixture<P2> parent2, BiFunction<P1, P2, T> factory)
+
+// Parameter-derived — bound to a test parameter by name
+createParameterFixture(String key, String from, Function<P, T> transform)
+createParameterFixture(String key, String from, boolean highlighted, Function<P, T> transform)
 ```
 
 ### `Fixtures` map

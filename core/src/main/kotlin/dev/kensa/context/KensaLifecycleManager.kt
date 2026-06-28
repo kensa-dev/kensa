@@ -3,6 +3,7 @@ package dev.kensa.context
 import dev.kensa.Configuration
 import dev.kensa.KensaConfigurationProvider
 import dev.kensa.StaticKensaConfigurationProvider
+import dev.kensa.fixture.ParameterFixtureSeeder
 import dev.kensa.output.ResultWriter
 import dev.kensa.parse.CompositeParserDelegate
 import dev.kensa.parse.MethodParser
@@ -24,6 +25,7 @@ class KensaLifecycleManager private constructor(
     val configuration: Configuration,
     private val kensaContext: KensaContext,
     private val resultWriter: Lazy<ResultWriter>,
+    private val parameterFixtureSeeder: ParameterFixtureSeeder,
 ) {
 
 
@@ -44,6 +46,7 @@ class KensaLifecycleManager private constructor(
 
     fun startInvocation(instance: Any, testClass: Class<*>, testMethod: Method, arguments: List<Any?>, displayName: String): UUID? {
         if (!isOutputEnabled) return null
+        TestContextHolder.testContext().let { parameterFixtureSeeder.seed(testMethod, arguments.toTypedArray(), it.fixtures, it.renderErrors) }
         return kensaContext.startTestInvocation(
             instance,
             testClass,
@@ -106,9 +109,10 @@ class KensaLifecycleManager private constructor(
         fun initialise(descriptor: FrameworkDescriptor): KensaLifecycleManager {
             val configuration = loadConfiguration()
             val parserCache = ParserCache()
-            // Hoisted: shared between per-invocation rendering (TestInvocationFactory) and the cross-test aggregate (ResultWriter).
+            // Hoisted: shared between per-invocation rendering (TestInvocationFactory), parameter-fixture seeding and the cross-test aggregate (ResultWriter).
             val componentDiagramFactory = ComponentDiagramFactory()
-            val testInvocationFactory = testInvocationFactory(configuration, parserCache, descriptor, componentDiagramFactory)
+            val methodParser = methodParser(configuration, parserCache, descriptor)
+            val testInvocationFactory = testInvocationFactory(configuration, methodParser, componentDiagramFactory)
             val testContainerFactory = TestContainerFactory(
                 descriptor.initialStateFor,
                 descriptor.displayNameFor,
@@ -119,7 +123,7 @@ class KensaLifecycleManager private constructor(
             )
             val kensaContext = KensaContext(testContainerFactory)
             val resultWriter = lazy { ResultWriter(configuration, componentDiagramFactory) }
-            return KensaLifecycleManager(configuration, kensaContext, resultWriter)
+            return KensaLifecycleManager(configuration, kensaContext, resultWriter, ParameterFixtureSeeder(methodParser))
                 .also { currentInstance.set(it) }
         }
 
@@ -140,20 +144,23 @@ class KensaLifecycleManager private constructor(
             }
         }
 
-        private fun testInvocationFactory(configuration: Configuration, parserCache: ParserCache, descriptor: FrameworkDescriptor, componentDiagramFactory: ComponentDiagramFactory): TestInvocationFactory =
+        private fun methodParser(configuration: Configuration, parserCache: ParserCache, descriptor: FrameworkDescriptor): MethodParser =
+            MethodParser(
+                parserCache,
+                configuration,
+                CompositeParserDelegate(
+                    configuration.sourceCode,
+                    listOf(
+                        JavaParserDelegate(descriptor.isJavaClassTest, descriptor.isJavaInterfaceTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode, configuration.sourceCode),
+                        KotlinParserDelegate(descriptor.isKotlinTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode, configuration.sourceCode),
+                    )
+                )
+            )
+
+        private fun testInvocationFactory(configuration: Configuration, methodParser: MethodParser, componentDiagramFactory: ComponentDiagramFactory): TestInvocationFactory =
             TestInvocationFactory(
                 TestInvocationParser(configuration),
-                MethodParser(
-                    parserCache,
-                    configuration,
-                    CompositeParserDelegate(
-                        configuration.sourceCode,
-                        listOf(
-                            JavaParserDelegate(descriptor.isJavaClassTest, descriptor.isJavaInterfaceTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode, configuration.sourceCode),
-                            KotlinParserDelegate(descriptor.isKotlinTest, configuration.antlrErrorListenerDisabled, configuration.antlrPredicationMode, configuration.sourceCode),
-                        )
-                    )
-                ),
+                methodParser,
                 SequenceDiagramFactory({ configuration.sequenceDiagram.directivesSnapshot() }) { configuration.sequenceDiagram.primary.participant },
                 componentDiagramFactory
             )

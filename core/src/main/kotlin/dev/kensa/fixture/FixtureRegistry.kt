@@ -31,6 +31,8 @@ object FixtureRegistry {
     @Suppress("UNCHECKED_CAST")
     internal fun <T> lookupFixture(name: String): Fixture<T> = fixturesByName[name] as? Fixture<T> ?: error("No fixture with name [$name] registered")
 
+    internal fun parameterFixtures(): List<ParameterFixture<*>> = synchronized(lock) { fixturesByKey.values.filterIsInstance<ParameterFixture<*>>() }
+
     @JvmStatic
     fun registerFixtures(vararg containers: FixtureContainer) = containers.forEach { register(it.javaClass) }
 

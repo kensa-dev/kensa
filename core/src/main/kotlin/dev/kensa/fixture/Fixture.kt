@@ -70,6 +70,40 @@ class SecondaryFixture<T>(
 }
 
 /**
+ * A fixture whose value is derived per-invocation from a named parameterised-test argument.
+ *
+ * @param T The type of the fixture value
+ * @property key The string key used internally
+ * @property from The name of the test parameter the value is derived from
+ * @property transform Function to transform the parameter value into the fixture value
+ */
+class ParameterFixture<T>(
+    override val key: String,
+    val from: String,
+    private val transform: (Any?) -> T,
+    override val highlighted: Boolean = false
+) : Fixture<T> {
+    internal fun deriveFrom(argument: Any?): T = transform(argument)
+
+    override fun createValue(fixtures: Fixtures): T =
+        error("Parameter fixture '$key' must be seeded from test parameter '$from' — it cannot be resolved without a parameterised invocation.")
+}
+
+/**
+ * Creates a parameter-derived fixture with a type-safe key.
+ *
+ * @param key The string key used internally
+ * @param from The name of the test parameter the value is derived from
+ * @param transform Function to transform the parameter value into the fixture value
+ * @return A new parameter fixture
+ */
+inline fun <reified T, P> parameterFixture(key: String, from: String, noinline transform: (P) -> T): ParameterFixture<T> =
+    ParameterFixture(key, from, { @Suppress("UNCHECKED_CAST") transform(it as P) })
+
+inline fun <reified T, P> parameterFixture(key: String, from: String, highlighted: Boolean = false, noinline transform: (P) -> T): ParameterFixture<T> =
+    ParameterFixture(key, from, { @Suppress("UNCHECKED_CAST") transform(it as P) }, highlighted)
+
+/**
  * Creates a parent fixture with a type-safe key.
  *
  * @param key The string key used internally
@@ -135,6 +169,22 @@ fun <T> createFixture(key: String, factory: () -> T): PrimaryFixture<T> = Primar
 
 @JvmName("createFixture")
 fun <T> createFixture(key: String, highlighted: Boolean, factory: () -> T): PrimaryFixture<T> = PrimaryFixture(key, factory, highlighted)
+
+/**
+ * Non-inline version of the parameterFixture function for Java interoperability.
+ *
+ * @param key The string key used internally
+ * @param from The name of the test parameter the value is derived from
+ * @param transform Function to transform the parameter value into the fixture value
+ * @return A new parameter fixture
+ */
+@JvmName("createParameterFixture")
+fun <T, P> createParameterFixture(key: String, from: String, transform: (P) -> T): ParameterFixture<T> =
+    ParameterFixture(key, from, { @Suppress("UNCHECKED_CAST") transform(it as P) })
+
+@JvmName("createParameterFixture")
+fun <T, P> createParameterFixture(key: String, from: String, highlighted: Boolean, transform: (P) -> T): ParameterFixture<T> =
+    ParameterFixture(key, from, { @Suppress("UNCHECKED_CAST") transform(it as P) }, highlighted)
 
 /**
  * Non-inline version of the fixture function for Java interoperability.

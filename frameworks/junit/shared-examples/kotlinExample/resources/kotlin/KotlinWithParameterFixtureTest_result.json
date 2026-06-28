@@ -1,0 +1,126 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithParameterFixtureTest",
+  "displayName": "Kotlin With Parameter Fixture Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "tags": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "greetsTheUser",
+      "displayName": "Greets The User",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 22,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the greeting equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "Hello, alice"
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "userName": "alice"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [
+            {
+              "greeting": "Hello, alice"
+            }
+          ],
+          "fixtureSpecs": [
+            {
+              "key": "greeting",
+              "parents": []
+            }
+          ],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] alice"
+        },
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 22,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the greeting equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "Hello, bob"
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "userName": "bob"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [
+            {
+              "greeting": "Hello, bob"
+            }
+          ],
+          "fixtureSpecs": [
+            {
+              "key": "greeting",
+              "parents": []
+            }
+          ],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[2] bob"
+        }
+      ]
+    }
+  ]
+}

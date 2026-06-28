@@ -152,6 +152,14 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         }
 
         @Test
+        fun embeddedJsonIsCorrectForTestWithParameterFixture() {
+            testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
+            }
+            executeTestAndVerifyJson(KotlinWithParameterFixtureTest::class.java)
+        }
+
+        @Test
         fun embeddedJsonIsCorrectForTestWithAcronyms() {
             testConfiguration {
                 sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
