@@ -1,5 +1,19 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.9
+
+New features:
+  - **Null-safe paths in rendered values.** Rendered chained paths now accept the `?.` safe-call operator — `order?.customer?.name`, `fixtures[X]?.foo`, `outputs("k")?.bar` — which were previously dropped from value substitution (#144).
+  - **Test parameters rendered through registered renderers.** Parameter values, the parameterised test description shown in the test header, and the suite search index now all honour registered value renderers, and each parameter is rendered exactly once (no more double-rendering when a `String` renderer is registered) (#145).
+  - **Parameter-derived fixtures.** A `parameterFixture("key", from = "paramName") { … }` (Kotlin) / `createParameterFixture(...)` (Java) is registered by name — so it resolves in `fixtures[…]` interpolation — and derives its value per invocation from a named parameterised-test argument, seeded before the test body so it's usable both in the test and in the rendered sentence. Secondary fixtures can derive from one (#148).
+
+Changed:
+  - **Consistent lowercase `null` rendering.** Captured null values now render as lowercase `null` everywhere, matching the source-literal `null` keyword and the UI's null styling (previously an inconsistent `NULL`, which made an actual null display as a quoted string) (#146).
+
+Fixes:
+  - **No ConcurrentModificationException in sequence diagrams under parallel execution.** `SequenceDiagramFactory` is now safe when tests run in parallel (#142).
+  - **`dataOnly` is authoritative over `outputDir` in site mode.**
+
 ### v0.8.8
 
 New features:
