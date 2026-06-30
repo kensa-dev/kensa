@@ -236,6 +236,36 @@ internal class RegexPatternsTest {
     }
 
     @Nested
+    inner class CallWithArgumentsAndPathPattern {
+
+        @Test
+        fun `captures full path when a method-call segment follows the parameterised call`() {
+            val result = RegexPatterns.callWithArgumentsAndPathPattern.matchEntire("""productFor("f").compute().value""").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "productFor"
+            result.groups["path"]!!.value shouldBe "compute().value"
+        }
+
+        @Test
+        fun `captures single property path`() {
+            val result = RegexPatterns.callWithArgumentsAndPathPattern.matchEntire("""fn(x).stringValue""").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "fn"
+            result.groups["path"]!!.value shouldBe "stringValue"
+        }
+
+        @Test
+        fun `handles nested-paren arguments`() {
+            val result = RegexPatterns.callWithArgumentsAndPathPattern.matchEntire("""fn(g(1)).p""").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "fn"
+            result.groups["path"]!!.value shouldBe "p"
+        }
+
+        @Test
+        fun `does not match zero-arg chained call`() {
+            RegexPatterns.callWithArgumentsAndPathPattern.matchEntire("""fn().x""").shouldBeNull()
+        }
+    }
+
+    @Nested
     inner class SingleCallWithArgumentsPattern {
 
         @Test

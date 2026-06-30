@@ -18,6 +18,7 @@ import dev.kensa.sentence.TemplateToken.TabularTemplateToken
 import dev.kensa.sentence.TemplateToken.Type
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.util.NamedValue
+import dev.kensa.util.resolvePath
 
 class TokenRenderer(
     private val testInstance: Any,
@@ -76,9 +77,9 @@ class TokenRenderer(
         finishCurrentWord()
     }
 
-    private fun TemplateToken.asRenderedValueToken(): RenderedValueToken {
+    private fun TemplateToken.RenderedValueToken.asRenderedValueToken(): RenderedValueToken {
         val returnValue = when (val invocation = renderedValueInvocationContext().nextInvocationFor(template)) {
-            is RealRenderedValueInvocation -> invocation.returnValue
+            is RealRenderedValueInvocation -> invocation.returnValue?.let { resolvePath(it, path) }
             else -> template
         }
         return RenderedValueToken(

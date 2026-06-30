@@ -450,6 +450,19 @@ class PaymentTest implements KensaTest, WithAssertJ { ... }
 </TabItem>
 </Tabs>
 
+#### Requirements for a referenced class or object
+
+For Kensa to discover and render values from a referenced class/object — for example a shared `object` holding `@RenderedValue` or `@ExpandableSentence` functions — **all** of the following must hold:
+
+1. **Referenced or inherited.** The class/object is listed in `@Sources(...)` on the test, **or** is a superclass/interface of the test (those are followed automatically — you only need `@Sources` for classes outside the test's own type hierarchy).
+2. **In its own source file, named after the class.** Kensa locates a class's source from its fully-qualified name (`com/example/PaymentSteps.kt`). A declaration that **shares a file with a differently-named class** — e.g. a helper `object` declared inside your test's `.kt` file — cannot be located and is silently skipped. Put shared helpers in their own file (`PaymentSteps.kt`).
+3. **Within a configured source location.** The file must live under one of your [`sourceLocations`](./configuration.md) roots — Kensa only parses the source roots you configure.
+4. **Instrumented by the Kensa compiler plugin.** Value capture for `@RenderedValue`/`@ExpandableSentence` is performed by the compiler plugin, so the class/object must be in a source set the plugin is applied to. If you customise the plugin's source-set/directory list, ensure it includes the helper's directory — otherwise the value is never captured.
+
+:::tip Diagnosing a missing requirement
+If a `@RenderedValue` function from a referenced class renders as the **literal call text** (the de-camel-cased function name) instead of its value, one of the above is usually unmet — most commonly the helper shares a file with a differently-named class (requirement 2), or `@Sources` was not added at all (requirement 1).
+:::
+
 ---
 
 ## UI Behaviour

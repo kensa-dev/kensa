@@ -82,7 +82,8 @@ sealed interface ElementDescriptor {
         val hasParameters: Boolean = method.parameters.isNotEmpty()
 
         override fun resolveValue(target: Any, path: String?): Any? =
-            method.resolveFrom(target)?.let { resolvePath(it, path) }
+            if (hasParameters) null
+            else method.resolveFrom(target)?.let { resolvePath(it, path) }
     }
 
     class PropertyElementDescriptor(private val property: KProperty<*>) : ElementDescriptor {

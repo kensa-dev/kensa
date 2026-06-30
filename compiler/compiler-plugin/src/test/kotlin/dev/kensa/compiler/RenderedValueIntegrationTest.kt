@@ -5,6 +5,9 @@ import dev.kensa.context.RenderedValueInvocationContext
 import dev.kensa.context.RenderedValueInvocationContextHolder
 import example.RenderedValues
 import example.Service
+import example.topLevelJvmNamedRenderedValue
+import example.topLevelOnExtensionReceiver
+import example.topLevelRenderedValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.DynamicTest
@@ -45,6 +48,16 @@ class RenderedValueIntegrationTest {
                 args = arrayOf("p", "v"),
                 service = service
             )
+        )
+    }
+
+    @TestFactory
+    fun `top-level functions invoke the rendered value hook`(): List<DynamicTest> {
+        val service = mock<Service>()
+        return listOf(
+            renderedValueCase("topLevelRenderedValue", expected = "top-x", invoke = { topLevelRenderedValue(service, "x") }, args = arrayOf("x"), service = service),
+            renderedValueCase("topLevelOnExtensionReceiver", expected = 6, invoke = { 3.topLevelOnExtensionReceiver(service) }, args = arrayOf(6), service = service),
+            renderedValueCase("topLevelJvmNamedRenderedValue", expected = "jvmnamed-y", invoke = { topLevelJvmNamedRenderedValue(service, "y") }, args = arrayOf("y"), service = service)
         )
     }
 

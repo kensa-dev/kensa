@@ -7,6 +7,7 @@ import dev.kensa.parse.LocatedEvent.Literal.*
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression
 import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
+import dev.kensa.parse.RegexPatterns.callWithArgumentsAndPathPattern
 import dev.kensa.parse.RegexPatterns.chainedCallPattern
 import dev.kensa.parse.RegexPatterns.fixturesPattern
 import dev.kensa.parse.RegexPatterns.outputsByKeyPattern
@@ -60,7 +61,9 @@ class ParseContext(
 
 
     internal fun ParseTree.asRenderedValueMethodExpression(): RenderedValue? =
-        singleCallWithArgumentsPattern.matchEntire(text)?.let { matchResult ->
+        callWithArgumentsAndPathPattern.matchEntire(text)?.let { matchResult ->
+            RenderedValue(location, matchResult.groups["function"]!!.value, matchResult.groups["path"]!!.value)
+        } ?: singleCallWithArgumentsPattern.matchEntire(text)?.let { matchResult ->
             RenderedValue(location, matchResult.groups["function"]!!.value)
         }
 
@@ -72,7 +75,11 @@ class ParseContext(
             else -> null
         }
 
-    internal fun ParseTree?.matchesRenderedValueMethodExpression() = this?.text?.let { singleCallWithArgumentsPattern.matchEntire(it)?.let { result -> result.groups["function"]?.value in renderedValueMethodNames } } ?: false
+    internal fun ParseTree?.matchesRenderedValueMethodExpression(): Boolean {
+        val text = this?.text ?: return false
+        callWithArgumentsAndPathPattern.matchEntire(text)?.let { return it.groups["function"]?.value in renderedValueMethodNames }
+        return singleCallWithArgumentsPattern.matchEntire(text)?.let { it.groups["function"]?.value in renderedValueMethodNames } ?: false
+    }
     internal fun ParseTree?.matchesFixturesExpression() = this?.text?.matches(fixturesPattern) ?: false
     internal fun ParseTree?.matchesOutputsExpression() = this?.matchesOutputsByNameExpression() ?: false || this?.matchesOutputsByKeyExpression() ?: false
     private fun ParseTree.matchesOutputsByNameExpression() = text?.matches(outputsByNamePattern) ?: false
@@ -96,6 +103,10 @@ class ParseContext(
         }
         outputsByKeyPattern.matchEntire(expr)?.let {
             return PathExpression.OutputsByKeyExpression(location, it.groupValues[1], it.groupValues[2])
+        }
+        callWithArgumentsAndPathPattern.matchEntire(expr)?.let { matchResult ->
+            val fn = matchResult.groups["function"]?.value
+            if (fn in renderedValueMethodNames) return RenderedValue(location, fn!!, matchResult.groups["path"]!!.value)
         }
         singleCallWithArgumentsPattern.matchEntire(expr)?.let { matchResult ->
             val fn = matchResult.groups["function"]?.value

@@ -201,7 +201,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     fun append(location: Location, event: RenderedValue) {
         if (isIgnored(location)) return
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        tokens.add(RenderedValueToken(event.name))
+        tokens.add(RenderedValueToken(event.name, event.path))
     }
 
     fun append(event: ChainedCallExpression) {

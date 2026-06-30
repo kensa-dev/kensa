@@ -19,8 +19,11 @@ import org.jetbrains.kotlin.ir.types.starProjectedType
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.ir.util.functions
+import org.jetbrains.kotlin.ir.util.getAnnotation
+import org.jetbrains.kotlin.ir.util.getAnnotationStringValue
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.parentClassOrNull
+import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -32,6 +35,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     private val expandableSentenceFqName = FqName("dev.kensa.ExpandableSentence")
     private val renderedValueFqName = FqName("dev.kensa.RenderedValue")
     private val expandableRenderedValueFqName = FqName("dev.kensa.ExpandableRenderedValue")
+    private val jvmNameFqName = FqName("kotlin.jvm.JvmName")
 
 
     private val hooksClassId = ClassId.topLevel(FqName("dev.kensa.runtime.CompilerPluginHookFunctions"))
@@ -189,11 +193,21 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
             addAll(valueParameters)
         }
 
-        val ownerFqName = builder.irString(fn.parentClassOrNull?.fqNameWhenAvailable?.asString() ?: "${file.packageFqName.asString()}.${fn.name.asString()}")
+        val ownerFqName = builder.irString(fn.parentClassOrNull?.fqNameWhenAvailable?.asString() ?: fileFacadeFqName(file))
         val simpleName = builder.irString(fn.name.asString())
         val paramTypesArray = builder.buildParamTypesArray(arrayOf, allParams)
 
         return InjectionContext(blockBody, builder, ownerExpr, ownerFqName, simpleName, paramTypesArray, allParams)
+    }
+
+    // For a top-level function the owner is the JVM file-facade class (<FileName>Kt), honouring @file:JvmName.
+    private fun fileFacadeFqName(file: IrFile): String {
+        val baseFileName = file.fileEntry.name.substringAfterLast('/').substringAfterLast('\\')
+        val simpleName = file.getAnnotation(jvmNameFqName)?.getAnnotationStringValue()
+            ?: PackagePartClassUtils.getFilePartShortName(baseFileName)
+        val packageFqName = file.packageFqName
+
+        return if (packageFqName.isRoot) simpleName else "${packageFqName.asString()}.$simpleName"
     }
 
     // Gets the `kotlin.arrayOf` function symbol so we can build arrays with it

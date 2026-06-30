@@ -42,6 +42,7 @@ sealed interface TemplateToken {
 
     data class RenderedValueToken(
         override val template: String,
+        val path: String = "",
     ) : TemplateToken {
         override val types: Set<Type> = setOf(Type.MethodValue)
     }

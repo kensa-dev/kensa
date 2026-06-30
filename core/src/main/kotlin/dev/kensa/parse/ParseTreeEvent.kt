@@ -52,7 +52,7 @@ sealed class LocatedEvent(val location: Location) : Event() {
     class Parameter(location: Location, val name: String) : LocatedEvent(location)
     class Method(location: Location, val name: String) : LocatedEvent(location)
     class Field(location: Location, val name: String) : LocatedEvent(location)
-    class RenderedValue(location: Location, val name: String) : LocatedEvent(location)
+    class RenderedValue(location: Location, val name: String, val path: String = "") : LocatedEvent(location)
     class ExpandableSentence(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
     class ExpandableSentenceWithArguments(location: Location, val name: String, val sentences: List<TemplateSentence>) : LocatedEvent(location)
     class ExpandableValue(location: Location, val name: String, val style: RenderedValueStyle, val headers: List<String>) : LocatedEvent(location)
