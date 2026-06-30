@@ -341,6 +341,33 @@ internal class KotlinFunctionParserTest {
     inner class Fixtures {
 
         @Test
+        fun `captures the argument expression of a registered fixture factory call as a factory token`() {
+            dev.kensa.fixture.FixtureRegistry.clearFixtures()
+            dev.kensa.fixture.FixtureRegistry.registerFixtures(ParserFactoryFixtures)
+            try {
+                val functionName = "testWithFixtureFactory"
+                val parser = createParserFor(aFunctionNamed(functionName))
+
+                val method = KotlinWithFixtures::class.java.findMethod(functionName, String::class.java)
+                val parsedMethod = parser.parse(method)
+
+                val expectedSentence = TemplateSentence(
+                    listOf(
+                        Word.asTemplateToken("action"),
+                        Word.asTemplateToken("with"),
+                        FixtureFactoryValue.asTemplateToken("MyFixture:p1")
+                    )
+                )
+
+                with(parsedMethod) {
+                    sentences.first().tokens shouldBe expectedSentence.tokens
+                }
+            } finally {
+                dev.kensa.fixture.FixtureRegistry.clearFixtures()
+            }
+        }
+
+        @Test
         fun `replaces fixture value in sentence when using fixtures inside lambda function`() {
             val functionName = "testWithFixturesInLambda"
             val parser = createParserFor(aFunctionNamed(functionName))
@@ -1290,4 +1317,8 @@ internal class KotlinFunctionParserTest {
             ExpandableInvocationContextHolder.clearFromThread()
         }
     }
+}
+object ParserFactoryFixtures : dev.kensa.fixture.FixtureContainer {
+    @dev.kensa.Fixture("MyFixture")
+    fun myFixture(arg: String) = dev.kensa.fixture.fixture("MyFixture") { arg }
 }

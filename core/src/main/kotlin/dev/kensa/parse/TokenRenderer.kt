@@ -40,6 +40,7 @@ class TokenRenderer(
                 token.hasType(MethodValue) -> token.asMethodValue()
                 token.hasType(ParameterValue) -> token.asParameterValue()
                 token.hasType(FixturesValue) -> token.asFixtureValue()
+                token.hasType(FixtureFactoryValue) -> token.asFactoryFixtureValue()
                 token.hasType(OutputsValueByName) -> token.asOutputValueByName()
                 token.hasType(OutputsValueByKey) -> token.asOutputValueByKey()
                 token is ExpandableValueTemplateToken -> token.asExpandableValue()
@@ -162,6 +163,29 @@ class TokenRenderer(
 
     private fun TemplateToken.asFixtureValue() =
         asRenderedValueToken { name, path -> fixtureAndOutputAccessor.fixtureValue(name, path) }
+
+    private fun TemplateToken.asFactoryFixtureValue(): RenderedToken {
+        val (key, argExpr) = template.split(":", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
+        val compositeKey = dev.kensa.fixture.compositeFixtureKey(key, resolveFactoryArgs(argExpr))
+        return RenderedValueToken(
+            renderers.renderValue(fixtureAndOutputAccessor.factoryFixtureValue(compositeKey)),
+            types.map { it.asCss() }.toSortedSet()
+        )
+    }
+
+    // Resolves the literal argument expression of a factory call (e.g. "p1" or "first, second") to its captured
+    // values for this invocation, so the (key, value) identity matches what the factory seeded. Only a parameter
+    // reference, a captured field, or a string/number literal can be resolved — arbitrary expressions cannot.
+    private fun resolveFactoryArgs(argExpr: String): List<Any?> =
+        if (argExpr.isBlank()) emptyList()
+        else argExpr.split(",").map { resolveFactoryArg(it.trim()) }
+
+    private fun resolveFactoryArg(arg: String): Any? = when {
+        parameters.containsKey(arg) -> parameters.getValue(arg).resolveValue(arguments, null)
+        properties.containsKey(arg) -> properties.getValue(arg).resolveValue(testInstance, null)
+        arg.length >= 2 && arg.startsWith("\"") && arg.endsWith("\"") -> arg.substring(1, arg.length - 1)
+        else -> arg
+    }
 
     private fun TemplateToken.asOutputValueByName() =
         asRenderedValueToken { name, path -> fixtureAndOutputAccessor.outputValueByName(name, path) }

@@ -55,5 +55,11 @@ class Fixtures {
         }
     }
 
+    /**
+     * Reads an already-seeded value by its raw storage [storageKey] (for `@`[dev.kensa.Fixture] factory fixtures,
+     * the `(key, args)` [compositeFixtureKey]). Returns null if nothing was seeded under that identity.
+     */
+    internal fun valueOf(storageKey: String): Any? = synchronized(lock) { keyToValue[storageKey] }
+
     private fun <T> createFixtureValue(fixture: Fixture<T>): T = fixture.createValue(this)
 }

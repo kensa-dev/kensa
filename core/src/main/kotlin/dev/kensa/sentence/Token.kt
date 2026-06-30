@@ -22,6 +22,7 @@ sealed interface TemplateToken {
         Operator("op"),
         ParameterValue("pv"),
         FixturesValue("fx"),
+        FixtureFactoryValue("fx"),
         OutputsValueByName("ov"),
         OutputsValueByKey("ov"),
         StringLiteral("sl"),

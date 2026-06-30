@@ -33,6 +33,7 @@ class HamkrestThenTest {
     @AfterEach
     fun tearDown() {
         reset(stateCollector)
+        TestContextHolder.clearFromThread()
     }
 
     @Test

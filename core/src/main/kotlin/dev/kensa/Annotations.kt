@@ -125,6 +125,19 @@ annotation class RenderedValueContainer
 annotation class RenderedValue
 
 /**
+ * Marks a function in a [dev.kensa.fixture.FixtureContainer] as a fixture factory.
+ *
+ * The annotated function takes arguments and returns a [dev.kensa.fixture.Fixture] (typically built with the
+ * no-name `fixture { }` overload, which adopts this [value] as its key). When the call appears in a sentence
+ * (e.g. `fixtures[myFixture("whatever")]`) Kensa renders the *seeded value* of the fixture, not the call text.
+ *
+ * @property value The fixture key the factory seeds and renders under.
+ */
+@Retention(RUNTIME)
+@Target(FUNCTION)
+annotation class Fixture(val value: String)
+
+/**
  * Annotation for marking fields, parameters, or methods as expandable rendered values.
  * This is typically used for complex objects or collections that should be displayed
  * with more detail in the test output, such as in a tabular format.

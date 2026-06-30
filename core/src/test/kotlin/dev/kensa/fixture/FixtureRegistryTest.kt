@@ -101,6 +101,15 @@ class FixtureRegistryTest {
     }
 
     @Test
+    fun `should register @Fixture factory functions by name without invoking them`() {
+        registerFixtures(FactoryFixtureContainer)
+
+        FixtureRegistry.isFactory("myFixture") shouldBe true
+        FixtureRegistry.keyForFactory("myFixture") shouldBe "MyFixture"
+        FactoryFixtureContainer.invoked shouldBe false
+    }
+
+    @Test
     fun `should register all sub-container fixtures when registering a FixtureSuite`() {
         registerFixtures(TestFixtureSuite)
 
@@ -161,5 +170,15 @@ class FixtureRegistryTest {
     @Suppress("unused")
     object ParameterFixtureContainer : FixtureContainer {
         val greeting = parameterFixture("greeting", from = "userName") { name: String -> "Hello, $name" }
+    }
+
+    object FactoryFixtureContainer : FixtureContainer {
+        var invoked = false
+
+        @dev.kensa.Fixture("MyFixture")
+        fun myFixture(p: String): PrimaryFixture<String> {
+            invoked = true
+            return fixture("MyFixture") { p }
+        }
     }
 }

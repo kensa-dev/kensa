@@ -21,8 +21,11 @@ import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.getAnnotationStringValue
+import org.jetbrains.kotlin.ir.util.getPackageFragment
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.parentClassOrNull
+import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
+import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -36,6 +39,8 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     private val renderedValueFqName = FqName("dev.kensa.RenderedValue")
     private val expandableRenderedValueFqName = FqName("dev.kensa.ExpandableRenderedValue")
     private val jvmNameFqName = FqName("kotlin.jvm.JvmName")
+    private val fixtureFqName = FqName("dev.kensa.Fixture")
+    private val fixturePackageFqName = "dev.kensa.fixture"
 
 
     private val hooksClassId = ClassId.topLevel(FqName("dev.kensa.runtime.CompilerPluginHookFunctions"))
@@ -48,8 +53,10 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
 
         // Get the symbol for kotlin.arrayOf() so we can build the parameter types and argument values arrays
         val arrayOf = finder.arrayOf()
+        val factoryFixtureSymbol = finder.findFunctions(CallableId(FqName(fixturePackageFqName), Name.identifier("factoryFixture"))).singleOrNull()
         var expandableSentenceCount = 0
         var renderedValueCount = 0
+        var fixtureFactoryCount = 0
 
         moduleFragment.files.forEach { file ->
             logDebug("Processing file: ${file.name}")
@@ -63,6 +70,9 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
                         if (injectForRenderedValueIfAnnotated(fn, file, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
                             renderedValueCount++
                         }
+                        if (factoryFixtureSymbol != null && rewriteFixtureFactoryIfAnnotated(fn, pluginContext, factoryFixtureSymbol)) {
+                            fixtureFactoryCount++
+                        }
                     }
 
                     is IrSimpleFunction -> {
@@ -73,6 +83,9 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
                         if (injectForRenderedValueIfAnnotated(decl, file, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
                             renderedValueCount++
                         }
+                        if (factoryFixtureSymbol != null && rewriteFixtureFactoryIfAnnotated(decl, pluginContext, factoryFixtureSymbol)) {
+                            fixtureFactoryCount++
+                        }
                     }
                 }
             }
@@ -81,6 +94,56 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         logInfo("Kensa IR generation completed.")
         logInfo(" - Processed $expandableSentenceCount functions with @ExpandableSentence annotation")
         logInfo(" - Processed $renderedValueCount functions with @RenderedValue/@ExpandableRenderedValue annotation")
+        logInfo(" - Processed $fixtureFactoryCount functions with @Fixture annotation")
+    }
+
+    /**
+     * Rewrites the no-name `fixture { }` call inside a `@`[dev.kensa.Fixture]`("key")` factory function to
+     * `factoryFixture("key", <factory params>) { }`, injecting the annotation key and the function's own value
+     * parameters as the identity discriminator. The un-rewritten no-name overload fails loud at runtime, so a
+     * function reaching that error means the plugin did not instrument its source set.
+     */
+    private fun rewriteFixtureFactoryIfAnnotated(
+        fn: IrSimpleFunction,
+        pluginContext: IrPluginContext,
+        factoryFixtureSymbol: IrSimpleFunctionSymbol
+    ): Boolean {
+        val annotation = fn.annotations.firstOrNull { it.type.classOrNull?.owner?.fqNameWhenAvailable == fixtureFqName } ?: return false
+        val key = (annotation.arguments.firstOrNull() as? IrConst)?.value as? String ?: return false
+
+        val identityParams = fn.parameters.filter { it.kind == IrParameterKind.Regular }
+        val anyN = pluginContext.irBuiltIns.anyNType
+        val builder = DeclarationIrBuilder(pluginContext, fn.symbol, fn.startOffset, fn.endOffset)
+
+        var rewrote = false
+        fn.transformChildrenVoid(object : IrElementTransformerVoid() {
+            override fun visitCall(expression: IrCall): IrExpression {
+                val callee = expression.symbol.owner
+                val isNoNameFixture = callee.name.asString() == "fixture" &&
+                        callee.getPackageFragment().packageFqName.asString() == fixturePackageFqName &&
+                        callee.parentClassOrNull == null &&
+                        callee.parameters.count { it.kind == IrParameterKind.Regular } == 1
+
+                if (!isNoNameFixture) return super.visitCall(expression)
+
+                rewrote = true
+                val factoryArgIndex = callee.parameters.indexOfFirst { it.kind == IrParameterKind.Regular }
+                val factoryArg = expression.arguments[factoryArgIndex]
+                    ?: return super.visitCall(expression)
+
+                return builder.irCall(factoryFixtureSymbol).apply {
+                    typeArguments[0] = expression.typeArguments[0]
+                    arguments[0] = builder.irString(key)
+                    arguments[1] = builder.irVararg(anyN, identityParams.map { vp ->
+                        val arg = builder.irGet(vp)
+                        if (vp.type.isPrimitiveType()) builder.irAs(arg, anyN) else arg
+                    })
+                    arguments[2] = factoryArg
+                }
+            }
+        })
+
+        return rewrote
     }
 
     private fun injectForRenderedValueIfAnnotated(

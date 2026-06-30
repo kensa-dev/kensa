@@ -164,6 +164,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
+            on<FixtureFactoryExpression> { currentState, event ->
+                sentenceBuilder.appendFixtureFactoryValue(event.location, event.key, event.argExpr)
+                InFixturesExpression(currentState)
+            }
             on<OutputsByNameExpression> { currentState, event ->
                 sentenceBuilder.appendOutputsByNameValue(event.location, event.name, event.path)
                 InOutputsExpression(currentState)
@@ -183,6 +187,9 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 currentState.parentState
             }
             on<FixturesExpression> { currentState, _ ->
+                InFixturesExpression(currentState)
+            }
+            on<FixtureFactoryExpression> { currentState, _ ->
                 InFixturesExpression(currentState)
             }
             on<EnterExpression> { currentState, _ ->
@@ -234,6 +241,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 EnterExpression::class,
                 ChainedCallExpression::class,
                 FixturesExpression::class,
+                FixtureFactoryExpression::class,
                 OutputsByKeyExpression::class,
                 OutputsByNameExpression::class
             ) { currentState, _ -> InRenderedValueExpression(currentState) }
@@ -278,6 +286,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
             }
             on<FixturesExpression> { currentState, event ->
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
+                InFixturesExpression(currentState)
+            }
+            on<FixtureFactoryExpression> { currentState, event ->
+                sentenceBuilder.appendFixtureFactoryValue(event.location, event.key, event.argExpr)
                 InFixturesExpression(currentState)
             }
             on<OutputsByNameExpression> { currentState, event ->
@@ -420,6 +432,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
             }
+            on<FixtureFactoryExpression> { currentState, event ->
+                sentenceBuilder.appendFixtureFactoryValue(event.location, event.key, event.argExpr)
+                InFixturesExpression(currentState)
+            }
             on<OutputsByNameExpression> { currentState, event ->
                 sentenceBuilder.appendOutputsByNameValue(event.location, event.name, event.path)
                 InOutputsExpression(currentState)
@@ -465,6 +481,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
             currentState.apply { append(event) }
         }
         on<FixturesExpression> { currentState, event ->
+            currentState.append(event)
+            InFixturesExpression(currentState)
+        }
+        on<FixtureFactoryExpression> { currentState, event ->
             currentState.append(event)
             InFixturesExpression(currentState)
         }

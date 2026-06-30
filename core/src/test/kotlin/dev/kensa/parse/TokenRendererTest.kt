@@ -12,6 +12,7 @@ import dev.kensa.example.Wrapper
 import dev.kensa.fixture.FixtureContainer
 import dev.kensa.fixture.FixtureRegistry
 import dev.kensa.fixture.Fixtures
+import dev.kensa.fixture.factoryFixture
 import dev.kensa.fixture.fixture
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.render.Renderers
@@ -276,6 +277,28 @@ class TokenRendererTest {
             val expected = listOf(
                 aRenderedValueOf("***fixture1Value***", setOf("tk-fx")),
                 aRenderedValueOf("***fixture2Value***", setOf("tk-fx"))
+            )
+
+            val renderedTokens = renderer.render(templates)
+
+            renderedTokens shouldContainExactly expected
+        }
+
+        @Test
+        fun `renders factory fixtures by resolving the arg expression to its seeded (key, value)`() {
+            fixtures.seed(factoryFixture("MyFixture", "arg1") { "" }, "forArg1")
+            fixtures.seed(factoryFixture("MyFixture", 20) { "" }, "forArg3")
+
+            val templates = listOf(
+                FixtureFactoryValue.asTemplateToken("MyFixture:param1"),
+                FixtureFactoryValue.asTemplateToken("MyFixture:param3"),
+                FixtureFactoryValue.asTemplateToken("MyFixture:param1")
+            )
+
+            val expected = listOf(
+                aRenderedValueOf("***forArg1***", setOf("tk-fx")),
+                aRenderedValueOf("***forArg3***", setOf("tk-fx")),
+                aRenderedValueOf("***forArg1***", setOf("tk-fx"))
             )
 
             val renderedTokens = renderer.render(templates)

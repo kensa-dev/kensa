@@ -2,6 +2,7 @@ package dev.kensa.fixture
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
@@ -152,6 +153,32 @@ class FixturesTest {
 
         fixtures[greeting] shouldBe "Hello, Alice"
         fixtures.specs() shouldBe listOf(FixtureSpec("greeting", emptyList()))
+    }
+
+    @Test
+    fun `factory fixtures memoize distinct values per (key, args) identity`() {
+        var counter = 0
+        fun make(arg: String) = factoryFixture("MyFixture", arg) { "$arg-${counter++}" }
+
+        val fixtures = Fixtures()
+
+        val a1 = fixtures[make("a")]
+        val a2 = fixtures[make("a")]
+        val b1 = fixtures[make("b")]
+
+        a1 shouldBe "a-0"
+        a2 shouldBe a1
+        b1 shouldBe "b-1"
+        b1 shouldNotBe a1
+
+        fixtures.values().map { it.name } shouldBe listOf("MyFixture(a)", "MyFixture(b)")
+    }
+
+    @Test
+    fun `factory fixture with no identity args stores under the bare key`() {
+        val f = factoryFixture("Bare") { "value" }
+
+        f.key shouldBe "Bare"
     }
 
     @Test

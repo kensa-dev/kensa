@@ -23,6 +23,12 @@ class KotlinWithFixtures {
         })
     }
 
+    fun testWithFixtureFactory(p1: String) {
+        actionWith(myFixture(p1))
+    }
+
+    private fun myFixture(arg: String) = arg
+
     fun testWithChainedFixture() {
         assertThat(theExtractedCharacter()) isEqualTo fixtures(MyFixture).toString().last()
     }

@@ -67,6 +67,16 @@ class ParseContext(
             RenderedValue(location, matchResult.groups["function"]!!.value)
         }
 
+    internal fun ParseTree.asFixtureFactory(): FixtureFactoryExpression? =
+        singleCallWithArgumentsPattern.matchEntire(text)?.let { match ->
+            val fn = match.groups["function"]?.value ?: return null
+            val key = dev.kensa.fixture.FixtureRegistry.keyForFactory(fn) ?: return null
+            FixtureFactoryExpression(location, key, match.groups["args"]?.value?.trim().orEmpty())
+        }
+
+    internal fun ParseTree?.matchesFixtureFactoryExpression(): Boolean =
+        this?.text?.let { singleCallWithArgumentsPattern.matchEntire(it)?.groups?.get("function")?.value?.let { fn -> dev.kensa.fixture.FixtureRegistry.isFactory(fn) } } ?: false
+
     private fun ParseContext.callTypeFor(key: String): ChainedCallExpression.Type? =
         when {
             methods[key]?.isRenderedValue == true -> Method
@@ -110,6 +120,9 @@ class ParseContext(
         }
         singleCallWithArgumentsPattern.matchEntire(expr)?.let { matchResult ->
             val fn = matchResult.groups["function"]?.value
+            if (fn != null) dev.kensa.fixture.FixtureRegistry.keyForFactory(fn)?.let { key ->
+                return FixtureFactoryExpression(location, key, matchResult.groups["args"]?.value?.trim().orEmpty())
+            }
             if (fn in renderedValueMethodNames) return RenderedValue(location, fn!!)
         }
         chainedCallPattern.matchEntire(expr)?.let { matchResult ->

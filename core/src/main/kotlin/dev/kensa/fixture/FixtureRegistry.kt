@@ -13,13 +13,21 @@ object FixtureRegistry {
     private val lock = Any()
     private val fixturesByName = mutableMapOf<String, Fixture<*>>()
     private val fixturesByKey = mutableMapOf<String, Fixture<*>>()
+    private val factoryKeysByName = mutableMapOf<String, String>()
 
     internal fun clearFixtures() {
         synchronized(this) {
             fixturesByName.clear()
             fixturesByKey.clear()
+            factoryKeysByName.clear()
         }
     }
+
+    /** True if [name] is a registered `@`[dev.kensa.Fixture] factory function. Used by the parser to classify calls. */
+    internal fun isFactory(name: String): Boolean = synchronized(lock) { factoryKeysByName.containsKey(name) }
+
+    /** The `@`[dev.kensa.Fixture] key declared by factory function [name], or null if [name] is not a registered factory. */
+    internal fun keyForFactory(name: String): String? = synchronized(lock) { factoryKeysByName[name] }
 
     /**
      * Looks up a fixture by its variable name.
@@ -50,6 +58,20 @@ object FixtureRegistry {
                 }
             } else {
                 containerClass.registerFixtureFields()
+            }
+            containerClass.registerFactoryFunctions()
+        }
+    }
+
+    /**
+     * Scans for `@`[dev.kensa.Fixture] factory functions WITHOUT invoking them (they need arguments), recording
+     * `function-name -> key`. The function is never called at registration; its `(key, args)` value is seeded
+     * per invocation when the test calls it (e.g. via `fixtures[myFixture(arg)]`), and rendered by composite identity.
+     */
+    private fun Class<out FixtureContainer>.registerFactoryFunctions() {
+        declaredMethods.forEach { method ->
+            method.getAnnotation(dev.kensa.Fixture::class.java)?.let { annotation ->
+                factoryKeysByName[method.name] = annotation.value
             }
         }
     }

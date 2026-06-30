@@ -15,6 +15,9 @@ class FixtureAndOutputAccessor(private val fixturesAndOutputs: FixturesAndOutput
         return resolvePath(fixturesAndOutputs.fixtures[key], path)
     }
 
+    /** Reads the seeded value of a `@`[dev.kensa.Fixture] factory fixture by its `(key, args)` composite storage key. */
+    fun factoryFixtureValue(compositeKey: String): Any? = fixturesAndOutputs.fixtures.valueOf(compositeKey)
+
     fun outputValueByName(outputName: String, path: String?): Any? {
         val key: CapturedOutput<Any> = CapturedOutputsRegistry.lookupCapturedOutput(outputName)
 

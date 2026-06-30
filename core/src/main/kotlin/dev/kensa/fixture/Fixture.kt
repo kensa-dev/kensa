@@ -115,6 +115,46 @@ inline fun <reified T> fixture(key: String, noinline factory: () -> T): PrimaryF
 inline fun <reified T> fixture(key: String, highlighted: Boolean = false, noinline factory: () -> T): PrimaryFixture<T> = PrimaryFixture(key, factory, highlighted)
 
 /**
+ * The storage identity of a `@`[dev.kensa.Fixture] factory fixture: its annotation [key] combined with the
+ * `toString()` of each identity argument. A distinct argument-set is a distinct, memoized fixture; the same
+ * argument-set (by value) resolves to the same cached value. Order-significant per the argument list.
+ */
+internal fun compositeFixtureKey(key: String, identityArgs: List<Any?>): String =
+    if (identityArgs.isEmpty()) key else "$key(${identityArgs.joinToString(", ")})"
+
+/**
+ * Creates a `@`[dev.kensa.Fixture] factory fixture whose identity is `(key, identityArgs)`. The Kensa compiler
+ * plugin rewrites a no-name `fixture { }` inside a `@Fixture("key")` function to this function, injecting the
+ * key and the factory's own value parameters as [identityArgs]. Distinct argument-sets are distinct, memoized
+ * fixtures; the same argument-set resolves to the same cached value (a singleton per identity).
+ *
+ * Named distinctly from [fixture] to avoid overload ambiguity with the secondary-fixture overloads; users never
+ * write this directly — they write the no-name `fixture { }` and rely on the plugin rewrite.
+ */
+fun <T> factoryFixture(key: String, vararg identityArgs: Any?, factory: () -> T): PrimaryFixture<T> =
+    PrimaryFixture(compositeFixtureKey(key, identityArgs.toList()), factory)
+
+/**
+ * Creates a primary fixture whose key is taken from the enclosing `@`[dev.kensa.Fixture]`("key")` factory
+ * function, so the key need not be repeated:
+ *
+ * ```
+ * @Fixture("MyFixture")
+ * fun myFixture(param: String) = fixture { if (param == "Meh") ... else ... }
+ * ```
+ *
+ * The key and identity arguments are injected at compile time by the Kensa compiler plugin, which rewrites
+ * this no-name call to the keyed [fixture] overload. Reaching this overload at runtime means the plugin was
+ * not applied to the source set, so it fails loud rather than mis-rendering silently.
+ */
+fun <T> fixture(@Suppress("UNUSED_PARAMETER") factory: () -> T): PrimaryFixture<T> =
+    error(
+        "fixture { } without a key requires the Kensa compiler plugin on this source set — it rewrites the " +
+            "enclosing @dev.kensa.Fixture(\"...\") factory's fixture { } to fixture(key, args) { }. Apply the " +
+            "plugin, or use the keyed fixture(key) { } overload directly."
+    )
+
+/**
  * Creates a secondary fixture with a type-safe key.
  *
  * @param key The string key used internally

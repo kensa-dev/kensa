@@ -83,6 +83,7 @@ class KotlinFunctionBodyParser(
         with(parseContext) {
             when {
                 ctx.matchesFixturesExpression() -> ctx.asFixture()
+                ctx.matchesFixtureFactoryExpression() -> ctx.asFixtureFactory()
                 ctx.matchesOutputsExpression() -> ctx.asOutputs()
                 ctx.matchesRenderedValueMethodExpression() -> ctx.asRenderedValueMethodExpression()
                 ctx.matchesChainedCall() -> ctx.asChainedCall()
@@ -95,6 +96,7 @@ class KotlinFunctionBodyParser(
         if (replacedStatementDepth > 0) return
         with(parseContext) {
             if (ctx.matchesFixturesExpression()
+                || ctx.matchesFixtureFactoryExpression()
                 || ctx.matchesOutputsExpression()
                 || ctx.matchesRenderedValueMethodExpression()
                 || ctx.matchesChainedCall()
@@ -157,6 +159,7 @@ class KotlinFunctionBodyParser(
         return with(parseContext) {
             when {
                 ctx.matchesFixturesExpression() -> ctx.asFixture()
+                ctx.matchesFixtureFactoryExpression() -> ctx.asFixtureFactory()
                 ctx.matchesOutputsExpression() -> ctx.asOutputs()
                 ctx.matchesRenderedValueMethodExpression() -> ctx.asRenderedValueMethodExpression()
                 ctx.matchesChainedCall() -> ctx.asChainedCall()

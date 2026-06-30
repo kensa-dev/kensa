@@ -46,6 +46,13 @@ sealed class LocatedEvent(val location: Location) : Event() {
         }
     }
 
+    /**
+     * A call to a registered `@`[dev.kensa.Fixture] factory function, e.g. `myFixture(p1)`. Carries the fixture
+     * [key] (from the annotation) and the literal argument expression [argExpr] (e.g. `p1`), which the renderer
+     * resolves per invocation to form the `(key, value)` identity of the seeded fixture.
+     */
+    class FixtureFactoryExpression(location: Location, val key: String, val argExpr: String) : LocatedEvent(location)
+
     class Identifier(location: Location, val name: String) : LocatedEvent(location)
 
     class Operator(location: Location, val text: String) : LocatedEvent(location)

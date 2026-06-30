@@ -167,6 +167,10 @@ The `from` value must match the test method's parameter name. The fixture is see
 A parameter fixture derives from a single parameter. Reach for one when a value must be **both** computed from a test argument **and** referenced by name in the report; for a value you only need inside the test, use the parameter directly or a [captured output](./outputs).
 :::
 
+:::tip[Factory fixtures]
+To vary a fixture's construction **per call** — for example calling a factory inline with a parameterised-test parameter, `matches(myFixture(p1))` — use a [factory fixture](./factory-fixtures) instead.
+:::
+
 ---
 
 ## Using Fixtures in Tests

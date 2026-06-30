@@ -3,6 +3,17 @@ package example
 import dev.kensa.ExpandableRenderedValue
 import dev.kensa.ExpandableSentence
 import dev.kensa.RenderedValue
+import dev.kensa.fixture.FixtureContainer
+import dev.kensa.fixture.PrimaryFixture
+import dev.kensa.fixture.fixture
+
+object FactoryFixtures : FixtureContainer {
+    @dev.kensa.Fixture("MyFixture")
+    fun myFixture(param: String): PrimaryFixture<String> = fixture { if (param == "Meh") "Bah" else "Yay" }
+
+    @dev.kensa.Fixture("TwoArg")
+    fun twoArg(first: String, second: Int): PrimaryFixture<String> = fixture { "$first-$second" }
+}
 
 interface Service {
     fun call(args: Array<Any>)
