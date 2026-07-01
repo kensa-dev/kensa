@@ -67,7 +67,7 @@ If the plugin is **not** applied, the no-name `fixture { }` fails loud at runtim
 fixture { } without a key requires the Kensa compiler plugin on this source set …
 ```
 
-Apply the plugin (the same one Kensa uses for `@RenderedValue` and `@ExpandableSentence`), or use the keyed `fixture("Key") { }` overload directly if you do not need the factory-function ergonomics.
+Apply the plugin (the same one Kensa uses for `@RenderedValue` and `@ExpandableSentence`) via the [Gradle plugin](../build-plugins/gradle-plugin.md) or [Maven plugin](../build-plugins/maven-plugin.md) — both apply it to your configured source sets automatically. Factory fixtures need a bundled `kensa-core` ≥ 0.8.10 (Gradle/Maven plugin ≥ 0.9.8). Alternatively use the keyed `fixture("Key") { }` overload directly if you do not need the factory-function ergonomics.
 
 ---
 

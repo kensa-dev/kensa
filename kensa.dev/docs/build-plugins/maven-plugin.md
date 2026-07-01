@@ -40,6 +40,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.8      | 0.8.10             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.10, which adds [`@Fixture` factory functions](../api/factory-fixtures.md) (rewritten by the compiler plugin the Maven plugin already applies — no config change) and fixes two `@RenderedValue` rendering bugs. No Maven-side change. |
 | 0.9.7      | 0.8.8              | 0.8.0          | Version bump only — paired Gradle-plugin site-mode resolution fix; no Maven-side change. |
 | 0.9.6      | 0.8.8              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.8. |
 | 0.9.5      | 0.8.7              | 0.8.0          | Built against Kotlin 2.4.0 (affects the Gradle plugin's apply-time Kotlin check only — no Maven-side change). Default `kensaCoreVersion` bumped to 0.8.7. |
