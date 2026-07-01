@@ -1,5 +1,14 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.10
+
+New features:
+  - **`@Fixture` factory functions.** Annotate a function in a `FixtureContainer` with `@Fixture("Key")` and call it inline via `fixtures[myFixture(arg)]`; the compiler plugin rewrites its no-name `fixture { }` to inject the key and arguments, giving each `(key, args)` a distinct memoized identity that renders as a fixture token.
+
+Fixes:
+  - **Chained reference to a parameterised `@RenderedValue` method.** `productFor(p).stringValue` now renders the captured value instead of the call words / `null` (#149).
+  - **Top-level `@RenderedValue` function.** Resolves the file-facade FQN (honouring `@file:JvmName`), fixing a `ClassNotFoundException` (#150).
+
 ### v0.8.9
 
 New features:
