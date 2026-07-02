@@ -173,6 +173,33 @@ To vary a fixture's construction **per call** — for example calling a factory 
 
 ---
 
+### Co-locating fixtures with a test
+
+A `FixtureContainer` need not be a separate object — a test class's own `companion object` can implement it, keeping test-local fixtures next to the test that uses them. Register it in the test's `init` block:
+
+```kotlin
+class OrderPricingTest : KensaTest, WithHamkrest {
+
+    init {
+        registerFixtures(Companion)
+    }
+
+    @Test
+    fun rendersFixturesDeclaredInTheCompanion() {
+        then(theGreeting(), equalTo(fixtures[Greeting]))
+    }
+
+    private fun theGreeting() = StateCollector { "Hello ${fixtures[FirstName]}" }
+
+    companion object : FixtureContainer {
+        val FirstName = fixture("FirstName") { "Jane" }
+        val Greeting  = fixture("Greeting", FirstName) { name -> "Hello $name" }
+    }
+}
+```
+
+Because the companion is a singleton, re-running `init` on each per-method test instance re-registers the same instances harmlessly — registration is idempotent for a given fixture. The `FixtureRegistry` is global for the test run and is **not** reset between tests, so keep fixture **keys and names unique across the suite**; co-locating them per test makes that easy. Registering from a shared JUnit extension (alongside `Kensa.konfigure { }`) works identically — call `registerFixtures(...)` there instead of in each `init`.
+
 ## Using Fixtures in Tests
 
 ### In `given` and `whenever` actions
