@@ -91,3 +91,5 @@ include("integration-spring-boot-starter-web")
 project(":integration-spring-boot-starter-web").projectDir = file("integrations/spring-boot-starter-web")
 
 include("bom")
+include("doc-snippets")
+project(":doc-snippets").projectDir = file("kensa.dev/snippets")

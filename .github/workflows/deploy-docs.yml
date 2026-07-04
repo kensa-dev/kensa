@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - 'kensa.dev/**'
+      - '!kensa.dev/snippets/**'
 
 jobs:
   deploy:

@@ -28,7 +28,8 @@ subprojects {
     if (name != "ui" && name != "bom" && name != "antlr") {
         apply(plugin = "org.jetbrains.kotlin.jvm")
         apply(plugin = "java-library")
-        if (name != "adoptabot") apply(plugin = "maven-publish")
+        val unpublished = name == "adoptabot" || name == "doc-snippets"
+        if (!unpublished) apply(plugin = "maven-publish")
 
         var javaVersion = if(name == "adoptabot") VERSION_21 else VERSION_17
         var kotlinJvmTarget = if(name == "adoptabot") JVM_21 else JVM_17
@@ -85,7 +86,7 @@ subprojects {
             }
         }
 
-        if (name != "adoptabot") publishing {
+        if (!unpublished) publishing {
             publications {
                 create<MavenPublication>("mavenJava") {
                     artifactId = "${rootProject.name}-${project.name}"
