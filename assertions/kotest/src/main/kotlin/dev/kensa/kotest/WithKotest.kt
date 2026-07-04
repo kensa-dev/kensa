@@ -109,4 +109,29 @@ interface WithKotest {
 
     fun <T> andEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, block: T.() -> Unit = {}): Unit =
         thenEventually(initialDelay, duration, interval, collector, block)
+
+    fun thenEventually(assertions: PollingScope.() -> Unit): Unit = thenEventually(10.seconds, assertions)
+    fun andEventually(assertions: PollingScope.() -> Unit): Unit = thenEventually(assertions)
+
+    fun thenEventually(duration: Duration, assertions: PollingScope.() -> Unit): Unit = thenEventually(ZERO, duration, 25.milliseconds, assertions)
+    fun andEventually(duration: Duration, assertions: PollingScope.() -> Unit): Unit = thenEventually(duration, assertions)
+
+    fun thenEventually(initialDelay: Duration, duration: Duration, interval: Duration, assertions: PollingScope.() -> Unit) {
+        val scope = PollingScope(testContext().collectorContext).apply(assertions)
+        runBlocking {
+            KotestThen.thenEventually(initialDelay, duration, interval, scope)
+        }
+    }
+
+    fun andEventually(initialDelay: Duration, duration: Duration, interval: Duration, assertions: PollingScope.() -> Unit): Unit =
+        thenEventually(initialDelay, duration, interval, assertions)
+
+    fun thenContinually(assertions: PollingScope.() -> Unit): Unit = thenContinually(10.seconds, assertions)
+
+    fun thenContinually(duration: Duration, assertions: PollingScope.() -> Unit) {
+        val scope = PollingScope(testContext().collectorContext).apply(assertions)
+        runBlocking {
+            KotestThen.thenContinually(duration, scope)
+        }
+    }
 }
