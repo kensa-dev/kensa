@@ -5,6 +5,7 @@ dependencies {
 
     api(libs.hamkrest)
     api(libs.awaitilityKotlin)
+    implementation(libs.kotlinCoroutines)
 
     testImplementation(platform(libs.junit6Bom))
     testImplementation(libs.junit6PlatformLauncher)

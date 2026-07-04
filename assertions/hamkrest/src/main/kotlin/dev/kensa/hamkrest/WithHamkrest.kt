@@ -49,6 +49,12 @@ interface WithHamkrest {
         HamkrestThen.thenContinually(duration, testContext(), collector, block)
     }
 
+    fun thenContinually(assertions: PollingScope.() -> Unit): Unit = thenContinually(10.seconds, assertions)
+
+    fun thenContinually(duration: Duration, assertions: PollingScope.() -> Unit) {
+        HamkrestThen.thenContinually(duration, PollingScope(testContext().collectorContext).apply(assertions))
+    }
+
     fun <T> thenEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
     fun <T> andEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
 
@@ -95,4 +101,17 @@ interface WithHamkrest {
 
     fun <T> andEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, collector: StateCollector<T>, block: T.() -> Unit = {}): Unit =
         thenEventually(initialDelay, duration, interval, collector, block)
+
+    fun thenEventually(assertions: PollingScope.() -> Unit): Unit = thenEventually(10.seconds, assertions)
+    fun andEventually(assertions: PollingScope.() -> Unit): Unit = thenEventually(assertions)
+
+    fun thenEventually(duration: Duration, assertions: PollingScope.() -> Unit): Unit = thenEventually(ZERO, duration, 25.milliseconds, assertions)
+    fun andEventually(duration: Duration, assertions: PollingScope.() -> Unit): Unit = thenEventually(duration, assertions)
+
+    fun thenEventually(initialDelay: Duration, duration: Duration, interval: Duration, assertions: PollingScope.() -> Unit) {
+        HamkrestThen.thenEventually(initialDelay, duration, interval, PollingScope(testContext().collectorContext).apply(assertions))
+    }
+
+    fun andEventually(initialDelay: Duration, duration: Duration, interval: Duration, assertions: PollingScope.() -> Unit): Unit =
+        thenEventually(initialDelay, duration, interval, assertions)
 }
