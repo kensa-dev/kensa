@@ -19,8 +19,8 @@ Each call appends a labelled PNG to the Screenshots tab for that test invocation
 
 Set `uiTesting.autoScreenshotOnFailure = true` in `Kensa.konfigure` to capture an extra screenshot (labelled `"On failure"`) automatically whenever a test fails:
 
-```kotlin reference title="FeasibilityUiPlaywrightTest.kt — companion setup"
-https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiPlaywrightTest.kt#L115-L124
+```kotlin reference title="ClearwaveUiExtension.kt — Kensa configuration"
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/ClearwaveUiExtension.kt#L14-L19
 ```
 
 ## Storage layout

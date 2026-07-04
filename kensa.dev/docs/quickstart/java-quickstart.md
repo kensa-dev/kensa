@@ -26,12 +26,9 @@ Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/
 
 > Site-mode reporting (multi-sourceset aggregated reports) is wired up by the [Kensa Gradle plugin](../build-plugins/gradle-plugin.md). Pure-Java projects don't otherwise need the plugin — value capture for Java goes through the runtime, not a compiler plugin.
 
-Implement `KensaTest` in your test class to get the Given–When–Then DSL. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface. The lifecycle listener is registered via the JUnit Platform `ServiceLoader`.
-
 ## 2. Write a Test
 
-Implement `KensaTest` and mix in an assertions bridge. Test methods follow the
-Given–When–Then structure using the `given()`, `whenever()`, and `then()` DSL.
+Implement `KensaTest` and mix in an assertions bridge. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface, and the lifecycle listener is registered via the JUnit Platform `ServiceLoader`. Test methods follow the Given–When–Then structure using the `given()`, `whenever()`, and `then()` DSL.
 
 ```java
 import dev.kensa.Action;
@@ -54,6 +51,7 @@ class LoanDecisionTest implements KensaTest, WithAssertJ {
     private final int requestedAmount = 10_000;
 
     private final LoanService service = new LoanService();
+    private Applicant applicant;
     private LoanResult result;
 
     @Test
@@ -73,26 +71,23 @@ class LoanDecisionTest implements KensaTest, WithAssertJ {
     // --- Givens ---
 
     private Action<GivensContext> anApplicantWithGoodCredit() {
-        return ctx -> ctx.getFixtures().add(new Applicant(applicantName, 750, requestedAmount));
+        return ctx -> applicant = new Applicant(applicantName, 750, requestedAmount);
     }
 
     private Action<GivensContext> anApplicantWithPoorCredit() {
-        return ctx -> ctx.getFixtures().add(new Applicant(applicantName, 300, requestedAmount));
+        return ctx -> applicant = new Applicant(applicantName, 300, requestedAmount);
     }
 
     // --- Action ---
 
     private Action<ActionContext> theLoanServiceProcessesTheApplication() {
-        return ctx -> {
-            Applicant applicant = ctx.getFixtures().get(Applicant.class);
-            result = service.process(applicant);
-        };
+        return ctx -> result = service.process(applicant);
     }
 
     // --- State ---
 
     private StateCollector<LoanResult> theLoanResult() {
-        return () -> result;
+        return ctx -> result;
     }
 }
 ```
@@ -104,9 +99,11 @@ class LoanDecisionTest implements KensaTest, WithAssertJ {
 | `KensaTest` | Provides the Given–When–Then DSL; registers the JUnit extension |
 | `WithAssertJ` | Adds `then()` / `and()` overloads that accept AssertJ assertions |
 | `@RenderedValue` | Field value is captured and shown in the HTML report |
-| `Action<GivensContext>` | Lambda that runs during `given()` — sets up fixtures |
+| `Action<GivensContext>` | Lambda that runs during `given()` — sets up test state |
 | `Action<ActionContext>` | Lambda that runs during `whenever()` — exercises the system |
-| `StateCollector<T>` | Supplier that returns a value for `then()` to assert against |
+| `StateCollector<T>` | Lambda that receives a `CollectorContext` and returns a value for `then()` to assert against |
+
+For shared, lazily-created test data — reusable across tests and rendered in the report's Fixtures tab — see [Fixtures](../api/fixtures.md).
 
 ## 3. Chain Multiple Steps
 
@@ -121,7 +118,17 @@ void canApproveLoanWithUnderwritingApproval() {
     whenever(theLoanServiceProcessesTheApplication());
 
     then(theLoanResult(), r -> assertThat(r.getStatus()).isEqualTo(LoanStatus.Approved));
-    and(theLoanReference(), ref -> assertThat(ref).startsWith("LN-"));
+    and(theLoanReference()).startsWith("LN-");
+}
+```
+
+The single-argument `then()` / `and()` overloads return a fluent AssertJ assertion directly. Declare the collector with one of the typed collector interfaces from `dev.kensa.assertj` (here `StringStateCollector`) to get the right assertion type:
+
+```java
+import dev.kensa.assertj.StringStateCollector;
+
+private StringStateCollector theLoanReference() {
+    return ctx -> result.getReference();
 }
 ```
 
@@ -133,17 +140,17 @@ Run your tests normally with Gradle:
 ./gradlew test
 ```
 
-By default, reports are written to a `kensa-output` directory in the system temp folder. Configure a fixed location in your test setup:
+By default, reports are written to a `kensa-output` directory in the system temp folder. Configure a fixed location in your test setup — `withOutputDir` requires an **absolute** path:
 
 ```java
 Kensa.configure()
-    .withOutputDir("build/kensa");
+    .withOutputDir(Paths.get("build/kensa-output").toAbsolutePath());
 ```
 
 Then open `index.html` in a browser, or use the Kensa CLI to serve them:
 
 ```bash
-kensa --dir build/kensa
+kensa --dir build/kensa-output
 ```
 
 ---

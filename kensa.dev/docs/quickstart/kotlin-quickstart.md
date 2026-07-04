@@ -13,7 +13,7 @@ The Kensa Gradle plugin wires the Kotlin compiler plugin (so `@RenderedValue` an
 
 ```kotlin title="build.gradle.kts"
 plugins {
-    kotlin("jvm") version "2.3.21"           // minimum Kotlin enforced by the plugin
+    kotlin("jvm") version "2.4.0"            // the plugin enforces a minimum Kotlin version — see the compatibility matrix
     id("dev.kensa.gradle-plugin") version "<plugin-version>"
 }
 
@@ -45,12 +45,9 @@ If you were previously adding `-Xskip-prerelease-check` to your Kotlin compile t
 
 :::
 
-Implement `KensaTest` in your test class to get the Given–When–Then DSL. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface. The lifecycle listener is registered via the JUnit Platform `ServiceLoader`.
-
 ## 3. Write a Test
 
-Implement `KensaTest` and mix in an assertions bridge. Test methods follow the
-Given–When–Then structure using the `given()`, `whenever()`, and `then()` DSL.
+Implement `KensaTest` and mix in an assertions bridge. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface, and the lifecycle listener is registered via the JUnit Platform `ServiceLoader`. Test methods follow the Given–When–Then structure using the `given()`, `whenever()`, and `then()` DSL.
 
 ```kotlin
 import dev.kensa.Action
@@ -72,6 +69,7 @@ class LoanDecisionTest : KensaTest, WithKotest {
     private val requestedAmount = 10_000
 
     private val service = LoanService()
+    private lateinit var applicant: Applicant
     private lateinit var result: LoanResult
 
     @Test
@@ -91,17 +89,16 @@ class LoanDecisionTest : KensaTest, WithKotest {
     // --- Givens ---
 
     private fun anApplicantWithGoodCredit() = Action<GivensContext> {
-        it.fixtures.add(Applicant(applicantName, creditScore = 750, amount = requestedAmount))
+        applicant = Applicant(applicantName, creditScore = 750, amount = requestedAmount)
     }
 
     private fun anApplicantWithPoorCredit() = Action<GivensContext> {
-        it.fixtures.add(Applicant(applicantName, creditScore = 300, amount = requestedAmount))
+        applicant = Applicant(applicantName, creditScore = 300, amount = requestedAmount)
     }
 
     // --- Action ---
 
-    private fun theLoanServiceProcessesTheApplication() = Action<ActionContext> { ctx ->
-        val applicant = ctx.fixtures.get<Applicant>()
+    private fun theLoanServiceProcessesTheApplication() = Action<ActionContext> {
         result = service.process(applicant)
     }
 
@@ -118,9 +115,11 @@ class LoanDecisionTest : KensaTest, WithKotest {
 | `KensaTest` | Provides the Given–When–Then DSL; registers the JUnit extension |
 | `WithKotest` | Adds `then()` / `and()` overloads that accept Kotest matchers |
 | `@RenderedValue` | Field value is captured and shown in the HTML report |
-| `Action<GivensContext>` | Lambda that runs during `given()` — sets up fixtures |
+| `Action<GivensContext>` | Lambda that runs during `given()` — sets up test state |
 | `Action<ActionContext>` | Lambda that runs during `whenever()` — exercises the system |
 | `StateCollector<T>` | Lambda that returns a value for `then()` to assert against |
+
+For shared, lazily-created test data — reusable across tests and rendered in the report's Fixtures tab — see [Fixtures](../api/fixtures.md).
 
 ## 4. Chain Multiple Steps
 
@@ -142,20 +141,29 @@ fun canApproveLoanWithUnderwritingApproval() {
 ## 5. Record Interactions (Sequence Diagrams)
 
 Capture calls between components in your `whenever()` action using `interactions.capture()`.
-Kensa renders these as a sequence diagram in the HTML report.
+Kensa renders these as a sequence diagram in the HTML report. Participants are `Party` implementations — an enum is the usual choice:
+
+```kotlin
+import dev.kensa.state.CapturedInteractionBuilder.Companion.from
+import dev.kensa.state.Party
+
+enum class LoanParties : Party {
+    Client, LoanProcessor;
+
+    override fun asString(): String = name
+}
+```
 
 ```kotlin
 private fun theLoanServiceProcessesTheApplication() = Action<ActionContext> { ctx ->
-    val applicant = ctx.fixtures.get<Applicant>()
-
     ctx.interactions.capture(
-        from(Client).to(LoanService).with("process(${applicant.name})", "Loan Request")
+        from(LoanParties.Client).to(LoanParties.LoanProcessor).with("process(${applicant.name})", "Loan Request")
     )
 
     result = service.process(applicant)
 
     ctx.interactions.capture(
-        from(LoanService).to(Client).with(result, "Loan Result")
+        from(LoanParties.LoanProcessor).to(LoanParties.Client).with(result, "Loan Result")
     )
 }
 ```
@@ -172,18 +180,18 @@ By default, reports are written to a `kensa-output` directory in the system temp
 
 ```kotlin
 Kensa.konfigure {
-    outputDir = Path("build/kensa")
+    outputDir = Path("build/kensa-output")
 }
 ```
 
 Then open `index.html` in a browser, or use the Kensa CLI to serve them:
 
 ```bash
-kensa --dir build/kensa
+kensa --dir build/kensa-output
 ```
 
 ---
 
 ## Other Frameworks
 
-Kensa also supports **TestNG** (and **Kotest** is on the roadmap). The Given-When-Then DSL is identical — only the dependency and setup differs. See the [TestNG Quickstart](testng-quickstart) if you're using TestNG, or the [Java Quickstart](java-quickstart) for Java-specific setup. Working examples are linked from each quickstart.
+Kensa also supports **Kotest** and **TestNG**. The Given-When-Then DSL is identical — only the dependency and setup differs. See the [Kotest Quickstart](kotest-quickstart) or the [TestNG Quickstart](testng-quickstart), or the [Java Quickstart](java-quickstart) for Java-specific setup. Working examples are linked from each quickstart.

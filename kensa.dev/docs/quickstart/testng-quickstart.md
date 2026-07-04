@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 description: Step-by-step guide to adding Kensa to a Kotlin or Java project with TestNG, writing your first Given-When-Then test, and viewing the generated HTML report.
 ---
 
@@ -18,7 +18,7 @@ The Kensa Gradle plugin wires the Kotlin compiler plugin (so `@RenderedValue` an
 
 ```kotlin title="build.gradle.kts"
 plugins {
-    kotlin("jvm") version "2.3.21"           // Kotlin tests only — minimum enforced by the plugin
+    kotlin("jvm") version "2.4.0"            // Kotlin tests only — the plugin enforces a minimum, see the compatibility matrix
     id("dev.kensa.gradle-plugin") version "<plugin-version>"
 }
 
@@ -38,7 +38,7 @@ Pull in `kensa-framework-testng` plus `testng` itself — the framework artifact
 dependencies {
     testImplementation(platform("dev.kensa:kensa-bom:<kensa-core-version>"))
     testImplementation("dev.kensa:kensa-framework-testng")
-    testImplementation("org.testng:testng:7.10.2")              // kensa-framework-testng has TestNG as compileOnly
+    testImplementation("org.testng:testng:7.12.0")              // kensa-framework-testng has TestNG as compileOnly
 
     // Pick one assertions bridge (or use multiple)
     testImplementation("dev.kensa:kensa-assertions-kotest")     // Kotest matchers
@@ -57,7 +57,7 @@ tasks.test {
 dependencies {
     testImplementation platform('dev.kensa:kensa-bom:<kensa-core-version>')
     testImplementation 'dev.kensa:kensa-framework-testng'
-    testImplementation 'org.testng:testng:7.10.2'               // kensa-framework-testng has TestNG as compileOnly
+    testImplementation 'org.testng:testng:7.12.0'               // kensa-framework-testng has TestNG as compileOnly
 
     // Pick one assertions bridge (or use multiple)
     testImplementation 'dev.kensa:kensa-assertions-assertj'     // AssertJ
@@ -107,6 +107,7 @@ class LoanDecisionTest : KensaTest, WithKotest {
     private val requestedAmount = 10_000
 
     private val service = LoanService()
+    private lateinit var applicant: Applicant
     private lateinit var result: LoanResult
 
     @Test
@@ -126,17 +127,16 @@ class LoanDecisionTest : KensaTest, WithKotest {
     // --- Givens ---
 
     private fun anApplicantWithGoodCredit() = Action<GivensContext> {
-        it.fixtures.add(Applicant(applicantName, creditScore = 750, amount = requestedAmount))
+        applicant = Applicant(applicantName, creditScore = 750, amount = requestedAmount)
     }
 
     private fun anApplicantWithPoorCredit() = Action<GivensContext> {
-        it.fixtures.add(Applicant(applicantName, creditScore = 300, amount = requestedAmount))
+        applicant = Applicant(applicantName, creditScore = 300, amount = requestedAmount)
     }
 
     // --- Action ---
 
-    private fun theLoanServiceProcessesTheApplication() = Action<ActionContext> { ctx ->
-        val applicant = ctx.fixtures.get<Applicant>()
+    private fun theLoanServiceProcessesTheApplication() = Action<ActionContext> {
         result = service.process(applicant)
     }
 
@@ -170,6 +170,7 @@ class LoanDecisionTest implements KensaTest, WithAssertJ {
     private final int requestedAmount = 10_000;
 
     private final LoanService service = new LoanService();
+    private Applicant applicant;
     private LoanResult result;
 
     @Test
@@ -189,26 +190,23 @@ class LoanDecisionTest implements KensaTest, WithAssertJ {
     // --- Givens ---
 
     private Action<GivensContext> anApplicantWithGoodCredit() {
-        return ctx -> ctx.getFixtures().add(new Applicant(applicantName, 750, requestedAmount));
+        return ctx -> applicant = new Applicant(applicantName, 750, requestedAmount);
     }
 
     private Action<GivensContext> anApplicantWithPoorCredit() {
-        return ctx -> ctx.getFixtures().add(new Applicant(applicantName, 300, requestedAmount));
+        return ctx -> applicant = new Applicant(applicantName, 300, requestedAmount);
     }
 
     // --- Action ---
 
     private Action<ActionContext> theLoanServiceProcessesTheApplication() {
-        return ctx -> {
-            Applicant applicant = ctx.getFixtures().get(Applicant.class);
-            result = service.process(applicant);
-        };
+        return ctx -> result = service.process(applicant);
     }
 
     // --- State ---
 
     private StateCollector<LoanResult> theLoanResult() {
-        return () -> result;
+        return ctx -> result;
     }
 }
 ```
@@ -223,7 +221,7 @@ class LoanDecisionTest implements KensaTest, WithAssertJ {
 | `dev.kensa.testng.KensaTest` | Provides the Given–When–Then DSL. **Different package** from the JUnit interface — make sure you don't pick up `dev.kensa.junit.KensaTest` by mistake |
 | `WithKotest` / `WithAssertJ` | Adds `then()` / `and()` overloads that accept Kotest matchers or AssertJ assertions |
 | `@RenderedValue` | Field value is captured and shown in the HTML report |
-| `Action<GivensContext>` | Lambda that runs during `given()` — sets up fixtures |
+| `Action<GivensContext>` | Lambda that runs during `given()` — sets up test state |
 | `Action<ActionContext>` | Lambda that runs during `whenever()` — exercises the system |
 | `StateCollector<T>` | Returns a value for `then()` to assert against |
 
@@ -259,9 +257,11 @@ void canApproveLoanWithUnderwritingApproval() {
     whenever(theLoanServiceProcessesTheApplication());
 
     then(theLoanResult(), r -> assertThat(r.getStatus()).isEqualTo(LoanStatus.Approved));
-    and(theLoanReference(), ref -> assertThat(ref).startsWith("LN-"));
+    and(theLoanReference()).startsWith("LN-");
 }
 ```
+
+The single-argument `and()` returns a fluent AssertJ assertion — declare the collector as a typed collector interface from `dev.kensa.assertj` (here `StringStateCollector theLoanReference()`) to get the right assertion type. See the [Java Quickstart](java-quickstart) for the full pattern.
 
 </TabItem>
 </Tabs>
@@ -340,7 +340,7 @@ By default, reports are written to a `kensa-output` directory in the system temp
 
 ```kotlin
 Kensa.konfigure {
-    outputDir = Path("build/kensa")
+    outputDir = Path("build/kensa-output")
 }
 ```
 
@@ -348,8 +348,9 @@ Kensa.konfigure {
 <TabItem value="java" label="Java">
 
 ```java
+// withOutputDir requires an absolute path
 Kensa.configure()
-    .withOutputDir("build/kensa");
+    .withOutputDir(Paths.get("build/kensa-output").toAbsolutePath());
 ```
 
 </TabItem>
@@ -358,17 +359,17 @@ Kensa.configure()
 Then open `index.html` in a browser, or use the Kensa CLI to serve them:
 
 ```bash
-kensa --dir build/kensa
+kensa --dir build/kensa-output
 ```
 
 ## TestNG-specific notes
 
 - **Class instance reuse.** TestNG creates one instance per class by default. State stored in test-class fields therefore leaks between methods. Either keep test-class fields immutable and put per-test state into a Kensa fixture (which is invocation-scoped), or annotate the class with `@Test(singleThreaded = true)` and re-initialise fields in `@BeforeMethod`.
 - **`@DataProvider`.** TestNG's parametrised-test mechanism (`@Test(dataProvider = "name")`) works as usual — the Kensa listener fires per parameter row.
-- **TestNG version.** `kensa-framework-testng` is built against TestNG `7.10.x`; newer 7.x releases are expected to work.
+- **TestNG version.** `kensa-framework-testng` is built against TestNG `7.12.x`; other 7.x releases are expected to work.
 
 ---
 
 ## Other Frameworks
 
-If you're using JUnit instead of TestNG, see the [Kotlin Quickstart](kotlin-quickstart) or [Java Quickstart](java-quickstart) — the DSL and assertions are the same.
+If you're using JUnit instead of TestNG, see the [Kotlin Quickstart](kotlin-quickstart) or [Java Quickstart](java-quickstart); for Kotest, see the [Kotest Quickstart](kotest-quickstart) — the DSL and assertions are the same.

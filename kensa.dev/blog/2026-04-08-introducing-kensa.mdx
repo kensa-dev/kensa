@@ -20,7 +20,7 @@ If you've ever set up Cucumber on a JVM project, you know the overhead: feature 
 
 Kensa parses your test source code at runtime, extracts the sentence structure of each test method, and substitutes actual captured values for variable names. The result is living HTML documentation generated directly from your tests — not from a separate spec file that may or may not reflect what your code actually does.
 
-Here's a test from the [Clearwave example](https://github.com/kensa-dev/clearwave-kensa-example) — a fictional telecoms service that checks broadband feasibility across two supplier networks:
+Here's a test from the [Clearwave example](https://github.com/kensa-dev/clearwave-example) — a fictional telecoms service that checks broadband feasibility across two supplier networks:
 
 ```kotlin
 @Test
@@ -55,17 +55,17 @@ The test *is* the specification. The report shows the test sentences with real v
 
 ## Getting Started
 
-Add the dependency and extend `KensaTest`:
+Add the dependency and implement `KensaTest`:
 
 ```kotlin
 // build.gradle.kts
-testImplementation("dev.kensa:kensa-junit:0.6.6")
+testImplementation("dev.kensa:kensa-framework-junit5:0.6.6")
 ```
 
 The [Kotlin Quickstart](/docs/quickstart/kotlin-quickstart) walks through a complete example in a few minutes.
 
 ## See It In Action
 
-The [Clearwave example repo](https://github.com/kensa-dev/clearwave-kensa-example) is a self-contained project showing a more complete scenario — async order processing across multiple suppliers, with sequence diagrams auto-generated from the interaction captures. You can browse the [live Kensa report](https://kensa-dev.github.io/clearwave-kensa-example) to see what the output looks like.
+The [Clearwave example repo](https://github.com/kensa-dev/clearwave-example) is a self-contained project showing a more complete scenario — async order processing across multiple suppliers, with sequence diagrams auto-generated from the interaction captures. You can browse the [live Kensa report](https://kensa-dev.github.io/clearwave-example) to see what the output looks like.
 
 Kensa itself is open source on [GitHub](https://github.com/kensa-dev/kensa). Feedback and contributions welcome.

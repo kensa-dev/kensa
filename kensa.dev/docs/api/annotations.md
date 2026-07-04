@@ -114,7 +114,7 @@ The report expands to show each `DispatchStatus` value; the test body shows one 
 
 #### Tabular style
 
-Renders the return value as a labelled table. The default table-renderer behaviour: an `Iterable<Pair<*, *>>` becomes two-column rows. Provide explicit `headers` to label the columns. For richer table shapes, register a custom `TableRenderer<T>` for your type.
+Renders the return value as a labelled table. The default table-renderer behaviour: an `Iterable<Pair<*, *>>` becomes two-column rows (the renderer special-cases `kotlin.Pair` and `Triple` — from Java, construct `new kotlin.Pair<>(a, b)`). Provide explicit `headers` to label the columns. For richer table shapes, register a custom `TableRenderer<T>` for your type.
 
 Use this when you need to verify a full set of named fields and want the BA to see field name alongside expected value:
 
@@ -145,13 +145,15 @@ then(courier.hasDispatched(aShipmentWith(theShipmentFields())))
 <TabItem value="java" label="Java">
 
 ```java
+import kotlin.Pair;
+
 @ExpandableRenderedValue(renderAs = RenderedValueStyle.Tabular, headers = {"Field", "Expected"})
 private List<Pair<String, String>> theShipmentFields() {
     ShipmentRecord dispatched = courier.lastDispatchedShipment();
     List<Pair<String, String>> fields = List.of(
-        Pair.of("PostCode",     fixtures().get(PostCodeFx)),
-        Pair.of("CountryCode",  fixtures().get(CountryCodeFx)),
-        Pair.of("ServiceLevel", fixtures().get(ServiceLevelFx))
+        new Pair<>("PostCode",     fixtures().get(PostCodeFx)),
+        new Pair<>("CountryCode",  fixtures().get(CountryCodeFx)),
+        new Pair<>("ServiceLevel", fixtures().get(ServiceLevelFx))
         // all fields
     );
     fields.forEach(f -> assertThat(dispatched.field(f.getFirst())).isEqualTo(f.getSecond()));
@@ -492,7 +494,7 @@ class OrderFlowTest implements KensaTest, WithAssertJ { ... }
 </TabItem>
 </Tabs>
 
-**`Tab` values:** `CapturedInteractions`, `CapturedOutputs`, `Givens`, `Parameters`, `SequenceDiagram`, `None`
+**`Tab` values:** `CapturedInteractions`, `CapturedOutputs`, `Parameters`, `SequenceDiagram`, `None`
 
 ---
 

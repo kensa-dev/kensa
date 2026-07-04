@@ -38,7 +38,7 @@ If Kensa fails to parse a test due to unsupported syntax, `ReplaceSentence` is a
 /*+ ReplaceSentence: <replacement text> */
 ```
 
-The hint must appear on the line immediately before the statement it replaces. Leading words matching Given / When / Then / And (case-insensitive) are treated as GWT keywords in the rendered sentence. All other statements in the test are rendered normally.
+The hint must appear on the line immediately before the statement it replaces. Leading words matching Given / When / Whenever / Then / And / ThenEventually / ThenContinually / AndEventually / AndContinually (case-insensitive) are treated as GWT keywords in the rendered sentence. All other statements in the test are rendered normally.
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">

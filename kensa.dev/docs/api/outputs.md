@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 4.7
 description: How to use CapturedOutputs to store and retrieve values produced during the whenever step, with typed and string keys, and highlighting support.
 ---
 
@@ -29,10 +29,10 @@ class PaymentTest : KensaTest, WithKotest {
     fun `payment is accepted`() {
         given { /* ... */ }
         whenever { ctx ->
-            ctx.outputs.put(response, paymentGateway.submit(ctx.fixtures[paymentRequest]))
+            ctx.outputs[response] = paymentGateway.submit(ctx.fixtures[paymentRequest])
         }
         then({ ctx -> ctx.outputs[response] }) {
-            it.statusCode shouldBe 200
+            statusCode shouldBe 200
         }
     }
 }
@@ -50,7 +50,7 @@ static final CapturedOutput<HttpResponse> RESPONSE =
 @Test
 void paymentIsAccepted() {
     given(ctx -> { /* ... */ });
-    whenever(ctx -> ctx.getOutputs().put(RESPONSE,
+    whenever(ctx -> ctx.getOutputs().set(RESPONSE,
         paymentGateway.submit(ctx.getFixtures().get(PAYMENT_REQUEST))));
     then(ctx -> ctx.getOutputs().get(RESPONSE),
         response -> assertThat(response.statusCode()).isEqualTo(200));
@@ -74,7 +74,7 @@ whenever { ctx ->
     ctx.outputs.put("response", httpClient.post("/payments", body))
 }
 then({ ctx -> ctx.outputs["response"] as HttpResponse }) {
-    it.statusCode shouldBe 200
+    statusCode shouldBe 200
 }
 ```
 
@@ -115,7 +115,7 @@ createCapturedOutput(String key, Class<T> type, boolean highlighted)
 | Method | Description |
 |--------|-------------|
 | `put(key: String, value: Any)` | Store by string key |
-| `put(key: CapturedOutput<T>, value: T)` | Store by typed key |
+| `outputs[key] = value` / `set(key: CapturedOutput<T>, value: T)` | Store by typed key |
 | `outputs[key]` / `get(key)` | Retrieve by string key (throws if absent) |
 | `outputs[key]` / `get(key: CapturedOutput<T>)` | Retrieve by typed key (throws if absent) |
 | `getOrNull(key)` | Retrieve by string or typed key, returns `null` if absent |
@@ -137,7 +137,7 @@ val transactionId = capturedOutput<String>("transaction id", highlighted = true)
 
 whenever { ctx ->
     val result = paymentGateway.submit(ctx.fixtures[paymentRequest])
-    ctx.outputs.put(transactionId, result.transactionId)
+    ctx.outputs[transactionId] = result.transactionId
 }
 ```
 
@@ -149,7 +149,7 @@ static final CapturedOutput<String> TRANSACTION_ID =
     createCapturedOutput("transaction id", String.class, true);
 
 // In whenever:
-ctx.getOutputs().put(TRANSACTION_ID, result.getTransactionId());
+ctx.getOutputs().set(TRANSACTION_ID, result.getTransactionId());
 ```
 
 </TabItem>

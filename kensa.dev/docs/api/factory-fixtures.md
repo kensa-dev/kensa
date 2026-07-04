@@ -27,6 +27,8 @@ object MyFixtures : FixtureContainer {
 Call the factory inline through the `fixtures[…]` accessor — the same way you read any other fixture. The driving use case is a **parameterised-test parameter**, and you can use several distinct parameters in one test:
 
 ```kotlin
+import dev.kensa.fixture.FixtureRegistry.registerFixtures
+
 class GreetingTest : KensaTest, WithHamkrest {
 
     init { registerFixtures(MyFixtures) }
@@ -67,7 +69,7 @@ If the plugin is **not** applied, the no-name `fixture { }` fails loud at runtim
 fixture { } without a key requires the Kensa compiler plugin on this source set …
 ```
 
-Apply the plugin (the same one Kensa uses for `@RenderedValue` and `@ExpandableSentence`) via the [Gradle plugin](../build-plugins/gradle-plugin.md) or [Maven plugin](../build-plugins/maven-plugin.md) — both apply it to your configured source sets automatically. Factory fixtures need a bundled `kensa-core` ≥ 0.8.10 (Gradle/Maven plugin ≥ 0.9.8). Alternatively use the keyed `fixture("Key") { }` overload directly if you do not need the factory-function ergonomics.
+Apply the plugin (the same one Kensa uses for `@RenderedValue` and `@ExpandableSentence`) via the [Gradle plugin](../build-plugins/gradle-plugin.md), which applies it to your configured source sets automatically. The [Maven plugin](../build-plugins/maven-plugin.md) does **not** currently apply the compiler plugin — see its limitations section. Factory fixtures need a bundled `kensa-core` ≥ 0.8.10 (Gradle plugin ≥ 0.9.8). Alternatively use the keyed `fixture("Key") { }` overload directly if you do not need the factory-function ergonomics.
 
 ---
 

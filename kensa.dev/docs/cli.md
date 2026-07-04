@@ -16,6 +16,10 @@ Copy the wrapper script from the [Kensa repository](https://github.com/kensa-dev
 
 The wrapper auto-downloads and keeps the binary up to date from GitHub releases. Commit it to your repository; the binary itself lives in `.kensa/bin/` and can be gitignored.
 
+:::note
+The wrapper currently always fetches the `amd64` binary — on Apple Silicon it runs via Rosetta 2.
+:::
+
 ## Usage
 
 ### Serve a directory directly

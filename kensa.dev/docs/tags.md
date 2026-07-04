@@ -47,12 +47,17 @@ class CheckoutTest implements KensaTest, WithAssertJ {
 
 ### Kotest
 
+Kotest tags are class-level only, applied to the `KensaTest` base class (built on `AnnotationSpec`):
+
 ```kotlin
+import dev.kensa.kotest.KensaTest
+import io.kotest.core.annotation.Tags
+
 @Tags("smoke", "regression")
-class CheckoutSpec : FunSpec(), WithKensa {
-    init {
-        test("large basket checks out under SLA") { ... }
-    }
+class CheckoutSpec : KensaTest() {
+
+    @Test
+    fun largeBasketChecksOutUnderSla() { ... }
 }
 ```
 

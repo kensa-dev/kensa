@@ -20,7 +20,7 @@ const FeatureList: FeatureItem[] = [
         title: 'Works with your framework',
         Svg: require('@site/static/img/coding.svg').default,
         description: (
-            <>Supports <strong>JUnit 5 &amp; 6</strong>, <strong>Kotest</strong>, and <strong>TestNG</strong>. Auto-registered via ServiceLoader — add the dependency and you're done.</>
+            <>Supports <strong>JUnit 5 &amp; 6</strong>, <strong>Kotest</strong>, and <strong>TestNG</strong>. JUnit and TestNG auto-register via ServiceLoader — add the dependency and you're done.</>
         ),
     },
     {

@@ -18,7 +18,7 @@ Kensa is configured once, before your tests run. There are two styles — a Kotl
 ```kotlin
 // DSL style — preferred in Kotlin
 Kensa.konfigure {
-    outputDir = Path("build/kensa-reports")
+    outputDir = Path("build/kensa-output")
     issueTrackerUrl = URI("https://github.com/my-org/my-repo/issues/").toURL()
 }
 ```
@@ -29,8 +29,8 @@ Kensa.konfigure {
 ```java
 // Builder style — preferred in Java
 Kensa.configure()
-    .withOutputDir("build/kensa-reports")
-    .withIssueTrackerUrl(new URL("https://github.com/my-org/my-repo/issues/"));
+    .withOutputDir(Paths.get("build/kensa-output").toAbsolutePath())
+    .withIssueTrackerUrl(URI.create("https://github.com/my-org/my-repo/issues/").toURL());
 ```
 
 </TabItem>
@@ -44,7 +44,7 @@ Configuration is typically placed in a test base class, a JUnit 5 `@BeforeAll`, 
 
 | Builder method | DSL property | Type | Default | Description |
 |----------------|--------------|------|---------|-------------|
-| `withOutputDir(path)` | `outputDir` | `Path` | system temp dir / `kensa-output` | Where HTML reports are written |
+| `withOutputDir(path)` | `outputDir` | `Path` | system temp dir / `kensa-output` | Where HTML reports are written. The builder method requires an **absolute** path and appends a `kensa-output` leaf unless the path already ends with one; the DSL property assigns the path exactly as given |
 | `withOutputDisabled()` | `isOutputEnabled = false` | `Boolean` | `true` | Suppress all report generation |
 | `withFlattenOutputPackages(bool)` | `flattenOutputPackages` | `Boolean` | `false` | Simplify package paths in output filenames |
 | `withPackageDisplayMode(mode)` | `packageDisplay` | `PackageDisplay` | `HideCommonPackages` | How package names appear in the report |
@@ -62,7 +62,7 @@ Configuration is typically placed in a test base class, a JUnit 5 `@BeforeAll`, 
 
 ```kotlin
 Kensa.konfigure {
-    outputDir = Path("build/kensa-reports")
+    outputDir = Path("build/kensa-output")
     packageDisplay = PackageDisplay.HideCommonPackages
 }
 ```
@@ -72,7 +72,7 @@ Kensa.konfigure {
 
 ```java
 Kensa.configure()
-    .withOutputDir("build/kensa-reports")
+    .withOutputDir(Paths.get("build/kensa-output").toAbsolutePath())
     .withPackageDisplayMode(PackageDisplay.HideCommonPackages);
 ```
 
@@ -103,7 +103,7 @@ Kensa.konfigure {
 
 ```java
 Kensa.configure()
-    .withIssueTrackerUrl(new URL("https://github.com/my-org/my-repo/issues/"));
+    .withIssueTrackerUrl(URI.create("https://github.com/my-org/my-repo/issues/").toURL());
 ```
 
 </TabItem>
@@ -125,7 +125,7 @@ With the above URL, `@Issue("42")` links to `https://github.com/my-org/my-repo/i
 
 **`Section` values:** `Tabs`, `Sentences`, `Exception`
 
-**`Tab` values:** `CapturedInteractions`, `CapturedOutputs`, `Givens`, `Parameters`, `SequenceDiagram`, `None`
+**`Tab` values:** `CapturedInteractions`, `CapturedOutputs`, `Parameters`, `SequenceDiagram`, `None`
 
 **`SetupStrategy` values:**
 
@@ -144,16 +144,17 @@ Kensa parses method names to build readable sentences. Extend the dictionary to 
 | Builder method | Description |
 |----------------|-------------|
 | `withProtectedPhrases(vararg phrases)` | Prevent a multi-word phrase from being split (e.g. `"credit score"`) |
-| `withAcronyms(vararg acronyms)` | Register an acronym and its meaning (e.g. `Acronym("API", "Application Programming Interface")`) |
+| `withAcronyms(vararg acronyms)` | Register an acronym and its meaning (e.g. `Acronym.of("API", "Application Programming Interface")`) |
 | `withKeywords(vararg keywords)` | Add custom BDD keywords beyond the defaults |
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin
-Kensa.configure()
-    .withProtectedPhrases(ProtectedPhrase("credit score"))
-    .withAcronyms(Acronym("API", "Application Programming Interface"))
+Kensa.konfigure {
+    protectedPhrases(ProtectedPhrase("credit score"))
+    acronyms(Acronym.of("API", "Application Programming Interface"))
+}
 ```
 
 </TabItem>
@@ -162,7 +163,7 @@ Kensa.configure()
 ```java
 Kensa.configure()
     .withProtectedPhrases(new ProtectedPhrase("credit score"))
-    .withAcronyms(new Acronym("API", "Application Programming Interface"));
+    .withAcronyms(Acronym.of("API", "Application Programming Interface"));
 ```
 
 </TabItem>
@@ -236,19 +237,40 @@ Kensa.konfigure {
 </TabItem>
 <TabItem value="java" label="Java">
 
-The Kotlin DSL is the preferred entry point. Java consumers continue to use the deprecated `umlDirectives` property on `Configuration` until a richer Java-side API lands:
+The `sequenceDiagram { }` DSL is Kotlin-only, but the underlying `SequenceDiagramConfiguration` methods are plain Java-callable. From Java, supply your own `KensaConfigurationProvider` (wired up via the `dev.kensa.ConfigurationProvider` system property) and call them directly:
 
 ```java
-Kensa.getConfiguration().setUmlDirectives(List.of(
-    UmlParticipant.actor("User"),
-    UmlParticipant.participant("Frontend"),
-    UmlBox.surroundingBox("Backend",
-        UmlParticipant.participant("Orchestration"),
-        UmlParticipant.database("OrderStore")),
-    UmlParticipant.queue("Events"),
-    UmlHideUnlinked.hideUnlinkedParticipants()
-));
+import dev.kensa.Configuration;
+import dev.kensa.KensaConfigurationProvider;
+import dev.kensa.SequenceDiagramConfiguration;
+
+public class MyKensaConfiguration implements KensaConfigurationProvider {
+
+    private final Configuration configuration = new Configuration();
+
+    public MyKensaConfiguration() {
+        SequenceDiagramConfiguration diagram = configuration.getSequenceDiagram();
+        diagram.title("Order placement");
+        diagram.actor("User");
+        diagram.participant("Frontend");
+        diagram.participant("Orchestration");
+        diagram.database("OrderStore");
+        diagram.queue("Events");
+        diagram.hideUnlinked();
+    }
+
+    @Override
+    public Configuration invoke() {
+        return configuration;
+    }
+}
 ```
+
+```kotlin title="build.gradle(.kts) — test task"
+jvmArgs("-Ddev.kensa.ConfigurationProvider=com.example.MyKensaConfiguration")
+```
+
+With a custom provider, the returned `Configuration` is the one Kensa uses — set all other configuration on the same instance rather than via `Kensa.configure()`. Boxes (`box { }`) are only available through the Kotlin DSL.
 
 </TabItem>
 </Tabs>

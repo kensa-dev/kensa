@@ -107,7 +107,7 @@ When a test in `MyTest` runs, the tab generator:
 2. Calls `LogQueryService.query(sourceId = "appLog", identifier = <tracking-id>)`.
 3. Renders the joined `text` of each returned `LogRecord` into the tab.
 
-If no identifier is available, or no records match, `LogsTabRenderer.queryAll(sourceId)` is used as a fallback. If both come back empty, the tab is omitted for that invocation.
+If no identifier is available, or no records match, the renderer falls back to `LogQueryService.queryAll(sourceId)`. If both come back empty, the tab is omitted for that invocation.
 
 ---
 
@@ -157,6 +157,7 @@ Both identifier and delimiter regexes must match against a **whole line** (group
 
 | Field | Purpose |
 |---|---|
+| `id` | Optional explicit stable tab id. When blank, an id is derived from renderer + identifier provider + source + name. Set it if you need the tab id to stay stable across refactors. |
 | `name` | Label shown on the tab button in the UI. |
 | `renderer` | Use `LogsTabRenderer::class` for log tabs. |
 | `identifierProvider` | Class returning the correlation id for the current invocation. |

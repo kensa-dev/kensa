@@ -32,7 +32,7 @@ The Maven plugin does **not** wire system properties for you; you set them on ea
 </plugin>
 ```
 
-You also need `dev.kensa:kensa-core` on the test classpath — the Kotlin compiler plugin and runtime are responsible for emitting per-source bundles, the Maven plugin only assembles them.
+You also need `dev.kensa:kensa-core` on the test classpath — the Kensa runtime emits the per-source bundles; the Maven plugin only assembles them.
 
 ## kensa-core compatibility
 
@@ -40,7 +40,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
-| 0.9.8      | 0.8.10             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.10, which adds [`@Fixture` factory functions](../api/factory-fixtures.md) (rewritten by the compiler plugin the Maven plugin already applies — no config change) and fixes two `@RenderedValue` rendering bugs. No Maven-side change. |
+| 0.9.8      | 0.8.10             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.10, which adds [`@Fixture` factory functions](../api/factory-fixtures.md) and fixes two `@RenderedValue` rendering bugs. Note that factory functions need the Kensa Kotlin compiler plugin, which the Maven plugin does not apply — see [Limitations](#limitations-relative-to-the-gradle-plugin). No Maven-side change. |
 | 0.9.7      | 0.8.8              | 0.8.0          | Version bump only — paired Gradle-plugin site-mode resolution fix; no Maven-side change. |
 | 0.9.6      | 0.8.8              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.8. |
 | 0.9.5      | 0.8.7              | 0.8.0          | Built against Kotlin 2.4.0 (affects the Gradle plugin's apply-time Kotlin check only — no Maven-side change). Default `kensaCoreVersion` bumped to 0.8.7. |
@@ -156,6 +156,7 @@ If `kensa.source.title` is not set, the source's sidebar label falls back to wha
 
 ## Limitations relative to the Gradle plugin
 
+- **No Kensa Kotlin compiler plugin.** The Gradle plugin wires the Kensa compiler plugin onto your Kotlin compilation; the Maven plugin does not. Compiler-plugin-dependent features — `@RenderedValue` / `@ExpandableSentence` value capture in Kotlin and [`@Fixture` factory functions](../api/factory-fixtures.md) — are therefore unavailable in Kotlin Maven builds until compiler-plugin wiring is documented/supported for `kotlin-maven-plugin`. Java projects are unaffected (Java value capture goes through the runtime).
 - No automatic source-id collision detection — set unique ids per execution yourself.
-- No partial-run warnings — the mojo logs a notice for missing expected sources but doesn't fail the build (same behaviour as Gradle).
+- A missing expected source logs a notice rather than failing the build (matching the Gradle behaviour).
 - The mojo is `@DisableCachingByDefault` equivalent — Maven has no build cache to participate in. Re-running rebuilds the manifest unconditionally.

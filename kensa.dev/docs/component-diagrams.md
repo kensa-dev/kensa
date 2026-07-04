@@ -22,7 +22,7 @@ In [site mode](./build-plugins/site-mode.md) — where multiple sourcesets (Grad
 - Edges are `(from, to)` pairs extracted from captured interactions.
 - Repeat invocations between the same pair are deduplicated to a single edge.
 - Self-loops (an actor invoking itself) are kept.
-- Bidirectional pairs render as two separate arrows — A → B and B → A — each pointing in the direction it was recorded.
+- Bidirectional pairs collapse into a single double-headed arrow — A ↔ B.
 
 ## Configuration
 

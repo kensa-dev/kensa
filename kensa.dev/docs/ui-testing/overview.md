@@ -6,7 +6,7 @@ description: Overview of UI testing in Kensa — browser-driven BDD tests with p
 # UI Testing — Overview
 
 :::note[Availability]
-UI testing support lands in **0.8.x**.
+Available since Kensa **0.8.1**.
 :::
 
 ## What it is

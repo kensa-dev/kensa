@@ -19,6 +19,15 @@ Since **0.9.4** the plugin separates *which sourcesets the compiler plugin instr
 https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L1-L7
 ```
 
+Without a version catalog, apply it by id directly:
+
+```kotlin title="build.gradle.kts"
+plugins {
+    kotlin("jvm") version "<kotlin-version>"
+    id("dev.kensa.gradle-plugin") version "<plugin-version>"
+}
+```
+
 The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was built against, so you don't need to declare them manually. Since plugin v0.9.0, plugin and `kensa-core` version independently — see the [compatibility matrix](#kensa-core-compatibility) below if you want to pin a different `kensa-core`.
 
 ## kensa-core compatibility
@@ -66,7 +75,7 @@ Configure via the `kensa { … }` extension:
 Example with multiple sourcesets in site mode:
 
 ```kotlin reference title="build.gradle.kts — kensa { } block"
-https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L9-L12
+https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L8-L14
 ```
 
 ## Compiler-plugin vs output sourcesets

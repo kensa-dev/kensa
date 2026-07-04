@@ -41,23 +41,26 @@ The common shape: capture during the test → put into attachments → a tab ren
 
 ## Defining a key and attaching data
 
-Define a `TypedKey` once and share it between producer and consumer.
+Define a `TypedKey` once and share it between producer and consumer. Attachments live on the `TestContext` (not on the action contexts), so a producer reaches them via `TestContextHolder.testContext()` — the same way the UI-testing module attaches its screenshots:
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin
+import dev.kensa.attachments.TypedKey
+import dev.kensa.context.TestContextHolder.testContext
+
 val mySnapshotKey = TypedKey<MySnapshot>("my-snapshot")
 
 class SomeTest : KensaTest, WithKotest {
 
     @Test
     fun `something happens`() {
-        whenever { ctx ->
+        whenever {
             val snapshot = capture()
-            ctx.attachments.put(mySnapshotKey, snapshot)
+            testContext().attachments.put(mySnapshotKey, snapshot)
         }
-        then { /* assertions */ }
+        // ... then(...) assertions as usual
     }
 }
 ```
@@ -66,15 +69,17 @@ class SomeTest : KensaTest, WithKotest {
 <TabItem value="java" label="Java">
 
 ```java
+import static dev.kensa.context.TestContextHolder.testContext;
+
 static final TypedKey<MySnapshot> MY_SNAPSHOT = new TypedKey<>("my-snapshot");
 
 @Test
 void somethingHappens() {
     whenever(ctx -> {
         MySnapshot snapshot = capture();
-        ctx.getAttachments().put(MY_SNAPSHOT, snapshot);
+        testContext().getAttachments().put(MY_SNAPSHOT, snapshot);
     });
-    then(/* assertions */);
+    // ... then(...) assertions as usual
 }
 ```
 

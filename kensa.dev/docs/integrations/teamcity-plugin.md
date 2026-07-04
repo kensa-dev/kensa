@@ -15,19 +15,13 @@ The Kensa TeamCity plugin surfaces your BDD test output where your team already 
 
 A dedicated **Kensa Report** tab is added to each build that published Kensa output as an artifact. The tab embeds the full HTML report inline, with an "Open in new tab" link for full-page rendering. No separate URL to remember or share — the report travels with the build.
 
-{/* TODO: screenshot — Kensa Report tab embedded in a TC build page */}
-
 ### First-class test results
 
 Every Kensa test appears in TeamCity's **Tests** tab under its human-readable Given-When-Then display name — the same sentence your team reads in the HTML report. Tests slot into TC's standard history graphs, flaky-test detection, and trend tracking exactly like any other test result.
 
-{/* TODO: screenshot — Tests tab showing GWT display names */}
-
 ### Failure summaries
 
 When a Kensa test fails, the Given-When-Then narrative, captured values, and exception are attached as that test's **failure detail** — the text you see immediately when you click a red test. No need to open the report separately to understand what went wrong.
-
-{/* TODO: screenshot — failure detail panel showing GWT narrative + exception */}
 
 ## Install
 

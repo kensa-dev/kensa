@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 # Fixtures
 
-Kensa Fixtures are collections of type-safe, lazily-created test data values. Each test invocation has its own discreet set of Fixtures. They are shared across `given`, `whenever`, and `then` steps via the context objects.
+Kensa Fixtures are collections of type-safe, lazily-created test data values. Each test invocation has its own discrete set of Fixtures. They are shared across `given`, `whenever`, and `then` steps via the context objects.
 
 :::tip[Full example]
 The code on this page is taken from [clearwave-example](https://github.com/kensa-dev/clearwave-example) — a complete working project that demonstrates fixtures, captured outputs, sequence diagrams, and async assertions.
@@ -31,7 +31,7 @@ A primary fixture has no dependencies — its factory takes no arguments.
 
 The key design principle is **granularity**: define one fixture per meaningful field rather than one fixture per domain object. This lets each field appear by name in the rendered report wherever it is referenced in the test body.
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
@@ -56,7 +56,7 @@ A secondary fixture depends on one or more parent fixtures. Its factory receives
 
 **2 parents:**
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
@@ -76,7 +76,7 @@ createFixture("Appointment Slot", appointmentDate, appointmentTimeSlot,
 
 **3 parents — composite object built from individual field fixtures:**
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
@@ -94,9 +94,9 @@ createFixture("Voice Profile", voiceDownloadSpeed, voiceUploadSpeed, voiceSuppli
 </TabItem>
 </Tabs>
 
-**More than 3 parents** — construct a `SecondaryFixture` directly; its factory lambda receives the full `Fixtures` map:
+**More than 3 dependencies** — construct a `SecondaryFixture` directly. Its factory lambda receives the full `Fixtures` map, so it can read any number of fixtures; `Parents` declares at most three of them for dependency tracking:
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
@@ -107,13 +107,14 @@ https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/c
 <TabItem value="java" label="Java">
 
 ```java
-new SecondaryFixture<>(
+new SecondaryFixture<ServiceAddress>(
     "Service Address",
     fixtures -> new ServiceAddress(
         fixtures.get(postcode), fixtures.get(addressLine1),
         fixtures.get(town), fixtures.get(county)
     ),
-    Parents.Three.of(postcode, addressLine1, town)
+    new Parents.Three<>(postcode, addressLine1, town),
+    false
 )
 ```
 
@@ -124,7 +125,7 @@ new SecondaryFixture<>(
 
 A parameter fixture derives its value **per invocation** from a named parameter of a parameterised test. Like every fixture it is registered by name, so it still resolves in `fixtures[…]` interpolation and renders by its display name — but instead of a fixed factory it is bound to a test parameter (by name) and a transform. Kensa seeds it from the invocation's arguments *before the test body runs*, so the value is available both in the test body and in the rendered sentence.
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin
@@ -178,6 +179,8 @@ To vary a fixture's construction **per call** — for example calling a factory 
 A `FixtureContainer` need not be a separate object — a test class's own `companion object` can implement it, keeping test-local fixtures next to the test that uses them. Register it in the test's `init` block:
 
 ```kotlin
+import dev.kensa.fixture.FixtureRegistry.registerFixtures
+
 class OrderPricingTest : KensaTest, WithHamkrest {
 
     init {
@@ -206,7 +209,7 @@ Because the companion is a singleton, re-running `init` on each per-method test 
 
 Access fixtures through the context destructured in each action lambda:
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
@@ -235,7 +238,7 @@ https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/cle
 
 The most important place to use fixture references is **directly in the test body**, passed as named arguments into assertion helpers. Kensa parses the test source code and when it sees `fixtures[voiceDownloadSpeed]` (Kotlin) or `fixtures(VOICE_DOWNLOAD_SPEED)` (Java) in the sentence it substitutes the fixture's display name — *Voice Download Speed* — rather than the raw value `900`. This makes reports self-documenting.
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
@@ -262,7 +265,7 @@ https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/cle
 
 The assertion helpers simply accept the fixture values as ordinary parameters — they have no special knowledge of Kensa:
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference
@@ -305,7 +308,7 @@ import dev.kensa.fixture.TelecomsFixtures.LineProfile
 import dev.kensa.fixture.TelecomsFixtures.AppointmentSlot
 // ... one import per fixture
 
-class FeasibilityServiceTest : KensaTest(), WithHamkrest {
+class FeasibilityServiceTest : KensaTest, WithHamkrest {
     @Test
     fun `can check feasibility`() {
         then(theAccountNumber(), equalTo(fixtures[AccountNumber]))
@@ -326,7 +329,7 @@ interface WithTelecomsFixtures : WithFixturesSuite<TelecomsFixtures> {
 Step 2 — implement it in test classes; access fixtures via a block lambda:
 
 ```kotlin
-class FeasibilityServiceTest : KensaTest(), WithTelecomsFixtures, WithHamkrest {
+class FeasibilityServiceTest : KensaTest, WithTelecomsFixtures, WithHamkrest {
     @Test
     fun `can check feasibility`() {
         then(theAccountNumber(), equalTo(fixtures { AccountNumber }))
@@ -374,7 +377,11 @@ fun <T, P> parameterFixture(key: String, from: String, highlighted: Boolean = fa
 createFixture(String key, Supplier<T> factory)
 createFixture(String key, boolean highlighted, Supplier<T> factory)
 createFixture(String key, Fixture<P1> parent, Function<P1, T> factory)
+createFixture(String key, Fixture<P1> parent, boolean highlighted, Function<P1, T> factory)
 createFixture(String key, Fixture<P1> parent1, Fixture<P2> parent2, BiFunction<P1, P2, T> factory)
+createFixture(String key, Fixture<P1> parent1, Fixture<P2> parent2, boolean highlighted, BiFunction<P1, P2, T> factory)
+createFixture(String key, Fixture<P1> parent1, Fixture<P2> parent2, Fixture<P3> parent3, Function3<P1, P2, P3, T> factory)
+createFixture(String key, Fixture<P1> parent1, Fixture<P2> parent2, Fixture<P3> parent3, boolean highlighted, Function3<P1, P2, P3, T> factory)
 
 // Parameter-derived — bound to a test parameter by name
 createParameterFixture(String key, String from, Function<P, T> transform)
@@ -395,7 +402,7 @@ createParameterFixture(String key, String from, boolean highlighted, Function<P,
 
 Set `highlighted = true` on any fixture to have its value appear prominently in the report. This is useful for correlation IDs and other values that should stand out across all interactions.
 
-<Tabs>
+<Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin reference

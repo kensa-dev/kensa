@@ -28,7 +28,7 @@ dependencies {
 }
 ```
 
-The starter brings `kensa-core` and `kensa-framework-junit5` along with the Spring-side glue. It does **not** transitively pin Spring Boot, Spring Framework, or any of the JUnit Jupiter artifacts — those scopes are `compileOnly` on Kensa's side so your project's own versions win.
+The starter brings `kensa-core` and `kensa-framework-junit5` along with the Spring-side glue. It does **not** pin Spring Boot or Spring Framework at compile time — those are `compileOnly` on Kensa's side so your project's own versions win. `junit-jupiter-api` does appear transitively at *runtime* scope (versionless, via `kensa-framework-junit5`), so declare your own JUnit version explicitly.
 
 That means you must declare JUnit Jupiter yourself, as you almost certainly already do:
 

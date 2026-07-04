@@ -60,7 +60,7 @@ val aProvider = XmlField<Provider>("/order/@provider") {
 
 // Compiled-expression form (use for namespaces / builders):
 val aProvider = XmlField(
-    compile("/order/@provider"),
+    compileXPath("/order/@provider"),
     "Provider"
 ) { node -> Provider.fromString(node.nodeValue) }
 ```
@@ -83,7 +83,7 @@ The `path` property returns the XPath string when the expression is an `XPathExp
 Extracts `textContent` from the matched node and applies `transform`. Prefer `XmlStringField` when the identity transform is sufficient.
 
 ```kotlin
-val anAmount = XmlTextField(compile("/order/amount"), "Amount") { it.toBigDecimal() }
+val anAmount = XmlTextField(compileXPath("/order/amount"), "Amount") { it.toBigDecimal() }
 ```
 
 ### `XmlStringField`
@@ -107,7 +107,7 @@ Extracts an ordered `List<T>` by evaluating the XPath as a node-set and mapping 
 
 ```kotlin
 val profileTypes = XmlListField(
-    compile("/FeasibilityResponse/Profiles/Profile/Type"),
+    compileXPath("/FeasibilityResponse/Profiles/Profile/Type"),
     "Profile Types"
 ) { it.textContent }
 ```
@@ -191,9 +191,10 @@ Parse the response document and compose the matcher in the test:
 <TabItem value="kotest" label="Kotest">
 
 ```kotlin
+import dev.kensa.kotest.testsupport.field.matching
 import dev.kensa.kotest.testsupport.field.of
-import dev.kensa.kotest.testsupport.field.withListOf
-import io.kotest.matchers.containExactlyInAnyOrder
+import io.kotest.matchers.and
+import io.kotest.matchers.collections.containExactlyInAnyOrder
 
 @Test
 fun `FibreVision XML response — asserted via XmlField DSL`() {
@@ -221,13 +222,8 @@ private fun theFibreVisionResponseDocument() = StateCollector<Document> {
 
 ```kotlin
 import com.natpryce.hamkrest.and
-import com.natpryce.hamkrest.assertion.assertThat
 import dev.kensa.hamkrest.testsupport.field.of
 import dev.kensa.hamkrest.testsupport.field.withListOf
-import dev.kensa.hamkrest.testsupport.field.xml.XmlField
-import dev.kensa.hamkrest.testsupport.field.xml.XmlListField
-import dev.kensa.hamkrest.testsupport.field.xml.XmlStringField
-import dev.kensa.hamkrest.testsupport.field.xml.XPathExpressionWrapper
 
 @Test
 fun `FibreVision XML response — asserted via XmlField DSL`() {

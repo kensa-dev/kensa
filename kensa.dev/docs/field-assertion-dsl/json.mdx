@@ -182,6 +182,7 @@ import com.clearwave.fields.FeasibilityResponseFields.fastestProfileSupplier
 import com.clearwave.fields.FeasibilityResponseFields.profileCount
 import com.clearwave.fields.FeasibilityResponseFields.serviceable
 import dev.kensa.kotest.testsupport.field.of
+import io.kotest.matchers.and
 
 @Test
 fun `feasibility response shape — asserted via JsonField DSL`() {
@@ -206,7 +207,6 @@ private fun theFeasibilityResponseAsJson() =
 
 ```kotlin
 import com.natpryce.hamkrest.and
-import com.natpryce.hamkrest.assertion.assertThat
 import dev.kensa.hamkrest.testsupport.field.of
 import com.example.fields.FeasibilityResponseFields.anAddressPostcode
 import com.example.fields.FeasibilityResponseFields.fastestProfileDownloadSpeed

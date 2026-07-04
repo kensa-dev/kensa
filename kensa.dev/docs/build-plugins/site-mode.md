@@ -108,11 +108,11 @@ The runtime contract uses two system properties:
 | `kensa.source.id` | Per-source bundle directory name. Defaults to the sourceset name. |
 | `kensa.source.title` | Overrides `Configuration.titleText` — the label shown for that source in the sidebar. |
 
-Both are pre-populated by the Gradle plugin (with `id = sourceset name`, `title` from `Configuration.titleText`). Override either via `task.systemProperty` on the relevant Test task — see [per-source overrides](./gradle-plugin.md#per-source-overrides).
+The Gradle plugin pre-populates `kensa.source.id` (with the sourceset name); the title flows from `Configuration.titleText`, which the runtime writes into the bundle's `configuration.json` and the assemble step reads back (or from the plugin's `sourceTitles` map). Override either via `task.systemProperty` on the relevant Test task — see [per-source overrides](./gradle-plugin.md#per-source-overrides).
 
 ### Cross-build uniqueness in CI
 
-If you publish per-build sites and want to point a Tauri/remote loader at multiple builds, override `kensa.source.id` to include the build number:
+If you publish per-build sites and want to point a remote loader (e.g. the Kensa desktop viewer) at multiple builds, override `kensa.source.id` to include the build number:
 
 ```kotlin
 tasks.named<Test>("uiTest") {
@@ -246,5 +246,5 @@ Static hosts often serve everything with long `Cache-Control: max-age=...`. The 
 ## What's NOT in site mode
 
 - The **single-bundle layout is unchanged** when `site = false`. Default Kensa workflow is untouched.
-- Cross-build aggregation (e.g. "compare last 5 nightly UI runs") is Tauri remote-source territory, not a CI artifact concern.
+- Cross-build aggregation (e.g. "compare last 5 nightly UI runs") is remote-source territory for the Kensa desktop viewer, not a CI artifact concern.
 - Per-task `kensa { … }` Gradle DSL extension (set source-specific titles inside the DSL rather than via `systemProperty`) is on the roadmap.

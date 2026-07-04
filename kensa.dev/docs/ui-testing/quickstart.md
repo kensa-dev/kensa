@@ -12,13 +12,13 @@ This guide walks through setting up a UI test using Playwright. A [Selenium vari
 Pick the artifacts that match your JUnit version — `-junit6` for JUnit 6, `-junit5` for JUnit 5. The clearwave example places UI testing in its own source set; the dependencies declaration below shows both drivers wired up for that source set:
 
 ```kotlin reference title="build.gradle.kts — UI testing dependencies"
-https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L67-L72
+https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L74-L79
 ```
 
 The version-catalog entries those `libs.*` references resolve to:
 
 ```toml reference title="gradle/libs.versions.toml"
-https://github.com/kensa-dev/clearwave-example/blob/master/gradle/libs.versions.toml#L11-L19
+https://github.com/kensa-dev/clearwave-example/blob/master/gradle/libs.versions.toml#L6-L26
 ```
 
 Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
@@ -27,7 +27,7 @@ Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/
 Before running Playwright tests for the first time, install the browsers once. Add a Gradle task that runs the Playwright CLI:
 
 ```kotlin reference title="build.gradle.kts — installPlaywrightBrowsers"
-https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L130-L137
+https://github.com/kensa-dev/clearwave-example/blob/master/build.gradle.kts#L134-L141
 ```
 
 Then run `./gradlew installPlaywrightBrowsers` once. Selenium 4.x auto-manages ChromeDriver — no extra setup needed.
@@ -47,7 +47,11 @@ https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com
 
 Extend `KensaPlaywrightUiTest<U>` — driver creation is handled for you (headless Chromium by default). Provide `createUser(driver)` and mix in `WithKotest` so the `then(collector, matcher)` DSL is available. The `theUser` property gives you the typed user stub inside each test method.
 
-Configure Kensa in a `@BeforeAll` companion method — set `sourceLocations` to point at your UI test sources so sentence parsing works correctly.
+Configure Kensa once for the source set — set `sourceLocations` to point at your UI test sources so sentence parsing works correctly. The clearwave example does this in a shared JUnit extension (a `BeforeAllCallback` that also starts the app under test):
+
+```kotlin reference title="ClearwaveUiExtension.kt — Kensa configuration"
+https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/ClearwaveUiExtension.kt#L11-L19
+```
 
 ```kotlin reference title="FeasibilityUiPlaywrightTest.kt"
 https://github.com/kensa-dev/clearwave-example/blob/master/src/uiTest/kotlin/com/clearwave/ui/FeasibilityUiPlaywrightTest.kt
@@ -92,10 +96,10 @@ Or run them alongside regular tests:
 ./gradlew test
 ```
 
-After the run, open `build/kensa-output-ui/index.html` in a browser, or serve it with the Kensa CLI:
+After the run, open the report in a browser or serve it with the Kensa CLI. With the default configuration that's `build/kensa-output`; the clearwave example uses [site mode](../build-plugins/site-mode.md), which assembles all source sets into `build/kensa-site`:
 
 ```bash
-kensa --dir build/kensa-output-ui
+kensa --dir build/kensa-site
 ```
 
 Each test invocation includes a **Screenshots** tab in the HTML report showing all captured screenshots in order.

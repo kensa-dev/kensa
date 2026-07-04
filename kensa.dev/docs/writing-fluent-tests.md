@@ -224,15 +224,17 @@ then(courier.hasDispatched(aShipmentWith(theShipmentFields())))
 <TabItem value="java" label="Java">
 
 ```java
+import kotlin.Pair;
+
 @ExpandableRenderedValue(renderAs = RenderedValueStyle.Tabular, headers = {"Field", "Expected"})
 private List<Pair<String, String>> theShipmentFields() {
     ShipmentRecord dispatched = courier.lastDispatchedShipment();
     List<Pair<String, String>> fields = List.of(
-        Pair.of("PostCode",     fixtures().get(PostCodeFx)),
-        Pair.of("CountryCode",  fixtures().get(CountryCodeFx)),
-        Pair.of("Street",       fixtures().get(StreetFx)),
-        Pair.of("City",         fixtures().get(CityFx)),
-        Pair.of("ServiceLevel", fixtures().get(ServiceLevelFx))
+        new Pair<>("PostCode",     fixtures().get(PostCodeFx)),
+        new Pair<>("CountryCode",  fixtures().get(CountryCodeFx)),
+        new Pair<>("Street",       fixtures().get(StreetFx)),
+        new Pair<>("City",         fixtures().get(CityFx)),
+        new Pair<>("ServiceLevel", fixtures().get(ServiceLevelFx))
         // all 30 fields
     );
     fields.forEach(f -> assertThat(dispatched.field(f.getFirst())).isEqualTo(f.getSecond()));
