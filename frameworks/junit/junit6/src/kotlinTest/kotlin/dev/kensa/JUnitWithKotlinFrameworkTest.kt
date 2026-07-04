@@ -120,7 +120,8 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 KotlinWithNotesTest::class,
                 KotlinWithFixturesTest::class,
                 KotlinWithFixtureSuiteTest::class,
-                KotlinWithTaggedTest::class
+                KotlinWithTaggedTest::class,
+                KotlinWithParallelAssertionsTest::class
             ]
         )
         fun embeddedJsonIsCorrectFor(theTestClass: Class<*>) {
