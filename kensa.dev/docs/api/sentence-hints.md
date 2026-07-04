@@ -1,6 +1,6 @@
 ---
 sidebar_position: 7
-description: Reference for the ReplaceSentence hint comment, which overrides the rendered sentence for a single test statement.
+description: Reference for Kensa's comment directives — ReplaceSentence and Ignore hints, and /// statement notes.
 ---
 
 import Tabs from '@theme/Tabs';
@@ -8,9 +8,15 @@ import TabItem from '@theme/TabItem';
 
 # Sentence Hints
 
+Kensa recognises three comment directives in test sources: `/*+ ReplaceSentence: ... */` (override a statement's rendered sentence), `/*+ Ignore */` (omit lines from a rendered body), and `///` (attach a note to a statement).
+
 ## `/*+ ReplaceSentence: ... */`
 
-A specially-formatted source comment placed immediately before a test statement replaces the rendered sentence for that statement with the hint text. Works in both Kotlin and Java test sources.
+A specially-formatted source comment placed immediately before a test statement replaces the rendered sentence for that statement with the hint text.
+
+:::info[Kotlin only]
+Hint comments currently work in **Kotlin test sources only** — the Java parser does not yet recognise them.
+:::
 
 :::warning[Last resort only]
 
@@ -40,24 +46,10 @@ If Kensa fails to parse a test due to unsupported syntax, `ReplaceSentence` is a
 
 The hint must appear on the line immediately before the statement it replaces. Leading words matching Given / When / Whenever / Then / And / ThenEventually / ThenContinually / AndEventually / AndContinually (case-insensitive) are treated as GWT keywords in the rendered sentence. All other statements in the test are rendered normally.
 
-<Tabs groupId="lang">
-<TabItem value="kotlin" label="Kotlin">
-
 ```kotlin
 /*+ ReplaceSentence: given a simple replacement */
 given {}
 ```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-/*+ ReplaceSentence: given a simple replacement */
-given(() -> {});
-```
-
-</TabItem>
-</Tabs>
 
 ### Value interpolation
 
@@ -72,9 +64,6 @@ given(() -> {});
 | `{outputs[name].value}` | Output looked up by identifier, chained property access |
 
 Multiple placeholders are supported in a single sentence.
-
-<Tabs groupId="lang">
-<TabItem value="kotlin" label="Kotlin">
 
 ```kotlin
 @RenderedValue
@@ -101,29 +90,6 @@ given {}
 given {}
 ```
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-@RenderedValue
-private final String trackingId = "TRK-001";
-
-// Field interpolation
-/*+ ReplaceSentence: given the tracking id is {trackingId} */
-given(() -> {});
-
-// Fixture interpolation
-/*+ ReplaceSentence: given the order {fixtures[trackingId]} is pending */
-given(() -> {});
-
-// Multiple placeholders
-/*+ ReplaceSentence: given {trackingId} and {fixtures[orderId]} are both valid */
-given(() -> {});
-```
-
-</TabItem>
-</Tabs>
-
 ### Scope
 
 Each hint replaces only the single statement immediately following it. Subsequent statements render normally unless they have their own hint.
@@ -142,3 +108,51 @@ given {}
 /*+ ReplaceSentence: then the result is confirmed */
 then {}
 ```
+
+---
+
+## `/*+ Ignore */`
+
+Excludes the following line(s) of a rendered body from the report — useful inside an [`@ExpandableSentence`](./annotations#expandablesentence) body when one line is plumbing that would add noise to the sentence. `/*+ Ignore: N */` skips the next N lines; the bare form skips one. Kotlin test sources only.
+
+```kotlin
+@ExpandableSentence
+private fun theFixtureBackedDetails(): Action<ActionContext> {
+    return matchers(
+        /*+ Ignore */
+        anIgnoredMatcher(),
+        aFirstName of fixtures(MatcherFixture),
+    )
+}
+```
+
+The `anIgnoredMatcher()` line is omitted from the rendered sentence; the rest of the body renders normally.
+
+---
+
+## Statement notes — `///`
+
+A `///` comment attaches a **note** to a statement — rendered in the report as an expandable annotation on that sentence rather than replacing it. Use notes for the *why* behind a step: context a reader needs that isn't part of the behaviour itself. Works in both Kotlin and Java test sources.
+
+Place the note on the line(s) immediately before the statement:
+
+```kotlin
+@Test
+fun canDeclineLoanWhenApplicantHasPoorCreditScore() {
+    /// Credit score below the minimum threshold — the portal must decline
+    /// without proceeding to fraud screening
+    given(anApplicantWithPoorCredit())
+
+    whenever(theLoanPortalProcessesAStandardApplication())
+
+    then(theLoanApplicationResult()) { shouldBeDeclined() }
+}
+```
+
+Consecutive `///` lines merge into one multi-line note. A note may also sit at the **end** of a statement line, after the closing parenthesis or brace:
+
+```kotlin
+given(anApplicantWithPoorCredit())   /// declined before fraud screening
+```
+
+Notes attach to statements beginning with a GWT keyword (`given`, `when`, `whenever`, `then`, `and`, and their `Eventually`/`Continually` variants). Set [`autoExpandNotes = true`](./configuration#report-layout) to render all notes expanded by default.

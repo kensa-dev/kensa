@@ -7,6 +7,7 @@ dependencies {
     testImplementation(project(":assertions-assertj"))
     testImplementation(project(":assertions-kotest"))
     testImplementation(project(":assertions-hamkrest"))
+    testImplementation(project(":docker-logs"))
     testImplementation(project(":kotest-test-support"))
     testImplementation(project(":kotest-test-support-xml"))
     testImplementation(project(":kotest-test-support-json"))

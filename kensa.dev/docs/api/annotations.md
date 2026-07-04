@@ -402,7 +402,7 @@ private final String transactionId = "txn-abc-123";
 
 Links a test or class to one or more issue tracker tickets. Kensa appends the key to the URL configured via [`issueTrackerUrl`](./configuration#issue-tracker).
 
-**Targets:** `CLASS`, `FUNCTION` (repeatable)
+**Targets:** `CLASS`, `FUNCTION`, `ANNOTATION_CLASS` — pass multiple ids in one annotation (`vararg`)
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
@@ -424,6 +424,29 @@ void refundIsProcessedWithin24Hours() { ... }
 
 </TabItem>
 </Tabs>
+
+---
+
+### `@ParameterizedTestDescription`
+
+Marks one parameter of a parameterised test as the invocation's **display description**. The parameter's per-invocation value becomes the label for that invocation in the report, and the parameter is excluded from normal parameter-value substitution in the rendered sentence.
+
+**Targets:** `VALUE_PARAMETER`
+
+```kotlin
+@ParameterizedTest
+@CsvSource(
+    "a standard loan is approved, 15000, 36",
+    "a high-value loan needs underwriting, 75000, 60",
+)
+fun canProcessLoanApplications(
+    @ParameterizedTestDescription description: String,
+    amount: Int,
+    termMonths: Int,
+) { ... }
+```
+
+Each invocation appears in the report under its description ("a standard loan is approved", …) instead of the raw argument list.
 
 ---
 
@@ -526,3 +549,57 @@ void orderIsFulfilledViaWarehouse() { ... }
 </Tabs>
 
 **`SetupStrategy` values:** `Grouped`, `Ungrouped`, `Ignored` — see [Configuration](./configuration#report-layout) for details.
+
+---
+
+## Flow Tagging
+
+:::warning[Experimental]
+Org-flow tagging supports cross-repo flow grouping in the (in-development) Kensa hub server. The API may change before it stabilises.
+:::
+
+### `@OrgFlow`
+
+Marks a test as the canonical slice of a named org-wide business flow. One tag per test — the test-to-flow relationship is 1:1.
+
+**Targets:** `FUNCTION`
+
+```kotlin
+@OrgFlow(category = "Payments", name = "Card checkout", product = "Web")
+@Test
+fun canCheckOutWithACard() { ... }
+```
+
+### `@OrgFlowMarker`
+
+Meta-annotation for a typed alternative to `@OrgFlow` string arguments. Put it on your own annotation whose single member is an enum implementing `dev.kensa.context.OrgFlowSpec`; Kensa resolves the test's org-flow from the enum constant:
+
+```kotlin
+enum class CheckoutFlow(
+    override val category: String,
+    override val flowName: String,
+    override val attributes: Map<String, String> = emptyMap(),
+) : OrgFlowSpec {
+    CardCheckout("Payments", "Card checkout"),
+}
+
+@OrgFlowMarker
+@Target(AnnotationTarget.FUNCTION)
+annotation class Flow(val value: CheckoutFlow)
+
+@Flow(CheckoutFlow.CardCheckout)
+@Test
+fun canCheckOutWithACard() { ... }
+```
+
+**Targets:** `ANNOTATION_CLASS`
+
+---
+
+## Documented Elsewhere
+
+| Annotation | Page |
+|---|---|
+| `@KensaTab` | [Log Tabs](./log-tabs#wiring-the-tab) — custom report tabs |
+| `@Fixture` | [Factory Fixtures](./factory-fixtures) — parameterised fixture factory functions |
+| `@RenderedValueWithHint` | [Field Assertion DSL — Report Rendering](../field-assertion-dsl/report-rendering) |

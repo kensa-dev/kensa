@@ -87,6 +87,16 @@ konfigure {
 <TabItem value="java" label="Java">
 
 ```java
+import dev.kensa.tabs.InvocationIdentifierProvider;
+import dev.kensa.tabs.KensaTabContext;
+
+public class TrackingIdProvider implements InvocationIdentifierProvider {
+    @Override
+    public String identifier(KensaTabContext ctx) {
+        return ctx.getFixtures().get(TRACKING_ID_FX);
+    }
+}
+
 @KensaTab(
     name = "App Logs",
     renderer = LogsTabRenderer.class,
@@ -97,6 +107,46 @@ public interface WithAppLogs {}
 
 public class MyTest implements KensaTest, WithAppLogs { /* ... */ }
 ```
+
+The `dockerCli { }` helper and `Kensa.konfigure` are Kotlin DSL; from Java, register the service on a custom [`KensaConfigurationProvider`](./configuration#sequence-diagrams) using `LogQueryServiceRegistry` directly:
+
+```java
+import dev.kensa.Configuration;
+import dev.kensa.KensaConfigurationProvider;
+import dev.kensa.service.logs.LogPatterns;
+import dev.kensa.service.logs.LogQueryService;
+import dev.kensa.service.logs.LogQueryServiceRegistry;
+import dev.kensa.service.logs.docker.DockerCliLogQueryService;
+import dev.kensa.service.logs.docker.ProcessDockerLogsRunner;
+import kotlin.jvm.JvmClassMappingKt;
+
+import java.util.List;
+
+public class MyKensaConfiguration implements KensaConfigurationProvider {
+
+    private final Configuration configuration = new Configuration();
+
+    public MyKensaConfiguration() {
+        configuration.registerTabService(JvmClassMappingKt.getKotlinClass(LogQueryService.class), () -> {
+            LogQueryServiceRegistry registry = new LogQueryServiceRegistry();
+            registry.register("appLog", sourceId -> new DockerCliLogQueryService(
+                    List.of(new DockerCliLogQueryService.DockerSource(sourceId, "my-app")),
+                    LogPatterns.INSTANCE.idField("TrackingId", List.of(":")),
+                    "***********",
+                    new ProcessDockerLogsRunner()
+            ));
+            return registry.build();
+        });
+    }
+
+    @Override
+    public Configuration invoke() {
+        return configuration;
+    }
+}
+```
+
+Wire the provider up via the `dev.kensa.ConfigurationProvider` system property on your test task.
 
 </TabItem>
 </Tabs>

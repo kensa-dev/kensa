@@ -16,6 +16,7 @@ Kensa's public API is organised around a few core concepts. Start here, then div
 | [Factory Fixtures](./factory-fixtures) | Parameterised `@Fixture` factory functions rewritten by the compiler plugin |
 | [Captured Outputs](./outputs) | Store and retrieve values produced during the action under test |
 | [Annotations](./annotations) | Control what appears in the HTML report — rendered values, notes, issues, and more |
+| [Async Assertions](./async-assertions) | `thenEventually` / `thenContinually` — polling assertions for asynchronous behaviour |
 | [Attachments](./attachments) | Attach arbitrary typed values to a test invocation for custom tabs |
 | [Sentence Hints](./sentence-hints) | Comment-based hints that reshape how a statement renders in the report |
 | [Interaction Renderers](./interaction-renderers) | Custom renderers for values exchanged between actors in sequence diagrams |
@@ -31,7 +32,7 @@ Every framework integration exposes the same setup/action DSL via its `KensaTest
 | `whenever(action)` (alias `` `when` ``) | `KensaTest` | `Action<ActionContext>` | Exercise the system under test |
 | `then(collector, matcher)` | assertion mixin | `StateCollector<T>` | Assert on extracted state |
 | `then(collector) { block }` / `and(...)` | assertion mixin | `StateCollector<T>` | Assert using a lambda block; chain further assertions |
-| `thenEventually(...)` / `thenContinually(...)` | assertion mixin | `StateCollector<T>` | Poll the collector until the assertion passes (or keeps passing) within a timeout |
+| [`thenEventually(...)` / `thenContinually(...)`](./async-assertions) | assertion mixin | `StateCollector<T>` | Poll the collector until the assertion passes (or keeps passing) within a timeout |
 
 ## Framework Integration
 
