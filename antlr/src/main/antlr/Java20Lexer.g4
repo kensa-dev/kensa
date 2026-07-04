@@ -948,7 +948,7 @@ WS
 
 NL: ('\n' | '\r' '\n') -> channel(HIDDEN);
 
-KENSA_HINT: '/**' .*? '*/' -> channel(HIDDEN);
+KENSA_HINT: '/*+' .*? '*/' -> channel(HIDDEN);
 
 KENSA_NOTE: '///' ~[\r\n]* -> channel(HIDDEN);
 

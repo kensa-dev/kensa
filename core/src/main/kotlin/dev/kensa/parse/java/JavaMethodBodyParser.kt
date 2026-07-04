@@ -2,11 +2,13 @@ package dev.kensa.parse.java
 
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.Location
+import dev.kensa.parse.LocatedEvent.IgnoreLines
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
 import dev.kensa.parse.ParseContext.Companion.asEnterExpression
 import dev.kensa.parse.ParseContext.Companion.asEnterStatement
+import dev.kensa.parse.ParseContext.Companion.asIgnoreHint
 import dev.kensa.parse.ParseContext.Companion.asMethodInvocation
 import dev.kensa.parse.ParseContext.Companion.asMultilineString
 import dev.kensa.parse.ParseContext.Companion.asNote
@@ -93,6 +95,7 @@ class JavaMethodBodyParser(
 
     override fun enterMethodName(ctx: Java20Parser.MethodNameContext) {
         if (replacedStatementDepth > 0) return
+        emitIgnoreHint(ctx)
         with(parseContext) {
             stateMachine.apply(ctx.asMethod() ?: ctx.asExpandableSentence()?.let { expandable ->
                 if (ctx.hasArguments())
@@ -109,8 +112,15 @@ class JavaMethodBodyParser(
 
     override fun enterIdentifier(ctx: Java20Parser.IdentifierContext) {
         if (replacedStatementDepth > 0) return
+        emitIgnoreHint(ctx)
         with(parseContext) {
             stateMachine.apply(ctx.asField() ?: ctx.asParameter() ?: ctx.asIdentifier())
+        }
+    }
+
+    private fun emitIgnoreHint(ctx: ParserRuleContext) {
+        ctx.asIgnoreHint()?.also { lineCount ->
+            stateMachine.apply(IgnoreLines(Location(ctx.start.line, ctx.start.charPositionInLine), lineCount))
         }
     }
 

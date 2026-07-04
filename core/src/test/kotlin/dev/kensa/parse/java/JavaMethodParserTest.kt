@@ -11,7 +11,9 @@ import dev.kensa.sentence.asTemplateToken
 import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.equality.FieldsEqualityCheckConfig
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.maps.shouldBeEmpty
@@ -406,6 +408,85 @@ internal class JavaMethodParserTest {
 
                 sentences.map { it.tokens }.shouldBe(expectedSentences.map { it.tokens })
             }
+        }
+    }
+
+    @Nested
+    inner class ReplaceSentence {
+
+        @Test
+        fun `replaces sentence with plain words`() {
+            val sentences = parseMethod("replacedWithPlainWords")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("a"),
+                Word.asTemplateToken("simple"),
+                Word.asTemplateToken("replacement"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence with field interpolation`() {
+            val sentences = parseMethod("replacedWithFieldInterpolation")
+            sentences.shouldHaveSize(1)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("tracking"),
+                Word.asTemplateToken("id"),
+                Word.asTemplateToken("is"),
+                FieldValue.asTemplateToken("trackingId:"),
+            )).tokens
+        }
+
+        @Test
+        fun `replaces sentence and leaves subsequent statements unaffected`() {
+            val sentences = parseMethod("replacedAndSubsequentStatementsUnaffected")
+            sentences.shouldHaveSize(2)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("Given"),
+                Word.asTemplateToken("a"),
+                Word.asTemplateToken("simple"),
+                Word.asTemplateToken("replacement"),
+            )).tokens
+            sentences[1].tokens shouldBe TemplateSentence(listOf(
+                Keyword.asTemplateToken("When"),
+            )).tokens
+        }
+
+        private fun parseMethod(methodName: String): List<TemplateSentence> {
+            val parser = createParserFor(classMethodNamed(methodName))
+            val method = JavaWithReplaceSentence::class.java.findMethod(methodName)
+            return parser.parse(method).sentences
+        }
+    }
+
+    @Nested
+    inner class IgnoreHint {
+
+        @Test
+        fun `omits an ignored statement from the rendered sentences`() {
+            val sentences = parseMethod("withIgnoredStatement")
+            sentences.shouldHaveSize(2)
+            sentences[0].tokens shouldBe TemplateSentence(listOf(Keyword.asTemplateToken("Given"))).tokens
+            sentences[1].tokens shouldBe TemplateSentence(listOf(Keyword.asTemplateToken("When"))).tokens
+        }
+
+        @Test
+        fun `omits an ignored line inside a block from the rendered sentence`() {
+            val sentences = parseMethod("withIgnoredLineInBlock")
+            sentences.shouldHaveSize(1)
+            val templates = sentences[0].tokens.map { it.template }
+            templates.shouldContain("thing")
+            templates.shouldNotContain("somethingNoisy")
+            templates.shouldNotContain("something")
+        }
+
+        private fun parseMethod(methodName: String): List<TemplateSentence> {
+            val parser = createParserFor(classMethodNamed(methodName))
+            val method = JavaWithIgnoreHint::class.java.findMethod(methodName)
+            return parser.parse(method).sentences
         }
     }
 
