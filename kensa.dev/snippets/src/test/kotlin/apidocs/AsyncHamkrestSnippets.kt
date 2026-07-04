@@ -20,5 +20,27 @@ class AsyncHamkrestSnippets : KensaTest, WithHamkrest {
         thenContinually(5.seconds, theOrderStatus(), equalTo("CONFIRMED"))
     }
 
+    @Test
+    fun `order is confirmed and reference assigned within one window`() {
+        whenever { orderService.placeOrder() }
+
+        thenEventually(10.seconds) {
+            then(theOrderStatus(), equalTo("CONFIRMED"))
+            and(theOrderReference(), equalTo("ORD-1"))
+        }
+    }
+
+    @Test
+    fun `order stays confirmed and reference stays stable`() {
+        whenever { orderService.placeOrder() }
+
+        thenContinually(5.seconds) {
+            then(theOrderStatus(), equalTo("CONFIRMED"))
+            and(theOrderReference(), equalTo("ORD-1"))
+        }
+    }
+
     private fun theOrderStatus() = StateCollector { orderService.status() }
+
+    private fun theOrderReference() = StateCollector { orderService.reference() }
 }
