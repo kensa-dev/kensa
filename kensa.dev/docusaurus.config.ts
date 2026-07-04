@@ -36,7 +36,17 @@ const config: Config = {
     locales: ['en'],
   },
 
-  themes: ['@saucelabs/theme-github-codeblock'],
+  themes: [
+    '@saucelabs/theme-github-codeblock',
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        indexBlog: true,
+        highlightSearchTermsOnTargetPage: true,
+      },
+    ],
+  ],
 
   clientModules: [require.resolve('./src/clientModules/githubStars.ts')],
 
@@ -46,6 +56,18 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          // Docs versioning is deliberately OFF until the 1.0 release (avoids
+          // dual-maintaining docs/ and versioned_docs/ while pre-1.0 docs churn).
+          // To turn it on at release (rehearsed on the `versioning-scaffold` branch):
+          //   1. npm run docusaurus docs:version 1.0
+          //   2. add here:  lastVersion: '1.0',
+          //                 versions: {
+          //                   current: { label: 'Next', path: 'next', banner: 'unreleased' },
+          //                   '1.0': { label: '1.0' },
+          //                 }
+          //   3. add { type: 'docsVersionDropdown', position: 'right' } to navbar.items
+          // Released docs then serve at /docs/; work-in-progress at /docs/next/.
+          // Note: the local search plugin indexes only the latest released version.
         },
         blog: {
           showReadingTime: true,
