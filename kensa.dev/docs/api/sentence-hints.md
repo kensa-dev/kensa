@@ -12,11 +12,7 @@ Kensa recognises three comment directives in test sources: `/*+ ReplaceSentence:
 
 ## `/*+ ReplaceSentence: ... */`
 
-A specially-formatted source comment placed immediately before a test statement replaces the rendered sentence for that statement with the hint text.
-
-:::info[Kotlin only]
-Hint comments currently work in **Kotlin test sources only** — the Java parser does not yet recognise them.
-:::
+A specially-formatted source comment placed immediately before a test statement replaces the rendered sentence for that statement with the hint text. Works in both Kotlin and Java test sources.
 
 :::warning[Last resort only]
 
@@ -113,7 +109,7 @@ then {}
 
 ## `/*+ Ignore */`
 
-Excludes the following line(s) of a rendered body from the report — useful inside an [`@ExpandableSentence`](./annotations#expandablesentence) body when one line is plumbing that would add noise to the sentence. `/*+ Ignore: N */` skips the next N lines; the bare form skips one. Kotlin test sources only.
+Excludes the following line(s) of a rendered body from the report — useful inside an [`@ExpandableSentence`](./annotations#expandablesentence) body when one line is plumbing that would add noise to the sentence. `/*+ Ignore: N */` skips the next N lines; the bare form skips one. Works in both Kotlin and Java test sources.
 
 ```kotlin
 @ExpandableSentence
