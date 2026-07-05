@@ -1,5 +1,13 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.11
+
+New features:
+  - **Multi-assertion `thenEventually` / `thenContinually` blocks.** Both polling forms now accept a block of `then` / `and` assertions evaluated in parallel within a single polling window — `thenEventually` locks in each assertion independently as it starts passing, `thenContinually` requires all assertions to hold on every tick. Single failures are rethrown as-is; multiple failures are aggregated with the rest suppressed. Available in the Kotest and Hamkrest bridges.
+
+Fixes:
+  - **`ReplaceSentence` and `Ignore` hints in Java test sources.** The Java lexer now recognises the documented `/*+ ... */` hint form (it previously only matched javadoc-style comments, which then failed the prefix check), and the Java body parser now emits `Ignore` hints, matching the Kotlin parser (#151).
+
 ### v0.8.10
 
 New features:
