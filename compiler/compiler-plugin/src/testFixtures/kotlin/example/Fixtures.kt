@@ -66,6 +66,16 @@ class ExpandableSentences(private val service: Service) {
         service.call(arrayOf(value))
     }
 
+    @ExpandableSentence
+    fun String.onExtensionReceiverWithValueClassParam(value: MyValueClass) {
+        service.call(arrayOf(this, value))
+    }
+
+    @ExpandableSentence
+    fun MyValueClass.onValueClassExtensionReceiverWithValueClassParam(value: MyValueClass) {
+        service.call(arrayOf(this, value))
+    }
+
     context(prefix: String)
     @ExpandableSentence
     fun withContextParameter(suffix: String) {

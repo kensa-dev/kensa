@@ -170,6 +170,18 @@ class KotlinWithExpandableSentenceTest : KotlinExampleTest(), WithHamkrest, Inte
         return someOtherAction("anAction")
     }
 
+    @Test
+    fun testForExpandableSentenceWithValueClassParameter() {
+        someActionWithValueClassParameter(myValueClassInstance)
+    }
+
+    @ExpandableSentence
+    fun someActionWithValueClassParameter(parameter1: MyValueClass): Action<ActionContext> {
+        return someActionWith(parameter1.value)
+    }
+
+    private val myValueClassInstance = MyValueClass("foo")
+
     private fun someOtherAction(withAParam: String): Action<ActionContext> {
         return Action { }
     }
@@ -183,3 +195,6 @@ interface InterfaceWithExpandableSentence {
 
     private fun someActionWith(@RenderedValue parameter1: String): Action<ActionContext> = Action { }
 }
+
+@JvmInline
+value class MyValueClass(val value: String)

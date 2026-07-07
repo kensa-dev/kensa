@@ -2,7 +2,10 @@ package dev.kensa.runtime
 
 import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.context.RenderedValueInvocationContextHolder
+import dev.kensa.util.allMethods
 import dev.kensa.util.findMethod
+import dev.kensa.util.normalisedPlatformName
+import dev.kensa.util.originalParamTypes
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
@@ -26,6 +29,10 @@ object CompilerPluginHookFunctions {
             else -> owner::class.java
         }
 
-        return clazz.findMethod(simpleName, *paramTypes.map { it.java }.toTypedArray())
+        return clazz
+            .allMethods
+            .firstOrNull { it.normalisedPlatformName == simpleName && it.originalParamTypes contentEquals paramTypes }
+            // Fallback to the original findMethod call, which doesn't know about methods with "value class" parameters
+            ?: clazz.findMethod(simpleName, *paramTypes.map { it.java }.toTypedArray())
     }
 }

@@ -2,6 +2,7 @@ package dev.kensa.context
 
 import dev.kensa.parse.ElementDescriptor
 import dev.kensa.parse.ParsedExpandableMethod
+import dev.kensa.util.normalisedPlatformName
 import java.lang.reflect.Method
 
 class ExpandableInvocationContext {
@@ -11,7 +12,7 @@ class ExpandableInvocationContext {
     private val invocations = mutableMapOf<String, MutableList<Array<Any?>>>()
 
     fun recordInvocation(method: Method, args: Array<Any?>) {
-        invocations.compute(method.name) { _, current ->
+        invocations.compute(method.normalisedPlatformName) { _, current ->
             current?.also { it.add(args) } ?: mutableListOf(args)
         }
     }

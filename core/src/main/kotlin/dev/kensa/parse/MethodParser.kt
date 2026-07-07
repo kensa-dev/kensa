@@ -9,6 +9,9 @@ import dev.kensa.util.*
 import java.lang.reflect.Method
 import kotlin.collections.emptyList
 import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
+import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.jvm.kotlinFunction
 
 class ClassDeclarations(
     val imports: Imports,
@@ -138,12 +141,14 @@ class MethodParser(
     private fun Class<*>.findExpandableMethod(dc: MethodDeclarationContext, imports: Imports): Method =
         allMethods.filter { it.normalisedPlatformName == dc.name }
             .find { method ->
-                val syntheticCount = method.findSyntheticKotlinReceivers().size
-                val totalMethodParams = method.parameterTypes.size
+                val realMethodParams = method
+                    .kotlinFunction
+                    ?.parameters
+                    ?.filter { it.kind == KParameter.Kind.VALUE }
+                    ?.map { it.type.jvmErasure.java }
+                    ?.toTypedArray()
+                    ?: method.parameterTypes
 
-                if (totalMethodParams != syntheticCount + dc.parameterTypes.size) return@find false
-
-                val realMethodParams = method.parameterTypes.drop(syntheticCount).toTypedArray()
                 imports.match(realMethodParams, dc.parameterTypes)
             } ?: throw KensaException("Did not find expandable method [${dc.name}] in class [${this.name}]")
 

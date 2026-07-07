@@ -39,6 +39,18 @@ class ExpandableSentenceIntegrationTest {
                 service = service
             ),
             expandableCase(
+                "onExtensionReceiverWithValueClassParam",
+                invoke = { with(instance) { "ext".onExtensionReceiverWithValueClassParam(MyValueClass("test arg")) } },
+                args = listOf("ext", MyValueClass("test arg")),
+                service = service
+            ),
+            expandableCase(
+                "onValueClassExtensionReceiverWithValueClassParam",
+                invoke = { with(instance) { MyValueClass("receiver").onValueClassExtensionReceiverWithValueClassParam(MyValueClass("test arg")) } },
+                args = listOf(MyValueClass("receiver"), MyValueClass("test arg")),
+                service = service
+            ),
+            expandableCase(
                 "withContextParameter",
                 invoke = { with("p") { instance.withContextParameter("v") } },
                 args = listOf("p", "v"),
