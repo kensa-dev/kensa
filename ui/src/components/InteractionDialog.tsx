@@ -4,6 +4,7 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/
 import {InteractionContent} from "./InteractionContent"
 import {cn} from "@/lib/utils"
 import {Interaction, RenderedInteractionValue} from "@/types/Test"
+import {FixtureSubstitution} from "@/util/fixtureSubstitution";
 
 interface InteractionDialogProps {
     interaction: Interaction | null;
@@ -11,9 +12,10 @@ interface InteractionDialogProps {
     onClose: () => void;
     isPassed: boolean;
     highlights?: string[];
+    fixtureSubstitutions?: FixtureSubstitution[];
 }
 
-export function InteractionDialog({interaction, isOpen, onClose, isPassed, highlights}: InteractionDialogProps) {
+export function InteractionDialog({interaction, isOpen, onClose, isPassed, highlights, fixtureSubstitutions}: InteractionDialogProps) {
     const [isMaximized, setIsMaximized] = React.useState(false)
 
     const hasValidPayload = React.useMemo(() => {
@@ -79,6 +81,7 @@ export function InteractionDialog({interaction, isOpen, onClose, isPassed, highl
                         interaction={interaction}
                         isPassed={isPassed}
                         highlights={highlights}
+                        fixtureSubstitutions={fixtureSubstitutions}
                         hideMetadata={isMaximized && hasValidPayload}
                         isMaximized={isMaximized}
                         onToggleMaximize={() => setIsMaximized(!isMaximized)}

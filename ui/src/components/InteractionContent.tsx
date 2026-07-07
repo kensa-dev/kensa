@@ -7,6 +7,7 @@ import {applyKensaHighlights, applySuiteHighlights, cn, getAllTextNodes, removeH
 import {DataTable} from "@/components/DataTable";
 import {useSuiteSearch} from "@/contexts/SuiteSearchContext";
 import {NameAndValues} from "@/types/Test";
+import {FixtureSubstitution, substitutePayloadValue} from "@/util/fixtureSubstitution";
 
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('xml', xml);
@@ -37,6 +38,7 @@ type InteractionContentProps = {
     interaction: Interaction;
     isPassed: boolean;
     highlights?: string[];
+    fixtureSubstitutions?: FixtureSubstitution[];
     hideMetadata?: boolean;
     onExpand?: () => void;
     isMaximized?: boolean;
@@ -59,6 +61,7 @@ export const InteractionContent = ({
                                        interaction,
                                        isPassed,
                                        highlights = [],
+                                       fixtureSubstitutions,
                                        hideMetadata,
                                        onExpand,
                                        isMaximized,
@@ -71,7 +74,15 @@ export const InteractionContent = ({
     const [isWrapped, setIsWrapped] = React.useState(false);
     const codeRef = React.useRef<HTMLElement>(null);
 
-    const payloads: Payload[] = rendered.values ?? [];
+    const rawPayloads: Payload[] = rendered.values ?? [];
+    // Org-flow popup only: rewrite the seam's correlation-fixture values to
+    // <fixture-name> placeholders before highlighting. Absent prop = unchanged.
+    const payloads: Payload[] = React.useMemo(() => {
+        if (!fixtureSubstitutions || fixtureSubstitutions.length === 0) return rawPayloads;
+        return rawPayloads.map((p) =>
+            p.value ? {...p, value: substitutePayloadValue(p.value, fixtureSubstitutions)} : p
+        );
+    }, [rawPayloads, fixtureSubstitutions]);
     const metadataGroups: MetadataGroup[] = rendered.attributes ?? [];
 
     const hasValidPayload = React.useMemo(

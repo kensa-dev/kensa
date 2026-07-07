@@ -53,6 +53,14 @@ export interface RenderedInteraction {
     attributes: NamedAttributes[]
 }
 
+export interface InteractionSeam {
+    id: string
+    name: string
+    owner: string
+    direction: string
+    correlationFixtures: string[]
+}
+
 export interface Interaction {
     id: string
     name: string
@@ -60,6 +68,7 @@ export interface Interaction {
     to?: string | null
     rendered: RenderedInteraction
     attributes: NameAndValues
+    seam?: InteractionSeam | null
 }
 
 export interface CustomTabContent {
