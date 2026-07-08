@@ -1,5 +1,14 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.12
+
+Fixes:
+  - **`@ExpandableSentence` with value class parameters.** The Kotlin compiler mangles the JVM name of a function that takes a value class parameter (`someAction` becomes `someAction-abc123`), so Kensa could not find the method and reported the test as unparseable. Thanks to Michael Orr (#160).
+  - **`@RenderedValue` with value class parameters or return types.** The same name mangling meant the captured invocation was recorded under the mangled JVM name and never matched the parsed sentence, so the rendered value was silently dropped.
+
+Performance:
+  - **No reflective method lookup on instrumented calls.** The compiler-plugin hooks now record invocations by source name directly instead of deriving a `java.lang.reflect.Method` on every `@ExpandableSentence` / `@RenderedValue` call.
+
 ### v0.8.11
 
 New features:
