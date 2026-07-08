@@ -19,6 +19,9 @@ interface Service {
     fun call(args: Array<Any>)
 }
 
+@JvmInline
+value class MyValueClass(val value: String)
+
 class ExpandableSentences(private val service: Service) {
     @ExpandableSentence
     fun foo(bar: String) {
@@ -56,6 +59,21 @@ class ExpandableSentences(private val service: Service) {
     @ExpandableSentence
     fun String.onExtensionReceiver() {
         service.call(arrayOf(this))
+    }
+
+    @ExpandableSentence
+    fun valueClassParam(value: MyValueClass) {
+        service.call(arrayOf(value))
+    }
+
+    @ExpandableSentence
+    fun String.onExtensionReceiverWithValueClassParam(value: MyValueClass) {
+        service.call(arrayOf(this, value))
+    }
+
+    @ExpandableSentence
+    fun MyValueClass.onValueClassExtensionReceiverWithValueClassParam(value: MyValueClass) {
+        service.call(arrayOf(this, value))
     }
 
     context(prefix: String)

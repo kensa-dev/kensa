@@ -12,6 +12,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.function.Supplier
 import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KTypeProjection
@@ -26,6 +27,18 @@ val Class<*>.isKotlinObject get() = isKotlinClass && kotlin.objectInstance != nu
 val KClass<*>.isKotlinObject get() = isKotlinClass && objectInstance != null
 
 val Method.normalisedPlatformName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
+
+/**
+ * Returns the parameter types (including context parameters and extension receiver, if present) as they would have
+ * been declared in Kotlin, before any <code>value class</code> parameters were inlined to their underlying types.
+ */
+val Method.originalParamTypes: Array<KClass<*>>
+    get() = this.kotlinFunction
+        ?.parameters
+        ?.filter { it.kind != KParameter.Kind.INSTANCE }
+        ?.mapNotNull { it.type.classifier as? KClass<*> }
+        ?.toTypedArray()
+        ?: this.parameterTypes.map { it.kotlin }.toTypedArray()
 
 fun Method.derivedTestName(protectedPhrases: Collection<String>): String =
     takeIf { declaringClass.isKotlinClass }
@@ -192,7 +205,7 @@ internal fun Class<*>.findRequiredField(name: String) = this.findField(withField
 
 internal fun Any.fieldValue(name: String): Any? = this::class.java.findRequiredField(name).valueOfIn(this)
 
-internal val Class<*>.allMethods get() = findMethodsInHierarchy(allTheMethods)
+val Class<*>.allMethods get() = findMethodsInHierarchy(allTheMethods)
 internal val Class<*>.allProperties: Set<KProperty<*>> get() = kotlin.allProperties
 internal val KClass<*>.allProperties: Set<KProperty<*>> get() = memberProperties.toSet() + findStaticPropertiesInHierarchy()
 internal val Class<*>.allFields get() = findFieldsInHierarchy(allTheFields)

@@ -1636,6 +1636,62 @@
           "displayName": "[2] \"two\""
         }
       ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "testForExpandableSentenceWithValueClassParameter",
+      "displayName": "Test For Expandable Sentence With Value Class Parameter",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 175,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-ex"
+                  ],
+                  "value": "some Action With Value Class Parameter",
+                  "parameterTokens": [
+                    {
+                      "types": [
+                        "tk-id"
+                      ],
+                      "value": "myValueClassInstance"
+                    }
+                  ],
+                  "tokens": [
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "some action with parameter 1 value"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "testForExpandableSentenceWithValueClassParameter()"
+        }
+      ]
     }
   ]
 }
