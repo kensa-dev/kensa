@@ -8,6 +8,9 @@ import dev.kensa.parse.ParsedExpandableMethod
 import example.ExpandableSentences
 import example.MyValueClass
 import example.Service
+import example.topLevelExpandableOnExtensionReceiver
+import example.topLevelExpandableSentence
+import example.topLevelJvmNamedExpandableSentence
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.DynamicTest
@@ -56,6 +59,16 @@ class ExpandableSentenceIntegrationTest {
                 args = listOf("p", "v"),
                 service = service
             )
+        )
+    }
+
+    @TestFactory
+    fun `top-level functions invoke the expandable sentence hook`(): List<DynamicTest> {
+        val service = mock<Service>()
+        return listOf(
+            expandableCase("topLevelExpandableSentence", invoke = { topLevelExpandableSentence(service, "x") }, args = listOf(service, "x"), service = service),
+            expandableCase("topLevelExpandableOnExtensionReceiver", invoke = { 3.topLevelExpandableOnExtensionReceiver(service) }, args = listOf(3, service), service = service),
+            expandableCase("topLevelJvmNamedExpandableSentence", invoke = { topLevelJvmNamedExpandableSentence(service, "y") }, args = listOf(service, "y"), service = service)
         )
     }
 
