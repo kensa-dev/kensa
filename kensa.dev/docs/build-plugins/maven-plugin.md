@@ -40,6 +40,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.9      | 0.8.12             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.12, which fixes `@ExpandableSentence` / `@RenderedValue` with value class parameters and return types (#160) and array parameter types in parameterized tests (#161), and includes 0.8.11's multi-assertion `thenEventually` / `thenContinually` blocks. No Maven-side change. |
 | 0.9.8      | 0.8.10             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.10, which adds [`@Fixture` factory functions](../api/factory-fixtures.md) and fixes two `@RenderedValue` rendering bugs. Note that factory functions need the Kensa Kotlin compiler plugin, which the Maven plugin does not apply — see [Limitations](#limitations-relative-to-the-gradle-plugin). No Maven-side change. |
 | 0.9.7      | 0.8.8              | 0.8.0          | Version bump only — paired Gradle-plugin site-mode resolution fix; no Maven-side change. |
 | 0.9.6      | 0.8.8              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.8. |

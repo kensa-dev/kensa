@@ -34,6 +34,7 @@ The plugin embeds the `kensa-core` / `kensa-compiler-plugin` coordinates it was 
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.9      | 0.8.12             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.12, which fixes `@ExpandableSentence` / `@RenderedValue` with value class parameters and return types (#160) and array parameter types in parameterized tests (#161), and includes 0.8.11's multi-assertion `thenEventually` / `thenContinually` blocks. No plugin-side change. |
 | 0.9.8      | 0.8.10             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.10, which adds [`@Fixture` factory functions](../api/factory-fixtures.md) (rewritten by the compiler plugin the Gradle plugin already applies — no config change) and fixes two `@RenderedValue` rendering bugs. Site mode also warns when a `sourceTitles` entry overrides a code-side title. |
 | 0.9.7      | 0.8.8              | 0.8.0          | Fixes site-mode `:assembleKensaSite` failing to resolve kensa-core on aggregator roots — `kensaShellResources` now pins `org.gradle.dependency.bundling=external` to disambiguate the plain and shadowed variants. No `kensaCoreVersion` change. |
 | 0.9.6      | 0.8.8              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.8. |
