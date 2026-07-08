@@ -31,4 +31,9 @@ class KotlinWithParameters {
     fun String.anExtensionFunctionWithContextParameters(first: String?, second: Int?) {
         assertThat(first).isIn("a", "b")
     }
+
+    @ExpandableSentence
+    fun aFunctionWithNullableFloat(first: Float?) {
+        assertThat(first?.toString()).isIn("a", "b")
+    }
 }

@@ -10,23 +10,17 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
-import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.isPrimitiveType
-import org.jetbrains.kotlin.ir.types.starProjectedType
-import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.ir.util.functions
-import org.jetbrains.kotlin.ir.util.getAnnotation
-import org.jetbrains.kotlin.ir.util.getAnnotationStringValue
 import org.jetbrains.kotlin.ir.util.getPackageFragment
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.parentClassOrNull
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
-import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -38,7 +32,6 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     private val expandableSentenceFqName = FqName("dev.kensa.ExpandableSentence")
     private val renderedValueFqName = FqName("dev.kensa.RenderedValue")
     private val expandableRenderedValueFqName = FqName("dev.kensa.ExpandableRenderedValue")
-    private val jvmNameFqName = FqName("kotlin.jvm.JvmName")
     private val fixtureFqName = FqName("dev.kensa.Fixture")
     private val fixturePackageFqName = "dev.kensa.fixture"
 
@@ -64,10 +57,10 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
                 when (decl) {
                     is IrClass -> decl.declarations.filterIsInstance<IrSimpleFunction>().forEach { fn ->
                         logDebug("Processing class: ${decl.name}")
-                        if (injectForExpandableSentenceIfAnnotated(fn, file, hookClass.owner, expandableSentenceHookFn.owner, pluginContext, arrayOf)) {
+                        if (injectForExpandableSentenceIfAnnotated(fn, hookClass.owner, expandableSentenceHookFn.owner, pluginContext, arrayOf)) {
                             expandableSentenceCount++
                         }
-                        if (injectForRenderedValueIfAnnotated(fn, file, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
+                        if (injectForRenderedValueIfAnnotated(fn, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
                             renderedValueCount++
                         }
                         if (factoryFixtureSymbol != null && rewriteFixtureFactoryIfAnnotated(fn, pluginContext, factoryFixtureSymbol)) {
@@ -77,10 +70,10 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
 
                     is IrSimpleFunction -> {
                         logDebug("Processing top-level function: ${decl.name}")
-                        if (injectForExpandableSentenceIfAnnotated(decl, file, hookClass.owner, expandableSentenceHookFn.owner, pluginContext, arrayOf)) {
+                        if (injectForExpandableSentenceIfAnnotated(decl, hookClass.owner, expandableSentenceHookFn.owner, pluginContext, arrayOf)) {
                             expandableSentenceCount++
                         }
-                        if (injectForRenderedValueIfAnnotated(decl, file, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
+                        if (injectForRenderedValueIfAnnotated(decl, hookClass.owner, renderedValueHookFn.owner, pluginContext, arrayOf)) {
                             renderedValueCount++
                         }
                         if (factoryFixtureSymbol != null && rewriteFixtureFactoryIfAnnotated(decl, pluginContext, factoryFixtureSymbol)) {
@@ -148,7 +141,6 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
 
     private fun injectForRenderedValueIfAnnotated(
         fn: IrSimpleFunction,
-        file: IrFile,
         hookClassOwner: IrClass,
         hookFnOwner: IrSimpleFunction,
         pluginContext: IrPluginContext,
@@ -157,7 +149,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         val hasAnnotation = fn.annotations.hasAnnotation(renderedValueFqName) || fn.annotations.hasAnnotation(expandableRenderedValueFqName)
         if (!hasAnnotation) return false
 
-        val ctx = prepareInjection(fn, file, pluginContext, arrayOf) ?: return false
+        val ctx = prepareInjection(fn, pluginContext, arrayOf) ?: return false
 
         val tempVar = ctx.builder.scope.createTemporaryVariableDeclaration(
             startOffset = ctx.builder.startOffset,
@@ -187,7 +179,6 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
 
     private fun injectForExpandableSentenceIfAnnotated(
         fn: IrSimpleFunction,
-        file: IrFile,
         hookClassOwner: IrClass,
         hookFnOwner: IrSimpleFunction,
         pluginContext: IrPluginContext,
@@ -196,7 +187,7 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         val hasAnnotation = fn.annotations.hasAnnotation(expandableSentenceFqName)
         if (!hasAnnotation) return false
 
-        val ctx = prepareInjection(fn, file, pluginContext, arrayOf) ?: return false
+        val ctx = prepareInjection(fn, pluginContext, arrayOf) ?: return false
 
         val argsArray = ctx.builder.buildArgsArray(arrayOf, ctx.allParams)
         ctx.blockBody.statements.add(0, ctx.buildHookCall(hookClassOwner, hookFnOwner, argsArray))
@@ -207,26 +198,19 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     private class InjectionContext(
         val blockBody: IrBlockBody,
         val builder: DeclarationIrBuilder,
-        val ownerExpr: IrExpression,
-        val ownerFqName: IrExpression,
         val simpleName: IrExpression,
-        val paramTypesArray: IrExpression,
         val allParams: List<IrValueParameter>
     ) {
         fun buildHookCall(hookClassOwner: IrClass, hookFnOwner: IrSimpleFunction, lastArg: IrExpression): IrCall =
             builder.irCall(hookFnOwner.symbol).apply {
                 dispatchReceiver = builder.irGetObject(hookClassOwner.symbol)
-                arguments[1] = ownerExpr
-                arguments[2] = ownerFqName
-                arguments[3] = simpleName
-                arguments[4] = paramTypesArray
-                arguments[5] = lastArg
+                arguments[1] = simpleName
+                arguments[2] = lastArg
             }
     }
 
     private fun prepareInjection(
         fn: IrSimpleFunction,
-        file: IrFile,
         pluginContext: IrPluginContext,
         arrayOf: IrSimpleFunctionSymbol
     ): InjectionContext? {
@@ -245,7 +229,6 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
         }
 
         val builder = DeclarationIrBuilder(pluginContext, fn.symbol, fn.startOffset, fn.endOffset)
-        val ownerExpr = fn.dispatchReceiverParameter?.let { builder.irGet(it) } ?: builder.irNull()
 
         val contextParams = fn.parameters.filter { it.kind == IrParameterKind.Context }
         val extensionParam = fn.parameters.firstOrNull { it.kind == IrParameterKind.ExtensionReceiver }
@@ -256,21 +239,9 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
             addAll(valueParameters)
         }
 
-        val ownerFqName = builder.irString(fn.parentClassOrNull?.fqNameWhenAvailable?.asString() ?: fileFacadeFqName(file))
         val simpleName = builder.irString(fn.name.asString())
-        val paramTypesArray = builder.buildParamTypesArray(arrayOf, allParams)
 
-        return InjectionContext(blockBody, builder, ownerExpr, ownerFqName, simpleName, paramTypesArray, allParams)
-    }
-
-    // For a top-level function the owner is the JVM file-facade class (<FileName>Kt), honouring @file:JvmName.
-    private fun fileFacadeFqName(file: IrFile): String {
-        val baseFileName = file.fileEntry.name.substringAfterLast('/').substringAfterLast('\\')
-        val simpleName = file.getAnnotation(jvmNameFqName)?.getAnnotationStringValue()
-            ?: PackagePartClassUtils.getFilePartShortName(baseFileName)
-        val packageFqName = file.packageFqName
-
-        return if (packageFqName.isRoot) simpleName else "${packageFqName.asString()}.$simpleName"
+        return InjectionContext(blockBody, builder, simpleName, allParams)
     }
 
     // Gets the `kotlin.arrayOf` function symbol so we can build arrays with it
@@ -281,24 +252,6 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
                         fn.owner.parameters.size == 1 &&
                         fn.owner.parameters[0].varargElementType != null
             }
-
-    // Builds the call to build the array of parameter types to pass to the hook function
-    private fun IrBuilderWithScope.buildParamTypesArray(arrayOf: IrSimpleFunctionSymbol, valueParameters: List<IrValueParameter>): IrCall {
-        val classStarType = context.irBuiltIns.kClassClass.starProjectedType
-        val classElements = valueParameters.map { vp ->
-            IrClassReferenceImpl(
-                startOffset = startOffset,
-                endOffset = endOffset,
-                type = context.irBuiltIns.kClassClass.typeWith(vp.type),
-                symbol = vp.type.classOrNull!!,
-                classType = vp.type
-            )
-        }
-        return irCall(arrayOf).apply {
-            typeArguments[0] = classStarType
-            arguments[0] = irVararg(classStarType, classElements)
-        }
-    }
 
     // Builds the call to build the array of arguments to pass to the hook function
     private fun IrBuilderWithScope.buildArgsArray(arrayOf: IrSimpleFunctionSymbol, valueParameters: List<IrValueParameter>): IrCall {

@@ -12,7 +12,11 @@ class ExpandableInvocationContext {
     private val invocations = mutableMapOf<String, MutableList<Array<Any?>>>()
 
     fun recordInvocation(method: Method, args: Array<Any?>) {
-        invocations.compute(method.normalisedPlatformName) { _, current ->
+        recordInvocation(method.normalisedPlatformName, args)
+    }
+
+    fun recordInvocation(name: String, args: Array<Any?>) {
+        invocations.compute(name) { _, current ->
             current?.also { it.add(args) } ?: mutableListOf(args)
         }
     }

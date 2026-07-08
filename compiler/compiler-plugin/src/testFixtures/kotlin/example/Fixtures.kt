@@ -145,4 +145,16 @@ class RenderedValues(private val service: Service) {
         service.call(arrayOf(prefix, value))
         return "$prefix-$value"
     }
+
+    @RenderedValue
+    fun valueClassParam(value: MyValueClass): String {
+        service.call(arrayOf(value))
+        return "rendered-${value.value}"
+    }
+
+    @RenderedValue
+    fun valueClassReturn(value: String): MyValueClass {
+        service.call(arrayOf(value))
+        return MyValueClass("wrapped-$value")
+    }
 }

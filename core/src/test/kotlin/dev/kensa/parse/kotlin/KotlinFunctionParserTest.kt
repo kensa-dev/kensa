@@ -913,12 +913,13 @@ internal class KotlinFunctionParserTest {
             val parsedTestMethod = parser.parse(testMethod)
 
             parsedTestMethod.expandableMethods
-                .shouldHaveSize(4)
+                .shouldHaveSize(5)
                 .should {
                     verifyExtensionFunction(it, "anExtensionFunction")
                     verifyFunctionWithContextParameter(it, "aFunctionWithContextParametersBeforeFn")
                     verifyFunctionWithContextParameter(it, "aFunctionWithContextParametersBeforeContext")
                     verifyExtensionFunctionWithContextParameters(it, "anExtensionFunctionWithContextParameters")
+                    verifyFunctionWithNullableFloat(it, "aFunctionWithNullableFloat")
                 }
 
         }
@@ -951,6 +952,15 @@ internal class KotlinFunctionParserTest {
                     shouldBeInstanceOf<ParameterElementDescriptor>()
                 }
                 assertSoftly(parameters.descriptors["second"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+            }
+        }
+
+        private fun verifyFunctionWithNullableFloat(map: Map<String, ParsedExpandableMethod>, functionName: String) {
+            map[functionName].shouldNotBeNull {
+                assertSoftly(parameters.descriptors["first"]) {
                     shouldNotBeNull()
                     shouldBeInstanceOf<ParameterElementDescriptor>()
                 }

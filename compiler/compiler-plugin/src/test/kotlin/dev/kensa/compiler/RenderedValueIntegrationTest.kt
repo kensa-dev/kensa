@@ -3,6 +3,7 @@ package dev.kensa.compiler
 import dev.kensa.context.RealRenderedValueInvocation
 import dev.kensa.context.RenderedValueInvocationContext
 import dev.kensa.context.RenderedValueInvocationContextHolder
+import example.MyValueClass
 import example.RenderedValues
 import example.Service
 import example.topLevelJvmNamedRenderedValue
@@ -46,6 +47,20 @@ class RenderedValueIntegrationTest {
                 expected = "p-v",
                 invoke = { with("p") { instance.withContextParameter("v") } },
                 args = arrayOf("p", "v"),
+                service = service
+            ),
+            renderedValueCase(
+                "valueClassParam",
+                expected = "rendered-test arg",
+                invoke = { instance.valueClassParam(MyValueClass("test arg")) },
+                args = arrayOf(MyValueClass("test arg")),
+                service = service
+            ),
+            renderedValueCase(
+                "valueClassReturn",
+                expected = MyValueClass("wrapped-x"),
+                invoke = { instance.valueClassReturn("x") },
+                args = arrayOf("x"),
                 service = service
             )
         )
