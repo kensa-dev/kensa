@@ -3,12 +3,12 @@
   "displayName": "Kotlin With Generic Parameterized Test",
   "state": "Passed",
   "notes": null,
+  "packageName": "dev.kensa.example",
   "issues": [],
   "tags": [],
-  "packageName": "dev.kensa.example",
   "tests": [
     {
-      "elapsedTime": "2 Ms",
+      "elapsedTime": "3 Ms",
       "testMethod": "theTest",
       "displayName": "The Test",
       "issues": [],
@@ -17,11 +17,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "2 Ms",
+          "elapsedTime": "3 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 20,
+              "lineNumber": 21,
               "tokens": [
                 {
                   "types": [
@@ -58,7 +58,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "componentDiagram": null,
           "state": "Passed",
@@ -81,7 +81,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 26,
+              "lineNumber": 27,
               "tokens": [
                 {
                   "types": [
@@ -100,7 +100,7 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "componentDiagram": null,
           "state": "Passed",
@@ -110,7 +110,7 @@
       ]
     },
     {
-      "elapsedTime": "",
+      "elapsedTime": "1 Ms",
       "testMethod": "theTestWithOptionalParameterAndClosingFunctionBraceOnDifferentLineAsParameter",
       "displayName": "The Test With Optional Parameter And Closing Function Brace On Different Line As Parameter",
       "issues": [],
@@ -119,11 +119,11 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "",
+          "elapsedTime": "1 Ms",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 34,
+              "lineNumber": 35,
               "tokens": [
                 {
                   "types": [
@@ -142,12 +142,60 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "[1] null"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "theTestWithArrayParameter",
+      "displayName": "The Test With Array Parameter",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 41,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "assert that param first first equal to"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "a"
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "param": "[(a, b)]"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] [(a, b)]"
         }
       ]
     }

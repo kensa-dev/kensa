@@ -15,23 +15,48 @@ class Imports(
         if (methodParameterTypes.size != sourceParameterTypes.size) return false
 
         return methodParameterTypes.zip(sourceParameterTypes).all { (parameterType, sourceType) ->
-            val sourceNoGenerics = sourceType.substringBefore('<')
-            val simpleSourceName = sourceNoGenerics.substringAfterLast('.')
-
-            when {
-                parameterType.isFullyQualifiedMatch(sourceNoGenerics) -> true
-
-                parameterType.isEquivalentToKotlin(simpleSourceName) -> true
-
-                parameterType.simpleName == simpleSourceName && parameterType.isInContext() -> true
-
-                isImportedNestedMatch(parameterType, sourceNoGenerics) -> true
-
-                isFunctionTypeMatch(parameterType, sourceType) -> true
-
-                else -> false
-            }
+            matches(parameterType, sourceType)
         }
+    }
+
+    private fun matches(parameterType: Class<*>, sourceType: String): Boolean {
+        if (parameterType.isArray) return matchesArray(parameterType.componentType, sourceType)
+
+        val sourceNoGenerics = sourceType.substringBefore('<')
+        val simpleSourceName = sourceNoGenerics.substringAfterLast('.')
+
+        return when {
+            parameterType.isFullyQualifiedMatch(sourceNoGenerics) -> true
+
+            parameterType.isEquivalentToKotlin(simpleSourceName) -> true
+
+            parameterType.simpleName == simpleSourceName && parameterType.isInContext() -> true
+
+            isImportedNestedMatch(parameterType, sourceNoGenerics) -> true
+
+            isFunctionTypeMatch(parameterType, sourceType) -> true
+
+            else -> false
+        }
+    }
+
+    private fun matchesArray(componentType: Class<*>, sourceType: String): Boolean {
+        if (sourceType.endsWith("[]")) return matches(componentType, sourceType.removeSuffix("[]"))
+
+        val unqualified = sourceType.removePrefix("kotlin.")
+        return when {
+            unqualified.startsWith("Array<") && unqualified.endsWith(">") ->
+                matches(componentType, unqualified.substring(6, unqualified.length - 1).trimEnd('?').stripVariancePrefix())
+
+            else -> KOTLIN_PRIMITIVE_ARRAYS[unqualified] == componentType
+        }
+    }
+
+    // ANTLR .text drops whitespace, so "Array<out Pair<..>>" arrives as "Array<outPair<..>>"
+    private fun String.stripVariancePrefix(): String = when {
+        startsWith("out") && getOrNull(3)?.isUpperCase() == true -> substring(3)
+        startsWith("in") && getOrNull(2)?.isUpperCase() == true -> substring(2)
+        else -> this
     }
 
     private fun Class<*>.isInContext(): Boolean =
@@ -101,6 +126,10 @@ class Imports(
             "Long" -> this == Long::class.javaObjectType || this == Long::class.javaPrimitiveType
             "Boolean" -> this == Boolean::class.javaObjectType || this == Boolean::class.javaPrimitiveType
             "Double" -> this == Double::class.javaObjectType || this == Double::class.javaPrimitiveType
+            "Float" -> this == Float::class.javaObjectType || this == Float::class.javaPrimitiveType
+            "Short" -> this == Short::class.javaObjectType || this == Short::class.javaPrimitiveType
+            "Byte" -> this == Byte::class.javaObjectType || this == Byte::class.javaPrimitiveType
+            "Char" -> this == Char::class.javaObjectType || this == Char::class.javaPrimitiveType
             "Any" -> this == Any::class.java
             else -> false
         }
@@ -134,6 +163,16 @@ class Imports(
             "kotlin.sequences",
             "kotlin.text",
             "kotlin.io"
+        )
+        private val KOTLIN_PRIMITIVE_ARRAYS: Map<String, Class<*>?> = mapOf(
+            "IntArray" to Int::class.javaPrimitiveType,
+            "LongArray" to Long::class.javaPrimitiveType,
+            "ShortArray" to Short::class.javaPrimitiveType,
+            "ByteArray" to Byte::class.javaPrimitiveType,
+            "DoubleArray" to Double::class.javaPrimitiveType,
+            "FloatArray" to Float::class.javaPrimitiveType,
+            "BooleanArray" to Boolean::class.javaPrimitiveType,
+            "CharArray" to Char::class.javaPrimitiveType,
         )
 
         operator fun invoke(importStrings: List<String>, declaringClass: Class<*>): Imports {

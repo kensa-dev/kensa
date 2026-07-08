@@ -45,12 +45,15 @@ class Renderers {
     }
 
     fun renderValue(value: Any?): String = value?.let {
-        if (it is List<*>) {
-            listRenderer.render(it)
-        } else {
-            valueRendererFor(value::class)?.render(value) ?: value.toString()
+        when {
+            it is List<*> -> listRenderer.render(it)
+            it::class.java.isArray -> listRenderer.render(it.asList())
+            else -> valueRendererFor(it::class)?.render(it) ?: it.toString()
         }
     } ?: "null"
+
+    private fun Any.asList(): List<*> =
+        (0 until java.lang.reflect.Array.getLength(this)).map { java.lang.reflect.Array.get(this, it) }
 
     private fun valueRendererFor(kClass: KClass<*>): ValueRenderer<Any>? =
         valueRenderers.entries

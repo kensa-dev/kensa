@@ -19,6 +19,9 @@ private fun Java20Parser.MethodHeaderContext.parameterNamesAndTypes() =
 // stream. See docs/superpowers/plans/2026-05-28-parser-cache-ast-detachment.md.
 private fun <T : ParserRuleContext> T.detachedFromParent(): T = apply { parent = null }
 
+private fun KotlinParser.FunctionValueParameterContext.isVararg(): Boolean =
+    parameterModifiers()?.parameterModifier()?.any { it.VARARG() != null } == true
+
 interface MethodDeclarationContext {
     val name: String
     val body: ParseTree
@@ -76,8 +79,12 @@ class KotlinMethodDeclarationContext private constructor(
             name = delegate.simpleIdentifier().text.replace("`", ""),
             body = delegate.functionBody().detachedFromParent(),
             parameterNamesAndTypes = delegate.functionValueParameters().functionValueParameter()
-                .map { it.parameter() }
-                .map { it.simpleIdentifier().text to it.type().text.trim().trimEnd('?') },
+                .map { fvp ->
+                    val parameter = fvp.parameter()
+                    val type = parameter.type().text.trim().trimEnd('?')
+                    // vararg params are arrays at runtime, so present them as such for declaration matching
+                    parameter.simpleIdentifier().text to if (fvp.isVararg()) "Array<$type>" else type
+                },
             startLine = delegate.start.line,
             endLine = delegate.stop?.line ?: delegate.start.line,
         )

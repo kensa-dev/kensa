@@ -3,6 +3,7 @@ package dev.kensa.example
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
 import dev.kensa.RenderedValue
 import dev.kensa.hamkrest.WithHamkrest
 import org.junit.jupiter.params.ParameterizedTest
@@ -34,10 +35,19 @@ class KotlinWithGenericParameterizedTest : KotlinExampleTest(), WithHamkrest {
         assertThat(param, absent())
     }
 
+    @ParameterizedTest
+    @MethodSource("pairArrayParameters")
+    fun theTestWithArrayParameter(param: Array<Pair<String, String>>) {
+        assertThat(param.first().first, equalTo("a"))
+    }
+
     private fun hasKey(key: String) = Matcher(Map<String, String>::containsKey, key)
 
     companion object {
         @JvmStatic
         fun genericParameters(): Set<Arguments?> = setOf(Arguments.of(listOf(mapOf("a" to "b"))))
+
+        @JvmStatic
+        fun pairArrayParameters(): Set<Arguments> = setOf(Arguments.of(arrayOf("a" to "b")))
     }
 }

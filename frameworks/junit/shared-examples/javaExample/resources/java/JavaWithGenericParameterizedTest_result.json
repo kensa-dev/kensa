@@ -3,12 +3,12 @@
   "displayName": "Java With Generic Parameterized Test",
   "state": "Passed",
   "notes": null,
+  "packageName": "dev.kensa.example",
   "issues": [],
   "tags": [],
-  "packageName": "dev.kensa.example",
   "tests": [
     {
-      "elapsedTime": "1 Ms",
+      "elapsedTime": "3 Ms",
       "testMethod": "theTest",
       "displayName": "The Test",
       "issues": [],
@@ -17,7 +17,7 @@
       "autoOpenTab": "None",
       "invocations": [
         {
-          "elapsedTime": "1 Ms",
+          "elapsedTime": "3 Ms",
           "highlights": [],
           "sentences": [
             {
@@ -58,12 +58,84 @@
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
-          "fixtureSpecs":[],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
           "displayName": "[1] [{a=b}]"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "theTestWithArrayParameter",
+      "displayName": "The Test With Array Parameter",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 37,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "assert that map of param"
+                },
+                {
+                  "types": [
+                    "tk-num"
+                  ],
+                  "value": "0"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "param"
+                },
+                {
+                  "types": [
+                    "tk-num"
+                  ],
+                  "value": "1"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "has key"
+                },
+                {
+                  "types": [
+                    "tk-sl"
+                  ],
+                  "value": "a"
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "param": "[a, b]"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] [a, b]"
         }
       ]
     }

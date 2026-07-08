@@ -5,6 +5,7 @@
 Fixes:
   - **`@ExpandableSentence` with value class parameters.** The Kotlin compiler mangles the JVM name of a function that takes a value class parameter (`someAction` becomes `someAction-abc123`), so Kensa could not find the method and reported the test as unparseable. Thanks to Michael Orr (#160).
   - **`@RenderedValue` with value class parameters or return types.** The same name mangling meant the captured invocation was recorded under the mangled JVM name and never matched the parsed sentence, so the rendered value was silently dropped.
+  - **Array parameter types in parameterized tests.** Tests declaring array parameters — `Array<Pair<String, String>>` and other `Array<T>` (including nested, variance and nullable components), primitive arrays (`IntArray`, ...), Java arrays (`String[]`), `vararg` params — previously failed with `Did not find method declaration for test method`; plain `Float`/`Short`/`Byte`/`Char` params now match too. Array values also render like lists (`[(a, b)]`) everywhere instead of `Object.toString()` identity hashes (#161).
 
 Performance:
   - **No reflective method lookup on instrumented calls.** The compiler-plugin hooks now record invocations by source name directly instead of deriving a `java.lang.reflect.Method` on every `@ExpandableSentence` / `@RenderedValue` call.

@@ -30,4 +30,15 @@ public class JavaWithGenericParameterizedTest extends JavaExampleTest implements
                 Arguments.of(List.of(Map.of("a", "b")))
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("arrayParameters")
+    void theTestWithArrayParameter(String[] param) {
+        assertThat(Map.of(param[0], param[1]), hasKey("a"));
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> arrayParameters() {
+        return Stream.of(Arguments.of((Object) new String[]{"a", "b"}));
+    }
 }

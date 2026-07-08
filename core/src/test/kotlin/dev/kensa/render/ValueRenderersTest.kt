@@ -125,4 +125,22 @@ internal class ValueRenderersTest {
             renderValue(SomeJavaSubClass(10, "boo")) shouldBe "<<<boo>>>"
         }
     }
+
+    @Test
+    internal fun `renders arrays like lists`() {
+        renderers.renderValue(arrayOf("a" to "b")) shouldBe renderers.renderValue(listOf("a" to "b"))
+        renderers.renderValue(arrayOf("x", "y")) shouldBe "[x, y]"
+        renderers.renderValue(intArrayOf(1, 2, 3)) shouldBe "[1, 2, 3]"
+        renderers.renderValue(booleanArrayOf(true)) shouldBe "[true]"
+        renderers.renderValue(emptyArray<String>()) shouldBe "[]"
+        renderers.renderValue(arrayOf(arrayOf("a"), arrayOf("b"))) shouldBe "[[a], [b]]"
+    }
+
+    @Test
+    internal fun `applies registered value renderers to array elements`() {
+        renderers.addValueRenderer(Int::class) { value -> "<$value>" }
+
+        renderers.renderValue(arrayOf(1, 2)) shouldBe "[<1>, <2>]"
+        renderers.renderValue(intArrayOf(1, 2)) shouldBe "[<1>, <2>]"
+    }
 }

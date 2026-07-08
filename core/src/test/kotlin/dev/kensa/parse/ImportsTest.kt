@@ -81,6 +81,12 @@ class ImportsTest {
         emptyImports.match(arrayOf(Long::class.java), listOf("Long")) shouldBe true
         emptyImports.match(arrayOf(Boolean::class.java), listOf("Boolean")) shouldBe true
         emptyImports.match(arrayOf(Double::class.java), listOf("Double")) shouldBe true
+        emptyImports.match(arrayOf(Float::class.java), listOf("Float")) shouldBe true
+        emptyImports.match(arrayOf(Float::class.javaObjectType), listOf("Float")) shouldBe true
+        emptyImports.match(arrayOf(Short::class.java), listOf("Short")) shouldBe true
+        emptyImports.match(arrayOf(Byte::class.java), listOf("Byte")) shouldBe true
+        emptyImports.match(arrayOf(Char::class.java), listOf("Char")) shouldBe true
+        emptyImports.match(arrayOf(Char::class.javaObjectType), listOf("Char")) shouldBe true
     }
 
     @Test
@@ -144,5 +150,61 @@ class ImportsTest {
 
         combined.match(arrayOf(String::class.java), listOf("String")) shouldBe true
         combined.match(arrayOf(Int::class.java), listOf("Int")) shouldBe true
+    }
+
+    @Test
+    fun `matches primitive component arrays via kotlin equivalents`() {
+        emptyImports.match(arrayOf(IntArray::class.java), listOf("Array<Int>")) shouldBe true
+        emptyImports.match(arrayOf(Array<Int>::class.java), listOf("Array<Int>")) shouldBe true
+        emptyImports.match(arrayOf(FloatArray::class.java), listOf("Array<Float>")) shouldBe true
+        emptyImports.match(arrayOf(LongArray::class.java), listOf("Array<Int>")) shouldBe false
+    }
+
+    @Test
+    fun `matches kotlin array types with variance`() {
+        emptyImports.match(arrayOf(emptyArray<Pair<String, String>>().javaClass), listOf("Array<outPair<String,String>>")) shouldBe true
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("Array<outString>")) shouldBe true
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("Array<inString>")) shouldBe true
+        emptyImports.match(arrayOf(emptyArray<Array<String>>().javaClass), listOf("Array<outArray<String>>")) shouldBe true
+        emptyImports.match(arrayOf(Array<Any>::class.java), listOf("Array<output>")) shouldBe false
+        emptyImports.match(arrayOf(Array<Any>::class.java), listOf("Array<input>")) shouldBe false
+    }
+
+    @Test
+    fun `matches kotlin object array parameter types`() {
+        emptyImports.match(arrayOf(emptyArray<Pair<String, String>>().javaClass), listOf("Array<Pair<String,String>>")) shouldBe true
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("Array<String>")) shouldBe true
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("kotlin.Array<String>")) shouldBe true
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("Array<String?>")) shouldBe true
+        emptyImports.match(arrayOf(emptyArray<Array<String>>().javaClass), listOf("Array<Array<String>>")) shouldBe true
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("Array<Int>")) shouldBe false
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("List<String>")) shouldBe false
+        emptyImports.match(arrayOf(String::class.java), listOf("Array<String>")) shouldBe false
+    }
+
+    @Test
+    fun `matches kotlin primitive array parameter types`() {
+        emptyImports.match(arrayOf(IntArray::class.java), listOf("IntArray")) shouldBe true
+        emptyImports.match(arrayOf(LongArray::class.java), listOf("LongArray")) shouldBe true
+        emptyImports.match(arrayOf(ShortArray::class.java), listOf("ShortArray")) shouldBe true
+        emptyImports.match(arrayOf(ByteArray::class.java), listOf("ByteArray")) shouldBe true
+        emptyImports.match(arrayOf(DoubleArray::class.java), listOf("DoubleArray")) shouldBe true
+        emptyImports.match(arrayOf(FloatArray::class.java), listOf("FloatArray")) shouldBe true
+        emptyImports.match(arrayOf(BooleanArray::class.java), listOf("BooleanArray")) shouldBe true
+        emptyImports.match(arrayOf(CharArray::class.java), listOf("CharArray")) shouldBe true
+        emptyImports.match(arrayOf(IntArray::class.java), listOf("kotlin.IntArray")) shouldBe true
+        emptyImports.match(arrayOf(Array<IntArray>::class.java), listOf("Array<IntArray>")) shouldBe true
+        emptyImports.match(arrayOf(IntArray::class.java), listOf("LongArray")) shouldBe false
+        emptyImports.match(arrayOf(Array<Int>::class.java), listOf("IntArray")) shouldBe false
+    }
+
+    @Test
+    fun `matches java array parameter types`() {
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("String[]")) shouldBe true
+        emptyImports.match(arrayOf(IntArray::class.java), listOf("int[]")) shouldBe true
+        emptyImports.match(arrayOf(emptyArray<Array<String>>().javaClass), listOf("String[][]")) shouldBe true
+        emptyImports.match(arrayOf(emptyArray<List<String>>().javaClass), listOf("List<String>[]")) shouldBe true
+        emptyImports.match(arrayOf(Array<String>::class.java), listOf("int[]")) shouldBe false
+        emptyImports.match(arrayOf(String::class.java), listOf("String[]")) shouldBe false
     }
 }

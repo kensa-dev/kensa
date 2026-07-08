@@ -904,6 +904,50 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
+        internal fun parsesFunctionWithVarargParameter() {
+            val functionName = "varargTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithParameters::class.java.findMethod(functionName, Array<String>::class.java)
+            val parsedMethod = parser.parse(method)
+
+            with(parsedMethod) {
+                name.shouldBe("varargTest")
+                assertSoftly(parameters.descriptors["first"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+            }
+        }
+
+        @Test
+        internal fun `parses backticked function with annotated parameters including generic array`() {
+            val functionName = "perform line diagnostics check when there is no active session"
+            val parser = createParserFor(aFunctionNamed("`$functionName`"))
+
+            val method = KotlinWithParameters::class.java.findMethod(
+                functionName,
+                KotlinWithParameters.Actor.Scenario::class.java,
+                java.lang.String::class.java,
+                emptyArray<Pair<String, String>>().javaClass,
+                java.lang.String::class.java
+            )
+            val parsedMethod = parser.parse(method)
+
+            with(parsedMethod) {
+                name.shouldBe(functionName)
+                assertSoftly(parameters.descriptors["dailyMaxCurrentRates"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+                assertSoftly(parameters.descriptors["sessionCheckScenario"]) {
+                    shouldNotBeNull()
+                    shouldBeInstanceOf<ParameterElementDescriptor>()
+                }
+            }
+        }
+
+        @Test
         internal fun parsesVariousExpandableSentenceStyles() {
             // Need to hook into the parser via a standard test function...
             val functionName = "parameterizedTest"
