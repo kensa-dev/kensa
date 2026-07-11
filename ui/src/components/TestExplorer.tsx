@@ -72,6 +72,10 @@ export interface TestExplorerProps {
     isNative?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
     onFilterApplied?: (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => void;
+    // Node ids to force-expand whenever the list changes (e.g. a facet narrowing
+    // the tree to a single application). One-shot per change: the user can still
+    // re-collapse them afterwards.
+    autoExpandIds?: string[];
 }
 
 const findAncestorIds = (nodes: Indices, targetId: string, trail: string[] = []): string[] | null => {
@@ -112,7 +116,27 @@ function RevealSelectedNode({nodes, selectedId, revealTick}: {nodes: Indices; se
     return null;
 }
 
-export function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, selectedResultKey, environment, onEnvChange, isNative, inputRef, onFilterApplied}: TestExplorerProps) {
+// Expands the given node ids whenever the list changes. Runs only on change, so
+// it never fights a user who re-collapses one of the nodes afterwards.
+function AutoExpandNodes({ids}: {ids: string[]}) {
+    const {setCollapsed} = useTreeExpansion();
+    const setCollapsedRef = React.useRef(setCollapsed);
+    setCollapsedRef.current = setCollapsed;
+    const key = ids.join('\n');
+
+    React.useEffect(() => {
+        if (!key) return;
+        for (const id of key.split('\n')) setCollapsedRef.current(id, false);
+    }, [key]);
+
+    return null;
+}
+
+// Memoized: the host re-renders on many states the tree doesn't care about
+// (report detail loads, config swaps, status polls) — with thousands of rows
+// each avoided pass is main-thread time saved. Callers must keep callback
+// props identity-stable for this to bite.
+export const TestExplorer = React.memo(function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, selectedResultKey, environment, onEnvChange, isNative, inputRef, onFilterApplied, autoExpandIds}: TestExplorerProps) {
     const {packageDisplay, packageDisplayRoot} = useConfig();
 
     const allIssues = React.useMemo(() => {
@@ -426,6 +450,7 @@ export function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChan
         <SourceMetaContext.Provider value={sourceMetaById ?? {}}>
         <TreeExpansionProvider nodes={renderedIndices} searchActive={Boolean(searchQuery || inputValue)}>
             <RevealSelectedNode nodes={renderedIndices} selectedId={selectedId} revealTick={selectedResultKey ?? null} />
+            <AutoExpandNodes ids={autoExpandIds ?? []} />
             <div className="flex flex-col flex-1 min-h-0">
                 <div className="p-3 pt-0 group-data-[collapsible=icon]:hidden">
                     {isNative && (
@@ -617,7 +642,7 @@ export function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChan
         </TreeExpansionProvider>
         </SourceMetaContext.Provider>
     );
-}
+});
 
 interface StateBadgesProps {
     counts: StateCounts;
@@ -797,9 +822,33 @@ interface RecursiveMenuItemProps {
     matchingMethodsMap: Map<string, string[]>;
 }
 
+// Split out so only System View rows subscribe to the router: a useLocation()
+// inside RecursiveMenuItem re-renders every tree row on every URL change, which
+// at multi-team scale (thousands of rows) blocks the main thread per click.
+function SystemViewMenuItem({node, onSelect}: {node: Index; onSelect: RecursiveMenuItemProps['onSelect']}) {
+    const location = useLocation();
+    const isActive = location.pathname === '/system-view'
+        && new URLSearchParams(location.search).get('source') === node.sourceId;
+    return (
+        <SidebarMenuItem>
+            <SidebarMenuButton
+                size="sm"
+                isActive={isActive}
+                onClick={() => onSelect(node, null, [])}
+                className={cn(
+                    "text-[13px] transition-all",
+                    isActive ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground"
+                )}
+            >
+                <Network className="h-3.5 w-3.5 shrink-0"/>
+                <span>{node.displayName}</span>
+            </SidebarMenuButton>
+        </SidebarMenuItem>
+    );
+}
+
 const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById, testMethodMap, matchingMethodsMap}: RecursiveMenuItemProps) {
     const sourceMetaById = React.useContext(SourceMetaContext);
-    const location = useLocation();
     const isSelected = selectedId === node.id;
 
     const iconTone =
@@ -845,24 +894,7 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
     }
 
     if (node.type === 'system-view') {
-        const isActive = location.pathname === '/system-view'
-            && new URLSearchParams(location.search).get('source') === node.sourceId;
-        return (
-            <SidebarMenuItem>
-                <SidebarMenuButton
-                    size="sm"
-                    isActive={isActive}
-                    onClick={() => onSelect(node, null, [])}
-                    className={cn(
-                        "text-[13px] transition-all",
-                        isActive ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground"
-                    )}
-                >
-                    <Network className="h-3.5 w-3.5 shrink-0"/>
-                    <span>{node.displayName}</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        );
+        return <SystemViewMenuItem node={node} onSelect={onSelect}/>;
     }
 
     return (
