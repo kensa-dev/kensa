@@ -368,6 +368,38 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
+        fun `parses a rendered-value parameter used as a fixture factory argument inside a fixtures subscript`() {
+            dev.kensa.fixture.FixtureRegistry.clearFixtures()
+            dev.kensa.fixture.FixtureRegistry.registerFixtures(ParserFactoryFixtures)
+            try {
+                val functionName = "handlesOrderAcknowledgedNotification"
+                val parser = createParserFor(aFunctionNamed(functionName))
+
+                val method = KotlinWithFixtureSubscript::class.java.findMethod(functionName, String::class.java)
+                val parsedMethod = parser.parse(method)
+
+                with(parsedMethod) {
+                    parseErrors shouldHaveSize 0
+                }
+            } finally {
+                dev.kensa.fixture.FixtureRegistry.clearFixtures()
+            }
+        }
+
+        @Test
+        fun `parses a rendered-value field used as the key of an outputs subscript`() {
+            val functionName = "handlesOutputsNotification"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithFixtureSubscript::class.java.findMethod(functionName)
+            val parsedMethod = parser.parse(method)
+
+            with(parsedMethod) {
+                parseErrors shouldHaveSize 0
+            }
+        }
+
+        @Test
         fun `replaces fixture value in sentence when using fixtures inside lambda function`() {
             val functionName = "testWithFixturesInLambda"
             val parser = createParserFor(aFunctionNamed(functionName))

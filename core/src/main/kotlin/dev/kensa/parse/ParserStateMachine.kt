@@ -186,30 +186,30 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
             on<ExitExpression> { currentState, _ ->
                 currentState.parentState
             }
-            on<FixturesExpression> { currentState, _ ->
-                InFixturesExpression(currentState)
-            }
-            on<FixtureFactoryExpression> { currentState, _ ->
-                InFixturesExpression(currentState)
-            }
-            on<EnterExpression> { currentState, _ ->
-                InFixturesExpression(currentState)
-            }
+            onAny(
+                FixturesExpression::class,
+                FixtureFactoryExpression::class,
+                EnterExpression::class,
+                ChainedCallExpression::class,
+                RenderedValue::class,
+                OutputsByNameExpression::class,
+                OutputsByKeyExpression::class
+            ) { currentState, _ -> InFixturesExpression(currentState) }
             ignoreUnknown()
         }
         state<InOutputsExpression> {
             on<ExitExpression> { currentState, _ ->
                 currentState.parentState
             }
-            on<OutputsByNameExpression> { currentState, _ ->
-                InOutputsExpression(currentState)
-            }
-            on<OutputsByKeyExpression> { currentState, _ ->
-                InOutputsExpression(currentState)
-            }
-            on<EnterExpression> { currentState, _ ->
-                InOutputsExpression(currentState)
-            }
+            onAny(
+                OutputsByNameExpression::class,
+                OutputsByKeyExpression::class,
+                EnterExpression::class,
+                ChainedCallExpression::class,
+                RenderedValue::class,
+                FixturesExpression::class,
+                FixtureFactoryExpression::class
+            ) { currentState, _ -> InOutputsExpression(currentState) }
             ignoreUnknown()
         }
         state<InChainedCallExpression> {
