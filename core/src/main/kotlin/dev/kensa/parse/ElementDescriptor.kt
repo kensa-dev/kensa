@@ -54,7 +54,7 @@ sealed interface ElementDescriptor {
         }
     }
 
-    class ParameterElementDescriptor(override val name: String, private val parameter: Parameter, private val index: Int) : ElementDescriptor {
+    class ParameterElementDescriptor(override val name: String, private val parameter: Parameter, val index: Int) : ElementDescriptor {
         override val isRenderedValue: Boolean = parameter.hasAnnotation<RenderedValue>()
         override val isExpandableRenderedValue: Boolean = parameter.hasAnnotation<ExpandableRenderedValue>()
         override val isHighlight: Boolean = parameter.hasAnnotation<Highlight>()

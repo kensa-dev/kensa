@@ -47,13 +47,17 @@ class TestInvocationParserTest {
         )
     }
 
-    private fun parse(configuration: Configuration): ParsedInvocation {
+    private fun parse(
+        configuration: Configuration,
+        arguments: Array<Any?> = arrayOf("raw", "hot", "descval"),
+        displayName: String = "test",
+    ): ParsedInvocation {
         val methodParser: MethodParser = mock { on { parse(any()) } doReturn parsedMethodWithParameters() }
         val context = TestInvocationContext(
             instance = Sample(),
             method = sampleMethod,
-            arguments = arrayOf("raw", "hot", "descval"),
-            displayName = "test",
+            arguments = arguments,
+            displayName = displayName,
             startTimeMs = 0L,
             fixtures = Fixtures(),
             capturedOutputs = CapturedOutputs()
@@ -68,6 +72,47 @@ class TestInvocationParserTest {
         val invocation = parse(configuration)
 
         invocation.namedParameterValues shouldContain NamedValue("p1", "raw")
+    }
+
+    @Test
+    fun `uses the parameterized display name label for opaque values like builders and lambdas`() {
+        val builder = { m: String -> m }
+        val configuration = Configuration()
+
+        val invocation = parse(
+            configuration,
+            arguments = arrayOf(builder, "hot", "descval"),
+            displayName = "[1] My Nice Builder, hot, descval",
+        )
+
+        invocation.namedParameterValues shouldContain NamedValue("p1", "My Nice Builder")
+    }
+
+    @Test
+    fun `does not substitute the display name label for values with a meaningful toString`() {
+        val configuration = Configuration()
+
+        val invocation = parse(
+            configuration,
+            arguments = arrayOf(5, "hot", "descval"),
+            displayName = "[1] 5, hot, descval",
+        )
+
+        invocation.namedParameterValues shouldContain NamedValue("p1", 5)
+    }
+
+    @Test
+    fun `does not substitute the display name label for arrays so the array renderer still applies`() {
+        val array = arrayOf("x")
+        val configuration = Configuration()
+
+        val invocation = parse(
+            configuration,
+            arguments = arrayOf(array, "hot", "descval"),
+            displayName = "[1] arr, hot, descval",
+        )
+
+        invocation.namedParameterValues shouldContain NamedValue("p1", array)
     }
 
     @Test
