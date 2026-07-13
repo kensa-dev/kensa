@@ -48,9 +48,18 @@ class Renderers {
         when {
             it is List<*> -> listRenderer.render(it)
             it::class.java.isArray -> listRenderer.render(it.asList())
-            else -> valueRendererFor(it::class)?.render(it) ?: it.toString()
+            else -> valueRendererFor(it::class)?.render(it) ?: renderDefault(it)
         }
     } ?: "null"
+
+    private fun renderDefault(value: Any): String =
+        if (value.isLambda()) value.lambdaLabel() else value.toString()
+
+    private fun Any.isLambda(): Boolean =
+        this is Function<*> || (javaClass.isSynthetic && javaClass.name.contains("\$\$Lambda"))
+
+    private fun Any.lambdaLabel(): String =
+        javaClass.interfaces.firstOrNull()?.simpleName ?: "lambda"
 
     private fun Any.asList(): List<*> =
         (0 until java.lang.reflect.Array.getLength(this)).map { java.lang.reflect.Array.get(this, it) }

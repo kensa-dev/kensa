@@ -127,6 +127,27 @@ internal class ValueRenderersTest {
     }
 
     @Test
+    internal fun `renders kotlin lambda as functional interface name instead of default object string`() {
+        val builder: (String) -> String = { "$it!" }
+
+        renderers.renderValue(builder) shouldBe "Function1"
+    }
+
+    @Test
+    internal fun `renders java lambda as functional interface name`() {
+        val supplier = java.util.function.Supplier { "hello" }
+
+        renderers.renderValue(supplier) shouldBe "Supplier"
+    }
+
+    @Test
+    internal fun `registered value renderer still wins over lambda default`() {
+        renderers.addValueRenderer(java.util.function.Supplier::class) { "<supplied>" }
+
+        renderers.renderValue(java.util.function.Supplier { "hello" }) shouldBe "<supplied>"
+    }
+
+    @Test
     internal fun `renders arrays like lists`() {
         renderers.renderValue(arrayOf("a" to "b")) shouldBe renderers.renderValue(listOf("a" to "b"))
         renderers.renderValue(arrayOf("x", "y")) shouldBe "[x, y]"
