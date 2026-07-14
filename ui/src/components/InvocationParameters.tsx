@@ -24,7 +24,7 @@ export const InvocationParameters = ({parameters}: InvocationParametersProps) =>
                             const classified = classifyParamValue(value);
                             return (
                                 <TableRow key={`${i}-${j}`} className="border-0 hover:bg-muted/30 transition-colors">
-                                    <TableCell className="py-2 px-4 align-top font-mono text-muted-foreground truncate">
+                                    <TableCell className="py-2 px-4 align-top font-mono text-muted-foreground truncate" title={name}>
                                         {name}
                                     </TableCell>
                                     <TableCell className={cn("py-2 px-4 whitespace-pre-wrap break-words", classified.className)}>

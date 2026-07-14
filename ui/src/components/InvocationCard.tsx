@@ -5,6 +5,7 @@ import {SectionRenderer} from './SectionRenderer';
 import {InvocationParameters} from './InvocationParameters';
 import {Invocation, ParseError} from "@/types/Test";
 import {summarizeInvocation} from "@/util/invocationSummary";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 interface InvocationCardProps {
     invocation: Invocation;
@@ -45,13 +46,31 @@ export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardPro
                             </span>
                         )}
                         {summary.kind === 'chip' ? (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground font-bold shrink-0">
-                                {summary.count} params
-                            </span>
-                        ) : (
-                            <span className="text-[11px] font-mono tracking-tight font-semibold min-w-0 truncate" title={summary.text}>
+                            <Tooltip delayDuration={200}>
+                                <TooltipTrigger asChild>
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground font-bold shrink-0">
+                                        {summary.count} params
+                                    </span>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-lg max-h-[70vh] overflow-y-auto whitespace-pre-wrap break-words font-mono text-xs">
+                                    {summary.text}
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : summary.kind === 'empty' ? (
+                            <span className="text-[11px] font-mono tracking-tight font-semibold min-w-0 truncate">
                                 {summary.text}
                             </span>
+                        ) : (
+                            <Tooltip delayDuration={200}>
+                                <TooltipTrigger asChild>
+                                    <span className="text-[11px] font-mono tracking-tight font-semibold min-w-0 truncate">
+                                        {summary.text}
+                                    </span>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-lg max-h-[70vh] overflow-y-auto whitespace-pre-wrap break-words font-mono text-xs">
+                                    {summary.text}
+                                </TooltipContent>
+                            </Tooltip>
                         )}
                     </div>
                     {invocation.elapsedTime && <span className="text-[10px] font-mono opacity-40 shrink-0 ml-2">{invocation.elapsedTime}</span>}

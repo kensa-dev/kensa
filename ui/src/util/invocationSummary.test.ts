@@ -79,7 +79,7 @@ describe('summarizeInvocation', () => {
             const result = summarizeInvocation({
                 parameters: [{ a: long }, { b: long }, { c: long }],
             });
-            expect(result).toEqual({ kind: 'chip', count: 3 });
+            expect(result).toEqual({ kind: 'chip', count: 3, text: `a: ${long}, b: ${long}, c: ${long}` });
         });
     });
 
@@ -88,7 +88,7 @@ describe('summarizeInvocation', () => {
             const result = summarizeInvocation({
                 parameters: [{ a: '1' }, { b: '2' }, { c: '3' }, { d: '4' }],
             });
-            expect(result).toEqual({ kind: 'chip', count: 4 });
+            expect(result).toEqual({ kind: 'chip', count: 4, text: 'a: 1, b: 2, c: 3, d: 4' });
         });
 
         it('returns chip for 2 params totalling over 80 chars', () => {
@@ -96,7 +96,7 @@ describe('summarizeInvocation', () => {
             const result = summarizeInvocation({
                 parameters: [{ a: long }, { b: long }],
             });
-            expect(result).toEqual({ kind: 'chip', count: 2 });
+            expect(result).toEqual({ kind: 'chip', count: 2, text: `a: ${long}, b: ${long}` });
         });
     });
 });

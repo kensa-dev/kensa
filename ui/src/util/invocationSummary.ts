@@ -4,7 +4,7 @@ export type InvocationSummary =
     | { kind: 'displayName'; text: string }
     | { kind: 'empty'; text: 'Invocation' }
     | { kind: 'inline'; text: string }
-    | { kind: 'chip'; count: number };
+    | { kind: 'chip'; count: number; text: string };
 
 export const INLINE_MAX_PARAMS = 3;
 export const INLINE_MAX_LENGTH = 80;
@@ -44,5 +44,5 @@ export function summarizeInvocation(invocation: {
     if (count <= INLINE_MAX_PARAMS && joined.length <= INLINE_MAX_LENGTH) {
         return { kind: 'inline', text: joined };
     }
-    return { kind: 'chip', count };
+    return { kind: 'chip', count, text: joined };
 }
