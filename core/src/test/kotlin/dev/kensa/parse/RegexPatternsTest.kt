@@ -298,4 +298,37 @@ internal class RegexPatternsTest {
             RegexPatterns.singleCallWithArgumentsPattern.matchEntire("foo.bar").shouldBeNull()
         }
     }
+
+    @Nested
+    inner class FixturesFactoryPattern {
+
+        @Test
+        fun `matches a factory call inside a fixtures subscript`() {
+            val result = RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures[productFor(provideType)]").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "productFor"
+            result.groups["args"]!!.value shouldBe "provideType"
+        }
+
+        @Test
+        fun `matches a factory call with a trailing navigation path`() {
+            val result = RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures[productFor(provideType)].stringValue").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "productFor"
+        }
+
+        @Test
+        fun `matches paren and brace accessor forms`() {
+            RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures(productFor(provideType))").shouldNotBeNull()
+            RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures{productFor(provideType)}").shouldNotBeNull()
+        }
+
+        @Test
+        fun `does not match a plain fixtures key`() {
+            RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures[MyFixture]").shouldBeNull()
+        }
+
+        @Test
+        fun `does not match a bare factory call without the fixtures accessor`() {
+            RegexPatterns.fixturesFactoryPattern.matchEntire("productFor(provideType)").shouldBeNull()
+        }
+    }
 }

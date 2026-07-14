@@ -38,6 +38,11 @@ class KotlinWithFixtureSubscript {
     private fun thatHas(matcher: Matcher): Matcher = matcher
     private fun matchesTheNotificationSchema(): Matcher = Matcher()
     private fun thenEventually(matcher: Matcher) {}
+    private fun given(matcher: Matcher) {}
+
+    fun rendersFactoryInSubscript(@RenderedValue provideType: String) {
+        given(aProduct of fixtures[myFixture(provideType)])
+    }
 
     fun handlesOrderAcknowledgedNotification(@RenderedValue provideType: String) {
         thenEventually(orchestration.receivesANotification(

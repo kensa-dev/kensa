@@ -9,6 +9,7 @@ import dev.kensa.parse.LocatedEvent.PathExpression.ChainedCallExpression.Type.*
 import dev.kensa.parse.LocatedEvent.PathExpression.FixturesExpression
 import dev.kensa.parse.RegexPatterns.callWithArgumentsAndPathPattern
 import dev.kensa.parse.RegexPatterns.chainedCallPattern
+import dev.kensa.parse.RegexPatterns.fixturesFactoryPattern
 import dev.kensa.parse.RegexPatterns.fixturesPattern
 import dev.kensa.parse.RegexPatterns.outputsByKeyPattern
 import dev.kensa.parse.RegexPatterns.outputsByNamePattern
@@ -68,14 +69,17 @@ class ParseContext(
         }
 
     internal fun ParseTree.asFixtureFactory(): FixtureFactoryExpression? =
-        singleCallWithArgumentsPattern.matchEntire(text)?.let { match ->
+        (singleCallWithArgumentsPattern.matchEntire(text) ?: fixturesFactoryPattern.matchEntire(text))?.let { match ->
             val fn = match.groups["function"]?.value ?: return null
             val key = dev.kensa.fixture.FixtureRegistry.keyForFactory(fn) ?: return null
             FixtureFactoryExpression(location, key, match.groups["args"]?.value?.trim().orEmpty())
         }
 
     internal fun ParseTree?.matchesFixtureFactoryExpression(): Boolean =
-        this?.text?.let { singleCallWithArgumentsPattern.matchEntire(it)?.groups?.get("function")?.value?.let { fn -> dev.kensa.fixture.FixtureRegistry.isFactory(fn) } } ?: false
+        this?.text?.let { text ->
+            (singleCallWithArgumentsPattern.matchEntire(text) ?: fixturesFactoryPattern.matchEntire(text))
+                ?.groups?.get("function")?.value?.let { fn -> dev.kensa.fixture.FixtureRegistry.isFactory(fn) }
+        } ?: false
 
     private fun ParseContext.callTypeFor(key: String): ChainedCallExpression.Type? =
         when {
