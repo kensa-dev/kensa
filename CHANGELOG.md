@@ -1,5 +1,15 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.13
+
+Fixes:
+  - **`@RenderedValue` identifier as a `fixtures[...]` / `outputs[...]` subscript key.** A rendered parameter or field used inside a fixtures or outputs subscript, such as `fixtures[productFor(provideType)]` or `outputs[trackingId]`, crashed the source parser and rendered the whole statement as "Could not parse this statement". The parser now keeps its expression stack balanced for these nested rendered identifiers (#163).
+  - **`Named` parameterized-test arguments show their label.** JUnit unwraps `Named.of("label", value)` to the raw payload before Kensa sees the invocation, so the parameter table showed the payload instead of the label. Kensa now recovers the label positionally from the test display name and applies it to opaque payloads, falling back to the raw value when the argument count does not match the parsed parameters (#162).
+  - **Opaque lambda and builder arguments render by type name.** Lambda and builder parameter values that fell through to `Object.toString()` produced non-deterministic noise like `MyTest$$Lambda/0x...@6f77685` in parameter tables. They now render as their functional interface simple name (for example `Function1`, or a custom SAM name), with `lambda` as a fallback. Registered value renderers still take precedence.
+
+Performance:
+  - **Fewer test-explorer re-renders in large reports.** Explorer rows no longer re-render on every selection or URL change, because only System-View rows subscribe to the router now. This cuts per-click main-thread work in reports with many test rows.
+
 ### v0.8.12
 
 Fixes:
