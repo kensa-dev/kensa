@@ -5,6 +5,7 @@
 Fixes:
   - **Fixture factory calls inside a `fixtures[...]` subscript render as a single value.** `fixtures[productFor(provideType)]` (the documented `@Fixture` factory-call syntax) previously leaked the literal word "fixtures" before the fixture value, because only the inner factory call was recognised. The whole `fixtures[factory(args)]` span, including any trailing navigation, is now recognised as one fixture-factory expression, so the accessor is absorbed.
   - **Parameterised test header hover no longer truncates.** The invocation header showed the full parameterised display name through a native `title` hover, which browsers cap at roughly 1024 characters, clipping long names mid-string. It now uses the built-in tooltip, which wraps and scrolls with no cap; the collapsed "N params" chip gained a hover listing the parameters, and long parameter names in the expanded table now show a hover too (#165).
+  - **Protected phrases no longer match inside longer words.** A protected phrase matched case-insensitively at any position, so a phrase like `Close` bit into `ClosedDate` and split it mid-word, rendering the display name as `Close d Date` instead of `Closed Date`; rendered sentences mangled the same way. Phrase matches now only apply when they align to camel-word or punctuation boundaries, in both test display names and sentences (#166).
 
 ### v0.8.13
 
