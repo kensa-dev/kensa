@@ -57,6 +57,7 @@ class Dictionary {
     }
 
     fun indexProtectedPhrases(text: String): List<ProtectedPhraseMatch> {
+        val boundaries = wordBoundariesOf(text)
         val matchesByStartIndex = TreeMap<Int, ProtectedPhraseMatch>()
         for (protectedPhrase in protectedPhrases) {
             val patterns = buildSearchPatterns(protectedPhrase.value)
@@ -64,6 +65,7 @@ class Dictionary {
                 for (match in pattern.findAll(text)) {
                     val start = match.range.first
                     val endExclusive = match.range.last + 1
+                    if (start !in boundaries || endExclusive !in boundaries) continue
                     val existing = matchesByStartIndex[start]
                     if (existing == null || existing.end < endExclusive) {
                         matchesByStartIndex[start] = ProtectedPhraseMatch(start, endExclusive)
@@ -72,6 +74,18 @@ class Dictionary {
             }
         }
         return matchesByStartIndex.values.toList()
+    }
+
+    private fun wordBoundariesOf(text: String): Set<Int> = buildSet {
+        add(0)
+        add(text.length)
+        CAMEL_CASE_SPLITTER.findAll(text).forEach { add(it.range.first) }
+        text.forEachIndexed { i, c ->
+            if (!c.isLetterOrDigit()) {
+                add(i)
+                add(i + 1)
+            }
+        }
     }
 
     private fun buildSearchPatterns(singular: String): List<Regex> {
@@ -93,6 +107,10 @@ class Dictionary {
 
     private val yEndingPattern = Regex(".*[bcdfghjklmnpqrstvwxz]y$")
     private val sibilantEndingPattern = Regex(".*(s|x|z|ch|sh)$")
+
+    companion object {
+        internal val CAMEL_CASE_SPLITTER = "(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=[a-z])(?=[0-9])|(?<=[0-9])(?=[A-Z])".toRegex()
+    }
 
     fun isAcronym(value: String) = acronyms.any { it.acronym.equals(value, ignoreCase = true) }
     fun findKeywordOrNull(value: String) = keywords.firstOrNull { it.value == value }

@@ -75,25 +75,39 @@ internal class DictionaryTest {
     fun `indexProtectedPhrases finds plural form of protected phrase with regular plural`() {
         dictionary.putProtectedPhrases(ProtectedPhrase("cat"))
 
-        val sentence = "Ihavetwocatsathome"
+        val sentence = "iHaveTwoCatsAtHome"
         val indices = dictionary.indexProtectedPhrases(sentence)
 
         indices shouldHaveSize 1
-        indices[0].start shouldBe 8  // Start index of "cats"
-        indices[0].end shouldBe 12  // End index of "cats" (exclusive end index)
+        indices[0].start shouldBe 8  // Start index of "Cats"
+        indices[0].end shouldBe 12  // End index of "Cats" (exclusive end index)
     }
 
     @Test
     fun `indexProtectedPhrases ignores fake plural form of protected phrase made with CamelCased words`() {
         dictionary.putProtectedPhrases(ProtectedPhrase("p2p"))
 
-        val sentence = "thereIsAp2pSubnetInHere"
+        val sentence = "myP2pSubnetInHere"
 
         val indices = dictionary.indexProtectedPhrases(sentence)
 
         indices shouldHaveSize 1
-        indices[0].start shouldBe 8
-        indices[0].end shouldBe 11
+        indices[0].start shouldBe 2
+        indices[0].end shouldBe 5
+    }
+
+    @Test
+    fun `indexProtectedPhrases does not match inside a longer camel word`() {
+        dictionary.putProtectedPhrases(ProtectedPhrase("close"))
+
+        dictionary.indexProtectedPhrases("verifiesClosedDateIsSet").shouldBeEmpty()
+        dictionary.indexProtectedPhrases("disclosedAmount").shouldBeEmpty()
+        dictionary.indexProtectedPhrases("the closed date").shouldBeEmpty()
+
+        val indices = dictionary.indexProtectedPhrases("recordsCloseDate")
+        indices shouldHaveSize 1
+        indices[0].start shouldBe 7
+        indices[0].end shouldBe 12
     }
 
     @Test

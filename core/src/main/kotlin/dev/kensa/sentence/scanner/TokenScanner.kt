@@ -75,9 +75,5 @@ class TokenScanner(private val dictionary: Dictionary) {
         }
     }
 
-    private fun camelCaseSplit(string: String): List<String> = CAMEL_CASE_SPLITTER.split(string)
-
-    companion object {
-        private val CAMEL_CASE_SPLITTER = "(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=[a-z])(?=[0-9])|(?<=[0-9])(?=[A-Z])".toRegex()
-    }
+    private fun camelCaseSplit(string: String): List<String> = Dictionary.CAMEL_CASE_SPLITTER.split(string)
 }
