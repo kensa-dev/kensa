@@ -25,9 +25,16 @@ fun String.unCamel(protectedPhrases: Collection<String>): String {
 
     data class Span(val start: Int, val end: Int)
 
+    val boundaries = buildSet {
+        add(0)
+        add(cleaned.length)
+        CAMEL_SPLIT_REGEX.findAll(cleaned).forEach { add(it.range.first) }
+    }
+
     val spans = mutableListOf<Span>()
     for (phrase in protectedPhrases) {
         Regex(Regex.escape(phrase), RegexOption.IGNORE_CASE).findAll(cleaned)
+            .filter { it.range.first in boundaries && it.range.last + 1 in boundaries }
             .forEach { spans.add(Span(it.range.first, it.range.last + 1)) }
     }
     spans.sortBy { it.start }

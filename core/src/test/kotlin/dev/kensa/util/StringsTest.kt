@@ -39,6 +39,17 @@ internal class StringsTest {
     }
 
     @Test
+    internal fun `protected phrases only match on camel word boundaries`() {
+        "ClosedDate".unCamel(listOf("Close")) shouldBe "Closed Date"
+        "closedDate".unCamel(listOf("Close")) shouldBe "Closed Date"
+        "verifiesClosedDateIsSet".unCamel(listOf("Close")) shouldBe "Verifies Closed Date Is Set"
+        "disclosedAmount".unCamel(listOf("Close")) shouldBe "Disclosed Amount"
+        "closeDate".unCamel(listOf("Close")) shouldBe "Close Date"
+        "closedDate".unCamel(listOf("closed")) shouldBe "Closed Date"
+        "recordsCloseDateAndClosedDate".unCamel(listOf("Close")) shouldBe "Records Close Date And Closed Date"
+    }
+
+    @Test
     internal fun `can un-camel and separate with separator`() {
         "".unCamelToSeparated() shouldBe ""
         " ".unCamelToSeparated() shouldBe " "
