@@ -58,6 +58,16 @@ class KotlinWithCapturedOutputsTest : KotlinExampleTest(), WithHamkrest {
         then(theBooleanFixture(), equalTo(outputs(BooleanOutput)!!))
     }
 
+    @Test
+    fun test5() {
+        given(somePrerequisites())
+
+        whenever(allTheOutputsAreGenerated())
+
+        then(theStringOutput(), equalTo(outputs<String>("KotlinStringOutput")!!))
+        then(theHyphenatedOutput(), equalTo(outputs("kotlin-hyphenated.output")!!))
+    }
+
     private fun somePrerequisites(): Action<GivensContext> = Action { context: GivensContext? -> }
 
     private fun theOutputsAreGenerated(): Action<ActionContext> {
@@ -74,10 +84,18 @@ class KotlinWithCapturedOutputsTest : KotlinExampleTest(), WithHamkrest {
     private fun theStringOutput() = StateCollector { it.outputs[StringOutput] }
 
     private fun theBooleanFixture() = StateCollector { it.outputs[BooleanOutput] }
+
+    private fun allTheOutputsAreGenerated(): Action<ActionContext> = Action { (_, _, outputs) ->
+        outputs.put(StringOutput, theStringOutput)
+        outputs.put(KotlinCapturedOutputs.HyphenatedOutput, "hyphenated-value")
+    }
+
+    private fun theHyphenatedOutput() = StateCollector { it.outputs[KotlinCapturedOutputs.HyphenatedOutput] }
 }
 
 internal object KotlinCapturedOutputs : CapturedOutputContainer {
     val StringOutput = capturedOutput<String>("KotlinStringOutput")
+    val HyphenatedOutput = capturedOutput<String>("kotlin-hyphenated.output")
 }
 
 internal object MoreKotlinCapturedOutputs : CapturedOutputContainer {

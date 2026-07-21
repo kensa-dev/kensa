@@ -180,6 +180,19 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches explicit type argument`() {
+            val result = RegexPatterns.fixturesPattern.matchEntire("fixtures<String>(MyFixture)").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyFixture"
+        }
+
+        @Test
+        fun `matches generic call in chain`() {
+            val result = RegexPatterns.fixturesPattern.matchEntire("fixtures[MyFixture].first<String>()").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyFixture"
+            result.groupValues[2] shouldBe "first<String>()"
+        }
+
+        @Test
         fun `does not match chain with arguments`() {
             RegexPatterns.fixturesPattern.matchEntire("fixtures[MyFixture].method(arg)").shouldBeNull()
         }
@@ -236,6 +249,12 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches explicit type argument`() {
+            val result = RegexPatterns.outputsByNamePattern.matchEntire("outputs<Boolean>(BooleanOutput)").shouldNotBeNull()
+            result.groupValues[1] shouldBe "BooleanOutput"
+        }
+
+        @Test
         fun `does not match chain with arguments`() {
             RegexPatterns.outputsByNamePattern.matchEntire("outputs[MyOutput].method(arg)").shouldBeNull()
         }
@@ -270,6 +289,32 @@ internal class RegexPatternsTest {
             val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs("myKey")!!.foo!!""").shouldNotBeNull()
             result.groupValues[1] shouldBe "myKey"
             result.groupValues[2] shouldBe "foo!!"
+        }
+
+        @Test
+        fun `matches key containing hyphen`() {
+            val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs("my-key")""").shouldNotBeNull()
+            result.groupValues[1] shouldBe "my-key"
+        }
+
+        @Test
+        fun `matches key containing dots and spaces with chain`() {
+            val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs("order id.v2")!!.length""").shouldNotBeNull()
+            result.groupValues[1] shouldBe "order id.v2"
+            result.groupValues[2] shouldBe "length"
+        }
+
+        @Test
+        fun `matches explicit type argument`() {
+            val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs<String>("myKey")""").shouldNotBeNull()
+            result.groupValues[1] shouldBe "myKey"
+        }
+
+        @Test
+        fun `matches nested generic type argument with chain`() {
+            val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs<Map<String,Int>>("myKey")!!.size""").shouldNotBeNull()
+            result.groupValues[1] shouldBe "myKey"
+            result.groupValues[2] shouldBe "size"
         }
 
         @Test

@@ -387,6 +387,8 @@ private fun KClass<*>.findStaticPropertiesInHierarchy(): Set<KProperty<*>> {
     return results
 }
 
+private val typeArguments = Regex("""<[^(]+>""")
+
 /**
  * Resolves a dot-separated path on the given object.
  */
@@ -399,7 +401,7 @@ fun resolvePath(startingValue: Any, path: String?): Any? {
     var currentValue: Any? = startingValue
 
     for (segment in segments) {
-        val cleanSegment = segment.removeSuffix("?").removeSuffix("!!")
+        val cleanSegment = segment.removeSuffix("?").removeSuffix("!!").replace(typeArguments, "")
         currentValue = currentValue?.let { resolveSegment(it, cleanSegment) } ?: return null
     }
 

@@ -439,6 +439,120 @@
           "displayName": "test4()"
         }
       ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test5",
+      "displayName": "Test 5",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 63,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
+            },
+            {
+              "lineNumber": 65,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "all the outputs are generated"
+                }
+              ]
+            },
+            {
+              "lineNumber": 67,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the string output equal to"
+                },
+                {
+                  "types": [
+                    "tk-ov"
+                  ],
+                  "value": "theOutput"
+                }
+              ]
+            },
+            {
+              "lineNumber": 68,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the hyphenated output equal to"
+                },
+                {
+                  "types": [
+                    "tk-ov"
+                  ],
+                  "value": "hyphenated-value"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [
+            {
+              "KotlinStringOutput": "theOutput"
+            },
+            {
+              "kotlin-hyphenated.output": "hyphenated-value"
+            }
+          ],
+          "fixtures": [],
+          "fixtureSpecs":[],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test5()"
+        }
+      ]
     }
   ]
 }

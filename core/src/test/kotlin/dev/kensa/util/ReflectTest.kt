@@ -151,6 +151,16 @@ internal class ReflectTest {
         internal fun `returns null for an unresolvable function segment`() {
             resolvePath(Outer(Middle(Inner("value"))), "b.c.d.nonexistent()") shouldBe null
         }
+
+        @Test
+        internal fun `resolves a generic call segment by erasing type arguments`() {
+            resolvePath(listOf("first", "second"), "first<String>()") shouldBe "first"
+        }
+
+        @Test
+        internal fun `resolves a non-null asserted generic call segment`() {
+            resolvePath(listOf("first", "second"), "firstOrNull<String>()!!") shouldBe "first"
+        }
     }
 
     @Nested
