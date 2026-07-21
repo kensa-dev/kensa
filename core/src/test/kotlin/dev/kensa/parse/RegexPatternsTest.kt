@@ -76,6 +76,13 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches non-null asserted chain`() {
+            val result = RegexPatterns.chainedCallPattern.matchEntire("target!!.foo()!!.bar").shouldNotBeNull()
+            result.groupValues[1] shouldBe "target"
+            result.groupValues[3] shouldBe "foo()!!.bar"
+        }
+
+        @Test
         fun `does not match call with single argument`() {
             RegexPatterns.chainedCallPattern.matchEntire("thing.foo(a)").shouldBeNull()
         }
@@ -146,6 +153,33 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches non-null asserted accessor`() {
+            val result = RegexPatterns.fixturesPattern.matchEntire("fixtures[MyFixture]!!").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyFixture"
+            result.groupValues[2] shouldBe ""
+        }
+
+        @Test
+        fun `matches non-null asserted accessor with chain`() {
+            val result = RegexPatterns.fixturesPattern.matchEntire("fixtures(MyFixture)!!.name").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyFixture"
+            result.groupValues[2] shouldBe "name"
+        }
+
+        @Test
+        fun `matches non-null asserted chain segments`() {
+            val result = RegexPatterns.fixturesPattern.matchEntire("fixtures[MyFixture].foo!!.bar!!").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyFixture"
+            result.groupValues[2] shouldBe "foo!!.bar!!"
+        }
+
+        @Test
+        fun `matches non-null asserted parameterless call in chain`() {
+            val result = RegexPatterns.fixturesPattern.matchEntire("fixtures[MyFixture].foo()!!.bar").shouldNotBeNull()
+            result.groupValues[2] shouldBe "foo()!!.bar"
+        }
+
+        @Test
         fun `does not match chain with arguments`() {
             RegexPatterns.fixturesPattern.matchEntire("fixtures[MyFixture].method(arg)").shouldBeNull()
         }
@@ -195,6 +229,13 @@ internal class RegexPatternsTest {
         }
 
         @Test
+        fun `matches non-null asserted accessor and chain`() {
+            val result = RegexPatterns.outputsByNamePattern.matchEntire("outputs[MyOutput]!!.foo!!.bar").shouldNotBeNull()
+            result.groupValues[1] shouldBe "MyOutput"
+            result.groupValues[2] shouldBe "foo!!.bar"
+        }
+
+        @Test
         fun `does not match chain with arguments`() {
             RegexPatterns.outputsByNamePattern.matchEntire("outputs[MyOutput].method(arg)").shouldBeNull()
         }
@@ -222,6 +263,13 @@ internal class RegexPatternsTest {
             val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs("myKey")?.foo?.bar""").shouldNotBeNull()
             result.groupValues[1] shouldBe "myKey"
             result.groupValues[2] shouldBe "foo?.bar"
+        }
+
+        @Test
+        fun `matches non-null asserted accessor and chain`() {
+            val result = RegexPatterns.outputsByKeyPattern.matchEntire("""outputs("myKey")!!.foo!!""").shouldNotBeNull()
+            result.groupValues[1] shouldBe "myKey"
+            result.groupValues[2] shouldBe "foo!!"
         }
 
         @Test
@@ -257,6 +305,13 @@ internal class RegexPatternsTest {
             val result = RegexPatterns.callWithArgumentsAndPathPattern.matchEntire("""fn(g(1)).p""").shouldNotBeNull()
             result.groups["function"]!!.value shouldBe "fn"
             result.groups["path"]!!.value shouldBe "p"
+        }
+
+        @Test
+        fun `matches non-null asserted call and path segments`() {
+            val result = RegexPatterns.callWithArgumentsAndPathPattern.matchEntire("""fn(x)!!.a!!.b""").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "fn"
+            result.groups["path"]!!.value shouldBe "a!!.b"
         }
 
         @Test
@@ -319,6 +374,12 @@ internal class RegexPatternsTest {
         fun `matches paren and brace accessor forms`() {
             RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures(productFor(provideType))").shouldNotBeNull()
             RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures{productFor(provideType)}").shouldNotBeNull()
+        }
+
+        @Test
+        fun `matches non-null asserted factory result with path`() {
+            val result = RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures[productFor(provideType)]!!.stringValue").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "productFor"
         }
 
         @Test

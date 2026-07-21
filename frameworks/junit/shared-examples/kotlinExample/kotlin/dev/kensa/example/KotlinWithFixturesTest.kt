@@ -54,6 +54,11 @@ class KotlinWithFixturesTest : KotlinExampleTest(), WithHamkrest {
         then(theConcatenatedFixtures(), equalTo(concatenate(fixtures(StringFixture), fixtures(BooleanFixture))))
     }
 
+    @Test
+    fun test6() {
+        then(theNullableFixture(), equalTo(fixtures[MoreKotlinTestFixtures.NullableStringFixture]!!.length))
+    }
+
     @RenderedValue
     private fun concatenate(string: String, boolean: Boolean) = "$string-$boolean"
     private fun theConcatenatedFixtures() = StateCollector { concatenate(fixtures(StringFixture), fixtures(BooleanFixture)) }
@@ -63,6 +68,7 @@ class KotlinWithFixturesTest : KotlinExampleTest(), WithHamkrest {
     private fun theStringFixture() = StateCollector { _ -> fixtures[StringFixture] }
     private fun thePrivateSourcedFixture() = StateCollector { _ -> fixtures[PublicFixture] }
     private fun theFixture(value: String) = StateCollector { _ -> value }
+    private fun theNullableFixture() = StateCollector { _ -> fixtures[MoreKotlinTestFixtures.NullableStringFixture]!!.length }
     private fun somePrerequisites() = Action<GivensContext> {}
 
     companion object : FixtureContainer {
@@ -72,4 +78,5 @@ class KotlinWithFixturesTest : KotlinExampleTest(), WithHamkrest {
 
 object MoreKotlinTestFixtures : FixtureContainer {
     val BooleanFixture = fixture("KotlinBooleanFixture") { false }
+    val NullableStringFixture = fixture<String?>("KotlinNullableStringFixture") { "nullable-value" }
 }

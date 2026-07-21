@@ -48,6 +48,16 @@ class KotlinWithCapturedOutputsTest : KotlinExampleTest(), WithHamkrest {
         then(theConcatenatedOutputs(), equalTo(concatenate(outputs(StringOutput), outputs(BooleanOutput))))
     }
 
+    @Test
+    fun test4() {
+        given(somePrerequisites())
+
+        whenever(theOutputsAreGenerated())
+
+        then(theStringOutput(), equalTo(outputs("KotlinStringOutput")!!))
+        then(theBooleanFixture(), equalTo(outputs(BooleanOutput)!!))
+    }
+
     private fun somePrerequisites(): Action<GivensContext> = Action { context: GivensContext? -> }
 
     private fun theOutputsAreGenerated(): Action<ActionContext> {

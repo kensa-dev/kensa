@@ -325,6 +325,120 @@
           "displayName": "test3()"
         }
       ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test4",
+      "displayName": "Test 4",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 53,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "some prerequisites"
+                }
+              ]
+            },
+            {
+              "lineNumber": 55,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the outputs are generated"
+                }
+              ]
+            },
+            {
+              "lineNumber": 57,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the string output equal to"
+                },
+                {
+                  "types": [
+                    "tk-ov"
+                  ],
+                  "value": "theOutput"
+                }
+              ]
+            },
+            {
+              "lineNumber": 58,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the boolean fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-ov"
+                  ],
+                  "value": "true"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [
+            {
+              "KotlinStringOutput": "theOutput"
+            },
+            {
+              "KotlinBooleanOutput": "true"
+            }
+          ],
+          "fixtures": [],
+          "fixtureSpecs":[],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test4()"
+        }
+      ]
     }
   ]
 }

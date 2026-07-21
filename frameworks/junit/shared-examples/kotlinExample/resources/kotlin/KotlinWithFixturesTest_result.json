@@ -431,6 +431,65 @@
           "displayName": "test5()"
         }
       ]
+    },
+    {
+      "elapsedTime": "",
+      "testMethod": "test6",
+      "displayName": "Test 6",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 59,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Then"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the nullable fixture equal to"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "14"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [
+            {
+              "KotlinNullableStringFixture": "nullable-value"
+            }
+          ],
+          "fixtureSpecs": [
+            {
+              "key": "KotlinNullableStringFixture",
+              "parents": []
+            }
+          ],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "test6()"
+        }
+      ]
     }
   ]
 }

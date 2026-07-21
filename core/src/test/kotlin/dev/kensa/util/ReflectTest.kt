@@ -116,6 +116,21 @@ internal class ReflectTest {
         internal fun `null-safe path short-circuits to null when an intermediate is null`() {
             resolvePath(Outer(null), "b?.c.d") shouldBe null
         }
+
+        @Test
+        internal fun `resolves a non-null asserted path`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b!!.c!!.d") shouldBe "value"
+        }
+
+        @Test
+        internal fun `resolves a non-null asserted parameterless call`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b.c!!.fetch()!!") shouldBe "value"
+        }
+
+        @Test
+        internal fun `resolves mixed non-null asserted and null-safe segments`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b!!?.c.d") shouldBe "value"
+        }
     }
 
     @Nested
