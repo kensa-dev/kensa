@@ -406,6 +406,13 @@ fun resolvePath(startingValue: Any, path: String?): Any? {
     return currentValue
 }
 
+private val extensionFacadeClasses: List<Class<*>> = listOf(
+    "kotlin.text.StringsKt",
+    "kotlin.collections.CollectionsKt",
+    "kotlin.collections.MapsKt",
+    "kotlin.collections.ArraysKt",
+).mapNotNull { runCatching { Class.forName(it) }.getOrNull() }
+
 /**
  * Resolves a single path segment on the given object.
  * The segment can represent a property or method.
@@ -414,9 +421,17 @@ private fun resolveSegment(target: Any, segment: String): Any? =
     try {
         if (segment.endsWith("()")) {
             val methodName = segment.removeSuffix("()")
-            val method = target::class.java.methods.find { it.name == methodName }
-                ?: throw NoSuchMethodException("Method $methodName not found on ${target::class.java.name}")
-            method.apply { isAccessible = true }.invoke(target)
+            val member = target::class.java.methods.find { it.name == methodName && it.parameterCount == 0 }
+            if (member != null) {
+                member.apply { isAccessible = true }.invoke(target)
+            } else {
+                val extension = extensionFacadeClasses.firstNotNullOfOrNull { facade ->
+                    generateSequence<Class<*>>(facade) { it.superclass }
+                        .flatMap { it.declaredMethods.asSequence() }
+                        .find { Modifier.isStatic(it.modifiers) && it.name == methodName && it.parameterCount == 1 && it.parameterTypes[0].isAssignableFrom(target.javaClass) }
+                } ?: throw NoSuchMethodException("Method $methodName not found on ${target::class.java.name}")
+                extension.apply { isAccessible = true }.invoke(null, target)
+            }
         } else {
             val property = target::class.memberProperties.find { it.name == segment }
                 ?: throw NoSuchFieldException("Property $segment not found on ${target::class.java.name}")

@@ -131,6 +131,26 @@ internal class ReflectTest {
         internal fun `resolves mixed non-null asserted and null-safe segments`() {
             resolvePath(Outer(Middle(Inner("value"))), "b!!?.c.d") shouldBe "value"
         }
+
+        @Test
+        internal fun `resolves a stdlib string extension function segment`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b.c.d.uppercase()") shouldBe "VALUE"
+        }
+
+        @Test
+        internal fun `resolves a stdlib collection extension function segment`() {
+            resolvePath(listOf("first", "second"), "first()") shouldBe "first"
+        }
+
+        @Test
+        internal fun `resolves a non-null asserted stdlib extension function segment`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b.c.d.uppercase()!!") shouldBe "VALUE"
+        }
+
+        @Test
+        internal fun `returns null for an unresolvable function segment`() {
+            resolvePath(Outer(Middle(Inner("value"))), "b.c.d.nonexistent()") shouldBe null
+        }
     }
 
     @Nested
