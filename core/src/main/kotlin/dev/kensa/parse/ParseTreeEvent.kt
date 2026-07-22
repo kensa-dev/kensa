@@ -51,7 +51,7 @@ sealed class LocatedEvent(val location: Location) : Event() {
      * [key] (from the annotation) and the literal argument expression [argExpr] (e.g. `p1`), which the renderer
      * resolves per invocation to form the `(key, value)` identity of the seeded fixture.
      */
-    class FixtureFactoryExpression(location: Location, val key: String, val argExpr: String) : LocatedEvent(location)
+    class FixtureFactoryExpression(location: Location, val key: String, val argExpr: String, val path: String = "") : LocatedEvent(location)
 
     class Identifier(location: Location, val name: String) : LocatedEvent(location)
 

@@ -355,7 +355,7 @@ internal class KotlinFunctionParserTest {
                     listOf(
                         Word.asTemplateToken("action"),
                         Word.asTemplateToken("with"),
-                        FixtureFactoryValue.asTemplateToken("MyFixture:p1")
+                        FixtureFactoryValue.asTemplateToken("MyFixture::p1")
                     )
                 )
 
@@ -402,7 +402,7 @@ internal class KotlinFunctionParserTest {
                         Word.asTemplateToken("a"),
                         Word.asTemplateToken("product"),
                         Word.asTemplateToken("of"),
-                        FixtureFactoryValue.asTemplateToken("MyFixture:provideType")
+                        FixtureFactoryValue.asTemplateToken("MyFixture::provideType")
                     )
                 )
 

@@ -436,5 +436,17 @@ internal class RegexPatternsTest {
         fun `does not match a bare factory call without the fixtures accessor`() {
             RegexPatterns.fixturesFactoryPattern.matchEntire("productFor(provideType)").shouldBeNull()
         }
+
+        @Test
+        fun `captures the trailing navigation path`() {
+            val result = RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures[productFor(provideType)].stringValue").shouldNotBeNull()
+            result.groups["path"]!!.value shouldBe "stringValue"
+        }
+
+        @Test
+        fun `captures a multi-segment non-null asserted path`() {
+            val result = RegexPatterns.fixturesFactoryPattern.matchEntire("fixtures[productFor(provideType)]!!.a!!.b").shouldNotBeNull()
+            result.groups["path"]!!.value shouldBe "a!!.b"
+        }
     }
 }

@@ -165,10 +165,13 @@ class TokenRenderer(
         asRenderedValueToken { name, path -> fixtureAndOutputAccessor.fixtureValue(name, path) }
 
     private fun TemplateToken.asFactoryFixtureValue(): RenderedToken {
-        val (key, argExpr) = template.split(":", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
+        val parts = template.split(":", limit = 3)
+        val key = parts[0]
+        val path = parts.getOrElse(1) { "" }
+        val argExpr = parts.getOrElse(2) { "" }
         val compositeKey = dev.kensa.fixture.compositeFixtureKey(key, resolveFactoryArgs(argExpr))
         return RenderedValueToken(
-            renderers.renderValue(fixtureAndOutputAccessor.factoryFixtureValue(compositeKey)),
+            renderers.renderValue(fixtureAndOutputAccessor.factoryFixtureValue(compositeKey)?.let { resolvePath(it, path) }),
             types.map { it.asCss() }.toSortedSet()
         )
     }

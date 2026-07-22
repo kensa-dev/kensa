@@ -68,12 +68,14 @@ class ParseContext(
             RenderedValue(location, matchResult.groups["function"]!!.value)
         }
 
-    internal fun ParseTree.asFixtureFactory(): FixtureFactoryExpression? =
-        (singleCallWithArgumentsPattern.matchEntire(text) ?: fixturesFactoryPattern.matchEntire(text))?.let { match ->
-            val fn = match.groups["function"]?.value ?: return null
-            val key = dev.kensa.fixture.FixtureRegistry.keyForFactory(fn) ?: return null
-            FixtureFactoryExpression(location, key, match.groups["args"]?.value?.trim().orEmpty())
-        }
+    internal fun ParseTree.asFixtureFactory(): FixtureFactoryExpression? {
+        val single = singleCallWithArgumentsPattern.matchEntire(text)
+        val factory = if (single == null) fixturesFactoryPattern.matchEntire(text) else null
+        val match = single ?: factory ?: return null
+        val fn = match.groups["function"]?.value ?: return null
+        val key = dev.kensa.fixture.FixtureRegistry.keyForFactory(fn) ?: return null
+        return FixtureFactoryExpression(location, key, match.groups["args"]?.value?.trim().orEmpty(), factory?.groups?.get("path")?.value.orEmpty())
+    }
 
     internal fun ParseTree?.matchesFixtureFactoryExpression(): Boolean =
         this?.text?.let { text ->

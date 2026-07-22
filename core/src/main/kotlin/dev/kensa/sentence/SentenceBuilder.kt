@@ -186,10 +186,10 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         tokens.add(SimpleTemplateToken("$name:$path", types = setOf(FixturesValue)))
     }
 
-    fun appendFixtureFactoryValue(location: Location, key: String, argExpr: String) {
+    fun appendFixtureFactoryValue(location: Location, key: String, argExpr: String, path: String) {
         if (isIgnored(location)) return
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
-        tokens.add(SimpleTemplateToken("$key:$argExpr", types = setOf(FixtureFactoryValue)))
+        tokens.add(SimpleTemplateToken("$key:$path:$argExpr", types = setOf(FixtureFactoryValue)))
     }
 
     fun appendOutputsByNameValue(location: Location, name: String, path: String) {

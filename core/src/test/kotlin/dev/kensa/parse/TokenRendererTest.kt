@@ -290,9 +290,9 @@ class TokenRendererTest {
             fixtures.seed(factoryFixture("MyFixture", 20) { "" }, "forArg3")
 
             val templates = listOf(
-                FixtureFactoryValue.asTemplateToken("MyFixture:param1"),
-                FixtureFactoryValue.asTemplateToken("MyFixture:param3"),
-                FixtureFactoryValue.asTemplateToken("MyFixture:param1")
+                FixtureFactoryValue.asTemplateToken("MyFixture::param1"),
+                FixtureFactoryValue.asTemplateToken("MyFixture::param3"),
+                FixtureFactoryValue.asTemplateToken("MyFixture::param1")
             )
 
             val expected = listOf(
@@ -304,6 +304,17 @@ class TokenRendererTest {
             val renderedTokens = renderer.render(templates)
 
             renderedTokens shouldContainExactly expected
+        }
+
+        @Test
+        fun `renders the navigated property of a factory fixture`() {
+            fixtures.seed(factoryFixture("MyFixture", "arg1") { "" }, "forArg1")
+
+            val templates = listOf(FixtureFactoryValue.asTemplateToken("MyFixture:length:param1"))
+
+            val renderedTokens = renderer.render(templates)
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***7***", setOf("tk-fx")))
         }
     }
 

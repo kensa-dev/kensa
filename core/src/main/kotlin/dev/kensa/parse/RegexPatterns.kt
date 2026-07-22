@@ -10,6 +10,6 @@ internal object RegexPatterns {
     val outputsByNamePattern: Regex = """^outputs$TYPE_ARGS[\[(](?:\w+\.)*(\w+)[])](?:!!)?(?:\??\.($CHAIN))?$""".toRegex()
     val outputsByKeyPattern: Regex = """^outputs$TYPE_ARGS\("([^"]+)"\)(?:!!)?(?:\??\.($CHAIN))?$""".toRegex()
     val singleCallWithArgumentsPattern: Regex = """^(?:(?<receiver>\w+)\.)?(?<function>\w+)\((?<args>.*)\)$""".toRegex()
-    val fixturesFactoryPattern: Regex = """^fixtures[\[({](?:(?<receiver>\w+)\.)?(?<function>\w+)\((?<args>.*)\)[])}](?:!!)?(?:\??\.($CHAIN))?$""".toRegex()
+    val fixturesFactoryPattern: Regex = """^fixtures[\[({](?:(?<receiver>\w+)\.)?(?<function>\w+)\((?<args>.*)\)[])}](?:!!)?(?:\??\.(?<path>$CHAIN))?$""".toRegex()
     val callWithArgumentsAndPathPattern: Regex = """^(?:(?<receiver>\w+)\.)?(?<function>\w+)\(.+?\)(?:!!)?\??\.(?<path>$CHAIN)$""".toRegex()
 }
