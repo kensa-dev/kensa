@@ -1,5 +1,13 @@
 <h2 class="github">Changelog</h2>
 
+### v0.8.15
+
+Fixes:
+  - **Given/When/Then keywords recognised in expandable sentence names.** An `@ExpandableSentence` (or nested sentence) call like `thenAllTheVerificationsAreCorrect()` rendered its whole name as one flat header — keyword scanning was disabled on that path and token types were discarded. The leading keyword is now emitted as its own keyword token (title-cased, rendered blue, `whenever` normalising to `When`) ahead of the expandable header; expandables not at the start of a sentence are unchanged (#173).
+
+Changed:
+  - **Kotlin 2.4.10, Gradle 9.6.1.** Toolchain bump from Kotlin 2.4.0 / Gradle 9.5.1; no API changes. Consumers using the build plugins get the matching compiler-plugin pairing via the next build-plugins release.
+
 ### v0.8.14
 
 Fixes:
