@@ -1155,9 +1155,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "when With Lambda",
+                  "value": "With Lambda",
                   "parameterTokens": [],
                   "tokens": [
                     [
@@ -1250,9 +1256,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "given Some Prerequisites",
+                  "value": "Some Prerequisites",
                   "parameterTokens": [],
                   "tokens": [
                     [
@@ -1278,9 +1290,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "when Some Action With",
+                  "value": "Some Action With",
                   "parameterTokens": [
                     {
                       "types": [
@@ -1381,9 +1399,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "given Some Prerequisites",
+                  "value": "Some Prerequisites",
                   "parameterTokens": [],
                   "tokens": [
                     [
@@ -1548,9 +1572,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "given Some Prerequisites",
+                  "value": "Some Prerequisites",
                   "parameterTokens": [],
                   "tokens": [
                     [
@@ -1596,9 +1626,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "given Some Prerequisites",
+                  "value": "Some Prerequisites",
                   "parameterTokens": [],
                   "tokens": [
                     [

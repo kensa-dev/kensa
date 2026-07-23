@@ -281,9 +281,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "given Some Prerequisites",
+                  "value": "Some Prerequisites",
                   "parameterTokens": [],
                   "tokens": [
                     [
@@ -309,9 +315,15 @@
               "tokens": [
                 {
                   "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
                     "tk-ex"
                   ],
-                  "value": "when Some Action",
+                  "value": "Some Action",
                   "parameterTokens": [
                     {
                       "types": [

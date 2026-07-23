@@ -35,10 +35,18 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
             return
         }
         currentExpandableLocation = location
+        val (scanned, indices) = scanner.scan(placeholder, isFirstInSentence())
         lastLocation = tokens.checkLineAndIndent(location, lastLocation)
 
+        val indexList = indices.toList()
+        val leadingKeyword = indexList.firstOrNull()?.takeIf { it.type == Keyword }
+        leadingKeyword?.let { keyword ->
+            tokens.append(valueFor(keyword, scanned.substring(keyword.start, keyword.end)), Keyword)
+        }
+        val headerIndices = if (leadingKeyword != null) indexList.drop(1) else indexList
+
         val templateToken = ExpandableTemplateToken(
-            scannedPlaceholder(placeholder),
+            headerIndices.joinToString(separator = " ") { index -> scanned.substring(index.start, index.end) },
             setOf(Expandable),
             name = placeholder,
             expandableTokens = sentences.map { it.tokens }
@@ -67,11 +75,6 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         }
 
         pushExpandable(location, token)
-    }
-
-    private fun scannedPlaceholder(placeholder: String): String {
-        val (scanned, indices) = scanner.scan(placeholder, false)
-        return indices.joinToString(separator = " ") { index -> scanned.substring(index.start, index.end) }
     }
 
     private fun pushExpandable(location: Location, token: TemplateToken) {
