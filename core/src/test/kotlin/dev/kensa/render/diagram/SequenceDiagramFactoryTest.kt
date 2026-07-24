@@ -169,6 +169,23 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
+    fun `rendered SVG uses spacingAndGlyphs so safari lays out labels correctly`() {
+        val directives = listOf(
+            participant("Alpha"),
+            participant("Bravo")
+        )
+        val interactions = interactions()
+        capture(interactions, "Alpha", "Bravo")
+
+        val diagram = SequenceDiagramFactory({ directives }).create(interactions)
+
+        diagram.shouldNotBeNull()
+        val svg = diagram.toString()
+        svg shouldContain """lengthAdjust="spacingAndGlyphs" textLength"""
+        svg shouldNotContain """lengthAdjust="spacing" textLength"""
+    }
+
+    @Test
     fun `factory observes umlDirectives populated via deprecated setter after factory construction`() {
         val configuration = Configuration()
         val factory = SequenceDiagramFactory({ configuration.sequenceDiagram.directivesSnapshot() })

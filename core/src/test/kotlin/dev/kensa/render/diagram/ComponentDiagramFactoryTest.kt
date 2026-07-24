@@ -111,6 +111,19 @@ internal class ComponentDiagramFactoryTest {
     }
 
     @Test
+    fun `create renders svg with spacingAndGlyphs so safari lays out labels correctly`() {
+        val interactions = interactions()
+        capture(interactions, "A", "B")
+
+        val diagram = factory.create(interactions.entrySet())
+
+        diagram.shouldNotBeNull()
+        val svg = diagram.toString()
+        svg shouldContain """lengthAdjust="spacingAndGlyphs" textLength"""
+        svg shouldNotContain """lengthAdjust="spacing" textLength"""
+    }
+
+    @Test
     fun `create returns null for empty entries`() {
         factory.create(emptySet<KensaMap.Entry>()) shouldBe null
     }

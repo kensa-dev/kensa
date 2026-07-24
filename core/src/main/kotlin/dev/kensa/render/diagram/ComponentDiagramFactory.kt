@@ -17,7 +17,7 @@ class ComponentDiagramFactory {
         ByteArrayOutputStream().use { os ->
             SourceStringReader(markup).outputImage(os, FileFormatOption(SVG))
             os.toString()
-        }
+        }.withSafariSafeLengthAdjust()
 }
 
 internal fun componentMarkupFor(entries: Set<KensaMap.Entry>): String? {

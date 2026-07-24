@@ -34,8 +34,13 @@ class SequenceDiagramFactory(
         ByteArrayOutputStream().use { os ->
             SourceStringReader(plantUmlMarkup).outputImage(os, FileFormatOption(SVG))
             os.toString()
-        }
+        }.withSafariSafeLengthAdjust()
 }
+
+// WebKit mislays glyphs under lengthAdjust="spacing" when browser font metrics diverge from
+// PlantUML's Java-side measurement; spacingAndGlyphs renders correctly in all engines.
+internal fun String.withSafariSafeLengthAdjust(): String =
+    replace("""lengthAdjust="spacing" """, """lengthAdjust="spacingAndGlyphs" """)
 
 internal fun buildMarkup(participants: List<String>, primary: UmlParticipant?, interactions: CapturedInteractions): String? {
     val events = eventsFrom(interactions)
