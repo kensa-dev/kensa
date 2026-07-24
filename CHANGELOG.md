@@ -3,7 +3,7 @@
 ### v0.8.15
 
 Fixes:
-  - **Sequence and component diagrams render correctly in Safari.** PlantUML stamps every SVG text element with `lengthAdjust="spacing"` and a Java-metrics-computed `textLength`; WebKit's `spacing` implementation misplaces glyphs when the browser font's natural width diverges, corrupting labels into interleaved letters. Rendered SVGs now use `lengthAdjust="spacingAndGlyphs"`, which WebKit handles correctly and leaves Chrome visually unchanged (#174).
+  - **Sequence and component diagrams render correctly in Safari.** A message label containing consecutive spaces (e.g. from interaction naming with an empty segment) corrupted in Safari into interleaved, overlapping letters: XML whitespace collapsing renders the run as one space, but PlantUML computes `textLength` for the raw string, and WebKit reconciles the mismatch under `lengthAdjust="spacing"` by overlapping glyph runs. Rendered SVGs now use `lengthAdjust="spacingAndGlyphs"`, which WebKit lays out correctly and leaves Chrome visually unchanged (#174).
   - **Given/When/Then keywords recognised in expandable sentence names.** An `@ExpandableSentence` (or nested sentence) call like `thenAllTheVerificationsAreCorrect()` rendered its whole name as one flat header — keyword scanning was disabled on that path and token types were discarded. The leading keyword is now emitted as its own keyword token (title-cased, rendered blue, `whenever` normalising to `When`) ahead of the expandable header; expandables not at the start of a sentence are unchanged (#173).
 
 Changed:
