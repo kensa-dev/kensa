@@ -2,6 +2,9 @@
 
 ### v0.8.15
 
+New features:
+  - **MCP server in the CLI.** `kensa mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server over stdio, giving an AI agent structured access to your test results. Four tools read a completed run (`list_tests`, `list_failures`, `get_test`, `failure_evidence`), so a failure reaches the agent as the Given/When/Then sentence Kensa parsed from your source rather than a stack trace it has to reverse-engineer. A fifth, `style_profile`, catalogues how the project writes Kensa tests (framework, fixture containers, MatcherFields, stub helpers, conventions and an exemplar) so a proposed fix follows your idiom. The bundle argument accepts a single bundle, a site-mode root, a test folder name from `.kensa-properties`, or nothing at all when only one folder is configured. Registration and usage are documented on [kensa.dev](https://kensa.dev/docs/cli#mcp-server).
+
 Fixes:
   - **Test card corners no longer bleed.** Test headers showed square corners outside the card's rounded border — all four when collapsed, where the header is the whole card. The card cannot clip with `overflow-hidden` because that stops the sticky parameter matrix pinning, so the header now carries its own matching radius: full when collapsed, top-only when expanded, where the body already rounds its bottom (#175).
   - **Sequence and component diagrams render correctly in Safari.** A message label containing consecutive spaces (e.g. from interaction naming with an empty segment) corrupted in Safari into interleaved, overlapping letters: XML whitespace collapsing renders the run as one space, but PlantUML computes `textLength` for the raw string, and WebKit reconciles the mismatch under `lengthAdjust="spacing"` by overlapping glyph runs. Rendered SVGs now use `lengthAdjust="spacingAndGlyphs"`, which WebKit lays out correctly and leaves Chrome visually unchanged (#174).
