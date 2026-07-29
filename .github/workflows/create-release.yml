@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: ui/package-lock.json
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.22'
+          go-version-file: cli/go.mod
       - name: Build UI shell and stage CLI embed assets
         run: |
           ./gradlew :ui:viteBuild
