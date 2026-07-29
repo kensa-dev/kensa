@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -15,8 +16,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kensa-dev/kensa/cli/internal/config"
+	"github.com/kensa-dev/kensa/cli/internal/mcp"
 	"github.com/kensa-dev/kensa/cli/internal/shell"
-	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -25,18 +27,20 @@ var (
 	open = flag.Bool("open", true, "automatically open the browser")
 )
 
-const configFile = ".kensa-properties"
+const configFile = config.FileName
 
 // version is the Kensa release the embedded shell artifacts were built from.
 // Overridden at build time via `-ldflags "-X main.version=$(cat version.txt)"`.
 var version = "dev"
 
-type Config struct {
-	TestFolders map[string]string `yaml:"testFolders"`
-	Port        int               `yaml:"port,omitempty"`
-}
-
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "mcp" {
+		if err := mcp.Run(context.Background(), version); err != nil {
+			log.Fatalf("kensa mcp: %v", err)
+		}
+		return
+	}
+
 	flag.Parse()
 
 	var portSet bool
@@ -52,7 +56,7 @@ func main() {
 	if *dir != "" {
 		serveDir = *dir
 	} else if len(args) > 0 {
-		cfg, err := loadConfig()
+		cfg, err := config.Load()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -187,25 +191,6 @@ func parseVersion(v string) ([]int, bool) {
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
-}
-
-func loadConfig() (*Config, error) {
-	data, err := os.ReadFile(configFile)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to read %s: %v. Please ensure the file exists.", configFile, err)
-	}
-
-	var cfg Config
-	err = yaml.Unmarshal(data, &cfg)
-	if err != nil {
-		return nil, fmt.Errorf("Invalid YAML in %s: %v. Please check the file format.", configFile, err)
-	}
-
-	if cfg.TestFolders == nil {
-		return nil, fmt.Errorf("%s has no 'testFolders' section. Please add this section.", configFile)
-	}
-
-	return &cfg, nil
 }
 
 func openBrowser(url string) {

@@ -1,0 +1,4 @@
+dependencies {
+    testImplementation 'dev.kensa:kensa-framework-junit6'
+    testImplementation 'dev.kensa:kensa-assertions-hamcrest'
+}

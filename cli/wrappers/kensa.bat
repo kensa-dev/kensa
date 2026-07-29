@@ -26,20 +26,31 @@ powershell -Command "$remote = (Invoke-WebRequest -Uri '%REMOTE_VERSION_URL%' -U
 set /p REMOTE_VERSION=<temp.txt
 del temp.txt
 if "%REMOTE_VERSION%"=="" (
-    echo Failed to check for updates. Please check your internet connection. Using local version if available.
+    echo Failed to check for updates. Please check your internet connection. Using local version if available. 1>&2
     set REMOTE_VERSION=%LOCAL_VERSION%
 )
 
-if not "%REMOTE_VERSION%"=="%LOCAL_VERSION%" if not exist "%BIN_DIR%\%BIN_NAME%" (
-    echo Downloading kensa %REMOTE_VERSION% for %OS%-%ARCH%...
-    powershell -Command "Invoke-WebRequest -Uri '%REPO_URL%/%BIN_NAME%' -OutFile '%BIN_DIR%\%BIN_NAME%'"
+:: Download when the binary is missing OR the version moved on. Batch has no
+:: OR operator, and chaining two `if`s is an AND — which never re-downloaded an
+:: existing binary after a release.
+set NEED_DOWNLOAD=
+if not exist "%BIN_DIR%\%BIN_NAME%" set NEED_DOWNLOAD=1
+if not "%REMOTE_VERSION%"=="%LOCAL_VERSION%" set NEED_DOWNLOAD=1
+
+if defined NEED_DOWNLOAD (
+    echo Downloading kensa %REMOTE_VERSION% for %OS%-%ARCH%... 1>&2
+    powershell -Command "$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -Uri '%REPO_URL%/%BIN_NAME%' -OutFile '%BIN_DIR%\%BIN_NAME%' -UseBasicParsing"
     if errorlevel 1 (
-        echo Failed to download kensa %REMOTE_VERSION%. Please check your connection or the repository.
+        echo Failed to download kensa %REMOTE_VERSION%. Please check your connection or the repository. 1>&2
         exit /b 1
     )
-    echo %REMOTE_VERSION% > "%VERSION_FILE%"
-    echo Successfully updated to kensa %REMOTE_VERSION%.
+    :: Redirect first: `echo %VAR% > file` writes a trailing space, which reads
+    :: back as a different version every run, and a version ending in a digit
+    :: immediately before `>` would be parsed as a stream number.
+    >"%VERSION_FILE%" echo %REMOTE_VERSION%
+    echo Successfully updated to kensa %REMOTE_VERSION%. 1>&2
 )
 
-:: Run the CLI
+:: Run the CLI. Everything above writes to stderr so that `kensa mcp`, which
+:: speaks JSON-RPC over stdout, has an uncontaminated stream.
 "%BIN_DIR%\%BIN_NAME%" %*

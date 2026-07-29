@@ -1,0 +1,1 @@
+{"schemaVersion": 1, "kensaVersion": "0.8.15", "sources": [{"id": "test", "title": "Acceptance Tests", "url": "sources/test"}, {"id": "uiTest", "title": "UI Tests", "url": "sources/uiTest"}]}
