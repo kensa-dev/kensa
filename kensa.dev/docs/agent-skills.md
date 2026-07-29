@@ -7,6 +7,10 @@ description: Teach your AI coding agent (Claude Code, OpenCode, and others) to w
 
 The [`kensa-dev/agent-skills`](https://github.com/kensa-dev/agent-skills) repository ships AI coding skills that teach your agent how to write and review idiomatic Kensa tests. Works with [Claude Code](https://claude.ai/code), [OpenCode](https://opencode.ai), and any agent that understands the `SKILL.md` format.
 
+:::tip
+This covers writing tests. To let an agent read the results of running them — which tests failed, and the Given/When/Then sentence that failed — see the [MCP server](./cli.md#mcp-server) built into the Kensa CLI.
+:::
+
 ## What the skill does
 
 The `kensa-development` skill is an expert reviewer for Kensa tests. It detects violations of Kensa best practices, produces an improved version of your test, and explains the changes. It checks for:
