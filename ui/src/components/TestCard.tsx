@@ -99,6 +99,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
 
     const hasParams = test.invocations.length > 0 && test.invocations.every((inv) => inv.parameters && inv.parameters.length >= 2);
     const showMatrix = test.invocations.length >= 2 && hasParams;
+    const showBody = !isDisabled && isExpanded;
 
     return (
         <div className={cn(
@@ -107,7 +108,11 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
         )}>
             <div
                 className={cn(
-                    "px-5 py-3 border-b flex items-center justify-between cursor-pointer select-none transition-colors",
+                    "px-5 py-3 flex items-center justify-between cursor-pointer select-none transition-colors",
+                    // The card is rounded but cannot clip with overflow-hidden — that
+                    // would stop the sticky parameter matrix pinning — so the header
+                    // carries its own matching radius. Collapsed, it is the whole card.
+                    showBody ? "rounded-t-xl border-b" : "rounded-xl",
                     headerBg[state],
                     isDisabled ? "cursor-default" : "cursor-pointer"
                 )}
