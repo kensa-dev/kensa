@@ -55,6 +55,12 @@ interface WithHamkrest {
         HamkrestThen.thenContinually(duration, PollingScope(testContext().collectorContext).apply(assertions))
     }
 
+    fun <T> thenContinually(spec: ThenSpec<T>): Unit = thenContinually(10.seconds, spec)
+
+    fun <T> thenContinually(duration: Duration, spec: ThenSpec<T>) {
+        thenContinually(duration) { then(spec) }
+    }
+
     fun <T> thenEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
     fun <T> andEventually(spec: ThenSpec<T>): Unit = thenEventually(10.seconds, spec)
 
