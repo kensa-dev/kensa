@@ -282,5 +282,45 @@ class KotestMultiAssertionTest {
         }.shouldHaveMessage("onMatch throws")
     }
 
+    @Test
+    fun `thenContinually accepts a ThenSpec directly and polls it for the window`() {
+        val polls = AtomicInteger()
+        val spec = object : ThenSpec<String> {
+            override val collector = StateCollector { polls.incrementAndGet(); "steady" }
+            override val matcher: Matcher<String> = be("steady")
+        }
+
+        with(harness) { thenContinually(300.milliseconds, spec) }
+
+        polls.get() shouldBeGreaterThan 1
+    }
+
+    @Test
+    fun `thenContinually with a ThenSpec fails when the matcher stops holding mid-window`() {
+        val count = AtomicInteger()
+        val spec = object : ThenSpec<String> {
+            override val collector = StateCollector { if (count.incrementAndGet() < 3) "steady" else "regressed" }
+            override val matcher: Matcher<String> = be("steady")
+        }
+
+        shouldThrow<AssertionError> {
+            with(harness) { thenContinually(2.seconds, spec) }
+        }
+    }
+
+    @Test
+    fun `thenContinually with a ThenSpec fires onMatch once on the first successful poll`() {
+        val onMatchCount = AtomicInteger()
+        val spec = object : ThenSpec<String> {
+            override val collector = StateCollector { "steady" }
+            override val matcher: Matcher<String> = be("steady")
+            override val onMatch: CollectorContext.(String) -> Unit = { onMatchCount.incrementAndGet() }
+        }
+
+        with(harness) { thenContinually(300.milliseconds, spec) }
+
+        onMatchCount.get() shouldBe 1
+    }
+
     class Harness : WithKotest
 }

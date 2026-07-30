@@ -134,4 +134,10 @@ interface WithKotest {
             KotestThen.thenContinually(duration, scope)
         }
     }
+
+    fun <T> thenContinually(spec: ThenSpec<T>): Unit = thenContinually(10.seconds, spec)
+
+    fun <T> thenContinually(duration: Duration, spec: ThenSpec<T>) {
+        thenContinually(duration) { then(spec) }
+    }
 }
