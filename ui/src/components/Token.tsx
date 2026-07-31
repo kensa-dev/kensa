@@ -124,7 +124,7 @@ const Expandable = ({token}: ExpandableProps) => {
                             className={cn(
                                 "py-0.5 rounded bg-muted/40 border border-border/20 text-foreground/90",
                                 "leading-snug",
-                                isMultilineParams ? "basis-full mt-1 ml-0 max-w[56-rem] w-fit" : "ml-1.5"
+                                isMultilineParams ? "basis-full mt-1 ml-0 max-w-[56rem] w-fit" : "ml-1.5"
                             )}
                         >
                             {renderParameterTokens(parameterTokens)}
@@ -138,7 +138,7 @@ const Expandable = ({token}: ExpandableProps) => {
                     side="top"
                     align="start"
                     collisionPadding={8}
-                    className={"p-0 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1 w-[450px] max-h-[var(--radix-hover-card-content-available-height)] overflow-hidden"}
+                    className={"p-0 shadow-2xl border-border/50 bg-background/95 backdrop-blur-md rounded-xl animate-in slide-in-from-bottom-1 w-max min-w-[450px] max-w-[var(--radix-hover-card-content-available-width)] max-h-[var(--radix-hover-card-content-available-height)] overflow-hidden"}
                 >
                     <div className="space-y-1 max-h-[var(--radix-hover-card-content-available-height)] overflow-y-auto overscroll-contain">
                         {tokens?.map((item: ExpandableItem, idx: number) => {
