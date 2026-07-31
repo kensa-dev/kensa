@@ -88,9 +88,9 @@
                   "parameterTokens": [
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter1"
+                      "value": "parameter 1"
                     },
                     {
                       "types": [
@@ -245,9 +245,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter1"
+                      "value": "parameter 1"
                     },
                     {
                       "types": [
@@ -293,9 +293,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter2"
+                      "value": "parameter 2"
                     },
                     {
                       "types": [
@@ -360,9 +360,9 @@
                   "parameterTokens": [
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter1"
+                      "value": "parameter 1"
                     },
                     {
                       "types": [
@@ -372,15 +372,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "myString"
-                    },
-                    {
-                      "types": [
-                        "tk-id"
-                      ],
-                      "value": "parameter2"
+                      "value": "my string parameter 2"
                     },
                     {
                       "types": [
@@ -390,9 +384,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "myString"
+                      "value": "my string"
                     },
                     {
                       "types": [
@@ -505,9 +499,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter1"
+                      "value": "parameter 1"
                     },
                     {
                       "types": [
@@ -517,9 +511,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "myString"
+                      "value": "my string"
                     },
                     {
                       "types": [
@@ -559,9 +553,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter2"
+                      "value": "parameter 2"
                     },
                     {
                       "types": [
@@ -571,9 +565,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "myString"
+                      "value": "my string"
                     },
                     {
                       "types": [
@@ -904,9 +898,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter1"
+                      "value": "parameter 1"
                     },
                     {
                       "types": [
@@ -952,9 +946,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter2"
+                      "value": "parameter 2"
                     },
                     {
                       "types": [
@@ -1000,9 +994,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter3"
+                      "value": "parameter 3"
                     },
                     {
                       "types": [
@@ -1302,9 +1296,9 @@
                   "parameterTokens": [
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "aScenarioOf"
+                      "value": "a scenario of"
                     },
                     {
                       "types": [
@@ -1445,9 +1439,9 @@
                   "parameterTokens": [
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter1"
+                      "value": "parameter 1"
                     },
                     {
                       "types": [
@@ -1463,9 +1457,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter2"
+                      "value": "parameter 2"
                     },
                     {
                       "types": [
@@ -1481,9 +1475,9 @@
                     },
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "parameter3"
+                      "value": "parameter 3"
                     },
                     {
                       "types": [
@@ -1697,9 +1691,9 @@
                   "parameterTokens": [
                     {
                       "types": [
-                        "tk-id"
+                        "tk-wd"
                       ],
-                      "value": "myValueClassInstance"
+                      "value": "my value class instance"
                     }
                   ],
                   "tokens": [
