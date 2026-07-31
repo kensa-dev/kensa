@@ -99,9 +99,9 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
         val parameterTokens = mutableListOf<TemplateToken>()
 
-        parameterEvents.mapNotNullTo(parameterTokens) { event ->
+        parameterEvents.forEach { event ->
             lastLocation = parameterTokens.checkLineAndIndent(event.location, lastLocation)
-            when (event) {
+            val token = when (event) {
                 is ChainedCallExpression -> when (event.type) {
                     Method -> event.asSentenceToken(MethodValue)
                     Field -> event.asSentenceToken(FieldValue)
@@ -118,7 +118,14 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
                     }
                 }
 
-                is Identifier -> SimpleTemplateToken(event.name, setOf(Identifier))
+                is Identifier -> {
+                    val (scanned, indices) = scanner.scan(event.name, isFirstInSentence = false)
+                    indices.forEach { index ->
+                        parameterTokens.append(valueFor(index, scanned.substring(index.start, index.end)), index.type)
+                    }
+                    null
+                }
+
                 is Operator -> SimpleTemplateToken(event.text, setOf(Operator))
                 is NullLiteral -> SimpleTemplateToken("null", setOf(NullLiteral))
                 is NumberLiteral -> SimpleTemplateToken(event.value, setOf(NumberLiteral))
@@ -128,6 +135,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
 
                 else -> null
             }
+            token?.let(parameterTokens::add)
         }
 
         when (currentTemplate) {
