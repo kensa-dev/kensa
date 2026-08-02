@@ -3,6 +3,7 @@
 ### v0.8.15
 
 New features:
+  - **Negative matcher assertions.** The kotest and hamkrest test-support cores gain `noneMatching(matcher)` — a `Matcher<Collection<T>>` that passes when no element matches, failing with the offending elements listed. `WithKotest`/`WithHamkrest` gain direct `thenContinually(spec)` overloads, so a `ThenSpec` can be asserted over a window (delegating to the existing `PollingScope` form: the matcher must hold on every poll; `onMatch` fires once). Pair negative assertions with `then` or `thenContinually`, not `thenEventually`, which passes trivially on the first poll.
   - **MCP server in the CLI.** `kensa mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server over stdio, giving an AI agent structured access to your test results. Four tools read a completed run (`list_tests`, `list_failures`, `get_test`, `failure_evidence`), so a failure reaches the agent as the Given/When/Then sentence Kensa parsed from your source rather than a stack trace it has to reverse-engineer. A fifth, `style_profile`, catalogues how the project writes Kensa tests (framework, fixture containers, MatcherFields, stub helpers, conventions and an exemplar) so a proposed fix follows your idiom. The bundle argument accepts a single bundle, a site-mode root, a test folder name from `.kensa-properties`, or nothing at all when only one folder is configured. Registration and usage are documented on [kensa.dev](https://kensa.dev/docs/cli#mcp-server).
 
 Fixes:
