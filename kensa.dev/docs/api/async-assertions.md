@@ -138,6 +138,33 @@ thenContinually(5.seconds) {
 
 Matcher, assertion-block and `ThenSpec` forms are all usable inside the braces, and timing is configured at block level only: the full `initialDelay` / `duration` / `interval` triple on `thenEventually`, `duration` alone on `thenContinually`. The duration argument is optional on both block forms — omit it and the page's defaults apply (10-second timeout, 25 ms interval, no initial delay). The block forms are available on `WithKotest` and `WithHamkrest` (the lambda-friendly mixins) — not on `WithAssertJ` or `WithHamcrest`.
 
+`thenContinually` also accepts a `ThenSpec` directly, mirroring `then(spec)` and `thenEventually(spec)`:
+
+```kotlin
+thenContinually(spec)             // default 10s window
+thenContinually(2.seconds, spec)  // explicit window
+```
+
+It delegates to the block form, so the spec's matcher must hold on every poll and its `onMatch` fires once, on the first successful poll.
+
+## Negative assertions
+
+Asserting that something *does not* happen — "no cancellation event is ever received" — needs care with verb choice. `thenEventually` succeeds as soon as its assertion passes, so a negative assertion passes trivially on the very first poll, before a late event could possibly arrive. Pair negatives with:
+
+- **`then`** — a point-in-time check, right when a later positive assertion already anchors that the system has finished, or
+- **`thenContinually`** — the honest verb when the system could still emit: the assertion must keep holding for the whole window.
+
+For "no element matching" over a collection, the kotest and hamkrest test-support cores provide `noneMatching`:
+
+```kotlin
+import dev.kensa.kotest.testsupport.collections.noneMatching   // hamkrest: dev.kensa.hamkrest.testsupport.collections
+
+// passes while no element matches; fails listing the offending elements
+thenContinually(2.seconds, theCapturedEvents(), noneMatching(aCancelledOrderEvent()))
+```
+
+`noneMatching(matcher)` builds a `Matcher<Collection<T>>` that passes when no element matches — other elements are ignored, so unrelated traffic doesn't fail the assertion — and fails with the matching elements listed.
+
 ## In the report
 
 The keywords are recognised by the sentence renderer, so
