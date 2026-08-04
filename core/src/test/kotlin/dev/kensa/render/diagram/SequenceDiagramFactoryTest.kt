@@ -169,7 +169,32 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
-    fun `rendered SVG uses spacingAndGlyphs so safari lays out labels correctly`() {
+    fun `buildMarkup collapses consecutive whitespace in interaction labels`() {
+        val interactions = interactions()
+        capture(interactions, "A", "B", descriptor = "MigratePending  Notification")
+
+        val markup = buildMarkup(emptyList(), null, interactions)
+
+        markup.shouldNotBeNull()
+        markup shouldContain ">MigratePending Notification</text>"
+        markup shouldNotContain "MigratePending  Notification"
+    }
+
+    @Test
+    fun `buildMarkup collapses consecutive whitespace in marker labels`() {
+        val interactions = interactions()
+        capture(interactions, "A", "B")
+        interactions.divider("Part  One")
+
+        val markup = buildMarkup(emptyList(), null, interactions)
+
+        markup.shouldNotBeNull()
+        markup shouldContain "==Part One=="
+        markup shouldNotContain "Part  One"
+    }
+
+    @Test
+    fun `rendered SVG preserves natural glyph shapes via spacing lengthAdjust`() {
         val directives = listOf(
             participant("Alpha"),
             participant("Bravo")
@@ -181,8 +206,8 @@ internal class SequenceDiagramFactoryTest {
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
-        svg shouldContain """lengthAdjust="spacingAndGlyphs" textLength"""
-        svg shouldNotContain """lengthAdjust="spacing" textLength"""
+        svg shouldContain """lengthAdjust="spacing" textLength"""
+        svg shouldNotContain """lengthAdjust="spacingAndGlyphs" textLength"""
     }
 
     @Test

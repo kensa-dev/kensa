@@ -34,13 +34,14 @@ class SequenceDiagramFactory(
         ByteArrayOutputStream().use { os ->
             SourceStringReader(plantUmlMarkup).outputImage(os, FileFormatOption(SVG))
             os.toString()
-        }.withSafariSafeLengthAdjust()
+        }
 }
 
-// WebKit mislays glyphs under lengthAdjust="spacing" when browser font metrics diverge from
-// PlantUML's Java-side measurement; spacingAndGlyphs renders correctly in all engines.
-internal fun String.withSafariSafeLengthAdjust(): String =
-    replace("""lengthAdjust="spacing" """, """lengthAdjust="spacingAndGlyphs" """)
+// Consecutive spaces in a label corrupt Safari's SVG text layout: XML whitespace collapsing
+// renders one space but PlantUML computes textLength for the raw string (#174).
+private val whitespaceRun = "\\s+".toRegex()
+
+internal fun String.collapseWhitespace(): String = trim().replace(whitespaceRun, " ")
 
 internal fun buildMarkup(participants: List<String>, primary: UmlParticipant?, interactions: CapturedInteractions): String? {
     val events = eventsFrom(interactions)
@@ -109,7 +110,7 @@ object ToGroupedSvg : (KensaMap.Entry) -> Pair<String?, String> {
             val interactionId = entry.attributes.get<String>(InteractionId)
                 ?: error("Missing $InteractionId attribute for sequence diagram interaction")
 
-            val interactionName = result.groupValues[1].trim()
+            val interactionName = result.groupValues[1].collapseWhitespace()
             val from = result.groupValues[2].trim()
             val to = result.groupValues[3].trim()
 
@@ -117,5 +118,5 @@ object ToGroupedSvg : (KensaMap.Entry) -> Pair<String?, String> {
                 entry.attributes.group,
                 """$from ${entry.attributes.arrowStyle.value} ${to}:<text class=sequence_diagram_clickable sequence_diagram_interaction_id="$interactionId">$interactionName</text>"""
             )
-        } ?: Pair(entry.attributes.group, entry.value.toString().trim())
+        } ?: Pair(entry.attributes.group, entry.value.toString().collapseWhitespace())
 }

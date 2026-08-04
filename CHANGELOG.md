@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### Unreleased
+
+Fixes:
+  - **Diagram labels keep natural glyph shapes.** The 0.8.15 Safari fix swapped every diagram `<text>` element to `lengthAdjust="spacingAndGlyphs"`, which scales glyphs horizontally to fit PlantUML's computed `textLength` — short labels (e.g. 4-character participant names) read as faux-bold where browser font metrics diverge from PlantUML's. The Safari corruption (#174) is now fixed at source instead: consecutive whitespace in sequence diagram labels (interaction names, dividers, time markers) is collapsed to a single space before PlantUML measures them, so the rendered `textLength` matches what the browser draws and the SVG keeps PlantUML's native `lengthAdjust="spacing"` (#179).
+
 ### v0.8.15
 
 New features:

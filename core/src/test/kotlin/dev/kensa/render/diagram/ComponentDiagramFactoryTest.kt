@@ -111,7 +111,7 @@ internal class ComponentDiagramFactoryTest {
     }
 
     @Test
-    fun `create renders svg with spacingAndGlyphs so safari lays out labels correctly`() {
+    fun `create renders svg preserving natural glyph shapes via spacing lengthAdjust`() {
         val interactions = interactions()
         capture(interactions, "A", "B")
 
@@ -119,8 +119,8 @@ internal class ComponentDiagramFactoryTest {
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
-        svg shouldContain """lengthAdjust="spacingAndGlyphs" textLength"""
-        svg shouldNotContain """lengthAdjust="spacing" textLength"""
+        svg shouldContain """lengthAdjust="spacing" textLength"""
+        svg shouldNotContain """lengthAdjust="spacingAndGlyphs" textLength"""
     }
 
     @Test
