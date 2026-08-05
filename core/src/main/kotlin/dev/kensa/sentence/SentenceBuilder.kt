@@ -126,6 +126,8 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
                     null
                 }
 
+                is ConstantReference -> HintedTemplateToken(event.name, event.hint)
+
                 is Operator -> SimpleTemplateToken(event.text, setOf(Operator))
                 is NullLiteral -> SimpleTemplateToken("null", setOf(NullLiteral))
                 is NumberLiteral -> SimpleTemplateToken(event.value, setOf(NumberLiteral))
@@ -243,6 +245,12 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         indices.forEach { index: Index ->
             tokens.append(valueFor(index, scanned.substring(index.start, index.end)), index.type)
         }
+    }
+
+    fun append(event: ConstantReference) {
+        if (isIgnored(event.location)) return
+        lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
+        tokens.add(HintedTemplateToken(event.name, event.hint))
     }
 
     fun build(): TemplateSentence = TemplateSentence(tokens, startingLocation.lineNumber)

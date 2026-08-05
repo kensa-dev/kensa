@@ -46,6 +46,11 @@ class TokenRenderer(
                 token is ExpandableValueTemplateToken -> token.asExpandableValue()
                 token is ExpandableTemplateToken -> token.asExpandable()
                 token is TabularTemplateToken -> token.asTabular()
+                token is TemplateToken.HintedTemplateToken -> RenderedValueToken(
+                    token.template,
+                    sortedSetOf(Word.asCss(), Hinted.asCss()),
+                    token.hint
+                )
 
                 else -> token.asRenderedValue()
             }

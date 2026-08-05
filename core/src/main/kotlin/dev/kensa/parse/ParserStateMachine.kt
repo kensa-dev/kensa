@@ -152,6 +152,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 sentenceBuilder.append(event)
                 currentState
             }
+            on<ConstantReference> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<Field> { currentState, event ->
                 sentenceBuilder.append(event)
                 currentState
@@ -304,6 +308,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 sentenceBuilder.append(event)
                 currentState
             }
+            on<ConstantReference> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<EnterTypeArguments> { currentState, _ ->
                 InTypeArguments(currentState)
             }
@@ -398,7 +406,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
             on<ExitTypeArguments> { currentState, _ ->
                 currentState.parentState
             }
-            ignoreAll(any<Identifier>())
+            ignoreAll(any<Identifier>(), any<ConstantReference>())
         }
         state<InMethodInvocation> {
             on<ExitMethodInvocation> { currentState, _ ->
@@ -445,6 +453,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
                 InOutputsExpression(currentState)
             }
             on<Identifier> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
+            on<ConstantReference> { currentState, event ->
                 sentenceBuilder.append(event)
                 currentState
             }
@@ -506,6 +518,9 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
             currentState.apply { append(event) }
         }
         on<Identifier> { currentState, event ->
+            currentState.apply { append(event) }
+        }
+        on<ConstantReference> { currentState, event ->
             currentState.apply { append(event) }
         }
         on<Method> { currentState, event ->

@@ -207,4 +207,73 @@ class ImportsTest {
         emptyImports.match(arrayOf(Array<String>::class.java), listOf("int[]")) shouldBe false
         emptyImports.match(arrayOf(String::class.java), listOf("String[]")) shouldBe false
     }
+
+    @Test
+    fun `resolves enum constant via same-package qualifier`() {
+        val imports = Imports(emptyList(), ImportsTest::class.java)
+
+        imports.resolveConstant("ImportsTestOrderStatus", "PENDING") shouldBe ResolvedConstant("PENDING", "ImportsTestOrderStatus")
+    }
+
+    @Test
+    fun `resolves sealed class data object via same-package qualifier`() {
+        val imports = Imports(emptyList(), ImportsTest::class.java)
+
+        imports.resolveConstant("ImportsTestDelivery", "Pending") shouldBe ResolvedConstant("Pending", "ImportsTestDelivery")
+    }
+
+    @Test
+    fun `resolves enum constant via specific import`() {
+        val imports = Imports(listOf("dev.kensa.parse.ImportsTestOrderStatus"), String::class.java)
+
+        imports.resolveConstant("ImportsTestOrderStatus", "COMPLETE") shouldBe ResolvedConstant("COMPLETE", "ImportsTestOrderStatus")
+    }
+
+    @Test
+    fun `resolves enum constant via wildcard import`() {
+        val imports = Imports(listOf("dev.kensa.parse.*"), String::class.java)
+
+        imports.resolveConstant("ImportsTestOrderStatus", "PENDING") shouldBe ResolvedConstant("PENDING", "ImportsTestOrderStatus")
+    }
+
+    @Test
+    fun `does not resolve companion const`() {
+        val imports = Imports(emptyList(), ImportsTest::class.java)
+
+        imports.resolveConstant("ImportsTestLimits", "MAX") shouldBe null
+    }
+
+    @Test
+    fun `does not resolve missing member`() {
+        val imports = Imports(emptyList(), ImportsTest::class.java)
+
+        imports.resolveConstant("ImportsTestOrderStatus", "NOPE") shouldBe null
+    }
+
+    @Test
+    fun `does not resolve lowercase qualifier`() {
+        val imports = Imports(emptyList(), ImportsTest::class.java)
+
+        imports.resolveConstant("importsTestOrderStatus", "PENDING") shouldBe null
+    }
+
+    @Test
+    fun `does not resolve unknown qualifier`() {
+        val imports = Imports(emptyList(), ImportsTest::class.java)
+
+        imports.resolveConstant("NoSuchType", "PENDING") shouldBe null
+    }
+}
+
+enum class ImportsTestOrderStatus { PENDING, COMPLETE }
+
+sealed class ImportsTestDelivery {
+    data object Pending : ImportsTestDelivery()
+    data object Shipped : ImportsTestDelivery()
+}
+
+class ImportsTestLimits {
+    companion object {
+        const val MAX = 10
+    }
 }

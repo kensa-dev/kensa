@@ -22,7 +22,8 @@ class ParseContext(
     private val properties: Map<String, ElementDescriptor>,
     private val methods: Map<String, ElementDescriptor.MethodElementDescriptor>,
     private val parameters: Map<String, ElementDescriptor> = emptyMap(),
-    private val expandableMethods: Map<String, ParsedExpandableMethod> = emptyMap()
+    private val expandableMethods: Map<String, ParsedExpandableMethod> = emptyMap(),
+    private val imports: Imports? = null
 ) {
 
     private val expandableRenderedValueMethodNames = methods.filterValues { it.isExpandableRenderedValue }.keys
@@ -47,8 +48,10 @@ class ParseContext(
     internal fun ParseTree.asOutputs() = asOutputsByName() ?: asOutputsByKey()
     private fun ParseTree.asOutputsByName() = outputsByNamePattern.matchEntire(text)?.let { PathExpression.OutputsByNameExpression(location, it.groupValues[1], it.groupValues[2]) }
     private fun ParseTree.asOutputsByKey() = outputsByKeyPattern.matchEntire(text)?.let { PathExpression.OutputsByKeyExpression(location, it.groupValues[1], it.groupValues[2]) }
+    internal fun ParseTree.asConstantReference(member: String): ConstantReference? =
+        imports?.resolveConstant(text, member)?.let { ConstantReference(location, it.name, it.hint) }
 
-    fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, expandableMethods)
+    fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, expandableMethods, imports)
 
     internal fun ExpandableSentence.asExpandableSentenceWithArguments() = ExpandableSentenceWithArguments(location, name, sentences)
     internal fun ExpandableValue.asExpandableValueWithArguments() = ExpandableValueWithArguments(location, name, style, headers)

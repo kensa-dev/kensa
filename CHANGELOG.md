@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+New features:
+  - **Qualified enum constants read cleanly.** When two enums share a constant name and Kotlin forces qualification (`OrderStatus.PENDING`), the sentence rendered the camel-split qualifier as noise words ("the order is order status PENDING"). A qualified reference whose qualifier provably resolves (via the file's imports) to an enum constant or nested object — including sealed-class data objects (`OrderStatus.Pending`) — now renders just the member name as a value token, with the type's simple name as a hover hint. Unresolvable qualifiers render as before. Kotlin and Java (#180).
+
 Fixes:
   - **Diagram labels keep natural glyph shapes.** The 0.8.15 Safari fix swapped every diagram `<text>` element to `lengthAdjust="spacingAndGlyphs"`, which scales glyphs horizontally to fit PlantUML's computed `textLength` — short labels (e.g. 4-character participant names) read as faux-bold where browser font metrics diverge from PlantUML's. The Safari corruption (#174) is now fixed at source instead: consecutive whitespace in sequence diagram labels (interaction names, dividers, time markers) is collapsed to a single space before PlantUML measures them, so the rendered `textLength` matches what the browser draws and the SVG keeps PlantUML's native `lengthAdjust="spacing"` (#179).
 

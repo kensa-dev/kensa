@@ -90,9 +90,12 @@ class MethodParser(
                     }
                 }
                 val expandableMethods = relatedClasses.fold(emptyMap<String, ParsedExpandableMethod>()) { acc, clazz ->
-                    acc + clazz.prepareExpandableMethods(methodDeclarations, ParseContext(properties, methods))
+                    acc + clazz.prepareExpandableMethods(methodDeclarations, ParseContext(properties, methods, imports = methodDeclarations.importsFor(clazz)))
                 }
-                val (testMethodSentences, testMethodParseErrors) = testClass.prepareTestMethodSentences(testMethodDeclaration, ParseContext(properties, methods, testMethodParameters.descriptors, expandableMethods))
+                val (testMethodSentences, testMethodParseErrors) = testClass.prepareTestMethodSentences(
+                    testMethodDeclaration,
+                    ParseContext(properties, methods, testMethodParameters.descriptors, expandableMethods, methodDeclarations.importsFor(testClass))
+                )
 
                 ParsedMethod(
                     indexInSource,
@@ -112,9 +115,12 @@ class MethodParser(
     private fun sentenceBuilder(): (Boolean, Location) -> SentenceBuilder =
         { isCommentSentence, location -> SentenceBuilder(isCommentSentence, location, configuration.dictionary, configuration.tabSize) }
 
+    private fun MethodDeclarations.importsFor(clazz: Class<*>): Imports =
+        declarationsByClass[clazz]?.imports ?: Imports(emptySet(), emptySet(), clazz)
+
     private fun Class<*>.prepareExpandableMethods(methodDeclarations: MethodDeclarations, parseContext: ParseContext): Map<String, ParsedExpandableMethod> =
         cache.getOrPutExpandableMethods(this) {
-            val imports = methodDeclarations.declarationsByClass[this]?.imports ?: Imports(emptySet(), emptySet(), this)
+            val imports = methodDeclarations.importsFor(this)
             val declarations = methodDeclarations.declarationsByClass[this]?.expandableMethods ?: emptyList()
 
             declarations

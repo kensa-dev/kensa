@@ -89,6 +89,14 @@ internal class SentenceBuilderTest {
     }
 
     @Test
+    internal fun `appends constant reference as hinted template token`() {
+        val builder = builderAt()
+        builder.append(dev.kensa.parse.LocatedEvent.ConstantReference(Location(1, 0), "PENDING", "OrderStatus"))
+
+        builder.build().tokens.single() shouldBe TemplateToken.HintedTemplateToken("PENDING", "OrderStatus")
+    }
+
+    @Test
     internal fun `does not emit keyword token when expandable is not first in sentence`() {
         val builder = builderAt()
         builder.append(dev.kensa.parse.LocatedEvent.Identifier(Location(1, 0), "given"))

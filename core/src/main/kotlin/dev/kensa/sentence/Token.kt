@@ -48,6 +48,13 @@ sealed interface TemplateToken {
         override val types: Set<Type> = setOf(Type.MethodValue)
     }
 
+    data class HintedTemplateToken(
+        override val template: String,
+        val hint: String,
+    ) : TemplateToken {
+        override val types: Set<Type> = setOf(Type.Hinted)
+    }
+
     data class ExpandableTemplateToken(
         override val template: String,
         override val types: Set<Type>,

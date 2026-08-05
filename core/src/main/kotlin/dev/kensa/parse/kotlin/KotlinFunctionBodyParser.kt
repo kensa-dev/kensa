@@ -1,5 +1,6 @@
 package dev.kensa.parse.kotlin
 
+import dev.kensa.parse.Event
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.IgnoreLines
 import dev.kensa.parse.kotlin.KotlinLexer.*
@@ -32,6 +33,7 @@ class KotlinFunctionBodyParser(
 
     private var replacedStatementDepth = 0
     private var renderableBody: RenderableBody? = null
+    private var suppressedConstantMember: KotlinParser.SimpleIdentifierContext? = null
 
     private class RenderableBody(
         val expression: KotlinParser.ExpressionContext,
@@ -179,6 +181,10 @@ class KotlinFunctionBodyParser(
             stateMachine.apply(IgnoreLines(Location(ctx.start.line, ctx.start.charPositionInLine), lineCount))
         }
         if (ctx === renderableBody?.suppressedCallee) return
+        if (ctx === suppressedConstantMember) {
+            suppressedConstantMember = null
+            return
+        }
         with(parseContext) {
             stateMachine.apply(
                 ctx.asParameter()
@@ -186,9 +192,18 @@ class KotlinFunctionBodyParser(
                     ?: ctx.asMethod()
                     ?: ctx.asExpandableSentence()?.let { expandable -> if (ctx.hasArguments()) expandable.asExpandableSentenceWithArguments() else expandable }
                     ?: ctx.asExpandableValue()?.let { expandable -> if (ctx.hasArguments()) expandable.asExpandableValueWithArguments() else expandable }
+                    ?: ctx.asConstantReferenceOrNull()
                     ?: ctx.asIdentifier()
             )
         }
+    }
+
+    private fun KotlinParser.SimpleIdentifierContext.asConstantReferenceOrNull(): Event? {
+        val primary = parent as? KotlinParser.PrimaryExpressionContext ?: return null
+        val postfix = primary.parent as? KotlinParser.PostfixUnaryExpressionContext ?: return null
+        if (postfix.postfixUnarySuffix().size != 1) return null
+        val memberCtx = postfix.postfixUnarySuffix().single().navigationSuffix()?.simpleIdentifier() ?: return null
+        return with(parseContext) { asConstantReference(memberCtx.text) }?.also { suppressedConstantMember = memberCtx }
     }
 
     override fun enterValueArgument(ctx: ValueArgumentContext) {

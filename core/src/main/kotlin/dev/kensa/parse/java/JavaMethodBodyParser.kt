@@ -1,5 +1,6 @@
 package dev.kensa.parse.java
 
+import dev.kensa.parse.Event
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.Location
 import dev.kensa.parse.LocatedEvent.IgnoreLines
@@ -31,6 +32,7 @@ class JavaMethodBodyParser(
 ) : Java20ParserBaseListener() {
 
     private var replacedStatementDepth = 0
+    private var suppressedConstantMember: Java20Parser.IdentifierContext? = null
 
     //  For Debugging:
     override fun enterEveryRule(ctx: ParserRuleContext) {
@@ -113,9 +115,21 @@ class JavaMethodBodyParser(
     override fun enterIdentifier(ctx: Java20Parser.IdentifierContext) {
         if (replacedStatementDepth > 0) return
         emitIgnoreHint(ctx)
-        with(parseContext) {
-            stateMachine.apply(ctx.asField() ?: ctx.asParameter() ?: ctx.asIdentifier())
+        if (ctx === suppressedConstantMember) {
+            suppressedConstantMember = null
+            return
         }
+        with(parseContext) {
+            stateMachine.apply(ctx.asField() ?: ctx.asParameter() ?: ctx.asConstantReferenceOrNull() ?: ctx.asIdentifier())
+        }
+    }
+
+    private fun Java20Parser.IdentifierContext.asConstantReferenceOrNull(): Event? {
+        val ambiguousName = parent as? Java20Parser.AmbiguousNameContext ?: return null
+        if (ambiguousName.ambiguousName() != null) return null
+        val expressionName = ambiguousName.parent as? Java20Parser.ExpressionNameContext ?: return null
+        val memberCtx = expressionName.identifier() ?: return null
+        return with(parseContext) { asConstantReference(memberCtx.text) }?.also { suppressedConstantMember = memberCtx }
     }
 
     private fun emitIgnoreHint(ctx: ParserRuleContext) {

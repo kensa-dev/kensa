@@ -20,6 +20,7 @@ import dev.kensa.render.ValueRenderer
 import dev.kensa.sentence.RenderedToken
 import dev.kensa.sentence.TemplateToken
 import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
+import dev.kensa.sentence.TemplateToken.HintedTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.aRenderedValueOf
 import dev.kensa.sentence.asTemplateToken
@@ -254,6 +255,26 @@ class TokenRendererTest {
             val expected = listOf(
                 aRenderedValueOf("***aStringField***", setOf("tk-wd", "tk-hi"), "path/to/string")
             )
+
+            renderedTokens shouldContainExactly expected
+        }
+
+        @Test
+        fun `renders hinted template token as value with hint and does not merge into word runs`() {
+            val templates = listOf(
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("order"),
+                HintedTemplateToken("PENDING", "OrderStatus"),
+                Word.asTemplateToken("please")
+            )
+
+            val expected = listOf(
+                aRenderedValueOf("the order", setOf("tk-wd")),
+                aRenderedValueOf("PENDING", setOf("tk-hi", "tk-wd"), "OrderStatus"),
+                aRenderedValueOf("please", setOf("tk-wd"))
+            )
+
+            val renderedTokens = renderer.render(templates)
 
             renderedTokens shouldContainExactly expected
         }
