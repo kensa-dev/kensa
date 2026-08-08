@@ -35,6 +35,10 @@ class KotlinWithQualifiedConstants {
         orderBecomes(OrderStatus.PENDING)
     }
 
+    fun testWithChainedAccess() {
+        theNameIs(OrderStatus.PENDING.name)
+    }
+
     @ExpandableSentence
     private fun orderBecomes(status: OrderStatus) {}
 
@@ -42,4 +46,5 @@ class KotlinWithQualifiedConstants {
     private fun andThePaymentIs(status: PaymentStatus) {}
     private fun theDeliveryIs(status: DeliveryStatus) {}
     private fun theLimitIs(limit: Int) {}
+    private fun theNameIs(name: String) {}
 }

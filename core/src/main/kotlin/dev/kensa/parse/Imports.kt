@@ -3,8 +3,6 @@ package dev.kensa.parse
 import dev.kensa.util.isKotlinObject
 import dev.kensa.util.toClassOrMaybeNested
 
-data class ResolvedConstant(val name: String, val hint: String)
-
 class Imports(
     private val imports: Set<Class<*>>,
     private val wildcardPackages: Set<String>,
@@ -14,12 +12,12 @@ class Imports(
     operator fun plus(other: Imports): Imports =
         Imports(imports + other.imports, wildcardPackages + other.wildcardPackages, declaringClass)
 
-    fun resolveConstant(qualifier: String, member: String): ResolvedConstant? {
+    fun resolveConstant(qualifier: String, member: String): String? {
         if (qualifier.firstOrNull()?.isUpperCase() != true) return null
         val clazz = resolveClass(qualifier) ?: return null
         return when {
-            clazz.isEnum && clazz.enumConstants.any { (it as Enum<*>).name == member } -> ResolvedConstant(member, clazz.simpleName)
-            clazz.declaredClasses.firstOrNull { it.simpleName == member }?.let { runCatching { it.isKotlinObject }.getOrDefault(false) } == true -> ResolvedConstant(member, clazz.simpleName)
+            clazz.isEnum && clazz.enumConstants.any { (it as Enum<*>).name == member } -> clazz.simpleName
+            clazz.declaredClasses.firstOrNull { it.simpleName == member }?.let { runCatching { it.isKotlinObject }.getOrDefault(false) } == true -> clazz.simpleName
             else -> null
         }
     }

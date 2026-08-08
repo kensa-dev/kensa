@@ -212,28 +212,28 @@ class ImportsTest {
     fun `resolves enum constant via same-package qualifier`() {
         val imports = Imports(emptyList(), ImportsTest::class.java)
 
-        imports.resolveConstant("ImportsTestOrderStatus", "PENDING") shouldBe ResolvedConstant("PENDING", "ImportsTestOrderStatus")
+        imports.resolveConstant("ImportsTestOrderStatus", "PENDING") shouldBe "ImportsTestOrderStatus"
     }
 
     @Test
     fun `resolves sealed class data object via same-package qualifier`() {
         val imports = Imports(emptyList(), ImportsTest::class.java)
 
-        imports.resolveConstant("ImportsTestDelivery", "Pending") shouldBe ResolvedConstant("Pending", "ImportsTestDelivery")
+        imports.resolveConstant("ImportsTestDelivery", "Pending") shouldBe "ImportsTestDelivery"
     }
 
     @Test
     fun `resolves enum constant via specific import`() {
         val imports = Imports(listOf("dev.kensa.parse.ImportsTestOrderStatus"), String::class.java)
 
-        imports.resolveConstant("ImportsTestOrderStatus", "COMPLETE") shouldBe ResolvedConstant("COMPLETE", "ImportsTestOrderStatus")
+        imports.resolveConstant("ImportsTestOrderStatus", "COMPLETE") shouldBe "ImportsTestOrderStatus"
     }
 
     @Test
     fun `resolves enum constant via wildcard import`() {
         val imports = Imports(listOf("dev.kensa.parse.*"), String::class.java)
 
-        imports.resolveConstant("ImportsTestOrderStatus", "PENDING") shouldBe ResolvedConstant("PENDING", "ImportsTestOrderStatus")
+        imports.resolveConstant("ImportsTestOrderStatus", "PENDING") shouldBe "ImportsTestOrderStatus"
     }
 
     @Test

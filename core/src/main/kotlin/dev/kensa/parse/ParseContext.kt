@@ -49,7 +49,7 @@ class ParseContext(
     private fun ParseTree.asOutputsByName() = outputsByNamePattern.matchEntire(text)?.let { PathExpression.OutputsByNameExpression(location, it.groupValues[1], it.groupValues[2]) }
     private fun ParseTree.asOutputsByKey() = outputsByKeyPattern.matchEntire(text)?.let { PathExpression.OutputsByKeyExpression(location, it.groupValues[1], it.groupValues[2]) }
     internal fun ParseTree.asConstantReference(member: String): ConstantReference? =
-        imports?.resolveConstant(text, member)?.let { ConstantReference(location, it.name, it.hint) }
+        imports?.resolveConstant(text, member)?.let { hint -> ConstantReference(location, member, hint) }
 
     fun copy(parameters: Map<String, ElementDescriptor>) = ParseContext(properties, methods, parameters, expandableMethods, imports)
 

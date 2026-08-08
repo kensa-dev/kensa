@@ -103,6 +103,13 @@ class QualifiedConstantRenderingTest {
     }
 
     @Test
+    fun `kotlin chained access on enum renders unchanged`() {
+        val sentences = parse("testWithChainedAccess").sentences
+
+        sentences.flatMap { it.tokens }.filterIsInstance<HintedTemplateToken>() shouldHaveSize 0
+    }
+
+    @Test
     fun `java qualified enum constants render as hinted member tokens`() {
         val sentences = parseJava("testWithQualifiedEnums").sentences
 
