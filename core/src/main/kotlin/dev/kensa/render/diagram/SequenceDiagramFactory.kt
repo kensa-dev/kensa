@@ -51,7 +51,7 @@ internal fun buildMarkup(participants: List<String>, primary: UmlParticipant?, i
 
     if (effective.isEmpty() && !hasRealInteractions(interactions)) return null
 
-    return (effective + events).joinToString(
+    return (effective.map { it.collapseWhitespace() } + events).joinToString(
         "\n",
         """
             @startuml
@@ -86,10 +86,11 @@ private fun eventsFrom(interactions: CapturedInteractions): List<String> =
             .groupByTo(LinkedHashMap(), { it.first }, { it.second })
             .forEach { (group, lines) ->
                 group?.takeIf { it.isNotEmpty() }?.let { g ->
+                    val collapsedGroup = g.collapseWhitespace()
                     if (group == "Setup") {
-                        add("group $SETUP_GROUP_COLOUR $g")
+                        add("group $SETUP_GROUP_COLOUR $collapsedGroup")
                     } else {
-                        add("group#gold $TEST_GROUP_COLOUR $g")
+                        add("group#gold $TEST_GROUP_COLOUR $collapsedGroup")
                     }
 
                     addAll(lines)

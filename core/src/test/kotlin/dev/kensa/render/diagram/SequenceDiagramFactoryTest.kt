@@ -194,6 +194,30 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
+    fun `buildMarkup collapses consecutive whitespace in group names`() {
+        val interactions = interactions()
+        interactions.capture(from(party("A")).to(party("B")).group("Part  One").with("payload", "sends a request"))
+
+        val markup = buildMarkup(emptyList(), null, interactions)
+
+        markup.shouldNotBeNull()
+        markup shouldContain "group#gold #FFFFFF Part One"
+        markup shouldNotContain "Part  One"
+    }
+
+    @Test
+    fun `buildMarkup collapses consecutive whitespace in participant directive labels`() {
+        val interactions = interactions()
+        capture(interactions, "A", "B")
+
+        val markup = buildMarkup(listOf("participant Order  Service"), null, interactions)
+
+        markup.shouldNotBeNull()
+        markup shouldContain "participant Order Service"
+        markup shouldNotContain "Order  Service"
+    }
+
+    @Test
     fun `rendered SVG preserves natural glyph shapes via spacing lengthAdjust`() {
         val directives = listOf(
             participant("Alpha"),
