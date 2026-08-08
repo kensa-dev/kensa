@@ -1,0 +1,192 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithContainerChainsTest",
+  "displayName": "Kotlin With Container Chains Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "tags": [],
+  "tests": [
+    {
+      "elapsedTime": "",
+      "testMethod": "canCheckSession",
+      "displayName": "Can Check Session",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 20,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "targeting use case market"
+                }
+              ]
+            },
+            {
+              "lineNumber": 22,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-pv"
+                  ],
+                  "value": "fastweb"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "sends a check session request"
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "useCase": "WholesalerUseCase(stub=WholesalerStub, market=EMEA)"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[1] WholesalerUseCase(stub=WholesalerStub, market=EMEA)"
+        },
+        {
+          "elapsedTime": "",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 20,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "targeting use case market"
+                }
+              ]
+            },
+            {
+              "lineNumber": 22,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-pv"
+                  ],
+                  "value": "vodafone"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "sends a check session request"
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "useCase": "WholesalerUseCase(stub=WholesalerStub, market=APAC)"
+            }
+          ],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "[2] WholesalerUseCase(stub=WholesalerStub, market=APAC)"
+        }
+      ]
+    },
+    {
+      "elapsedTime": "1 Ms",
+      "testMethod": "canCheckSessionForHeldWholesaler",
+      "displayName": "Can Check Session For Held Wholesaler",
+      "issues": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "elapsedTime": "1 Ms",
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 27,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-fv"
+                  ],
+                  "value": "giffgaff"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "sends a check session request"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "canCheckSessionForHeldWholesaler()"
+        }
+      ]
+    }
+  ]
+}

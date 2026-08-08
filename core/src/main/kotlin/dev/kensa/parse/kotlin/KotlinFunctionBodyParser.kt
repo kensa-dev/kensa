@@ -3,6 +3,7 @@ package dev.kensa.parse.kotlin
 import dev.kensa.parse.Event
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.LocatedEvent.IgnoreLines
+import dev.kensa.parse.LocatedEvent.PathExpression.ContainerChainExpression
 import dev.kensa.parse.kotlin.KotlinLexer.*
 import dev.kensa.parse.kotlin.KotlinParser.ValueArgumentContext
 import dev.kensa.parse.Location
@@ -34,6 +35,7 @@ class KotlinFunctionBodyParser(
     private var replacedStatementDepth = 0
     private var renderableBody: RenderableBody? = null
     private var suppressedConstantMember: KotlinParser.SimpleIdentifierContext? = null
+    private val suppressedContainerMembers = HashSet<KotlinParser.SimpleIdentifierContext>()
 
     private class RenderableBody(
         val expression: KotlinParser.ExpressionContext,
@@ -185,9 +187,11 @@ class KotlinFunctionBodyParser(
             suppressedConstantMember = null
             return
         }
+        if (suppressedContainerMembers.remove(ctx)) return
         with(parseContext) {
             stateMachine.apply(
-                ctx.asParameter()
+                ctx.asContainerChainOrNull()
+                    ?: ctx.asParameter()
                     ?: ctx.asField()
                     ?: ctx.asMethod()
                     ?: ctx.asExpandableSentence()?.let { expandable -> if (ctx.hasArguments()) expandable.asExpandableSentenceWithArguments() else expandable }
@@ -196,6 +200,26 @@ class KotlinFunctionBodyParser(
                     ?: ctx.asIdentifier()
             )
         }
+    }
+
+    private fun KotlinParser.SimpleIdentifierContext.asContainerChainOrNull(): Event? {
+        val primary = parent as? KotlinParser.PrimaryExpressionContext ?: return null
+        val postfix = primary.parent as? KotlinParser.PostfixUnaryExpressionContext ?: return null
+        val suffixes = postfix.postfixUnarySuffix()
+
+        val members = mutableListOf<KotlinParser.SimpleIdentifierContext>()
+        for ((index, suffix) in suffixes.withIndex()) {
+            val navigationSuffix = suffix.navigationSuffix() ?: break
+            if (navigationSuffix.memberAccessOperator().COLONCOLON() != null) break
+            val member = navigationSuffix.simpleIdentifier() ?: break
+            if (suffixes.getOrNull(index + 1)?.callSuffix() != null) break
+            members.add(member)
+        }
+        if (members.isEmpty()) return null
+
+        val type = with(parseContext) { containerChainTypeFor(text, members.first().text) } ?: return null
+        suppressedContainerMembers.addAll(members)
+        return ContainerChainExpression(Location(start.line, start.charPositionInLine), type, text, members.joinToString(".") { it.text })
     }
 
     private fun KotlinParser.SimpleIdentifierContext.asConstantReferenceOrNull(): Event? {

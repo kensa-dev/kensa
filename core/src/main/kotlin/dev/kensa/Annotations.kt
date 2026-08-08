@@ -110,6 +110,14 @@ annotation class ExpandableSentence
  * Annotation that specifies a container for rendered values.
  * This annotation causes Kensa to look for further rendering annotations in the class
  * of the annotated field or parameter.
+ *
+ * Members of the container class annotated with [RenderedValue] render as resolved values when
+ * referenced through the container in a sentence. For a field container this includes bare name
+ * inside a `with(container) { }` body; a parameter container only supports a prefixed chain
+ * (`container.member`, `container.member.path`) — bare-name resolution does not apply. A prefixed
+ * chain may be followed by a call taking arguments (`container.member.sends(request)`); the prefix
+ * renders as the resolved value and the call parses as ordinary sentence words. In Java, only the
+ * chain-followed-by-call shape is supported; a bare chain with no trailing call renders as words.
  */
 @Retention(RUNTIME)
 @Target(FIELD, VALUE_PARAMETER)

@@ -6,6 +6,7 @@ import dev.kensa.RenderedValueStrategy.*
 import dev.kensa.util.*
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
@@ -19,6 +20,7 @@ sealed interface ElementDescriptor {
     val highlight: Highlight?
     val renderedValueStyle: RenderedValueStyle get() = RenderedValueStyle.Default
     val renderedValueHeaders: List<String> get() = emptyList()
+    val containerRenderedMembers: Set<String> get() = emptySet()
 
     fun resolveValue(target: Any, path: String? = null): Any?
 
@@ -34,6 +36,9 @@ sealed interface ElementDescriptor {
         fun forMethod(method: Method): MethodElementDescriptor = MethodElementDescriptor(method)
 
         fun forParameter(parameter: Parameter, name: String, index: Int): ParameterElementDescriptor = ParameterElementDescriptor(name, parameter, index)
+
+        internal fun Class<*>.renderedMemberNames(): Set<String> =
+            allProperties.filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }.map { it.name }.toSet()
 
         private fun KProperty<*>.resolveFrom(target: Any): Any? {
             val actualTarget = javaField?.declaringClass?.kotlin?.objectInstance ?: target
@@ -57,11 +62,14 @@ sealed interface ElementDescriptor {
     class ParameterElementDescriptor(override val name: String, private val parameter: Parameter, val index: Int) : ElementDescriptor {
         override val isRenderedValue: Boolean = parameter.hasAnnotation<RenderedValue>()
         override val isExpandableRenderedValue: Boolean = parameter.hasAnnotation<ExpandableRenderedValue>()
+        override val isRenderedValueContainer: Boolean = parameter.hasAnnotation<RenderedValueContainer>()
         override val isHighlight: Boolean = parameter.hasAnnotation<Highlight>()
         override val highlight: Highlight? = parameter.findAnnotation<Highlight>()
         override val isParameterizedTestDescription: Boolean by lazy { parameter.hasAnnotation<ParameterizedTestDescription>() }
         override val renderedValueStyle: RenderedValueStyle = parameter.findAnnotation<ExpandableRenderedValue>()?.renderAs ?: RenderedValueStyle.Default
         override val renderedValueHeaders: List<String> = parameter.findAnnotation<ExpandableRenderedValue>()?.headers?.toList() ?: emptyList()
+        override val containerRenderedMembers: Set<String> =
+            if (isRenderedValueContainer) parameter.type.renderedMemberNames() else emptySet()
 
         override fun resolveValue(target: Any, path: String?): Any? {
             val initialValue = (target as Array<*>)[index] ?: return null
@@ -94,6 +102,9 @@ sealed interface ElementDescriptor {
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
         override val renderedValueStyle: RenderedValueStyle = property.findKotlinOrJavaAnnotation<ExpandableRenderedValue>()?.renderAs ?: RenderedValueStyle.Default
         override val renderedValueHeaders: List<String> = property.findKotlinOrJavaAnnotation<ExpandableRenderedValue>()?.headers?.toList() ?: emptyList()
+        override val containerRenderedMembers: Set<String> =
+            if (isRenderedValueContainer) (property.returnType.classifier as? KClass<*>)?.java?.renderedMemberNames().orEmpty()
+            else emptySet()
 
         override fun resolveValue(target: Any, path: String?): Any? =
             property.resolveFrom(target)?.let { resolvePath(it, path) }

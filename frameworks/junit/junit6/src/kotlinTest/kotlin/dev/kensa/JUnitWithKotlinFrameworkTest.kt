@@ -154,6 +154,17 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         }
 
         @Test
+        fun embeddedJsonIsCorrectForTestWithContainerChains() {
+            testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
+                renderers.addValueRenderer(WholesalerStub::class.java) {
+                    it.name
+                }
+            }
+            executeTestAndVerifyJson(KotlinWithContainerChainsTest::class.java)
+        }
+
+        @Test
         fun embeddedJsonIsCorrectForTestWithAcronyms() {
             testConfiguration {
                 sourceLocations = listOf(Path("src/kotlinExample/kotlin"))

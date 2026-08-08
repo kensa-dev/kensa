@@ -44,6 +44,7 @@ sealed class LocatedEvent(val location: Location) : Event() {
                 Method, Field, Parameter
             }
         }
+        class ContainerChainExpression(location: Location, val type: ChainedCallExpression.Type, name: String, path: String) : PathExpression(location, name, path)
     }
 
     /**

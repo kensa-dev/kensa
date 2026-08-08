@@ -102,11 +102,9 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         parameterEvents.forEach { event ->
             lastLocation = parameterTokens.checkLineAndIndent(event.location, lastLocation)
             val token = when (event) {
-                is ChainedCallExpression -> when (event.type) {
-                    Method -> event.asSentenceToken(MethodValue)
-                    Field -> event.asSentenceToken(FieldValue)
-                    Parameter -> event.asSentenceToken(ParameterValue)
-                }
+                is ChainedCallExpression -> event.asSentenceToken(event.type.asTokenType())
+
+                is ContainerChainExpression -> event.asSentenceToken(event.type.asTokenType())
 
                 is FixturesExpression -> event.asSentenceToken(FixturesValue)
                 is OutputsByNameExpression -> event.asSentenceToken(OutputsValueByName)
@@ -223,13 +221,9 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         tokens.add(RenderedValueToken(event.name, event.path))
     }
 
-    fun append(event: ChainedCallExpression) {
-        when (event.type) {
-            Method -> appendPathExpression(event, MethodValue)
-            Field -> appendPathExpression(event, FieldValue)
-            Parameter -> appendPathExpression(event, ParameterValue)
-        }
-    }
+    fun append(event: ChainedCallExpression) = appendPathExpression(event, event.type.asTokenType())
+
+    fun append(event: ContainerChainExpression) = appendPathExpression(event, event.type.asTokenType())
 
     fun append(event: Parameter) = appendNamedValue(event, event.name, ParameterValue)
 
@@ -294,7 +288,7 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
         tokens.append(value, type)
     }
 
-    private fun appendPathExpression(event: ChainedCallExpression, tokenType: Type) {
+    private fun appendPathExpression(event: PathExpression, tokenType: Type) {
         if (isIgnored(event.location)) return
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
         tokens.add(event.asSentenceToken(tokenType))
@@ -307,6 +301,12 @@ class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Lo
     }
 
     private fun PathExpression.asSentenceToken(tokenType: Type) = SimpleTemplateToken("${name}:${path}", types = setOf(tokenType))
+
+    private fun ChainedCallExpression.Type.asTokenType(): Type = when (this) {
+        Method -> MethodValue
+        Field -> FieldValue
+        Parameter -> ParameterValue
+    }
 
     private fun MutableList<TemplateToken>.append(value: String, vararg tokenTypes: Type) {
         add(SimpleTemplateToken(value, types = setOf(*tokenTypes)))

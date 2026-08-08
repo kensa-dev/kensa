@@ -94,6 +94,12 @@ class ParseContext(
             else -> null
         }
 
+    internal fun containerChainTypeFor(base: String, member: String): ChainedCallExpression.Type? = when {
+        parameters[base]?.let { it.isRenderedValueContainer && member in it.containerRenderedMembers } == true -> Parameter
+        properties[base]?.let { it.isRenderedValueContainer && member in it.containerRenderedMembers } == true -> Field
+        else -> null
+    }
+
     internal fun ParseTree?.matchesRenderedValueMethodExpression(): Boolean {
         val text = this?.text ?: return false
         callWithArgumentsAndPathPattern.matchEntire(text)?.let { return it.groups["function"]?.value in renderedValueMethodNames }

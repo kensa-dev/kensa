@@ -185,6 +185,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
 
                 InChainedCallExpression(currentState)
             }
+            on<ContainerChainExpression> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
         }
         state<InFixturesExpression> {
             on<ExitExpression> { currentState, _ ->
@@ -287,6 +291,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
             on<ChainedCallExpression> { currentState, event ->
                 sentenceBuilder.append(event)
                 InChainedCallExpression(currentState)
+            }
+            on<ContainerChainExpression> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
             }
             on<FixturesExpression> { currentState, event ->
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
@@ -436,6 +444,10 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
 
                 InChainedCallExpression(currentState)
             }
+            on<ContainerChainExpression> { currentState, event ->
+                sentenceBuilder.append(event)
+                currentState
+            }
             on<FixturesExpression> { currentState, event ->
                 sentenceBuilder.appendFixturesValue(event.location, event.name, event.path)
                 InFixturesExpression(currentState)
@@ -538,6 +550,9 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
         on<ChainedCallExpression> { currentState, event ->
             currentState.append(event)
             InChainedCallExpression(currentState)
+        }
+        on<ContainerChainExpression> { currentState, event ->
+            currentState.apply { append(event) }
         }
     }
 

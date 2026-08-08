@@ -209,6 +209,60 @@ private final PaymentRequest paymentRequest = new PaymentRequest(amount, currenc
 </TabItem>
 </Tabs>
 
+#### On a test-method parameter, with a chained member access
+
+`@RenderedValueContainer` also applies to a test-method parameter, e.g. one supplied by `@ParameterizedTest`. Members of the container class annotated with `@RenderedValue` render as resolved values wherever they're referenced through the container in the sentence. Bare-name resolution inside a `with(container) { }` body is a field-container feature only; a parameter container supports a prefixed chain (`container.member`, `container.member.path`), which may itself be followed by a call taking arguments (`container.member.sends(request)`) — the prefix renders as the resolved value and the call parses as ordinary sentence words. In Java, only the chain-followed-by-call shape is supported; a bare chain with no trailing call (e.g. `sendIt(useCase.stub)`) renders as words.
+
+<Tabs groupId="lang">
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+class WholesalerStub {
+    fun sends(request: CheckSessionRequest): CheckSessionResponse = ...
+    override fun toString() = "fastweb"
+}
+
+class WholesalerUseCase(@RenderedValue val stub: WholesalerStub)
+
+@ParameterizedTest
+@MethodSource("wholesalers")
+fun canCheckSession(@RenderedValueContainer useCase: WholesalerUseCase) {
+    whenever(useCase.stub.sends(aCheckSessionRequest { ... }))
+}
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+public static class WholesalerStub {
+    public CheckSessionResponse sends(CheckSessionRequest request) { ... }
+
+    @Override
+    public String toString() { return "fastweb"; }
+}
+
+public static class WholesalerUseCase {
+    @RenderedValue
+    public final WholesalerStub stub = new WholesalerStub();
+}
+
+@ParameterizedTest
+@MethodSource("wholesalers")
+void canCheckSession(@RenderedValueContainer WholesalerUseCase useCase) {
+    whenever(useCase.stub.sends(aCheckSessionRequest(...)));
+}
+```
+
+</TabItem>
+</Tabs>
+
+The rendered sentence is:
+
+> When fastweb sends a check session request …
+
+`useCase.stub` resolves to the `WholesalerStub` instance; its display value comes from a registered `ValueRenderer<WholesalerStub>` (see [`withValueRenderer`](./configuration.md)) or, absent one, its `toString()` — `"fastweb"` above. `sends(aCheckSessionRequest { ... })` is not part of the container chain, so it parses as ordinary sentence words.
+
 ---
 
 ### `@RenderedValueWithHint`

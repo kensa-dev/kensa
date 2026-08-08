@@ -6,6 +6,7 @@ import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.example.*
 import dev.kensa.parse.*
 import dev.kensa.sentence.TemplateSentence
+import dev.kensa.sentence.TemplateToken.SimpleTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
 import dev.kensa.util.allProperties
@@ -487,6 +488,50 @@ internal class JavaMethodParserTest {
             val parser = createParserFor(classMethodNamed(methodName))
             val method = JavaWithIgnoreHint::class.java.findMethod(methodName)
             return parser.parse(method).sentences
+        }
+    }
+
+    @Nested
+    inner class ContainerChains {
+
+        @Test
+        fun `renders container chain prefix before call with arguments`() {
+            val method = JavaWithContainerChains::class.java.findMethod("chainWithTrailingCall", JavaWithContainerChains.UseCase::class.java)
+            val parser = createParserFor(classMethodNamed("chainWithTrailingCall"))
+            val tokens = parser.parse(method).sentences.single().tokens
+            tokens.shouldContain(SimpleTemplateToken("useCase:stub", setOf(ParameterValue)))
+            tokens.map { it.template }.shouldContain("sends")
+            tokens.map { it.template }.shouldNotContain("stub")
+        }
+
+        @Test
+        fun `renders field container chain prefix`() {
+            val method = JavaWithContainerChains::class.java.findMethod("fieldContainerChain")
+            val parser = createParserFor(classMethodNamed("fieldContainerChain"))
+            val tokens = parser.parse(method).sentences.single().tokens
+            tokens.shouldContain(SimpleTemplateToken("heldCase:stub", setOf(FieldValue)))
+            tokens.map { it.template }.shouldNotContain("stub")
+        }
+
+        @Test
+        fun `bare chain with no trailing call renders as words`() {
+            val method = JavaWithContainerChains::class.java.findMethod("bareChain", JavaWithContainerChains.UseCase::class.java)
+            val parser = createParserFor(classMethodNamed("bareChain"))
+            val templates = parser.parse(method).sentences.single().tokens.map { it.template }
+            templates.shouldNotContain("useCase:stub")
+            templates.shouldContain("use")
+            templates.shouldContain("case")
+        }
+
+        @Test
+        fun `unannotated member renders as words`() {
+            val method = JavaWithContainerChains::class.java.findMethod("unannotatedMember", JavaWithContainerChains.UseCase::class.java)
+            val parser = createParserFor(classMethodNamed("unannotatedMember"))
+            val templates = parser.parse(method).sentences.single().tokens.map { it.template }
+            templates.shouldNotContain("useCase:plain")
+            templates.shouldContain("use")
+            templates.shouldContain("case")
+            templates.shouldContain("plain")
         }
     }
 

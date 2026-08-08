@@ -4,6 +4,7 @@ import dev.kensa.parse.Event
 import dev.kensa.parse.Event.*
 import dev.kensa.parse.Location
 import dev.kensa.parse.LocatedEvent.IgnoreLines
+import dev.kensa.parse.LocatedEvent.PathExpression.ContainerChainExpression
 import dev.kensa.parse.ParseContext
 import dev.kensa.parse.ParseContext.Companion.asBooleanLiteral
 import dev.kensa.parse.ParseContext.Companion.asCharacterLiteral
@@ -33,6 +34,7 @@ class JavaMethodBodyParser(
 
     private var replacedStatementDepth = 0
     private var suppressedConstantMember: Java20Parser.IdentifierContext? = null
+    private val suppressedContainerMembers = HashSet<Java20Parser.IdentifierContext>()
 
     //  For Debugging:
     override fun enterEveryRule(ctx: ParserRuleContext) {
@@ -119,9 +121,27 @@ class JavaMethodBodyParser(
             suppressedConstantMember = null
             return
         }
+        if (suppressedContainerMembers.remove(ctx)) return
         with(parseContext) {
-            stateMachine.apply(ctx.asField() ?: ctx.asParameter() ?: ctx.asConstantReferenceOrNull() ?: ctx.asIdentifier())
+            stateMachine.apply(ctx.asContainerChainOrNull() ?: ctx.asField() ?: ctx.asParameter() ?: ctx.asConstantReferenceOrNull() ?: ctx.asIdentifier())
         }
+    }
+
+    private fun Java20Parser.IdentifierContext.asContainerChainOrNull(): Event? {
+        val packageName = parent as? Java20Parser.PackageNameContext ?: return null
+        if (packageName.parent !is Java20Parser.TypeNameContext) return null
+
+        val members = mutableListOf<Java20Parser.IdentifierContext>()
+        var current = packageName.packageName()
+        while (current != null) {
+            members.add(current.identifier())
+            current = current.packageName()
+        }
+        if (members.isEmpty()) return null
+
+        val type = with(parseContext) { containerChainTypeFor(text, members.first().text) } ?: return null
+        suppressedContainerMembers.addAll(members)
+        return ContainerChainExpression(Location(start.line, start.charPositionInLine), type, text, members.joinToString(".") { it.text })
     }
 
     private fun Java20Parser.IdentifierContext.asConstantReferenceOrNull(): Event? {
