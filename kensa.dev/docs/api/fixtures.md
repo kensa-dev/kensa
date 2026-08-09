@@ -292,6 +292,30 @@ https://github.com/kensa-dev/clearwave-example/blob/master/src/test/java/com/cle
 
 ---
 
+### Exposing fixture values from shared objects (Kotlin)
+
+Sometimes a fixture value needs to be surfaced by an object that outlives any single test invocation, such as a data class supplying `@MethodSource` arguments to a parameterised test. The value cannot be baked in at construction time: it is seeded per invocation, and the same instance may be in use by several invocations at once when tests run in parallel.
+
+The `fixtures()` property delegate solves this. It holds only the fixture reference and resolves the value from the currently executing test's context on every access:
+
+```kotlin
+data class WholesalerUseCase(
+    @RenderedValue val stub: WholesalerStub,
+    private val referenceFx: Fixture<ProviderOrderReference>,
+) {
+    @get:RenderedValue
+    val providerOrderReference: ProviderOrderReference by fixtures(referenceFx)
+}
+```
+
+Each access reads the fixture seeded for the test running on the accessing thread, so a single shared instance is safe under parallel execution. Accessing the property outside an active Kensa test fails with an error naming the property and fixture.
+
+Annotate the delegated property with `@RenderedValue` (or `@get:RenderedValue`) and mark the parameter or field holding the object with [`@RenderedValueContainer`](/docs/api/annotations#renderedvaluecontainer), and references like `useCase.providerOrderReference` in the test body render the per-invocation value in the report.
+
+The delegate is Kotlin-only.
+
+---
+
 ## Grouping Fixtures with `WithFixturesSuite`
 
 When many tests share a large `FixtureContainer`, importing every fixture individually creates noise. `WithFixturesSuite` lets you declare one shared interface per container; test classes implement that interface and gain scoped, IDE-assisted block access to all its fixtures.
@@ -395,6 +419,7 @@ createParameterFixture(String key, String from, boolean highlighted, Function<P,
 | `fixtures[fixture]` | Get (and lazily create) the fixture value |
 | `fixtures.values()` | All fixture values as `List<NamedValue>` |
 | `fixtures.highlightedValues()` | Only highlighted fixture values |
+| `by fixtures(fixture)` | Property delegate resolving the value from the active test context on every access (Kotlin only, see [Exposing fixture values from shared objects](#exposing-fixture-values-from-shared-objects-kotlin)) |
 
 ---
 
