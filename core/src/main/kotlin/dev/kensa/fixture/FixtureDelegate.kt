@@ -21,6 +21,9 @@ import kotlin.reflect.KProperty
  * The value is re-read on every access, so the same instance can be shared across parameterised test
  * invocations and parallel threads; each access sees the fixture value seeded for the test running on the
  * accessing thread.
+ *
+ * Values resolve during sentence rendering, on the test's thread. The delegate therefore requires the test
+ * context to still be bound to that thread at render time, not just at capture time.
  */
 class FixtureDelegate<T>(val fixture: Fixture<T>) : ReadOnlyProperty<Any?, T> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
