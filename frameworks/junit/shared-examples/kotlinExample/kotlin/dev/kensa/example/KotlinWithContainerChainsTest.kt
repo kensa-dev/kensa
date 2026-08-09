@@ -5,6 +5,9 @@ import dev.kensa.ActionContext
 import dev.kensa.GivensContext
 import dev.kensa.RenderedValue
 import dev.kensa.RenderedValueContainer
+import dev.kensa.fixture.FixtureContainer
+import dev.kensa.fixture.fixture
+import dev.kensa.fixture.fixtures
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -24,10 +27,14 @@ class KotlinWithContainerChainsTest : KotlinExampleTest() {
 
     @Test
     fun canCheckSessionForHeldWholesaler() {
+        given(withReference(heldWholesaler.reference))
+
         whenever(heldWholesaler.stub.sends(aCheckSessionRequest()))
     }
 
     private fun targeting(market: String) = Action<GivensContext> {}
+
+    private fun withReference(reference: String) = Action<GivensContext> {}
 
     private fun aCheckSessionRequest() = CheckSessionRequest()
 
@@ -45,6 +52,13 @@ class WholesalerStub(val name: String) {
     override fun toString() = "WholesalerStub"
 }
 
-data class WholesalerUseCase(@RenderedValue val stub: WholesalerStub, val market: String)
+object WholesalerFixtures : FixtureContainer {
+    val WholesalerReferenceFx = fixture("WholesalerReferenceFx") { "REF-DEFAULT" }
+}
+
+data class WholesalerUseCase(@RenderedValue val stub: WholesalerStub, val market: String) {
+    @get:RenderedValue
+    val reference: String by fixtures(WholesalerFixtures.WholesalerReferenceFx)
+}
 
 class CheckSessionRequest

@@ -4,6 +4,8 @@ import dev.kensa.RenderedValueWithHint
 import dev.kensa.RenderingDirective
 import dev.kensa.RenderingDirectives
 import dev.kensa.Sources
+import dev.kensa.fixture.Fixture
+import dev.kensa.fixture.FixtureDelegate
 import java.lang.System.err
 import java.lang.reflect.AnnotatedElement
 import java.util.concurrent.atomic.AtomicBoolean
@@ -402,11 +404,48 @@ fun resolvePath(startingValue: Any, path: String?): Any? {
 
     for (segment in segments) {
         val cleanSegment = segment.removeSuffix("?").removeSuffix("!!").replace(typeArguments, "")
-        currentValue = currentValue?.let { resolveSegment(it, cleanSegment) } ?: return null
+        currentValue = currentValue?.let { resolveSegmentValue(it, cleanSegment) } ?: return null
     }
 
     return currentValue
 }
+
+fun fixtureFor(startingValue: Any, path: String?): Fixture<*>? {
+    if (path.isNullOrEmpty()) return null
+    val segments = path.split(".").map { it.removeSuffix("?").removeSuffix("!!").replace(typeArguments, "") }
+    if (segments.any { it.endsWith("()") }) return null
+
+    var target: Any = startingValue
+    for (segment in segments.dropLast(1)) {
+        target = target.resolveNonDelegatedSegmentValue(segment) ?: return null
+    }
+    val terminal = segments.last()
+    val property = target::class.memberProperties.find { it.name == terminal } ?: return null
+    val delegateField = property.javaField?.takeIf { it.name.endsWith("\$delegate") } ?: return null
+    return (delegateField.apply { isAccessible = true }.get(target) as? FixtureDelegate<*>)?.fixture
+}
+
+/**
+ * Resolves a non-terminal path segment without invoking a delegated property's getter. A `$delegate`-backed
+ * segment here means the path continues past a delegate, which is by definition not the terminal delegated
+ * property [fixtureFor] probes for, so this bails out (returning null) rather than calling the getter. Real value
+ * resolution (via `resolvePath`) does invoke intermediate delegate getters when it walks this same segment; the
+ * point of bailing out here is only that the probe never adds a delegate-getter invocation of its own on top of
+ * that resolution.
+ */
+private fun Any.resolveNonDelegatedSegmentValue(segment: String): Any? =
+    try {
+        val property = this::class.memberProperties.find { it.name == segment } ?: return null
+        val field = property.javaField
+        if (field != null && field.name.endsWith("\$delegate")) {
+            null
+        } else {
+            field?.apply { isAccessible = true }?.get(this)
+                ?: property.javaGetter?.apply { isAccessible = true }?.invoke(this)
+        }
+    } catch (e: Exception) {
+        err.println("Accessor threw an exception: "); e.printStackTrace(err); null
+    }
 
 private val extensionFacadeClasses: List<Class<*>> = listOf(
     "kotlin.text.StringsKt",
@@ -419,7 +458,7 @@ private val extensionFacadeClasses: List<Class<*>> = listOf(
  * Resolves a single path segment on the given object.
  * The segment can represent a property or method.
  */
-private fun resolveSegment(target: Any, segment: String): Any? =
+private fun resolveSegmentValue(target: Any, segment: String): Any? =
     try {
         if (segment.endsWith("()")) {
             val methodName = segment.removeSuffix("()")

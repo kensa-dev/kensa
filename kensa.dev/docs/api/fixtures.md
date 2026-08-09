@@ -312,6 +312,8 @@ Each access reads the fixture seeded for the test running on the accessing threa
 
 Annotate the delegated property with `@RenderedValue` (or `@get:RenderedValue`) and mark the parameter or field holding the object with [`@RenderedValueContainer`](/docs/api/annotations#renderedvaluecontainer), and references like `useCase.providerOrderReference` in the test body render the per-invocation value in the report.
 
+When a delegated property resolves a fixture through the container chain, Kensa recognizes the fixture reference and renders it as a fixture token in the report, styled identically to direct `fixtures[...]` references. If the underlying fixture is marked `highlighted = true`, the token is highlighted as well. This gives shared-object patterns the same fixture-aware rendering as test-local fixture access, with no additional annotations required.
+
 The delegate is Kotlin-only.
 
 ---

@@ -5,6 +5,7 @@ import dev.kensa.context.ExpandableInvocationContextHolder.expandableSentenceInv
 import dev.kensa.context.RealExpandableInvocation
 import dev.kensa.context.RealRenderedValueInvocation
 import dev.kensa.context.RenderedValueInvocationContextHolder.renderedValueInvocationContext
+import dev.kensa.fixture.Fixture
 import dev.kensa.parse.ElementDescriptor.*
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedToken
@@ -18,6 +19,7 @@ import dev.kensa.sentence.TemplateToken.TabularTemplateToken
 import dev.kensa.sentence.TemplateToken.Type
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.util.NamedValue
+import dev.kensa.util.fixtureFor
 import dev.kensa.util.resolvePath
 
 class TokenRenderer(
@@ -222,13 +224,16 @@ class TokenRenderer(
                         }
                     }
 
-                    else -> asToken(
-                        if (pd is ResolveHolderElementDescriptor) {
-                            renderers.renderValue(pd.resolveValue(testInstance, "$name.$path"))
-                        } else {
-                            renderers.renderValue(pd.resolveValue(testInstance, path))
-                        }, FieldValue, pd.isHighlight
-                    )
+                    is ResolveHolderElementDescriptor -> {
+                        val fullPath = if (path.isEmpty()) name else "$name.$path"
+                        pd.fixtureBehind(testInstance, fullPath)?.let { fixture ->
+                            asToken(renderers.renderValue(pd.resolveValue(testInstance, fullPath)), FixturesValue, pd.isHighlight || fixture.highlighted)
+                        } ?: asToken(renderers.renderValue(pd.resolveValue(testInstance, fullPath)), FieldValue, pd.isHighlight)
+                    }
+
+                    else -> pd.fixtureBehind(testInstance, path)?.let { fixture ->
+                        asToken(renderers.renderValue(pd.resolveValue(testInstance, path)), FixturesValue, pd.isHighlight || fixture.highlighted)
+                    } ?: asToken(renderers.renderValue(pd.resolveValue(testInstance, path)), FieldValue, pd.isHighlight)
                 }
             }
         } ?: throw KensaException("Token [${template}] with type FieldValue did not refer to an actual field")
@@ -243,9 +248,14 @@ class TokenRenderer(
     private fun TemplateToken.asParameterValue(): RenderedToken =
         template.split(":").let { (name, path) ->
             parameters[name]?.let { pd ->
-                asToken(renderers.renderValue(pd.resolveValue(arguments, path)), ParameterValue, pd.isHighlight)
+                pd.fixtureBehind(arguments, path)?.let { fixture ->
+                    asToken(renderers.renderValue(pd.resolveValue(arguments, path)), FixturesValue, pd.isHighlight || fixture.highlighted)
+                } ?: asToken(renderers.renderValue(pd.resolveValue(arguments, path)), ParameterValue, pd.isHighlight)
             }
         } ?: asToken(template, ParameterValue, false) // Test suite has not been executed with the kensa-agent
+
+    private fun ElementDescriptor.fixtureBehind(target: Any, path: String): Fixture<*>? =
+        if (path.isEmpty()) null else resolveValue(target, null)?.let { base -> fixtureFor(base, path) }
 
     private fun asToken(value: String, type: Type, shouldHighlight: Boolean, hint: String? = null) =
         RenderedValueToken(

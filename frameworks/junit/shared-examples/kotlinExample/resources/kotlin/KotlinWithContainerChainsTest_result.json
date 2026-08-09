@@ -21,7 +21,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 20,
+              "lineNumber": 23,
               "tokens": [
                 {
                   "types": [
@@ -38,7 +38,7 @@
               ]
             },
             {
-              "lineNumber": 22,
+              "lineNumber": 25,
               "tokens": [
                 {
                   "types": [
@@ -81,7 +81,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 20,
+              "lineNumber": 23,
               "tokens": [
                 {
                   "types": [
@@ -98,7 +98,7 @@
               ]
             },
             {
-              "lineNumber": 22,
+              "lineNumber": 25,
               "tokens": [
                 {
                   "types": [
@@ -152,7 +152,30 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 27,
+              "lineNumber": 30,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "with reference"
+                },
+                {
+                  "types": [
+                    "tk-fx"
+                  ],
+                  "value": "REF-DEFAULT"
+                }
+              ]
+            },
+            {
+              "lineNumber": 32,
               "tokens": [
                 {
                   "types": [
@@ -178,8 +201,17 @@
           "parameters": [],
           "capturedInteractions": [],
           "capturedOutputs": [],
-          "fixtures": [],
-          "fixtureSpecs": [],
+          "fixtures": [
+            {
+              "WholesalerReferenceFx": "REF-DEFAULT"
+            }
+          ],
+          "fixtureSpecs": [
+            {
+              "key": "WholesalerReferenceFx",
+              "parents": []
+            }
+          ],
           "sequenceDiagram": null,
           "componentDiagram": null,
           "state": "Passed",

@@ -4,6 +4,7 @@ import dev.kensa.KensaException
 import dev.kensa.context.TestContext
 import dev.kensa.context.TestContextHolder
 import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 /**
  * Property delegate that resolves a fixture's value from the current thread's active test context on every
@@ -21,11 +22,14 @@ import kotlin.properties.ReadOnlyProperty
  * invocations and parallel threads; each access sees the fixture value seeded for the test running on the
  * accessing thread.
  */
-fun <T> fixtures(fixture: Fixture<T>): ReadOnlyProperty<Any?, T> =
-    ReadOnlyProperty { _, property ->
+class FixtureDelegate<T>(val fixture: Fixture<T>) : ReadOnlyProperty<Any?, T> {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         val context: TestContext = TestContextHolder.testContextOrNull()
             ?: throw KensaException(
                 "Property [${property.name}] delegates to fixture [${fixture.key}] but was accessed outside an active Kensa test"
             )
-        context.fixtures[fixture]
+        return context.fixtures[fixture]
     }
+}
+
+fun <T> fixtures(fixture: Fixture<T>): FixtureDelegate<T> = FixtureDelegate(fixture)

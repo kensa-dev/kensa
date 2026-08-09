@@ -7,13 +7,17 @@ import dev.kensa.RenderedValueStrategy.UseIdentifierName
 import dev.kensa.RenderingDirective
 import dev.kensa.context.RenderedValueInvocationContext
 import dev.kensa.context.RenderedValueInvocationContextHolder
+import dev.kensa.context.TestContext
+import dev.kensa.context.TestContextHolder
 import dev.kensa.example.TheTestClass
 import dev.kensa.example.Wrapper
+import dev.kensa.fixture.Fixture as FixtureValue
 import dev.kensa.fixture.FixtureContainer
 import dev.kensa.fixture.FixtureRegistry
 import dev.kensa.fixture.Fixtures
 import dev.kensa.fixture.factoryFixture
 import dev.kensa.fixture.fixture
+import dev.kensa.fixture.fixtures
 import dev.kensa.outputs.CapturedOutputs
 import dev.kensa.render.Renderers
 import dev.kensa.render.ValueRenderer
@@ -24,6 +28,8 @@ import dev.kensa.sentence.TemplateToken.HintedTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.aRenderedValueOf
 import dev.kensa.sentence.asTemplateToken
+import dev.kensa.state.CapturedInteractions
+import dev.kensa.state.SetupStrategy
 import dev.kensa.util.NamedValue
 import dev.kensa.util.findMethod
 import io.kotest.matchers.collections.shouldContainExactly
@@ -336,6 +342,149 @@ class TokenRendererTest {
             val renderedTokens = renderer.render(templates)
 
             renderedTokens shouldContainExactly listOf(aRenderedValueOf("***7***", setOf("tk-fx")))
+        }
+    }
+
+    class ContainerChainHolder(fx: FixtureValue<String>) {
+        val reference: String by fixtures(fx)
+    }
+
+    class ContainerChainPlainHolder {
+        val reference: String = "plain-value"
+    }
+
+    class ContainerChainField(fx: FixtureValue<String>) {
+        val holder = ContainerChainHolder(fx)
+    }
+
+    class ContainerChainResolveHolderRoot(fx: FixtureValue<String>) {
+        val holder = ContainerChainHolder(fx)
+    }
+
+    @Nested
+    inner class FixtureDelegatedContainerChain {
+
+        private val referenceFx = fixture("ContainerChainReferenceFx") { "default-ref" }
+        private val highlightedFx = fixture("ContainerChainHighlightedFx", highlighted = true) { "default-highlighted" }
+
+        @AfterEach
+        fun tearDown() {
+            TestContextHolder.clearFromThread()
+        }
+
+        @Test
+        fun `renders a fixture delegated property behind a parameter as a fixture token`() {
+            bindContextSeededWith(referenceFx, "REF-1")
+
+            val renderedTokens = rendererFor("holder" to ContainerChainHolder(referenceFx))
+                .render(listOf(ParameterValue.asTemplateToken("holder:reference")))
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***REF-1***", setOf("tk-fx")))
+        }
+
+        @Test
+        fun `carries the Highlighted css when the fixture was declared highlighted`() {
+            bindContextSeededWith(highlightedFx, "HL-1")
+
+            val renderedTokens = rendererFor("holder" to ContainerChainHolder(highlightedFx))
+                .render(listOf(ParameterValue.asTemplateToken("holder:reference")))
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***HL-1***", setOf("tk-fx", "tk-hl")))
+        }
+
+        @Test
+        fun `keeps the plain ParameterValue css when the path continues past the delegate`() {
+            bindContextSeededWith(referenceFx, "REF-1")
+
+            val renderedTokens = rendererFor("holder" to ContainerChainHolder(referenceFx))
+                .render(listOf(ParameterValue.asTemplateToken("holder:reference.length")))
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***5***", setOf("tk-pv")))
+        }
+
+        @Test
+        fun `keeps the plain ParameterValue css for a non-delegated property`() {
+            val renderedTokens = rendererFor("holder" to ContainerChainPlainHolder())
+                .render(listOf(ParameterValue.asTemplateToken("holder:reference")))
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***plain-value***", setOf("tk-pv")))
+        }
+
+        @Test
+        fun `keeps the plain ParameterValue css when the path includes a method-call segment`() {
+            bindContextSeededWith(referenceFx, "REF-1")
+
+            val renderedTokens = rendererFor("holder" to ContainerChainHolder(referenceFx))
+                .render(listOf(ParameterValue.asTemplateToken("holder:reference.toString()")))
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***REF-1***", setOf("tk-pv")))
+        }
+
+        @Test
+        fun `renders a fixture delegated property behind a field as a fixture token`() {
+            bindContextSeededWith(referenceFx, "REF-2")
+
+            val fieldTestInstance = ContainerChainField(referenceFx)
+            val renderer = TokenRenderer(
+                fieldTestInstance,
+                emptyArray(),
+                renderers,
+                FixtureAndOutputAccessor(FixturesAndOutputs(fixtures, outputs)),
+                emptyMap(),
+                mapOf("holder" to ElementDescriptor.forProperty(ContainerChainField::holder)),
+                emptyMap(),
+                emptySet()
+            )
+
+            val renderedTokens = renderer.render(listOf(FieldValue.asTemplateToken("holder:reference")))
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***REF-2***", setOf("tk-fx")))
+        }
+
+        @Test
+        fun `renders a fixture delegated property behind a ResolveHolder descriptor as a fixture token`() {
+            bindContextSeededWith(referenceFx, "REF-3")
+
+            val rootInstance = ContainerChainResolveHolderRoot(referenceFx)
+            val parentDescriptor = ElementDescriptor.forProperty(ContainerChainResolveHolderRoot::holder)
+            val resolveHolderDescriptor = ElementDescriptor.forResolveHolder(parentDescriptor, ContainerChainHolder::reference)
+            val renderer = TokenRenderer(
+                rootInstance,
+                emptyArray(),
+                renderers,
+                FixtureAndOutputAccessor(FixturesAndOutputs(fixtures, outputs)),
+                emptyMap(),
+                mapOf("reference" to resolveHolderDescriptor),
+                emptyMap(),
+                emptySet()
+            )
+
+            val renderedTokens = renderer.render(listOf(FieldValue.asTemplateToken("reference:")))
+
+            renderedTokens shouldContainExactly listOf(aRenderedValueOf("***REF-3***", setOf("tk-fx")))
+        }
+
+        private fun rendererFor(vararg holderArguments: Pair<String, Any?>): TokenRenderer {
+            val holderParameters = holderArguments.mapIndexed { index, (name, _) ->
+                name to ElementDescriptor.forParameter(parameterWithAnnotations(), name, index)
+            }.toMap()
+
+            return TokenRenderer(
+                testInstance,
+                holderArguments.map { it.second }.toTypedArray(),
+                renderers,
+                FixtureAndOutputAccessor(FixturesAndOutputs(fixtures, outputs)),
+                holderParameters,
+                properties,
+                methods,
+                emptySet()
+            )
+        }
+
+        private fun <T> bindContextSeededWith(fx: FixtureValue<T>, value: T) {
+            val context = TestContext(CapturedInteractions(SetupStrategy.Grouped), Fixtures(), CapturedOutputs())
+            context.fixtures.seed(fx, value)
+            TestContextHolder.bindToCurrentThread(context)
         }
     }
 

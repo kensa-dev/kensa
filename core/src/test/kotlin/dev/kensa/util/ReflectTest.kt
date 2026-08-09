@@ -1,6 +1,9 @@
 package dev.kensa.util
 
 import dev.kensa.example.*
+import dev.kensa.fixture.Fixture
+import dev.kensa.fixture.fixture
+import dev.kensa.fixture.fixtures
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -9,7 +12,9 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.lang.reflect.AnnotatedElement
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
 
@@ -180,6 +185,51 @@ internal class ReflectTest {
     }
 
     @Nested
+    inner class FixtureResolution {
+
+        private val holderFx = fixture("HolderFx") { "v" }
+
+        @Test
+        internal fun `finds the fixture behind a delegated terminal property`() {
+            fixtureFor(FxHolder(holderFx), "reference")?.key shouldBe "HolderFx"
+        }
+
+        @Test
+        internal fun `resolves through a non delegated intermediate segment to the fixture behind the terminal property`() {
+            fixtureFor(OuterFxHolder(holderFx), "holder.reference")?.key shouldBe "HolderFx"
+        }
+
+        @Test
+        internal fun `returns null for a non delegated property`() {
+            fixtureFor(FxHolder(holderFx), "plain") shouldBe null
+        }
+
+        @Test
+        internal fun `returns null when the terminal property is delegated but not a FixtureDelegate`() {
+            fixtureFor(Delegated(), "lazyValue") shouldBe null
+        }
+
+        @Test
+        internal fun `returns null when the path continues past the delegated property`() {
+            fixtureFor(FxHolder(holderFx), "reference.length") shouldBe null
+        }
+
+        @Test
+        internal fun `returns null for an empty path`() {
+            fixtureFor(FxHolder(holderFx), "") shouldBe null
+        }
+
+        @Test
+        internal fun `does not invoke a delegated getter while walking past it to a later segment`() {
+            val counter = AtomicInteger(0)
+
+            fixtureFor(CountingDelegateHolder(counter), "reference.length") shouldBe null
+
+            counter.get() shouldBe 0
+        }
+    }
+
+    @Nested
     inner class ClassIdentification {
 
         @Test
@@ -345,6 +395,26 @@ internal class ReflectTest {
         val lazyValue: String by lazy { "lazy-value" }
         val delegatedValue: Inner by ReadOnlyProperty { _, _ -> Inner("delegated-value") }
         private val privateDelegated: String by lazy { "private-value" }
+    }
+
+    private class FxHolder(fx: Fixture<String>) {
+        val reference: String by fixtures(fx)
+        val plain: String = "plain"
+    }
+
+    private class OuterFxHolder(fx: Fixture<String>) {
+        val holder: FxHolder = FxHolder(fx)
+    }
+
+    private class CountingDelegateProperty(private val counter: AtomicInteger, private val value: String) : ReadOnlyProperty<Any?, String> {
+        override fun getValue(thisRef: Any?, property: KProperty<*>): String {
+            counter.incrementAndGet()
+            return value
+        }
+    }
+
+    private class CountingDelegateHolder(counter: AtomicInteger) {
+        val reference: String by CountingDelegateProperty(counter, "counted-value")
     }
 }
 
