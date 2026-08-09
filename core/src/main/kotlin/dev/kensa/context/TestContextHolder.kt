@@ -1,5 +1,7 @@
 package dev.kensa.context
 
+import dev.kensa.KensaException
+
 object TestContextHolder {
     private val holder = ThreadLocal<TestContext>()
 
@@ -9,7 +11,7 @@ object TestContextHolder {
     }
 
     @JvmStatic
-    fun testContext(): TestContext = holder.get()
+    fun testContext(): TestContext = testContextOrNull() ?: throw KensaException("No Kensa test context is bound to the current thread")
 
     @JvmStatic
     fun testContextOrNull(): TestContext? = holder.get()
