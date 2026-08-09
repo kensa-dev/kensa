@@ -1,6 +1,6 @@
 <h2 class="github">Changelog</h2>
 
-### Unreleased
+### v0.8.16
 
 New features:
   - **Qualified enum constants read cleanly.** When two enums share a constant name and Kotlin forces qualification (`OrderStatus.PENDING`), the sentence rendered the camel-split qualifier as noise words ("the order is order status PENDING"). A qualified reference whose qualifier provably resolves (via the file's imports) to an enum constant or nested object — including sealed-class data objects (`OrderStatus.Pending`) — now renders just the member name as a value token, with the type's simple name as a hover hint. Unresolvable qualifiers render as before. Kotlin and Java (#180).
