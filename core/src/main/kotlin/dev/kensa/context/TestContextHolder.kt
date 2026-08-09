@@ -12,6 +12,9 @@ object TestContextHolder {
     fun testContext(): TestContext = holder.get()
 
     @JvmStatic
+    fun testContextOrNull(): TestContext? = holder.get()
+
+    @JvmStatic
     fun clearFromThread() {
         holder.remove()
     }
