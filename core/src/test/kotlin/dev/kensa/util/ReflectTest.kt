@@ -227,6 +227,15 @@ internal class ReflectTest {
 
             counter.get() shouldBe 0
         }
+
+        @Test
+        internal fun `does not invoke the delegated getter to identify the fixture directly behind a terminal property`() {
+            val counter = AtomicInteger(0)
+
+            fixtureFor(CountingDelegateHolder(counter), "reference")
+
+            counter.get() shouldBe 0
+        }
     }
 
     @Nested

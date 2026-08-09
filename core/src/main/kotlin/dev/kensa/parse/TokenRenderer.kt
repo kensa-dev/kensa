@@ -226,14 +226,10 @@ class TokenRenderer(
 
                     is ResolveHolderElementDescriptor -> {
                         val fullPath = if (path.isEmpty()) name else "$name.$path"
-                        pd.fixtureBehind(testInstance, fullPath)?.let { fixture ->
-                            asToken(renderers.renderValue(pd.resolveValue(testInstance, fullPath)), FixturesValue, pd.isHighlight || fixture.highlighted)
-                        } ?: asToken(renderers.renderValue(pd.resolveValue(testInstance, fullPath)), FieldValue, pd.isHighlight)
+                        tokenFor(pd, testInstance, fullPath, FieldValue)
                     }
 
-                    else -> pd.fixtureBehind(testInstance, path)?.let { fixture ->
-                        asToken(renderers.renderValue(pd.resolveValue(testInstance, path)), FixturesValue, pd.isHighlight || fixture.highlighted)
-                    } ?: asToken(renderers.renderValue(pd.resolveValue(testInstance, path)), FieldValue, pd.isHighlight)
+                    else -> tokenFor(pd, testInstance, path, FieldValue)
                 }
             }
         } ?: throw KensaException("Token [${template}] with type FieldValue did not refer to an actual field")
@@ -247,15 +243,17 @@ class TokenRenderer(
 
     private fun TemplateToken.asParameterValue(): RenderedToken =
         template.split(":").let { (name, path) ->
-            parameters[name]?.let { pd ->
-                pd.fixtureBehind(arguments, path)?.let { fixture ->
-                    asToken(renderers.renderValue(pd.resolveValue(arguments, path)), FixturesValue, pd.isHighlight || fixture.highlighted)
-                } ?: asToken(renderers.renderValue(pd.resolveValue(arguments, path)), ParameterValue, pd.isHighlight)
-            }
+            parameters[name]?.let { pd -> tokenFor(pd, arguments, path, ParameterValue) }
         } ?: asToken(template, ParameterValue, false) // Test suite has not been executed with the kensa-agent
 
+    private fun tokenFor(pd: ElementDescriptor, target: Any, path: String, plainType: Type): RenderedToken {
+        val value = pd.resolveValue(target, path)
+        val fixture = pd.fixtureBehind(target, path)
+        return asToken(renderers.renderValue(value), if (fixture != null) FixturesValue else plainType, pd.isHighlight || (fixture?.highlighted ?: false))
+    }
+
     private fun ElementDescriptor.fixtureBehind(target: Any, path: String): Fixture<*>? =
-        if (path.isEmpty()) null else resolveValue(target, null)?.let { base -> fixtureFor(base, path) }
+        if (path.isEmpty()) fixtureFor(target, name) else resolveValue(target, null)?.let { base -> fixtureFor(base, path) }
 
     private fun asToken(value: String, type: Type, shouldHighlight: Boolean, hint: String? = null) =
         RenderedValueToken(
