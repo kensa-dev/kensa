@@ -106,7 +106,10 @@ class QualifiedConstantRenderingTest {
     fun `kotlin chained access on enum renders unchanged`() {
         val sentences = parse("testWithChainedAccess").sentences
 
-        sentences.flatMap { it.tokens }.filterIsInstance<HintedTemplateToken>() shouldHaveSize 0
+        val tokens = sentences.flatMap { it.tokens }
+        tokens.filterIsInstance<HintedTemplateToken>() shouldHaveSize 0
+        tokens.any { it.template == "PENDING" } shouldBe true
+        tokens.any { it.template == "name" } shouldBe true
     }
 
     @Test
