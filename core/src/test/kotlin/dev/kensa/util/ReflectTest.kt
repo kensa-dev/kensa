@@ -9,6 +9,7 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.lang.reflect.AnnotatedElement
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
 
@@ -105,6 +106,21 @@ internal class ReflectTest {
         @Test
         internal fun `resolves a null-safe property access path stripping the safe-call operator`() {
             resolvePath(Outer(Middle(Inner("value"))), "b?.c.d") shouldBe "value"
+        }
+
+        @Test
+        internal fun `resolves a lazy delegated property to its value`() {
+            resolvePath(Delegated(), "lazyValue") shouldBe "lazy-value"
+        }
+
+        @Test
+        internal fun `resolves a custom delegated property and continues the path`() {
+            resolvePath(Delegated(), "delegatedValue.d") shouldBe "delegated-value"
+        }
+
+        @Test
+        internal fun `resolves a private delegated property to its value`() {
+            resolvePath(Delegated(), "privateDelegated") shouldBe "private-value"
         }
 
         @Test
@@ -324,5 +340,11 @@ internal class ReflectTest {
     private class Middle(val c: Inner?)
 
     private class Outer(val b: Middle?)
+
+    private class Delegated {
+        val lazyValue: String by lazy { "lazy-value" }
+        val delegatedValue: Inner by ReadOnlyProperty { _, _ -> Inner("delegated-value") }
+        private val privateDelegated: String by lazy { "private-value" }
+    }
 }
 

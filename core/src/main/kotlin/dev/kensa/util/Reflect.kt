@@ -437,8 +437,13 @@ private fun resolveSegment(target: Any, segment: String): Any? =
         } else {
             val property = target::class.memberProperties.find { it.name == segment }
                 ?: throw NoSuchFieldException("Property $segment not found on ${target::class.java.name}")
-            property.javaField?.apply { isAccessible = true }?.get(target)
-                ?: property.javaGetter?.apply { isAccessible = true }?.invoke(target)
+            val field = property.javaField
+            if (field != null && field.name.endsWith("\$delegate")) {
+                property.getter.apply { isAccessible = true }.call(target)
+            } else {
+                field?.apply { isAccessible = true }?.get(target)
+                    ?: property.javaGetter?.apply { isAccessible = true }?.invoke(target)
+            }
         }
     } catch (e: Exception) {
         err.println("Accessor threw an exception: "); e.printStackTrace(err); null
