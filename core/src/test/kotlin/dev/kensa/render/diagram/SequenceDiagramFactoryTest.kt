@@ -206,6 +206,18 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
+    fun `buildMarkup applies the setup colour even when the raw group name has surrounding whitespace`() {
+        val interactions = interactions()
+        interactions.capture(from(party("A")).to(party("B")).group("Setup ").with("payload", "sends a request"))
+
+        val markup = buildMarkup(emptyList(), null, interactions)
+
+        markup.shouldNotBeNull()
+        markup shouldContain "group #ECECEC Setup"
+        markup shouldNotContain "group#gold"
+    }
+
+    @Test
     fun `buildMarkup collapses consecutive whitespace in participant directive labels`() {
         val interactions = interactions()
         capture(interactions, "A", "B")

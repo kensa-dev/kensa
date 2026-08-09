@@ -87,7 +87,7 @@ private fun eventsFrom(interactions: CapturedInteractions): List<String> =
             .forEach { (group, lines) ->
                 group?.takeIf { it.isNotEmpty() }?.let { g ->
                     val collapsedGroup = g.collapseWhitespace()
-                    if (group == "Setup") {
+                    if (collapsedGroup == "Setup") {
                         add("group $SETUP_GROUP_COLOUR $collapsedGroup")
                     } else {
                         add("group#gold $TEST_GROUP_COLOUR $collapsedGroup")
