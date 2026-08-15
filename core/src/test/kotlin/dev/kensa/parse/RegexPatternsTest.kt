@@ -400,6 +400,42 @@ internal class RegexPatternsTest {
     }
 
     @Nested
+    inner class MatchSingleCallWithArguments {
+
+        @Test
+        fun `does not match call with trailing chained call`() {
+            RegexPatterns.matchSingleCallWithArguments("f(x).g(y)").shouldBeNull()
+        }
+
+        @Test
+        fun `does not match rendered value call with trailing chained call`() {
+            RegexPatterns.matchSingleCallWithArguments("theWholesaler(useCase).sends(aCheckSessionRequest())").shouldBeNull()
+        }
+
+        @Test
+        fun `matches call with nested call arguments`() {
+            val result = RegexPatterns.matchSingleCallWithArguments("f(foo(bar))").shouldNotBeNull()
+            result.groups["function"]!!.value shouldBe "f"
+        }
+
+        @Test
+        fun `matches parameterless call`() {
+            RegexPatterns.matchSingleCallWithArguments("foo()").shouldNotBeNull()
+        }
+
+        @Test
+        fun `matches call with arguments`() {
+            RegexPatterns.matchSingleCallWithArguments("foo(a,b)").shouldNotBeNull()
+        }
+
+        @Test
+        fun `matches call with receiver`() {
+            val result = RegexPatterns.matchSingleCallWithArguments("obj.foo(a)").shouldNotBeNull()
+            result.groups["receiver"]!!.value shouldBe "obj"
+        }
+    }
+
+    @Nested
     inner class FixturesFactoryPattern {
 
         @Test
