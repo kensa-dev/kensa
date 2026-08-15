@@ -98,9 +98,9 @@ export const ComponentDiagram: React.FC<ComponentDiagramProps> = ({ svg, classNa
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-auto p-6 flex justify-center bg-background/50">
+                    <div className="flex-1 overflow-auto p-6 flex bg-background/50">
                         <div
-                            className="sequence-diagram"
+                            className="sequence-diagram mx-auto"
                             dangerouslySetInnerHTML={{ __html: svg }}
                         />
                     </div>

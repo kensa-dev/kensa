@@ -18,9 +18,14 @@
   border: none;
   border-radius: 12px;
   display: flex;
-  justify-content: center;
   align-items: flex-start;
   padding: 16px;
+}
+
+/* Centre via auto margins, not justify-content: centred flex overflow
+   extends past the unscrollable left edge of an overflow container. */
+.sd-scroll > * {
+  margin-inline: auto;
 }
 
 .sequence-diagram svg {

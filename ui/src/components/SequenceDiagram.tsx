@@ -301,10 +301,10 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-auto p-6 flex justify-center bg-background/50">
+                    <div className="flex-1 overflow-auto p-6 flex bg-background/50">
                         <div
                             ref={modalRootRef}
-                            className={rootClasses}
+                            className={`${rootClasses} mx-auto`}
                             dangerouslySetInnerHTML={{__html: sequenceDiagram}}
                         />
                     </div>
