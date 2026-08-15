@@ -10,6 +10,7 @@ import dev.kensa.parse.ParserCache
 import dev.kensa.sentence.TemplateToken.SimpleTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.ParameterValue
 import dev.kensa.sentence.TemplateToken.Type.FieldValue
+import dev.kensa.sentence.TemplateToken.Type.MethodValue
 import dev.kensa.util.findMethod
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldNotContain
@@ -39,6 +40,13 @@ internal class KotlinContainerChainParserTest {
         tokens.shouldContain(SimpleTemplateToken("useCase:stub", setOf(ParameterValue)))
         tokens.map { it.template }.shouldContain("sends")
         tokens.map { it.template }.shouldNotContain("stub")
+    }
+
+    @Test
+    fun `rendered value call with arguments keeps trailing chained call`() {
+        val tokens = parseWithUseCase("renderedValueCallWithTrailingChain").sentences.single().tokens
+        tokens.shouldContain(SimpleTemplateToken("theWholesaler:", setOf(MethodValue)))
+        tokens.map { it.template }.shouldContain("sends")
     }
 
     @Test

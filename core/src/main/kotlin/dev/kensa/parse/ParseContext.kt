@@ -13,7 +13,7 @@ import dev.kensa.parse.RegexPatterns.fixturesFactoryPattern
 import dev.kensa.parse.RegexPatterns.fixturesPattern
 import dev.kensa.parse.RegexPatterns.outputsByKeyPattern
 import dev.kensa.parse.RegexPatterns.outputsByNamePattern
-import dev.kensa.parse.RegexPatterns.singleCallWithArgumentsPattern
+import dev.kensa.parse.RegexPatterns.matchSingleCallWithArguments
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
@@ -67,12 +67,12 @@ class ParseContext(
     internal fun ParseTree.asRenderedValueMethodExpression(): RenderedValue? =
         callWithArgumentsAndPathPattern.matchEntire(text)?.let { matchResult ->
             RenderedValue(location, matchResult.groups["function"]!!.value, matchResult.groups["path"]!!.value)
-        } ?: singleCallWithArgumentsPattern.matchEntire(text)?.let { matchResult ->
+        } ?: matchSingleCallWithArguments(text)?.let { matchResult ->
             RenderedValue(location, matchResult.groups["function"]!!.value)
         }
 
     internal fun ParseTree.asFixtureFactory(): FixtureFactoryExpression? {
-        val single = singleCallWithArgumentsPattern.matchEntire(text)
+        val single = matchSingleCallWithArguments(text)
         val factory = if (single == null) fixturesFactoryPattern.matchEntire(text) else null
         val match = single ?: factory ?: return null
         val fn = match.groups["function"]?.value ?: return null
@@ -82,7 +82,7 @@ class ParseContext(
 
     internal fun ParseTree?.matchesFixtureFactoryExpression(): Boolean =
         this?.text?.let { text ->
-            (singleCallWithArgumentsPattern.matchEntire(text) ?: fixturesFactoryPattern.matchEntire(text))
+            (matchSingleCallWithArguments(text) ?: fixturesFactoryPattern.matchEntire(text))
                 ?.groups?.get("function")?.value?.let { fn -> dev.kensa.fixture.FixtureRegistry.isFactory(fn) }
         } ?: false
 
@@ -103,7 +103,7 @@ class ParseContext(
     internal fun ParseTree?.matchesRenderedValueMethodExpression(): Boolean {
         val text = this?.text ?: return false
         callWithArgumentsAndPathPattern.matchEntire(text)?.let { return it.groups["function"]?.value in renderedValueMethodNames }
-        return singleCallWithArgumentsPattern.matchEntire(text)?.let { it.groups["function"]?.value in renderedValueMethodNames } ?: false
+        return matchSingleCallWithArguments(text)?.let { it.groups["function"]?.value in renderedValueMethodNames } ?: false
     }
     internal fun ParseTree?.matchesFixturesExpression() = this?.text?.matches(fixturesPattern) ?: false
     internal fun ParseTree?.matchesOutputsExpression() = this?.matchesOutputsByNameExpression() ?: false || this?.matchesOutputsByKeyExpression() ?: false
@@ -133,7 +133,7 @@ class ParseContext(
             val fn = matchResult.groups["function"]?.value
             if (fn in renderedValueMethodNames) return RenderedValue(location, fn!!, matchResult.groups["path"]!!.value)
         }
-        singleCallWithArgumentsPattern.matchEntire(expr)?.let { matchResult ->
+        matchSingleCallWithArguments(expr)?.let { matchResult ->
             val fn = matchResult.groups["function"]?.value
             if (fn != null) dev.kensa.fixture.FixtureRegistry.keyForFactory(fn)?.let { key ->
                 return FixtureFactoryExpression(location, key, matchResult.groups["args"]?.value?.trim().orEmpty())

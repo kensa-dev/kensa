@@ -52,4 +52,11 @@ class KotlinWithContainerChains {
     fun fieldContainerChain() {
         whenever(heldCase.stub.sends(aRequest()))
     }
+
+    @RenderedValue
+    private fun theWholesaler(useCase: UseCase): Stub = useCase.stub
+
+    fun renderedValueCallWithTrailingChain(useCase: UseCase) {
+        whenever(theWholesaler(useCase).sends(aRequest()))
+    }
 }
