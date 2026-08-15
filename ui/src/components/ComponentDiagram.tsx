@@ -8,9 +8,10 @@ interface ComponentDiagramProps {
     svg: string;
     className?: string;
     maxHeight?: number;
+    fill?: boolean;
 }
 
-export const ComponentDiagram: React.FC<ComponentDiagramProps> = ({ svg, className, maxHeight = 700 }) => {
+export const ComponentDiagram: React.FC<ComponentDiagramProps> = ({ svg, className, maxHeight = 700, fill = false }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [isMaximized, setIsMaximized] = useState(false);
     const [isOverflowing, setIsOverflowing] = useState(false);
@@ -52,7 +53,7 @@ export const ComponentDiagram: React.FC<ComponentDiagramProps> = ({ svg, classNa
 
     return (
         <>
-            <div className={["sd-panel", className].filter(Boolean).join(" ")}>
+            <div className={["sd-panel", fill && "h-full", className].filter(Boolean).join(" ")}>
                 {isOverflowing && (
                     <button
                         type="button"
@@ -67,7 +68,7 @@ export const ComponentDiagram: React.FC<ComponentDiagramProps> = ({ svg, classNa
                 <div
                     ref={scrollRef}
                     className="sd-scroll"
-                    style={{ maxHeight } as React.CSSProperties}
+                    style={(fill ? { height: "100%" } : { maxHeight }) as React.CSSProperties}
                 >
                     <div
                         className="component-diagram"
