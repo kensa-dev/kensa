@@ -3,6 +3,7 @@ import GithubIcon from "@/assets/github-mark.svg?react"
 import KensaLogo from "@/assets/logo.svg?react"
 import {Sidebar, SidebarFooter, SidebarHeader,} from "@/components/ui/sidebar"
 import {Index, Indices} from "@/types/Index";
+import type {LoadStatus} from "@/lib/initialLoad";
 import {useConfig} from "@/contexts/ConfigContext"
 import {TestExplorer} from "@/components/TestExplorer"
 
@@ -19,6 +20,8 @@ interface AppSidebarProps {
     isNative?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
     onFilterApplied?: (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => void;
+    loadStatus?: LoadStatus;
+    onRetry?: () => void;
 }
 
 export function AppSidebar(props: AppSidebarProps) {

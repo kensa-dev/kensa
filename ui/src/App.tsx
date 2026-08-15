@@ -25,7 +25,7 @@ import {TagFilterProvider} from "@/contexts/TagFilterContext";
 import {SuiteSearchProvider, type SuiteSearchResult} from "@/contexts/SuiteSearchContext";
 import {SuiteSearchResults} from "@/components/SuiteSearchResults";
 import {type MergedIndex} from "@/lib/suiteSearch";
-import {loadTreeData, loadSearchIndexes} from "@/lib/initialLoad";
+import {loadTreeData, loadSearchIndexes, statusFor, type LoadStatus} from "@/lib/initialLoad";
 import {nodeIdForLocation} from "@/util/suiteSearchNav";
 
 const App = () => {
@@ -41,6 +41,7 @@ const App = () => {
     const [testToExpand, setTestToExpand] = useState<string>("");
     const [matchingMethods, setMatchingMethods] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
     const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('theme') === 'dark');
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
@@ -216,29 +217,30 @@ const App = () => {
         return null;
     };
 
-    useEffect(() => {
-        const loadInitialData = async () => {
-            const manifest = await loadManifestOrFallback();
+    const loadInitialData = useCallback(async () => {
+        setLoadStatus('loading');
+        const manifest = await loadManifestOrFallback();
 
-            const [treeData, mergedSearch] = await Promise.all([
-                loadTreeData(manifest),
-                loadSearchIndexes(manifest),
-            ]);
+        // Search index hydrates whenever it lands; the tree never waits on it.
+        void loadSearchIndexes(manifest).then(setMergedSearchIndex);
 
-            setSourceConfigs(treeData.sourceConfigsMap);
-            setSourceUrls(treeData.urls);
-            setSourceTitles(treeData.titles);
-            setMergedSearchIndex(mergedSearch);
-            setIndices(treeData.roots);
-            setAggregateComponentDiagramsBySource(treeData.diagramsBySource);
-            // First source's config flows through ConfigContext until the user selects a test;
-            // selection updates it via the selectedIndex effect below.
-            const first = manifest.sources[0];
-            if (first && treeData.sourceConfigsMap[first.id]) setConfig(treeData.sourceConfigsMap[first.id]);
-        };
+        const treeData = await loadTreeData(manifest);
 
-        void loadInitialData();
+        setSourceConfigs(treeData.sourceConfigsMap);
+        setSourceUrls(treeData.urls);
+        setSourceTitles(treeData.titles);
+        setIndices(treeData.roots);
+        setAggregateComponentDiagramsBySource(treeData.diagramsBySource);
+        // First source's config flows through ConfigContext until the user selects a test;
+        // selection updates it via the selectedIndex effect below.
+        const first = manifest.sources[0];
+        if (first && treeData.sourceConfigsMap[first.id]) setConfig(treeData.sourceConfigsMap[first.id]);
+        setLoadStatus(statusFor(treeData, manifest));
     }, []);
+
+    useEffect(() => {
+        void loadInitialData();
+    }, [loadInitialData]);
 
     useEffect(() => {
         if (!selectedIndex) return;
@@ -485,6 +487,8 @@ const App = () => {
                         >
                             <AppSidebar
                                 indices={indices}
+                                loadStatus={loadStatus}
+                                onRetry={loadInitialData}
                                 sourceMetaById={sourceMetaById}
                                 searchQuery={searchQuery}
                                 onSearchChange={onSearchChange}

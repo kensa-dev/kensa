@@ -1,5 +1,5 @@
 import {describe, it, expect, vi, afterEach} from 'vitest';
-import {loadTreeData, loadSearchIndexes} from './initialLoad';
+import {loadTreeData, loadSearchIndexes, statusFor} from './initialLoad';
 import type {Manifest} from '@/types/Manifest';
 import type {RawSearchIndex} from '@/types/SearchIndex';
 
@@ -118,6 +118,20 @@ describe('loadTreeData', () => {
 
         expect(result.failedSourceIds).toEqual([]);
         expect(result.roots[0].displayName).toBe('projA title');
+    });
+});
+
+describe('statusFor', () => {
+    it('is error when every source failed', () => {
+        expect(statusFor({failedSourceIds: ['a', 'b']}, manifestFor('a', 'b'))).toBe('error');
+    });
+
+    it('is ready when at least one source loaded', () => {
+        expect(statusFor({failedSourceIds: ['b']}, manifestFor('a', 'b'))).toBe('ready');
+    });
+
+    it('is ready for a manifest with no sources', () => {
+        expect(statusFor({failedSourceIds: []}, manifestFor())).toBe('ready');
     });
 });
 

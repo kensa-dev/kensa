@@ -1,5 +1,5 @@
 import * as React from "react"
-import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, Network, Search, X} from "lucide-react"
+import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, Network, RefreshCw, Search, X} from "lucide-react"
 import {expandProjectChildren} from "@/utils/treeUtils"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
@@ -10,6 +10,8 @@ import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from "@/components
 import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 import {Kbd, KbdGroup} from "@/components/ui/kbd"
+import {Skeleton} from "@/components/ui/skeleton"
+import type {LoadStatus} from "@/lib/initialLoad"
 import {useConfig} from "@/contexts/ConfigContext"
 import {matchesAnyIssue} from "@/util/issueMatch"
 import {tagMatch} from "@/util/tagMatch"
@@ -76,6 +78,8 @@ export interface TestExplorerProps {
     // the tree to a single application). One-shot per change: the user can still
     // re-collapse them afterwards.
     autoExpandIds?: string[];
+    loadStatus?: LoadStatus;
+    onRetry?: () => void;
 }
 
 const findAncestorIds = (nodes: Indices, targetId: string, trail: string[] = []): string[] | null => {
@@ -136,7 +140,7 @@ function AutoExpandNodes({ids}: {ids: string[]}) {
 // (report detail loads, config swaps, status polls) — with thousands of rows
 // each avoided pass is main-thread time saved. Callers must keep callback
 // props identity-stable for this to bite.
-export const TestExplorer = React.memo(function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, selectedResultKey, environment, onEnvChange, isNative, inputRef, onFilterApplied, autoExpandIds}: TestExplorerProps) {
+export const TestExplorer = React.memo(function TestExplorer({indices, sourceMetaById, searchQuery, onSearchChange, onSelect, selectedId, selectedResultKey, environment, onEnvChange, isNative, inputRef, onFilterApplied, autoExpandIds, loadStatus = 'ready', onRetry}: TestExplorerProps) {
     const {packageDisplay, packageDisplayRoot} = useConfig();
 
     const allIssues = React.useMemo(() => {
@@ -623,21 +627,46 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
                                 <SidebarTreeToolbar/>
                             </div>
                         </SidebarGroupLabel>
-                        <SidebarMenu className="gap-0.5">
-                            {renderedIndices.map((node) => (
-                                <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById} testMethodMap={testMethodMap} matchingMethodsMap={matchingMethodsMap}/>
-                            ))}
-                        </SidebarMenu>
+                        {loadStatus === 'loading' ? (
+                            <div className="px-2 py-1 space-y-2">
+                                {[72, 56, 64, 48, 68, 52].map((w, i) => (
+                                    <div key={i} className="flex items-center gap-2 px-2">
+                                        <Skeleton className="h-3.5 w-3.5 rounded-sm shrink-0"/>
+                                        <Skeleton className="h-3.5" style={{width: `${w}%`}}/>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : loadStatus === 'error' ? (
+                            <div className="px-3 py-6 flex flex-col items-center gap-3 text-center">
+                                <AlertTriangle className="h-5 w-5 text-muted-foreground"/>
+                                <p className="text-[13px] text-muted-foreground">Failed to load test results.</p>
+                                <button
+                                    type="button"
+                                    onClick={onRetry}
+                                    className="inline-flex items-center gap-1.5 text-[13px] px-3 py-1.5 rounded-md border bg-muted/50 hover:bg-muted transition-colors"
+                                >
+                                    <RefreshCw size={13}/> Retry
+                                </button>
+                            </div>
+                        ) : (
+                            <SidebarMenu className="gap-0.5">
+                                {renderedIndices.map((node) => (
+                                    <RecursiveMenuItem key={node.id} node={node} onSelect={onSelect} selectedId={selectedId} stateCountsById={stateCountsById} testMethodMap={testMethodMap} matchingMethodsMap={matchingMethodsMap}/>
+                                ))}
+                            </SidebarMenu>
+                        )}
                     </SidebarGroup>
                 </SidebarContent>
 
-                <div className="p-3 pt-0 group-data-[collapsible=icon]:hidden">
-                    <StateCountBar
-                        counts={rawGlobalCounts}
-                        activeStates={queryMeta.states}
-                        onToggle={(s) => onSearchChange(setStateFilter(searchQuery, s))}
-                    />
-                </div>
+                {loadStatus === 'ready' && (
+                    <div className="p-3 pt-0 group-data-[collapsible=icon]:hidden">
+                        <StateCountBar
+                            counts={rawGlobalCounts}
+                            activeStates={queryMeta.states}
+                            onToggle={(s) => onSearchChange(setStateFilter(searchQuery, s))}
+                        />
+                    </div>
+                )}
             </div>
         </TreeExpansionProvider>
         </SourceMetaContext.Provider>

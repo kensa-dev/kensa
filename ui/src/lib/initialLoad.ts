@@ -85,6 +85,13 @@ export async function loadTreeData(manifest: Manifest): Promise<TreeData> {
     return {roots, diagramsBySource, sourceConfigsMap, urls, titles, failedSourceIds};
 }
 
+export type LoadStatus = 'loading' | 'ready' | 'error';
+
+export function statusFor(treeData: Pick<TreeData, 'failedSourceIds'>, manifest: Manifest): LoadStatus {
+    const allFailed = manifest.sources.length > 0 && treeData.failedSourceIds.length === manifest.sources.length;
+    return allFailed ? 'error' : 'ready';
+}
+
 export async function loadSearchIndexes(manifest: Manifest): Promise<MergedIndex> {
     const perSourceSearch = await Promise.all(manifest.sources.map(async (source) => ({
         sourceId: source.id,
