@@ -24,17 +24,9 @@ import {nextQueryAfterTagClick, selectedTagsFromQuery} from "@/util/tagClick";
 import {TagFilterProvider} from "@/contexts/TagFilterContext";
 import {SuiteSearchProvider, type SuiteSearchResult} from "@/contexts/SuiteSearchContext";
 import {SuiteSearchResults} from "@/components/SuiteSearchResults";
-import {mergeIndexes, type MergedIndex} from "@/lib/suiteSearch";
-import type {RawSearchIndex} from "@/types/SearchIndex";
+import {type MergedIndex} from "@/lib/suiteSearch";
+import {loadTreeData, loadSearchIndexes} from "@/lib/initialLoad";
 import {nodeIdForLocation} from "@/util/suiteSearchNav";
-
-const tagWithSourceId = (nodes: Indices, sourceId: string): Indices =>
-    nodes.map(n => ({
-        ...n,
-        id: n.testClass ? `${sourceId}::${n.id}` : n.id,
-        sourceId,
-        children: n.children ? tagWithSourceId(n.children, sourceId) : undefined,
-    }));
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -228,84 +220,21 @@ const App = () => {
         const loadInitialData = async () => {
             const manifest = await loadManifestOrFallback();
 
-            const perSource = await Promise.all(manifest.sources.map(async (source) => {
-                const config = await loadJson<KensaConfig>(
-                    'configuration.json',
-                    `Configuration (${source.id})`,
-                    {baseUrl: source.url}
-                );
-                const indicesData = await loadJson<{ indices: Indices; aggregateComponentDiagram?: string }>(
-                    'indices.json',
-                    `Indices tree (${source.id})`,
-                    {baseUrl: source.url}
-                );
-                const searchIndex = await loadJson<RawSearchIndex>(
-                    'search-index.json',
-                    `Search index (${source.id})`,
-                    {baseUrl: source.url}
-                );
-                return {source, config, indicesData, searchIndex};
-            }));
+            const [treeData, mergedSearch] = await Promise.all([
+                loadTreeData(manifest),
+                loadSearchIndexes(manifest),
+            ]);
 
-            const sourceConfigsMap: Record<string, KensaConfig> = {};
-            const roots: Indices = [];
-            const diagramsBySource: Record<string, string> = {};
-            const perSourceSearch: { sourceId: string; index: RawSearchIndex }[] = [];
-            for (const {source, config, indicesData, searchIndex} of perSource) {
-                perSourceSearch.push({
-                    sourceId: source.id,
-                    index: searchIndex ?? {schemaVersion: 1, terms: []},
-                });
-                if (config) sourceConfigsMap[source.id] = config;
-                const sourceIndices = indicesData?.indices ?? [];
-                const sourceDiagram = indicesData?.aggregateComponentDiagram;
-                if (sourceDiagram) diagramsBySource[source.id] = sourceDiagram;
-                if (sourceIndices.length === 0) continue;
-                const tagged = tagWithSourceId(sourceIndices, source.id);
-                // Each source root's first child is a synthetic "System View" entry pointing at
-                // that source's own aggregate component diagram — keeps per-source architectures
-                // separate in the sidebar tree rather than conflating them under one global view.
-                const children: Indices = sourceDiagram
-                    ? [
-                        {
-                            id: `sysview:${source.id}`,
-                            type: 'system-view',
-                            displayName: 'System View',
-                            testClass: '',
-                            state: 'Passed',
-                            sourceId: source.id,
-                        },
-                        ...tagged,
-                    ]
-                    : tagged;
-                roots.push({
-                    id: `src:${source.id}`,
-                    type: 'project',
-                    displayName: config?.titleText || source.title || source.id,
-                    testClass: '',
-                    state: tagged.some(i => i.state === 'Failed') ? 'Failed' : 'Passed',
-                    children,
-                    sourceId: source.id,
-                });
-            }
-
-            const urls: Record<string, string> = {};
-            const titles: Record<string, string> = {};
-            for (const source of manifest.sources) {
-                urls[source.id] = source.url;
-                titles[source.id] = sourceConfigsMap[source.id]?.titleText || source.title || source.id;
-            }
-
-            setSourceConfigs(sourceConfigsMap);
-            setSourceUrls(urls);
-            setSourceTitles(titles);
-            setMergedSearchIndex(mergeIndexes(perSourceSearch));
-            setIndices(roots);
-            setAggregateComponentDiagramsBySource(diagramsBySource);
+            setSourceConfigs(treeData.sourceConfigsMap);
+            setSourceUrls(treeData.urls);
+            setSourceTitles(treeData.titles);
+            setMergedSearchIndex(mergedSearch);
+            setIndices(treeData.roots);
+            setAggregateComponentDiagramsBySource(treeData.diagramsBySource);
             // First source's config flows through ConfigContext until the user selects a test;
             // selection updates it via the selectedIndex effect below.
             const first = manifest.sources[0];
-            if (first && sourceConfigsMap[first.id]) setConfig(sourceConfigsMap[first.id]);
+            if (first && treeData.sourceConfigsMap[first.id]) setConfig(treeData.sourceConfigsMap[first.id]);
         };
 
         void loadInitialData();
