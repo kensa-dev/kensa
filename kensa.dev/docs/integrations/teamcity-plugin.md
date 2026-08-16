@@ -1,4 +1,6 @@
 ---
+title: "TeamCity Plugin: BDD Test Reports in CI"
+sidebar_label: TeamCity Plugin
 sidebar_position: 1
 description: Embed Kensa HTML reports, human-readable test names, and failure narratives directly inside TeamCity with the Kensa Integration build feature.
 ---

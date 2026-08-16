@@ -1,4 +1,6 @@
 ---
+title: "Kensa CLI: Serve HTML Test Reports Locally"
+sidebar_label: CLI
 sidebar_position: 5
 description: The Kensa CLI is a lightweight Go binary that serves HTML test reports over HTTP and exposes your test results to AI agents over MCP, with auto-download via a shell wrapper script.
 ---

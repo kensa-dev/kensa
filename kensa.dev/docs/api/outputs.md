@@ -1,4 +1,6 @@
 ---
+title: Capturing Test Outputs for Living Documentation
+sidebar_label: Captured Outputs
 sidebar_position: 4.7
 description: How to use CapturedOutputs to store and retrieve values produced during the whenever step, with typed and string keys, and highlighting support.
 ---

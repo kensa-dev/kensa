@@ -1,4 +1,6 @@
 ---
+title: Attaching Files & Evidence to Test Reports
+sidebar_label: Attachments
 sidebar_position: 4.5
 description: How to attach typed plugin-defined data to a test for display in custom report tabs.
 ---

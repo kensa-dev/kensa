@@ -1,4 +1,6 @@
 ---
+title: UI Testing with Selenium & Playwright in Kotlin
+sidebar_label: UI Testing — Overview
 sidebar_position: 1
 description: Overview of UI testing in Kensa — browser-driven BDD tests with page objects, screenshot capture, and HTML report integration.
 ---

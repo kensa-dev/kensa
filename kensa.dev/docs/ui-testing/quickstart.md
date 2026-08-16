@@ -1,4 +1,6 @@
 ---
+title: Browser Test Automation in Kotlin — Quickstart
+sidebar_label: UI Testing — Quickstart
 sidebar_position: 2
 description: Step-by-step guide to writing a Kensa UI test with Playwright or Selenium, including dependencies, user stubs, and running the tests.
 ---

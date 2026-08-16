@@ -1,4 +1,6 @@
 ---
+title: Component Diagrams from Kotlin Tests
+sidebar_label: Component Diagrams
 sidebar_position: 4
 description: Component diagrams give a top-down view of which actors talk to which, derived automatically from the same captured interactions that drive sequence diagrams.
 ---

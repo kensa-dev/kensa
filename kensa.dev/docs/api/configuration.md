@@ -1,4 +1,6 @@
 ---
+title: "Configuring Kensa: Properties & Options"
+sidebar_label: Configuration
 sidebar_position: 2
 description: Complete reference for configuring Kensa — output directory, issue tracker URL, report layout, sentence parsing, custom renderers, and source locations.
 ---

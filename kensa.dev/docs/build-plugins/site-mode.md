@@ -1,4 +1,6 @@
 ---
+title: "Site Mode: Publishing Test Reports as a Site"
+sidebar_label: Site Mode
 sidebar_position: 3
 description: Site mode aggregates multiple Kensa-producing test executions (e.g. unit tests + UI tests + integration tests) into a single viewable HTML site, grouped per sourceset rather than flat-merged.
 ---

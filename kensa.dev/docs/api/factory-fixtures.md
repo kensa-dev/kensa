@@ -1,4 +1,6 @@
 ---
+title: Parameterised Test Fixtures in Kotlin
+sidebar_label: Factory Fixtures
 sidebar_position: 4
 description: Parameterised fixture factory functions — call a @Fixture-annotated factory inline in a test with a parameterised-test parameter, and Kensa renders the seeded, argument-derived value as a fixture token.
 ---

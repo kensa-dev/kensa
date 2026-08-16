@@ -1,4 +1,6 @@
 ---
+title: BDD Testing with TestNG in Kotlin & Java
+sidebar_label: Quickstart — TestNG
 sidebar_position: 4
 description: Step-by-step guide to adding Kensa to a Kotlin or Java project with TestNG, writing your first Given-When-Then test, and viewing the generated HTML report.
 ---

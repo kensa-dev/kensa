@@ -1,4 +1,6 @@
 ---
+title: Writing Fluent, Readable Tests in Kotlin
+sidebar_label: Writing Fluent Tests
 sidebar_position: 3
 description: How to write Kensa tests that read as domain prose — covering matcher design, @ExpandableRenderedValue, and the signals to look for in code review.
 ---

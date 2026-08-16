@@ -1,4 +1,6 @@
 ---
+title: BDD Testing in Kotlin with Kotest — Quickstart
+sidebar_label: Quickstart — Kotest
 sidebar_position: 3
 description: Step-by-step guide to adding Kensa to a Kotlin project with Kotest, writing your first Given-When-Then test, and viewing the generated HTML report.
 ---

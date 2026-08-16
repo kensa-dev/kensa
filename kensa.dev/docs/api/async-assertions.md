@@ -1,4 +1,6 @@
 ---
+title: "Async Assertions: Testing Eventual Consistency"
+sidebar_label: Async Assertions
 sidebar_position: 5.5
 description: Reference for thenEventually and thenContinually — polling assertions for asynchronous behaviour, with timeout, interval and initial-delay tuning.
 ---

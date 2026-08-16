@@ -1,4 +1,6 @@
 ---
+title: "IntelliJ Plugin: Jump from Report to Test"
+sidebar_label: IntelliJ Plugin
 sidebar_position: 2
 description: Open Kensa HTML reports from inside IntelliJ IDEA — gutter icons on tests, console hyperlinks, and live notifications when a report lands.
 ---

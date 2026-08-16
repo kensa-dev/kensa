@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import clsx from 'clsx';
+import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
@@ -81,6 +82,16 @@ export default function Home(): ReactNode {
         <Layout
             title={siteConfig.title}
             description="BDD testing framework for Kotlin and Java — write Given–When–Then tests in code, get living HTML documentation and sequence diagrams.">
+            {/*
+              Docusaurus formats <title> as `${title} | ${siteTitle}` for every value
+              except siteTitle itself, so the homepage can only be `Kensa` or
+              `… | Kensa` via the Layout prop. This overrides it outright: the brand
+              needs subject context in results (it competes with an unrelated
+              heat-pump manufacturer for the bare name).
+            */}
+            <Head>
+                <title>Kensa — BDD Testing for Kotlin &amp; Java Without Gherkin</title>
+            </Head>
             <HomepageHeader />
             <main>
                 <HomepageShowcase />

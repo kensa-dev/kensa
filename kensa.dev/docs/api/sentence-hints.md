@@ -1,4 +1,6 @@
 ---
+title: Controlling Test Report Wording with Hints
+sidebar_label: Sentence Hints
 sidebar_position: 7
 description: Reference for Kensa's comment directives — ReplaceSentence and Ignore hints, and /// statement notes.
 ---

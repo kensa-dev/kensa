@@ -1,4 +1,6 @@
 ---
+title: Adding Application Logs to Test Reports
+sidebar_label: Log Tabs
 sidebar_position: 8
 description: How to surface external log output — files or Docker container stdout — in a per-invocation report tab, correlated to each test by a tracking identifier.
 ---

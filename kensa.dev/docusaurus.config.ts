@@ -70,6 +70,8 @@ const config: Config = {
           // Note: the local search plugin indexes only the latest released version.
         },
         blog: {
+          // Drives the /blog listing <title>; the default is a bare "Blog".
+          blogTitle: 'Kensa Blog — BDD & Testing for the JVM',
           showReadingTime: true,
           blogSidebarTitle: 'All posts',
           blogSidebarCount: 'ALL',

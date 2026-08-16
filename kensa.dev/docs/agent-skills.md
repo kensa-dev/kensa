@@ -1,4 +1,6 @@
 ---
+title: AI Agent Skills for Writing Kensa Tests
+sidebar_label: AI Agent Skills
 sidebar_position: 8
 description: Teach your AI coding agent (Claude Code, OpenCode, and others) to write idiomatic Kensa BDD tests using the kensa-development skill.
 ---

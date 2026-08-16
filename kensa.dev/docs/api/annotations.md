@@ -1,4 +1,6 @@
 ---
+title: Test Annotations for Kotlin BDD Reports
+sidebar_label: Annotations
 sidebar_position: 5
 description: Reference for all Kensa annotations, covering value rendering, sentence structure, report notes, issue linking, and UI behaviour overrides.
 ---

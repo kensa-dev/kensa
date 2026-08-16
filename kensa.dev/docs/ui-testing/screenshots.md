@@ -1,4 +1,6 @@
 ---
+title: Screenshots in Automated UI Test Reports
+sidebar_label: Screenshots
 sidebar_position: 3
 description: How screenshots are captured in Kensa UI tests, stored on disk, and rendered in the HTML report.
 ---

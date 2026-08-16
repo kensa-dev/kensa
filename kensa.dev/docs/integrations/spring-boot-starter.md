@@ -1,4 +1,6 @@
 ---
+title: Spring Boot BDD Testing with Kensa
+sidebar_label: Spring Boot Starter
 sidebar_position: 3
 description: Wire Kensa into a Spring Boot test with a single annotation, bind kensa.* properties from application.yml, and auto-capture HTTP interactions for sequence diagrams.
 ---

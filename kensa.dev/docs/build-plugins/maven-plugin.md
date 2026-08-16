@@ -1,4 +1,6 @@
 ---
+title: Kensa Maven Plugin for BDD Test Reports
+sidebar_label: Maven Plugin
 sidebar_position: 2
 description: The Kensa Maven plugin provides an `assemble-site` mojo that aggregates per-execution Kensa output into a single multi-source viewable site. Surefire/failsafe drive the per-source bundles via system properties.
 ---

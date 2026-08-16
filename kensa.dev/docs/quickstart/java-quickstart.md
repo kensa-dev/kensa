@@ -1,4 +1,6 @@
 ---
+title: BDD Testing in Java with JUnit 5 — Quickstart
+sidebar_label: Quickstart — Java & JUnit 5
 sidebar_position: 2
 description: Step-by-step guide to adding Kensa to a Java project with JUnit 5, writing your first Given-When-Then test, and viewing the generated HTML report.
 ---

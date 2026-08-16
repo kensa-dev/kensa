@@ -1,4 +1,6 @@
 ---
+title: Kensa Gradle Plugin for BDD Test Reports
+sidebar_label: Gradle Plugin
 sidebar_position: 1
 description: The Kensa Gradle plugin wires the Kotlin compiler plugin, kensa-core dependency, and site-mode test-task system properties for you. Configure via the `kensa { … }` extension.
 ---
