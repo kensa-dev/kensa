@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkensa_dev=self.webpackChunkkensa_dev||[]).push([["3220"],{1912(e){e.exports=JSON.parse('{"blogBasePath":"/blog","blogTitle":"Kensa Blog \u2014 BDD & Testing for the JVM","authorsListPath":"/blog/authors"}')}}]);
