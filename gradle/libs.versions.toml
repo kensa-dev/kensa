@@ -25,7 +25,7 @@ selenium = "4.43.0"
 http4k = "6.23.1.0"
 jackson = "2.21.2"
 
-springBoot = "3.5.7"
+springBoot = "4.1.0"
 spring = "6.2.12"
 jakartaServlet = "6.1.0"
 
