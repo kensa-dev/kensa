@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !endsWith(github.ref_name, '-SNAPSHOT') }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Set up JDK
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ endsWith(github.ref_name, '-SNAPSHOT') }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Set up JDK
@@ -62,7 +62,7 @@ jobs:
     environment: maven-central-released
     if: ${{ always() && needs.PublishToStaging.result == 'success' && !contains(github.ref_name, '-') }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Dispatch Release Event
