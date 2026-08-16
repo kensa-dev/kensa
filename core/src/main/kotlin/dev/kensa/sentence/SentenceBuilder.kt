@@ -17,7 +17,7 @@ import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Location, private val dictionary: Dictionary, private val tabSize: Int) {
+internal class SentenceBuilder(val isNoteBlock: Boolean, private val startingLocation: Location, private val dictionary: Dictionary, private val tabSize: Int) {
     var lastLocation = startingLocation
     var ignoredLines: Set<Int> = emptySet()
 

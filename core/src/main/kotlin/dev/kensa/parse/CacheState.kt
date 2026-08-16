@@ -1,5 +1,5 @@
 package dev.kensa.parse
 
-enum class CacheState {
+internal enum class CacheState {
     NotCached, NullValue
 }

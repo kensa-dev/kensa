@@ -113,7 +113,7 @@ class Configuration {
 
     internal val dictionary: Dictionary = Dictionary()
     var sourceLocations: List<Path> = emptyList()
-    val sourceCode: SourceCode by lazy { SourceCode({ sourceLocations }) }
+    internal val sourceCode: SourceCode by lazy { SourceCode({ sourceLocations }) }
     internal val tabServiceFactories: ConcurrentHashMap<KClass<*>, () -> Any> = ConcurrentHashMap()
 
     fun <T : Any> registerTabService(type: KClass<T>, factory: () -> T) {

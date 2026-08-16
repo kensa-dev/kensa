@@ -4,7 +4,7 @@ import java.lang.reflect.Method
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class KensaContext(private val testContainerFactory: TestContainerFactory) {
+internal class KensaContext(private val testContainerFactory: TestContainerFactory) {
 
     private val _testContainers = ConcurrentHashMap<Class<*>, TestContainer>()
     val testContainers: List<TestContainer> get() = _testContainers.values.toList()

@@ -19,7 +19,7 @@ class TestContext(
 ) : WithFixturesAndOutputs {
 
     override val fixturesAndOutputs = FixturesAndOutputs(fixtures, outputs)
-    val renderErrors = mutableListOf<RenderError>()
+    internal val renderErrors = mutableListOf<RenderError>()
     val givensContext = GivensContext(fixtures, outputs)
     val actionContext = ActionContext(fixtures, interactions, outputs)
     val collectorContext = CollectorContext(fixtures, interactions, outputs)

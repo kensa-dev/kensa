@@ -1,5 +1,6 @@
 package dev.kensa.context
 
+@dev.kensa.KensaInternalApi
 object RenderedValueInvocationContextHolder {
     private val holder = ThreadLocal<RenderedValueInvocationContext>()
 

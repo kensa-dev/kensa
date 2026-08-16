@@ -2,7 +2,7 @@ package dev.kensa.parse
 
 import dev.kensa.sentence.TemplateSentence
 
-data class ParsedMethod(
+internal data class ParsedMethod(
     val indexInSource: Int,
     val name: String,
     val parameters: MethodParameters,
@@ -13,6 +13,7 @@ data class ParsedMethod(
     val parseErrors: List<ParseError> = emptyList()
 )
 
+@dev.kensa.KensaInternalApi
 class ParsedExpandableMethod(
     val name: String,
     val parameters: MethodParameters,

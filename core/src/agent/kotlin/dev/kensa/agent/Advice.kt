@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaExperimental::class)
+
 package dev.kensa.agent
 
 import dev.kensa.context.ExpandableInvocationContextHolder.expandableSentenceInvocationContext

@@ -4,7 +4,7 @@ import dev.kensa.parse.Event.ExitExpression
 import dev.kensa.parse.LocatedEvent.Identifier
 import dev.kensa.parse.LocatedEvent.PathExpression
 
-class ReplaceSentenceHintParser(private val parseContext: ParseContext) {
+internal class ReplaceSentenceHintParser(private val parseContext: ParseContext) {
 
     private val gwtKeywords = setOf(
         "given", "when", "whenever", "then", "and",

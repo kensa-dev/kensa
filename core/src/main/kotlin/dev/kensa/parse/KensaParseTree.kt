@@ -22,7 +22,7 @@ private fun <T : ParserRuleContext> T.detachedFromParent(): T = apply { parent =
 private fun KotlinParser.FunctionValueParameterContext.isVararg(): Boolean =
     parameterModifiers()?.parameterModifier()?.any { it.VARARG() != null } == true
 
-interface MethodDeclarationContext {
+internal interface MethodDeclarationContext {
     val name: String
     val body: ParseTree
     val parameterNamesAndTypes: List<Pair<String, String>>
@@ -31,7 +31,7 @@ interface MethodDeclarationContext {
     val endLine: Int
 }
 
-class JavaMethodDeclarationContext private constructor(
+internal class JavaMethodDeclarationContext private constructor(
     override val name: String,
     override val body: ParseTree,
     override val parameterNamesAndTypes: List<Pair<String, String>>,
@@ -49,7 +49,7 @@ class JavaMethodDeclarationContext private constructor(
     }
 }
 
-class JavaInterfaceDeclarationContext private constructor(
+internal class JavaInterfaceDeclarationContext private constructor(
     override val name: String,
     override val body: ParseTree,
     override val parameterNamesAndTypes: List<Pair<String, String>>,
@@ -67,7 +67,7 @@ class JavaInterfaceDeclarationContext private constructor(
     }
 }
 
-class KotlinMethodDeclarationContext private constructor(
+internal class KotlinMethodDeclarationContext private constructor(
     override val name: String,
     override val body: ParseTree,
     override val parameterNamesAndTypes: List<Pair<String, String>>,

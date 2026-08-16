@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.notExists
 
-class IndexedLogFileQueryService(
+internal class IndexedLogFileQueryService(
     private val source: FileSource,
     private val idPattern: Regex,
     private val delimiterRegex: Regex,

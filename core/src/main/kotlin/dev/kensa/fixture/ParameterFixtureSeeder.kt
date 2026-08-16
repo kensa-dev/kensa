@@ -5,7 +5,7 @@ import dev.kensa.parse.MethodParser
 import dev.kensa.parse.RenderError
 import java.lang.reflect.Method
 
-class ParameterFixtureSeeder(private val parser: MethodParser) {
+internal class ParameterFixtureSeeder(private val parser: MethodParser) {
 
     fun seed(method: Method, arguments: Array<Any?>, fixtures: Fixtures, errors: MutableList<RenderError> = mutableListOf()) {
         val parameterFixtures = FixtureRegistry.parameterFixtures()

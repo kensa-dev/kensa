@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.kotest
 
 import io.kotest.core.annotation.Tags

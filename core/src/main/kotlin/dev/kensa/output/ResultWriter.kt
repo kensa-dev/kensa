@@ -19,7 +19,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 import com.eclipsesource.json.Json.`object` as jsonObject
 
-class ResultWriter(private val configuration: Configuration, private val componentDiagramFactory: ComponentDiagramFactory) {
+internal class ResultWriter(private val configuration: Configuration, private val componentDiagramFactory: ComponentDiagramFactory) {
 
     init {
         IoUtil.recreate(configuration.outputDir)

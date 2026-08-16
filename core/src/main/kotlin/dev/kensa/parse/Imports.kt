@@ -3,7 +3,7 @@ package dev.kensa.parse
 import dev.kensa.util.isKotlinObject
 import dev.kensa.util.toClassOrMaybeNested
 
-class Imports(
+internal class Imports(
     private val imports: Set<Class<*>>,
     private val wildcardPackages: Set<String>,
     private val declaringClass: Class<*>

@@ -1,3 +1,3 @@
 package dev.kensa.parse
 
-data class RenderError(val type: String, val message: String)
+internal data class RenderError(val type: String, val message: String)

@@ -1,3 +1,4 @@
+
 package dev.kensa.tabs.logs
 
 import dev.kensa.service.logs.LogQueryService

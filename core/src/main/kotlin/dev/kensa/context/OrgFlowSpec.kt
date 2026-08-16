@@ -14,12 +14,14 @@ import java.lang.reflect.AnnotatedElement
  * @property attributes free-form descriptive facets (e.g. `product`, `channel`), emitted as a
  *   JSON object with sorted keys.
  */
+@dev.kensa.KensaExperimental
 interface OrgFlowSpec {
     val category: String
     val flowName: String
     val attributes: Map<String, String>
 }
 
+@dev.kensa.KensaExperimental
 data class SimpleOrgFlowSpec(
     override val category: String,
     override val flowName: String,
@@ -28,6 +30,7 @@ data class SimpleOrgFlowSpec(
 
 // An OrgFlowMarker annotation carries a single OrgFlowSpec-typed member by convention; if it
 // declared more than one, the first (in unspecified reflection order) would be used.
+@dev.kensa.KensaExperimental
 fun orgFlowOf(element: AnnotatedElement): OrgFlowSpec? =
     element.annotations.firstNotNullOfOrNull { annotation ->
         annotation.takeIf { it.annotationClass.java.isAnnotationPresent(OrgFlowMarker::class.java) }

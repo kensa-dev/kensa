@@ -3,6 +3,7 @@ package dev.kensa.context
 import dev.kensa.util.normalisedPlatformName
 import java.lang.reflect.Method
 
+@dev.kensa.KensaInternalApi
 class RenderedValueInvocationContext {
 
     private val invocations = mutableMapOf<String, MutableList<Any?>>()

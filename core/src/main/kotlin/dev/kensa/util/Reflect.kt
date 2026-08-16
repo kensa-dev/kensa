@@ -22,14 +22,14 @@ import kotlin.reflect.jvm.*
 
 typealias ReflectPredicate<T> = (T) -> Boolean
 
-val Class<*>.isKotlinClass get() = declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
-val KClass<*>.isKotlinClass get() = java.isKotlinClass
-val Class<*>.isKotlinObject get() = isKotlinClass && kotlin.objectInstance != null
-val KClass<*>.isKotlinObject get() = isKotlinClass && objectInstance != null
+internal val Class<*>.isKotlinClass get() = declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
+internal val KClass<*>.isKotlinClass get() = java.isKotlinClass
+internal val Class<*>.isKotlinObject get() = isKotlinClass && kotlin.objectInstance != null
+internal val KClass<*>.isKotlinObject get() = isKotlinClass && objectInstance != null
 
 val Method.normalisedPlatformName: String get() = takeIf { declaringClass.isKotlinClass }?.kotlinFunction?.name ?: name
 
-fun Method.derivedTestName(protectedPhrases: Collection<String>): String =
+internal fun Method.derivedTestName(protectedPhrases: Collection<String>): String =
     takeIf { declaringClass.isKotlinClass }
         ?.kotlinFunction
         ?.name
@@ -38,17 +38,17 @@ fun Method.derivedTestName(protectedPhrases: Collection<String>): String =
 
 private fun String.requiresBackTicks(): Boolean = isEmpty() || !this[0].isJavaIdentifierStart() || !all { it.isJavaIdentifierPart() }
 
-fun KProperty<*>.isPublic(): Boolean = visibility == null || visibility.toString() == "PUBLIC"
-fun Field.isStatic(): Boolean = Modifier.isStatic(modifiers)
-fun Field.isPublicStatic(): Boolean = Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)
-inline fun <reified T> Field.hasType(): Boolean = T::class.java.isAssignableFrom(this.type)
+internal fun KProperty<*>.isPublic(): Boolean = visibility == null || visibility.toString() == "PUBLIC"
+internal fun Field.isStatic(): Boolean = Modifier.isStatic(modifiers)
+internal fun Field.isPublicStatic(): Boolean = Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)
+internal inline fun <reified T> Field.hasType(): Boolean = T::class.java.isAssignableFrom(this.type)
 
-inline fun <reified T> KProperty1<*, *>.hasType(): Boolean {
+internal inline fun <reified T> KProperty1<*, *>.hasType(): Boolean {
     val type = T::class.createType(arguments = listOf(KTypeProjection.STAR))
     return returnType.isSubtypeOf(type)
 }
 
-fun <T> ReflectPredicate<T>.and(other: ReflectPredicate<T>): ReflectPredicate<T> = { it: T -> invoke(it) && other.invoke(it) }
+internal fun <T> ReflectPredicate<T>.and(other: ReflectPredicate<T>): ReflectPredicate<T> = { it: T -> invoke(it) && other.invoke(it) }
 
 private val allTheMethods: ReflectPredicate<Method> = { true }
 private fun notDeclaredIn(clazz: Class<*>): ReflectPredicate<Method> = { it.declaringClass != clazz }
@@ -83,7 +83,7 @@ internal fun Class<*>.findAllRelatedClasses(sourceCode: SourceCode): Set<Class<*
         collect(this)
     }
 
-fun Class<*>.findAllRenderingDirectives(): RenderingDirectives =
+internal fun Class<*>.findAllRenderingDirectives(): RenderingDirectives =
     RenderingDirectives(
         findAllAnnotations<RenderedValueWithHint>().associate {
             it.type to RenderingDirective(it.valueStrategy, it.valueParam, it.hintStrategy, it.hintParam)
@@ -100,7 +100,7 @@ internal fun Method.actualDeclaringClass(): Class<*> {
 private val contextParameterWarningLogged = AtomicBoolean(false)
 
 @OptIn(ExperimentalContextParameters::class)
-fun Method.findSyntheticKotlinReceivers(): List<Pair<String, String>> =
+internal fun Method.findSyntheticKotlinReceivers(): List<Pair<String, String>> =
     kotlinFunction?.let { fn ->
         buildList {
             try {
@@ -152,7 +152,7 @@ internal fun <T> Any.invokeMethodOrNull(method: Method): T? = method.run {
     }
 }
 
-fun Class<*>.findLocalOrSourcesMethods(name: String, vararg paramTypes: Class<*>) =
+internal fun Class<*>.findLocalOrSourcesMethods(name: String, vararg paramTypes: Class<*>) =
     findMethodOrNull(name, paramTypes) ?: findSourcesMethods(name, paramTypes) ?: throw IllegalArgumentException("No method [$name] found in class [${this}] or any sources class")
 
 private fun Class<*>.findSourcesMethods(name: String, paramTypes: Array<out Class<*>>) =
@@ -165,16 +165,16 @@ private fun Class<*>.findSourcesMethods(name: String, paramTypes: Array<out Clas
 private fun Class<*>.findMethodOrNull(name: String, paramTypes: Array<out Class<*>>): Method? =
     findMethodsInHierarchy(named(name).and(withParameterTypes(paramTypes))).firstOrNull()
 
-fun Class<*>.findMethod(name: String, vararg paramTypes: Class<*>) =
+internal fun Class<*>.findMethod(name: String, vararg paramTypes: Class<*>) =
     findMethodOrNull(name, paramTypes) ?: throw IllegalArgumentException("No method [$name] found in class [${this}]")
 
-fun String.toClassOrNull(): Class<*>? = try {
+internal fun String.toClassOrNull(): Class<*>? = try {
     Class.forName(this)
 } catch (e: Throwable) {
     null
 }
 
-fun String.toClassOrMaybeNested(): Class<*>? {
+internal fun String.toClassOrMaybeNested(): Class<*>? {
     toClassOrNull()?.let { return it }
 
     var attempt = this
@@ -208,7 +208,7 @@ private fun Field.valueOfIn(target: Any): Any? = run {
     } ?: valueOfJavaStaticField()
 }
 
-fun KProperty<*>.valueOfKotlinPropertyIn(target: Any): Any? = run {
+internal fun KProperty<*>.valueOfKotlinPropertyIn(target: Any): Any? = run {
     javaField?.takeIf { it.isStatic() }?.run {
         valueOfJavaStaticField()
     } ?: run {
@@ -217,7 +217,7 @@ fun KProperty<*>.valueOfKotlinPropertyIn(target: Any): Any? = run {
     }
 }
 
-inline fun <reified T> Field.valueOfJavaStaticField(): T? = run {
+internal inline fun <reified T> Field.valueOfJavaStaticField(): T? = run {
     isAccessible = true
     get(null) as? T
 }
@@ -280,26 +280,27 @@ inline fun <reified T : Annotation> AnnotatedElement.findAnnotation(): T? =
         else -> annotations.filterIsInstance<T>().firstOrNull() ?: getAnnotation(T::class.java)
     }
 
-inline fun <reified T : Annotation> AnnotatedElement.findAllAnnotations(): Set<T> =
+internal inline fun <reified T : Annotation> AnnotatedElement.findAllAnnotations(): Set<T> =
     if (this is Class<*>) {
         findAllAnnotationsInHierarchy<T>()
     } else {
         getAnnotationsByType(T::class.java).toSet()
     }
 
-inline fun <reified T : Annotation> Class<*>.findAnnotationInHierarchy(): T? =
+internal inline fun <reified T : Annotation> Class<*>.findAnnotationInHierarchy(): T? =
     findAnnotationInHierarchy(T::class.java)
 
 /**
  * Returns all annotations of a specific type in the hierarchy (useful for @Repeatable).
  */
-inline fun <reified T : Annotation> Class<*>.findAllAnnotationsInHierarchy(): Set<T> =
+internal inline fun <reified T : Annotation> Class<*>.findAllAnnotationsInHierarchy(): Set<T> =
     findAllAnnotationsInHierarchy(T::class.java)
 
 /**
  * Searches for an annotation on this class, its superclasses, and its interfaces.
  */
-fun <T : Annotation> Class<*>.findAnnotationInHierarchy(annotationClass: Class<T>): T? {
+@PublishedApi
+internal fun <T : Annotation> Class<*>.findAnnotationInHierarchy(annotationClass: Class<T>): T? {
     getAnnotation(annotationClass)?.let { return it }
 
     for (i in interfaces) {
@@ -309,7 +310,7 @@ fun <T : Annotation> Class<*>.findAnnotationInHierarchy(annotationClass: Class<T
     return superclass?.findAnnotationInHierarchy(annotationClass)
 }
 
-fun <T : Annotation> Class<*>.findAllAnnotationsInHierarchy(annotationClass: Class<T>): Set<T> =
+internal fun <T : Annotation> Class<*>.findAllAnnotationsInHierarchy(annotationClass: Class<T>): Set<T> =
     buildSet {
         addAll(getAnnotationsByType(annotationClass))
 
@@ -394,7 +395,7 @@ private val typeArguments = Regex("""<[^(]+>""")
 /**
  * Resolves a dot-separated path on the given object.
  */
-fun resolvePath(startingValue: Any, path: String?): Any? {
+internal fun resolvePath(startingValue: Any, path: String?): Any? {
     if (path.isNullOrEmpty()) {
         return startingValue
     }
@@ -410,7 +411,7 @@ fun resolvePath(startingValue: Any, path: String?): Any? {
     return currentValue
 }
 
-fun fixtureFor(startingValue: Any, path: String?): Fixture<*>? {
+internal fun fixtureFor(startingValue: Any, path: String?): Fixture<*>? {
     if (path.isNullOrEmpty()) return null
     val segments = path.split(".").map { it.removeSuffix("?").removeSuffix("!!").replace(typeArguments, "") }
     if (segments.any { it.endsWith("()") }) return null

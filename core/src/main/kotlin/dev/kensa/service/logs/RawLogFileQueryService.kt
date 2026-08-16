@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.notExists
 
-class RawLogFileQueryService(
+internal class RawLogFileQueryService(
     private val source: FileSource,
     private val tailLines: Int? = null
 ) : LogQueryService {

@@ -1,3 +1,4 @@
+
 package dev.kensa.tabs
 
 import dev.kensa.Configuration
@@ -17,7 +18,7 @@ import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
-class TabArtifactManager {
+internal class TabArtifactManager {
 
     data class InvocationKey(val testMethod: String, val invocationIndex: Int)
 

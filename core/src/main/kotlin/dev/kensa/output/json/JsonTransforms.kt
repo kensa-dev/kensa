@@ -1,3 +1,4 @@
+
 package dev.kensa.output.json
 
 import com.eclipsesource.json.Json
@@ -26,7 +27,7 @@ import java.io.StringWriter
 import kotlin.time.Duration
 import com.eclipsesource.json.Json.`object` as jsonObject
 
-object JsonTransforms {
+internal object JsonTransforms {
 
     private val interactionKeyPattern = "^(.*) from (.+) to (.+)$".toRegex()
 

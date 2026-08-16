@@ -17,7 +17,7 @@ import dev.kensa.sentence.TemplateToken.Type.Indent
 import dev.kensa.sentence.TemplateToken.Type.NewLine
 import dev.kensa.sentence.TemplateSentence
 
-class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) -> SentenceBuilder) {
+internal class ParserStateMachine internal constructor(private val createSentenceBuilder: (Boolean, Location) -> SentenceBuilder) {
 
     private val _sentences: MutableList<TemplateSentence> = ArrayList()
     val sentences: List<TemplateSentence>
@@ -556,7 +556,7 @@ class ParserStateMachine(private val createSentenceBuilder: (Boolean, Location) 
         }
     }
 
-    fun apply(event: Event) {
+    internal fun apply(event: Event) {
         if (skipDepth > 0) {
             handleSkipping(event)
             return

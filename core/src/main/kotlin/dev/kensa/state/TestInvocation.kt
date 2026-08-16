@@ -14,7 +14,7 @@ import dev.kensa.util.KensaMap
 import dev.kensa.util.NamedValue
 import kotlin.time.Duration
 
-class TestInvocation(
+class TestInvocation internal constructor(
     val elapsed: Duration,
     val displayName: String,
     val executionException: Throwable?,
@@ -25,7 +25,7 @@ class TestInvocation(
     val outputs: CapturedOutputs,
     val fixtures: Fixtures,
     val attachments: Attachments,
-    val renderErrors: List<RenderError> = emptyList(),
+    internal val renderErrors: List<RenderError> = emptyList(),
 ) {
     val sentences: List<RenderedSentence> = parsedInvocation.sentences
     val parameters: Collection<NamedValue> = parsedInvocation.namedParameterValues

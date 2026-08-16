@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaExperimental::class)
+
 package dev.kensa.context
 
 import io.kotest.matchers.nulls.shouldBeNull

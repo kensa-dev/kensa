@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.uitesting
 
 import dev.kensa.attachments.Attachments

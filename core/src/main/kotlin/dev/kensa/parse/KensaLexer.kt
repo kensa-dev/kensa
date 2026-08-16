@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.Token
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-class KensaLexer(
+internal class KensaLexer(
     private val newlineToken: Int,
     private val kensaNoteTokens: Set<Int>,
     private val kensaHintTokens: Set<Int>,

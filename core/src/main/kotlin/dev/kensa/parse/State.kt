@@ -2,7 +2,7 @@ package dev.kensa.parse
 
 import dev.kensa.sentence.TemplateSentence
 
-sealed interface State {
+internal sealed interface State {
 
     data object Start : State
     data object InMethod : State

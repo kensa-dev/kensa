@@ -33,6 +33,19 @@ sourceSets {
     })
 }
 
+// Kensa's own markers exist to guard consumers, not core itself. Opting in module-wide keeps the
+// intra-core call sites free of @OptIn noise while consumer modules still have to acknowledge them.
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            listOf(
+                "-opt-in=dev.kensa.KensaInternalApi",
+                "-opt-in=dev.kensa.KensaExperimental",
+            )
+        )
+    }
+}
+
 extensions.getByType(JavaPluginExtension::class.java).registerFeature("hooks") {
     usingSourceSet(sourceSets.getByName("hooks"))
 }
@@ -76,6 +89,7 @@ dependencies {
     testImplementation(libs.hamcrestCore)
     testImplementation(libs.mockitoKotlin)
     testImplementation(libs.plantuml)
+    testImplementation(libs.kotlinCompilerEmbeddable)
     testImplementation(sourceSets["example"].output)
 
     "testSupportImplementation"(project(":core"))

@@ -2,7 +2,7 @@ package dev.kensa.util
 
 import kotlin.time.Duration
 
-fun Duration.format(): String {
+internal fun Duration.format(): String {
 
     fun StringBuilder.append(value: Int, singular: String, pluralSuffix: String = "s") {
         if (value > 0) {

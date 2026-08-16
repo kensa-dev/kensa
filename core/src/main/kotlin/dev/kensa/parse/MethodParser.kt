@@ -1,3 +1,4 @@
+
 package dev.kensa.parse
 
 import dev.kensa.*
@@ -13,7 +14,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
-class ClassDeclarations(
+internal class ClassDeclarations(
     val imports: Imports,
     val testMethods: List<MethodDeclarationContext> = emptyList(),
     val expandableMethods: List<MethodDeclarationContext> = emptyList()
@@ -26,7 +27,7 @@ class ClassDeclarations(
         )
 }
 
-class MethodDeclarations(val declarationsByClass: Map<Class<*>, ClassDeclarations> = emptyMap()) {
+internal class MethodDeclarations(val declarationsByClass: Map<Class<*>, ClassDeclarations> = emptyMap()) {
 
     operator fun plus(other: MethodDeclarations): MethodDeclarations {
         val map = declarationsByClass.toMutableMap()
@@ -55,7 +56,7 @@ class MethodDeclarations(val declarationsByClass: Map<Class<*>, ClassDeclaration
     }
 }
 
-class MethodParser(
+internal class MethodParser(
     private val cache: ParserCache,
     private val configuration: Configuration,
     private val parserDelegate: CompositeParserDelegate,

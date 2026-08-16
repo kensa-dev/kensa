@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaExperimental::class)
+
 package dev.kensa.output.json
 
 import com.eclipsesource.json.Json

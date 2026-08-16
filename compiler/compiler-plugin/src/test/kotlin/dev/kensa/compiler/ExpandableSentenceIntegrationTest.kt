@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.compiler
 
 import dev.kensa.context.ExpandableInvocationContext

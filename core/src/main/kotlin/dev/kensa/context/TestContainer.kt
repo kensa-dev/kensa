@@ -6,6 +6,7 @@ import dev.kensa.state.TestState.*
 import java.lang.reflect.Method
 import java.util.*
 
+@dev.kensa.KensaInternalApi
 class TestContainer(
     val testClass: Class<*>,
     val displayName: String,

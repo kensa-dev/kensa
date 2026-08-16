@@ -6,6 +6,7 @@ import dev.kensa.state.TestState
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
+@dev.kensa.KensaInternalApi
 data class FrameworkDescriptor(
     val initialStateFor: (AnnotatedElement) -> TestState,
     val displayNameFor: (AnnotatedElement) -> String?,

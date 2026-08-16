@@ -1,5 +1,7 @@
+
 package dev.kensa.state
 
+@dev.kensa.KensaExperimental
 sealed interface SeamDefinition {
     val id: String
     val name: String

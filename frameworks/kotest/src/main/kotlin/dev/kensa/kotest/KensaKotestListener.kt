@@ -1,10 +1,12 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.kotest
 
 import dev.kensa.context.FrameworkDescriptor
 import dev.kensa.context.KensaLifecycleManager
 import dev.kensa.context.TestContainer
 import dev.kensa.parse.kotlin.KotlinParser
-import dev.kensa.parse.kotlin.KotlinParserDelegate.Companion.findAnnotationNames
+import dev.kensa.parse.kotlin.findAnnotationNames
 import dev.kensa.state.TestState.Disabled
 import dev.kensa.state.TestState.NotExecuted
 import dev.kensa.util.findTestMethods

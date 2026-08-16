@@ -4,7 +4,7 @@ import dev.kensa.parse.KensaLexer
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.Token
 
-class KensaKotlinLexer(input: CharStream) : KotlinLexer(input) {
+internal class KensaKotlinLexer(input: CharStream) : KotlinLexer(input) {
 
     private val ignoredTokens = setOf(WS, Inside_WS, COMMA)
 

@@ -1,3 +1,4 @@
+
 package dev.kensa.parse
 
 import dev.kensa.KensaException
@@ -22,7 +23,7 @@ import dev.kensa.util.NamedValue
 import dev.kensa.util.fixtureFor
 import dev.kensa.util.resolvePath
 
-class TokenRenderer(
+internal class TokenRenderer(
     private val testInstance: Any,
     private val arguments: Array<Any?>,
     private val renderers: Renderers,

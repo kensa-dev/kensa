@@ -10,6 +10,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
+@dev.kensa.KensaInternalApi
 sealed interface ElementDescriptor {
     val name: String
     val isRenderedValue: Boolean

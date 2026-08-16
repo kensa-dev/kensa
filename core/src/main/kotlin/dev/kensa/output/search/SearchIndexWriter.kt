@@ -12,11 +12,11 @@ import java.nio.file.Path
 import kotlin.io.path.writeText
 import com.eclipsesource.json.Json.`object` as jsonObject
 
-data class SearchLocation(val testId: String, val testMethod: String, val invocation: Int, val displayName: String, val count: Int)
+internal data class SearchLocation(val testId: String, val testMethod: String, val invocation: Int, val displayName: String, val count: Int)
 
-data class SearchTerm(val value: String, val names: List<String>, val locations: List<SearchLocation>)
+internal data class SearchTerm(val value: String, val names: List<String>, val locations: List<SearchLocation>)
 
-class SearchIndexBuilder(private val renderers: Renderers) {
+internal class SearchIndexBuilder(private val renderers: Renderers) {
 
     private val braceKeyPattern = "^\\{.+}.*$".toRegex()
 
@@ -122,7 +122,7 @@ class SearchIndexBuilder(private val renderers: Renderers) {
     }
 }
 
-class SearchIndexWriter {
+internal class SearchIndexWriter {
 
     fun write(outputDir: Path, terms: List<SearchTerm>) {
         val json = jsonObject()

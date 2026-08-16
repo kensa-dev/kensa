@@ -3,9 +3,9 @@ package dev.kensa.parse
 import dev.kensa.RenderedValueStyle
 import dev.kensa.sentence.TemplateSentence
 
-data class Location(val lineNumber: Int, val linePosition: Int)
+internal data class Location(val lineNumber: Int, val linePosition: Int)
 
-sealed class Event {
+internal sealed class Event {
 
     object EnterMethod : Event()
     object ExitMethod : Event()
@@ -27,7 +27,7 @@ sealed class Event {
     object ExitTypeArguments : Event()
 }
 
-sealed class LocatedEvent(val location: Location) : Event() {
+internal sealed class LocatedEvent(val location: Location) : Event() {
 
     class EnterStatement(location: Location) : LocatedEvent(location)
     class EnterBodyExpression(location: Location) : LocatedEvent(location)

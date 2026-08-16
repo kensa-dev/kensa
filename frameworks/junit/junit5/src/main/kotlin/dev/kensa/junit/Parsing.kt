@@ -1,9 +1,11 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.junit
 
 import dev.kensa.context.FrameworkDescriptor
 import dev.kensa.parse.java.Java20Parser
 import dev.kensa.parse.kotlin.KotlinParser
-import dev.kensa.parse.kotlin.KotlinParserDelegate.Companion.findAnnotationNames
+import dev.kensa.parse.kotlin.findAnnotationNames
 import dev.kensa.state.TestState.NotExecuted
 import dev.kensa.util.findAnnotation
 import dev.kensa.util.findTestMethods

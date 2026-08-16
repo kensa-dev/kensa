@@ -4,13 +4,13 @@ import dev.kensa.Action
 import dev.kensa.ActionContext
 import dev.kensa.StateCollector
 
-object TestContextUtil {
+internal object TestContextUtil {
     fun withTestContext(block: TestContextRunner.() -> Unit) {
         TestContextRunner(TestContextHolder.testContext()).apply(block)
     }
 }
 
-class TestContextRunner(private val testContext: TestContext) {
+internal class TestContextRunner(private val testContext: TestContext) {
     fun execute(action: Action<ActionContext>) {
         action.execute(testContext.actionContext)
     }

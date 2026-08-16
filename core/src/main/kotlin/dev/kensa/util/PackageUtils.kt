@@ -1,8 +1,8 @@
 package dev.kensa.util
 
-typealias PackageElements = List<String>
+internal typealias PackageElements = List<String>
 
-fun findCommonPackage(packageNames: List<String>): String {
+internal fun findCommonPackage(packageNames: List<String>): String {
     require(packageNames.isNotEmpty())
 
     return packageNames

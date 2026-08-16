@@ -1,5 +1,23 @@
 <h2 class="github">Changelog</h2>
 
+### v0.9.0
+
+The API freeze ahead of 1.0. The supported surface is now sealed by the compiler rather than by convention, so that 1.0 can commit to semantic versioning over something we actually mean. See `COMPATIBILITY.md` for the full policy and support matrix.
+
+Breaking:
+  - **Implementation packages are now `internal`.** The parser, runtime, state machine, sentence scanner, output writers and utility code in `dev.kensa.parse`, `dev.kensa.state`, `dev.kensa.output`, `dev.kensa.service`, `dev.kensa.util` and the implementation parts of `dev.kensa.context` can no longer be imported by Kotlin consumers. Nothing in the documented API is affected. Note that `internal` is a Kotlin concept with no bytecode equivalent, so Java consumers are not blocked from these types, but they are equally unsupported.
+  - **Upgrade core and the framework adapters together.** Kotlin mangles the JVM names of `internal` functions, so mixing a 0.9.0 core with an older `kensa-junit5` / `kensa-testng` / `kensa-kotest` can fail at runtime rather than at compile time.
+  - **`findAnnotationNames` moved.** Now a top-level `dev.kensa.parse.kotlin.findAnnotationNames` instead of a member of `KotlinParserDelegate.Companion`, which is itself now `internal`. Affects custom framework adapters only.
+  - **`@KensaInternalApi` is an error, not a warning.** Code reaching for the integration SPI (`FrameworkDescriptor`, `KensaLifecycleManager`, the invocation-context hooks) must now opt in explicitly with `@file:OptIn(dev.kensa.KensaInternalApi::class)`.
+
+New features:
+  - **Two opt-in markers with opposite meanings.** `@KensaInternalApi` marks plumbing that is public only because Kensa's adapters and compiler plugin span Gradle modules: do not call it. `@KensaExperimental` marks features still being designed and open to feedback, currently the org-flow surfaces only. Opting in to one does not opt you in to the other.
+  - **`COMPATIBILITY.md`.** States what semver covers, what the two markers exclude, and the support matrix of Kensa version against required Kotlin and minimum JDK, including why a Kotlin bump is a documented compatibility note rather than an API-major.
+
+Changed:
+  - **Tab services are supported API.** `Configuration.registerTabService` and `KensaTabServices` were tagged experimental despite being documented, so registering a log-tab service demanded an opt-in. They are now part of the stable surface and need none.
+  - **`TestContext` and `TestContextHolder` are stable.** The thread-local accessor pair that application code uses is now documented as frozen rather than disclaimed in prose.
+
 ### v0.8.16
 
 New features:

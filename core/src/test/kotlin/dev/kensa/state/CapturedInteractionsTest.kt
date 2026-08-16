@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaExperimental::class)
+
 package dev.kensa.state
 
 import dev.kensa.render.diagram.directive.ArrowStyle

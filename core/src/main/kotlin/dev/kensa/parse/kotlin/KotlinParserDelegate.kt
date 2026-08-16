@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import java.lang.reflect.Method
 import dev.kensa.util.findSyntheticKotlinReceivers
 
-class KotlinParserDelegate(
+internal class KotlinParserDelegate(
     private val isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean,
     private val antlrErrorListenerDisabled: Boolean,
     private val antlrPredicationMode: PredictionMode,
@@ -88,19 +88,4 @@ class KotlinParserDelegate(
 
     private fun KotlinParser.FunctionDeclarationContext.isAnnotatedAsExpandableSentence(): Boolean = findAnnotationNames().any { name -> expandableSentenceAnnotationNames.contains(name) }
 
-    companion object {
-        fun KotlinParser.FunctionDeclarationContext.findAnnotationNames(): List<String> {
-            val functionAnnotations = modifiers().flatMap { it.annotation() }
-            val statementAnnotations = parent?.parent?.takeIf { it is KotlinParser.StatementContext }?.let { (it as KotlinParser.StatementContext).annotation() }.orEmpty()
-
-            val annotationContexts = functionAnnotations + statementAnnotations
-
-            return annotationContexts.mapNotNull {
-                val namedWithConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.constructorInvocation()?.userType()?.text
-                val namedWithoutConstructorInvocation = it.singleAnnotation()?.unescapedAnnotation()?.userType()?.text
-
-                namedWithConstructorInvocation ?: namedWithoutConstructorInvocation
-            }
-        }
-    }
 }

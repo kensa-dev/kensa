@@ -3,7 +3,7 @@ package dev.kensa.sentence.scanner
 import dev.kensa.sentence.Dictionary
 import dev.kensa.sentence.TemplateToken.Type.*
 
-class TokenScanner(private val dictionary: Dictionary) {
+internal class TokenScanner(private val dictionary: Dictionary) {
 
     fun scan(string: String, isFirstInSentence: Boolean): Pair<String, Indices> =
         normaliseKeywords(string).let {

@@ -12,7 +12,7 @@ import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.RenderedToken.RenderedValueToken
 import kotlin.time.Duration
 
-class TestInvocationFactory(
+internal class TestInvocationFactory(
     private val testInvocationParser: TestInvocationParser,
     private val parser: MethodParser,
     private val sequenceDiagramFactory: SequenceDiagramFactory,

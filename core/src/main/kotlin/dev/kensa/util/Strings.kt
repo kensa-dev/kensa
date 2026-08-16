@@ -6,7 +6,7 @@ private val CAMEL_SPLIT_REGEX = Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A
 private val UPPER_CASE_LETTER_REGEX = Regex("(?=\\p{Lu})")
 private val ALPHA_NUMERIC_REGEX = Regex("[^a-zA-Z0-9]")
 
-fun String.unCamel() =
+internal fun String.unCamel() =
     when {
         this.isBlank() -> this
         else -> replace(ALPHA_NUMERIC_REGEX, "").let { p ->
@@ -17,7 +17,7 @@ fun String.unCamel() =
         }
     }
 
-fun String.unCamel(protectedPhrases: Collection<String>): String {
+internal fun String.unCamel(protectedPhrases: Collection<String>): String {
     if (isBlank()) return this
     if (protectedPhrases.isEmpty()) return unCamel()
     val cleaned = replace(ALPHA_NUMERIC_REGEX, "")
@@ -59,7 +59,7 @@ fun String.unCamel(protectedPhrases: Collection<String>): String {
     return tokens.joinToString(" ")
 }
 
-fun String.unCamelToSeparated(separator: String = "-") =
+internal fun String.unCamelToSeparated(separator: String = "-") =
     if (this.isBlank()) this
     else UPPER_CASE_LETTER_REGEX.split(trim()).filterNot { it.isBlank() }.joinToString(separator).lowercase(Locale.getDefault())
 

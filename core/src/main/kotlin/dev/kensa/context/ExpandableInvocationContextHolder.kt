@@ -1,5 +1,6 @@
 package dev.kensa.context
 
+@dev.kensa.KensaInternalApi
 object ExpandableInvocationContextHolder {
     private val holder = ThreadLocal<ExpandableInvocationContext>()
 

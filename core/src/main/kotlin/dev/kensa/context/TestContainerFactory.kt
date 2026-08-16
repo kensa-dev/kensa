@@ -1,3 +1,4 @@
+
 package dev.kensa.context
 
 import dev.kensa.*
@@ -10,7 +11,7 @@ import dev.kensa.util.unCamel
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 
-class TestContainerFactory(
+internal class TestContainerFactory(
     private val initialStateFor: (AnnotatedElement) -> TestState,
     private val displayNameFor: (AnnotatedElement) -> String?,
     private val findTestMethods: (Class<*>) -> Set<Method>,

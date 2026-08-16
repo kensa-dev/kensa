@@ -6,7 +6,7 @@ import java.nio.file.*
 import java.nio.file.FileVisitResult.CONTINUE
 import java.nio.file.attribute.BasicFileAttributes
 
-object IoUtil {
+internal object IoUtil {
     private val DELETE_ALL_VISITOR = DeleteAllVisitor()
 
     fun recreate(path: Path) {

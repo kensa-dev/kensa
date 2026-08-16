@@ -269,6 +269,7 @@ annotation class UseSetupStrategy(val value: SetupStrategy)
  */
 @Retention(RUNTIME)
 @Target(FUNCTION)
+@dev.kensa.KensaExperimental
 annotation class OrgFlow(val category: String, val name: String, val product: String = "")
 
 /**
@@ -279,4 +280,5 @@ annotation class OrgFlow(val category: String, val name: String, val product: St
  */
 @Retention(RUNTIME)
 @Target(ANNOTATION_CLASS)
+@dev.kensa.KensaExperimental
 annotation class OrgFlowMarker

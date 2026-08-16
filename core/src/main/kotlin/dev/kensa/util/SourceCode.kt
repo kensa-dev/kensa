@@ -14,7 +14,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.toPath
 
-class SourceCode(private val sourceLocations: () -> List<Path> = { emptyList() }) {
+internal class SourceCode(private val sourceLocations: () -> List<Path> = { emptyList() }) {
     private val workingDirectory = Path(System.getProperty("user.dir"))
     private val Class<*>.sourceExtension get() = if (isKotlinClass) "kt" else "java"
 

@@ -21,6 +21,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
 
+@dev.kensa.KensaInternalApi
 class KensaLifecycleManager private constructor(
     val configuration: Configuration,
     private val kensaContext: KensaContext,

@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import java.lang.reflect.Method
 
-class JavaParserDelegate(
+internal class JavaParserDelegate(
     private val isClassTest: (Java20Parser.MethodDeclarationContext) -> Boolean,
     private val isInterfaceTest: (Java20Parser.InterfaceMethodDeclarationContext) -> Boolean,
     private val antlrErrorListenerDisabled: Boolean,

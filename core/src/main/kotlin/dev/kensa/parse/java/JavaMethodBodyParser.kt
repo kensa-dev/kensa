@@ -26,7 +26,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
-class JavaMethodBodyParser(
+internal class JavaMethodBodyParser(
     private val stateMachine: ParserStateMachine,
     private val parseContext: ParseContext,
     private val hintParser: ReplaceSentenceHintParser

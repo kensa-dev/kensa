@@ -4,7 +4,7 @@ import dev.kensa.KensaException
 import dev.kensa.util.SourceCode
 import java.lang.reflect.Method
 
-interface ParserDelegate {
+internal interface ParserDelegate {
 
     fun Class<*>.isParsable(): Boolean
 
@@ -21,7 +21,7 @@ interface ParserDelegate {
     }
 }
 
-class CompositeParserDelegate(val sourceCode: SourceCode, private val delegates: List<ParserDelegate>) : ParserDelegate {
+internal class CompositeParserDelegate(val sourceCode: SourceCode, private val delegates: List<ParserDelegate>) : ParserDelegate {
 
     override fun Class<*>.isParsable(): Boolean = delegates.any { delegate -> with(delegate) { isParsable() } }
 

@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaExperimental::class)
+
 package dev.kensa.parse.kotlin
 
 import dev.kensa.Configuration

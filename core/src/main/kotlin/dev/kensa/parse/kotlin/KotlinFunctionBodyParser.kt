@@ -26,7 +26,7 @@ import dev.kensa.parse.ReplaceSentenceHintParser
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
-class KotlinFunctionBodyParser(
+internal class KotlinFunctionBodyParser(
     private val stateMachine: ParserStateMachine,
     private val parseContext: ParseContext,
     private val hintParser: ReplaceSentenceHintParser,

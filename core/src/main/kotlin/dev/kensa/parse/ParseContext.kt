@@ -18,7 +18,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
-class ParseContext(
+internal class ParseContext(
     private val properties: Map<String, ElementDescriptor>,
     private val methods: Map<String, ElementDescriptor.MethodElementDescriptor>,
     private val parameters: Map<String, ElementDescriptor> = emptyMap(),

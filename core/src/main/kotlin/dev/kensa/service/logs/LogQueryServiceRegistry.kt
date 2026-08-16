@@ -11,11 +11,11 @@ class LogQueryServiceRegistry {
         delegatesBySourceId[id] = factory(id)
     }
 
-    fun build(): CompositeLogQueryService =
+    fun build(): LogQueryService =
         CompositeLogQueryService(delegatesBySourceId.toMap())
 
     companion object {
-        fun compositeLogQueryService(block: LogQueryServiceRegistry.() -> Unit): CompositeLogQueryService =
+        fun compositeLogQueryService(block: LogQueryServiceRegistry.() -> Unit): LogQueryService =
             LogQueryServiceRegistry().apply(block).build()
     }
 }

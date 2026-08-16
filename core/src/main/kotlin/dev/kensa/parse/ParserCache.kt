@@ -23,7 +23,7 @@ internal fun <K : Any, V> ConcurrentHashMap<K, CompletableFuture<V>>.memoize(
     }
 }
 
-class ParserCache {
+internal class ParserCache {
     private val parsedMethods = ConcurrentHashMap<Method, CompletableFuture<ParsedMethod>>()
     private val methodDeclarations = ConcurrentHashMap<Class<*>, CompletableFuture<MethodDeclarations>>()
     private val expandableMethods = ConcurrentHashMap<Class<*>, CompletableFuture<Map<String, ParsedExpandableMethod>>>()

@@ -8,7 +8,7 @@ import dev.kensa.sentence.TemplateSentence
 import dev.kensa.state.TestInvocationContext
 import dev.kensa.util.NamedValue
 
-class TestInvocationParser(private val configuration: Configuration) {
+internal class TestInvocationParser(private val configuration: Configuration) {
 
     private companion object {
         // Matches JUnit's default parameterized display name `[{index}] {arguments}`, capturing the arguments segment.

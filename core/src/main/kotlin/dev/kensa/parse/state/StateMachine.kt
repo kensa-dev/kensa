@@ -2,7 +2,7 @@ package dev.kensa.parse.state
 
 import kotlin.reflect.KClass
 
-class StateMachine<STATE : Any, EVENT : Any>(
+internal class StateMachine<STATE : Any, EVENT : Any>(
     initialState: STATE,
     private val transitions: Map<Matcher<STATE>, Set<StateMachineBuilder<STATE, EVENT>.Transition<EVENT, STATE>>>,
     private val unknownHandlers: Map<Matcher<STATE>, (STATE, EVENT) -> STATE> = emptyMap()
@@ -24,7 +24,7 @@ class StateMachine<STATE : Any, EVENT : Any>(
     }
 }
 
-class Matcher<T> private constructor(private val clazz: Class<T>) {
+internal class Matcher<T> private constructor(private val clazz: Class<T>) {
 
     private val predicates = mutableListOf<(T) -> Boolean>({ clazz.isInstance(it) })
 
@@ -46,7 +46,7 @@ class Matcher<T> private constructor(private val clazz: Class<T>) {
     }
 }
 
-class StateMachineBuilder<STATE : Any, EVENT : Any> {
+internal class StateMachineBuilder<STATE : Any, EVENT : Any> {
 
     var initialState: STATE? = null
     private val transitions: MutableMap<Matcher<STATE>, Set<Transition<EVENT, STATE>>> = LinkedHashMap()

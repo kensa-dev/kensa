@@ -3,7 +3,7 @@ package dev.kensa.sentence.scanner
 import dev.kensa.sentence.TemplateToken.Type
 import java.util.*
 
-class Indices : Iterable<Index> {
+internal class Indices : Iterable<Index> {
 
     private val indices: SortedSet<Index> = TreeSet { i1: Index, i2: Index ->
         if (i1.start == i2.start) {

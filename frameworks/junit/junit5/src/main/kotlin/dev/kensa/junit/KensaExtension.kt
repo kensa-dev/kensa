@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.junit
 
 import dev.kensa.context.KensaLifecycleManager

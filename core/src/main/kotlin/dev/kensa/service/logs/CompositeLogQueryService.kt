@@ -3,7 +3,7 @@ package dev.kensa.service.logs
 /**
  * Delegates queries to different LogQueryService implementations depending on sourceId.
  */
-class CompositeLogQueryService(
+internal class CompositeLogQueryService(
     private val delegatesBySourceId: Map<String, LogQueryService>
 ) : LogQueryService {
 
