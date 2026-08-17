@@ -5,6 +5,7 @@ import {useContext} from "react";
 import {cn} from "@/lib/utils";
 import {TestState} from "@/types/Test";
 import {issueHref} from "@/util/issueTrackerLink";
+import {replayIssueHref} from "@/util/replayLink";
 
 interface IssueBadgeProps {
     issue: string;
@@ -12,7 +13,7 @@ interface IssueBadgeProps {
 }
 
 export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
-    const {issueTrackerUrl} = useContext(ConfigContext);
+    const {issueTrackerUrl, replayUrl} = useContext(ConfigContext);
 
     const baseClasses = "rounded-md border transition-colors bg-clip-padding";
 
@@ -38,24 +39,41 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
 
     const href = issueHref(issueTrackerUrl, issue);
 
-    if (!href) {
-        return (
+    const issueBadge = href
+        ? (
+            <Badge asChild className={cn(baseClasses, toneClasses)}>
+                <Link
+                    target="_blank"
+                    to={href}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    {issue}
+                </Link>
+            </Badge>
+        )
+        : (
             <Badge className={cn(baseClasses, toneClasses)}>
                 {issue}
             </Badge>
         );
-    }
+
+    if (!replayUrl) return issueBadge;
 
     return (
-        <Badge asChild className={cn(baseClasses, toneClasses)}>
-            <Link
-                target="_blank"
-                to={href}
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-            >
-                {issue}
-            </Link>
-        </Badge>
+        <span className="inline-flex items-center gap-1">
+            {issueBadge}
+            <Badge asChild className={cn(baseClasses, toneClasses, "px-1.5 text-[10px] font-semibold")}>
+                <Link
+                    target="_blank"
+                    to={replayIssueHref(replayUrl, issue)}
+                    title={`Open ${issue} in Replay`}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    Replay ›
+                </Link>
+            </Badge>
+        </span>
     );
 };

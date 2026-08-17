@@ -7,6 +7,7 @@ import {applySuiteHighlights, cn, isNative, loadJson, removeHighlightSpans, SUIT
 import {loadManifestOrFallback} from "@/lib/manifestLoader";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {ConfigContext, DEFAULT_CONFIG, KensaConfig} from "@/contexts/ConfigContext";
+import {withReplayUrl} from "@/util/replayLink";
 import {SourceContext} from "@/contexts/SourceContext";
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
@@ -248,7 +249,11 @@ const App = () => {
 
         const treeData = await loadTreeData(manifest);
 
-        setSourceConfigs(treeData.sourceConfigsMap);
+        const sourceConfigsMap: Record<string, KensaConfig> = Object.fromEntries(
+            Object.entries(treeData.sourceConfigsMap).map(([id, cfg]) => [id, withReplayUrl(cfg, manifest)])
+        );
+
+        setSourceConfigs(sourceConfigsMap);
         setSourceUrls(treeData.urls);
         setSourceTitles(treeData.titles);
         setIndices(treeData.roots);
@@ -256,7 +261,7 @@ const App = () => {
         // First source's config flows through ConfigContext until the user selects a test;
         // selection updates it via the selectedIndex effect below.
         const first = manifest.sources[0];
-        if (first && treeData.sourceConfigsMap[first.id]) setConfig(treeData.sourceConfigsMap[first.id]);
+        if (first && sourceConfigsMap[first.id]) setConfig(sourceConfigsMap[first.id]);
         setLoadStatus(statusFor(treeData, manifest));
     }, []);
 
