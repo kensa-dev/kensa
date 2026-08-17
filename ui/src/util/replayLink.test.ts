@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {issueBadgeMenu, issueTrackerHref, replayIssueHref, withReplayUrl} from './replayLink';
+import {issueBadgeMenu, replayIssueHref, withReplayUrl} from './replayLink';
 import {DEFAULT_CONFIG, KensaConfig} from '@/contexts/ConfigContext';
 import {Manifest} from '@/types/Manifest';
 
@@ -85,21 +85,19 @@ describe('withReplayUrl', () => {
     });
 });
 
-describe('issueTrackerHref', () => {
-    it('joins the tracker url and the issue id', () => {
-        expect(issueTrackerHref('https://jira.example.com/browse', 'TEAM-1'))
-            .toBe('https://jira.example.com/browse/TEAM-1');
-    });
-
-    it('does not double the separator when the tracker url ends with a slash', () => {
-        expect(issueTrackerHref('https://jira.example.com/browse/', 'TEAM-1'))
-            .toBe('https://jira.example.com/browse/TEAM-1');
-    });
-});
-
 describe('issueBadgeMenu', () => {
     it('is empty when neither url is configured', () => {
         expect(issueBadgeMenu('', undefined, 'TEAM-1')).toEqual([]);
+    });
+
+    it('is empty when the tracker url is null', () => {
+        expect(issueBadgeMenu(null, undefined, 'TEAM-1')).toEqual([]);
+    });
+
+    it('omits the issue entry for the legacy unset sentinel', () => {
+        expect(issueBadgeMenu('http://empty', 'https://replay.example.com', 'TEAM-1')).toEqual([
+            {key: 'replay', label: 'Open in Replay', href: 'https://replay.example.com/replay/?tags=issue:TEAM-1'}
+        ]);
     });
 
     it('offers only the issue entry when just the tracker url is configured', () => {

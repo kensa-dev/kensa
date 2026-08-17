@@ -1,5 +1,6 @@
 import {KensaConfig} from "@/contexts/ConfigContext";
 import {Manifest} from "@/types/Manifest";
+import {issueHref} from "@/util/issueTrackerLink";
 
 export interface IssueMenuEntry {
     key: "issue" | "replay";
@@ -14,16 +15,11 @@ export const replayIssueHref = (replayUrl: string, issue: string): string => {
     return `${base}/?tags=issue:${encodeURIComponent(issue)}`;
 };
 
-export const issueTrackerHref = (issueTrackerUrl: string, issue: string): string => {
-    const trimmed = issueTrackerUrl.trim();
-
-    return trimmed.endsWith("/") ? `${trimmed}${issue}` : `${trimmed}/${issue}`;
-};
-
-export const issueBadgeMenu = (issueTrackerUrl: string, replayUrl: string | undefined, issue: string): IssueMenuEntry[] => {
+export const issueBadgeMenu = (issueTrackerUrl: string | null | undefined, replayUrl: string | undefined, issue: string): IssueMenuEntry[] => {
     const entries: IssueMenuEntry[] = [];
+    const issueLink = issueHref(issueTrackerUrl, issue);
 
-    if (issueTrackerUrl.trim()) entries.push({key: "issue", label: "Open issue", href: issueTrackerHref(issueTrackerUrl, issue)});
+    if (issueLink) entries.push({key: "issue", label: "Open issue", href: issueLink});
     if (replayUrl?.trim()) entries.push({key: "replay", label: "Open in Replay", href: replayIssueHref(replayUrl, issue)});
 
     return entries;

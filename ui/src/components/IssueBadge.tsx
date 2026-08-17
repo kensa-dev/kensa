@@ -1,11 +1,14 @@
 import {Link} from "react-router-dom";
 import {Badge} from "@/components/ui/badge";
+import {Popover, PopoverAnchor, PopoverContent} from "@/components/ui/popover";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {ConfigContext} from "@/contexts/ConfigContext";
-import {useContext} from "react";
+import {type MouseEvent, useContext, useState} from "react";
+import {Play} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {TestState} from "@/types/Test";
 import {issueHref} from "@/util/issueTrackerLink";
-import {replayIssueHref} from "@/util/replayLink";
+import {issueBadgeMenu} from "@/util/replayLink";
 
 interface IssueBadgeProps {
     issue: string;
@@ -14,6 +17,7 @@ interface IssueBadgeProps {
 
 export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
     const {issueTrackerUrl, replayUrl} = useContext(ConfigContext);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const baseClasses = "rounded-md border transition-colors bg-clip-padding";
 
@@ -39,8 +43,16 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
 
     const href = issueHref(issueTrackerUrl, issue);
 
-    const issueBadge = href
-        ? (
+    if (!replayUrl?.trim()) {
+        if (!href) {
+            return (
+                <Badge className={cn(baseClasses, toneClasses)}>
+                    {issue}
+                </Badge>
+            );
+        }
+
+        return (
             <Badge asChild className={cn(baseClasses, toneClasses)}>
                 <Link
                     target="_blank"
@@ -51,29 +63,78 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
                     {issue}
                 </Link>
             </Badge>
+        );
+    }
+
+    const openMenu = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setMenuOpen(true);
+    };
+
+    const glyph = <Play className="ml-1 size-2.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100"/>;
+
+    const badge = href
+        ? (
+            <Badge asChild className={cn(baseClasses, toneClasses, "group")}>
+                <Link
+                    target="_blank"
+                    to={href}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onContextMenu={openMenu}
+                >
+                    {issue}
+                    {glyph}
+                </Link>
+            </Badge>
         )
         : (
-            <Badge className={cn(baseClasses, toneClasses)}>
+            <Badge className={cn(baseClasses, toneClasses, "group")} onContextMenu={openMenu}>
                 {issue}
+                {glyph}
             </Badge>
         );
 
-    if (!replayUrl) return issueBadge;
-
     return (
-        <span className="inline-flex items-center gap-1">
-            {issueBadge}
-            <Badge asChild className={cn(baseClasses, toneClasses, "px-1.5 text-[10px] font-semibold")}>
-                <Link
-                    target="_blank"
-                    to={replayIssueHref(replayUrl, issue)}
-                    title={`Open ${issue} in Replay`}
-                    onClick={(e) => e.stopPropagation()}
-                    onMouseDown={(e) => e.stopPropagation()}
-                >
-                    Replay ›
-                </Link>
-            </Badge>
-        </span>
+        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+            <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                    <PopoverAnchor asChild>
+                        {badge}
+                    </PopoverAnchor>
+                </TooltipTrigger>
+                <TooltipContent className="bg-slate-900 text-white border-none shadow-xl text-xs px-3 py-2">
+                    Right-click for Replay
+                </TooltipContent>
+            </Tooltip>
+
+            <PopoverContent
+                align="start"
+                sideOffset={6}
+                className="w-auto min-w-[10rem] p-1 rounded-lg shadow-xl border-border/40"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+            >
+                <div className="flex flex-col">
+                    {issueBadgeMenu(issueTrackerUrl, replayUrl, issue).map((entry) => (
+                        <a
+                            key={entry.key}
+                            href={entry.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-md px-2 py-1.5 text-xs text-foreground hover:bg-muted/60 whitespace-nowrap"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setMenuOpen(false);
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                        >
+                            {entry.label}
+                        </a>
+                    ))}
+                </div>
+            </PopoverContent>
+        </Popover>
     );
 };
