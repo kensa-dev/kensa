@@ -72,7 +72,7 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
         setMenuOpen(true);
     };
 
-    const glyph = <Play className="ml-1 size-2.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100"/>;
+    const glyph = <Play className="!size-2.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100"/>;
 
     const badge = href
         ? (
