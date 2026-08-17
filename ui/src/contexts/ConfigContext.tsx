@@ -11,6 +11,7 @@ export interface KensaConfig {
     alwaysExpandNotes: boolean;
     kensaVersion?: string;
     generatedAt?: string;
+    replayUrl?: string;
 }
 
 // Default fallback configuration

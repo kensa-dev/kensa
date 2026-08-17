@@ -9,5 +9,6 @@ export interface Manifest {
     kensaVersion?: string;
     hubVersion?: string;
     generatedAt?: string;
+    replayUrl?: string;
     sources: SourceEntry[];
 }
