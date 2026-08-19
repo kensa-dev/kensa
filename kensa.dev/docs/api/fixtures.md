@@ -312,6 +312,20 @@ data class WholesalerUseCase(
 
 Each access reads the fixture seeded for the test running on the accessing thread, so a single shared instance is safe under parallel execution. Accessing the property outside an active Kensa test fails with an error naming the property and fixture.
 
+:::warning[Derive with `get()`, not with a `val`]
+Only the delegated property itself is re-read. A plain `val` that reads it is evaluated once, at construction, and a `by lazy` one is evaluated once, at first access. Either freezes whichever invocation got there first, and every later invocation silently sees that stale value. No error is raised, and under parallel execution which invocation wins varies from run to run.
+
+```kotlin
+val reference: ProviderOrderReference by fixtures(referenceFx)
+
+val summary: String = "order $reference"        // frozen at construction
+val alsoFrozen: String by lazy { "order $reference" }  // frozen at first access
+val correct: String get() = "order $reference"  // re-read per access
+```
+
+For anything more involved than string interpolation, prefer a [secondary fixture](#secondary-fixtures), which is created per test context and keeps the derivation in the fixture graph where the report can see it.
+:::
+
 Annotate the delegated property with `@RenderedValue` (or `@get:RenderedValue`) and mark the parameter or field holding the object with [`@RenderedValueContainer`](/docs/api/annotations#renderedvaluecontainer), and references like `useCase.providerOrderReference` in the test body render the per-invocation value in the report.
 
 When a delegated property resolves a fixture through the container chain, Kensa recognizes the fixture reference and renders it as a fixture token in the report, styled identically to direct `fixtures[...]` references. If the underlying fixture is marked `highlighted = true`, the token is highlighted as well. This gives shared-object patterns the same fixture-aware rendering as test-local fixture access, with no additional annotations required.

@@ -22,6 +22,18 @@ import kotlin.reflect.KProperty
  * invocations and parallel threads; each access sees the fixture value seeded for the test running on the
  * accessing thread.
  *
+ * Only the delegated property is re-read. A `val` initialised from it is evaluated once, at construction,
+ * and a `by lazy` one once, at first access, so either freezes whichever invocation got there first and
+ * every later invocation silently reads that stale value:
+ *
+ * ```
+ * val reference: String by fixtures(referenceFx)
+ * val summary: String = "order $reference"       // frozen at construction
+ * val correct: String get() = "order $reference" // re-read per access
+ * ```
+ *
+ * Derive with a getter, or with a [SecondaryFixture] when the derivation should appear in the report.
+ *
  * Values resolve during sentence rendering, on the test's thread. The delegate therefore requires the test
  * context to still be bound to that thread at render time, not just at capture time.
  */
