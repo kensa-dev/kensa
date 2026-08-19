@@ -14,9 +14,14 @@ New features:
   - **Two opt-in markers with opposite meanings.** `@KensaInternalApi` marks plumbing that is public only because Kensa's adapters and compiler plugin span Gradle modules: do not call it. `@KensaExperimental` marks features still being designed and open to feedback, currently the org-flow surfaces only. Opting in to one does not opt you in to the other.
   - **`COMPATIBILITY.md`.** States what semver covers, what the two markers exclude, and the support matrix of Kensa version against required Kotlin and minimum JDK, including why a Kotlin bump is a documented compatibility note rather than an API-major.
 
+Fixes:
+  - **Parallel invocations of the same test method no longer lose data.** Every invocation of a test method shares one `TestMethodContainer`, which held plain non-concurrent collections. A parameterised test running its invocations in parallel could lose an invocation's context between starting and ending it, failing with a `NoSuchElementException` on the invocation's own id, or a `NullPointerException` reading the missing context. Both collections are now concurrent.
+  - **Empty string parameters are distinguishable from null.** An empty string parameter displayed as `null` in the invocation parameter matrix, so a test passing `""` and one passing `null` looked identical. Empty strings now render as `""` (#185, thanks to Michael Orr).
+
 Changed:
   - **Tab services are supported API.** `Configuration.registerTabService` and `KensaTabServices` were tagged experimental despite being documented, so registering a log-tab service demanded an opt-in. They are now part of the stable surface and need none.
   - **`TestContext` and `TestContextHolder` are stable.** The thread-local accessor pair that application code uses is now documented as frozen rather than disclaimed in prose.
+  - **Deriving from a `by fixtures(...)` property is documented as a trap.** Only the delegated property is re-read. A `val` initialised from one is evaluated once at construction, and a `by lazy` one at first access, so on an object shared across invocations, which is exactly what the delegate exists to support, either freezes whichever invocation got there first and every later invocation silently reads a stale value. Derive with `get()`, or with a secondary fixture when the derivation should appear in the report.
 
 ### v0.8.16
 
