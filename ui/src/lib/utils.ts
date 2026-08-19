@@ -96,12 +96,14 @@ export function getAllTextNodes(root: Node): Text[] {
     return textNodes;
 }
 
-export function buildHighlightRegex(highlights: string[]): RegExp | null {
+export function buildHighlightRegex(highlights: string[]): RegExp {
     const escaped = highlights
-        .map(h => h.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'))
-        .filter(h => h.length > 0);
+        .filter(h => h.length > 0)
+        .map(h => h.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
 
-    if (escaped.length == 0) return null;
+    // An empty highlight matches at every position, so every text node splits into empty fragments and
+    // the tab hangs. `(?!)` can never match, leaving callers to render the text untouched.
+    if (escaped.length === 0) return /(?!)/g;
 
     return new RegExp(`(${escaped.join('|')})`, 'g');
 }
@@ -121,8 +123,6 @@ export function applyKensaHighlights(root: HTMLElement, highlights: string[], cl
     if (highlights.length === 0) return;
 
     const regExp = buildHighlightRegex(highlights);
-
-    if (regExp == null) return;
 
     getAllTextNodes(root).forEach(node => {
         const text = node.textContent ?? '';
