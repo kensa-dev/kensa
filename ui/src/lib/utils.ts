@@ -96,8 +96,13 @@ export function getAllTextNodes(root: Node): Text[] {
     return textNodes;
 }
 
-export function buildHighlightRegex(highlights: string[]): RegExp {
-    const escaped = highlights.map(h => h.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
+export function buildHighlightRegex(highlights: string[]): RegExp | null {
+    const escaped = highlights
+        .map(h => h.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'))
+        .filter(h => h.length > 0);
+
+    if (escaped.length == 0) return null;
+
     return new RegExp(`(${escaped.join('|')})`, 'g');
 }
 
@@ -116,6 +121,8 @@ export function applyKensaHighlights(root: HTMLElement, highlights: string[], cl
     if (highlights.length === 0) return;
 
     const regExp = buildHighlightRegex(highlights);
+
+    if (regExp == null) return;
 
     getAllTextNodes(root).forEach(node => {
         const text = node.textContent ?? '';
