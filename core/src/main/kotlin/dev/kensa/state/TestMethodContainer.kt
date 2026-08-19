@@ -7,12 +7,17 @@ import dev.kensa.context.TestContext
 import dev.kensa.parse.ParseError
 import java.lang.reflect.Method
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.milliseconds
 
 class TestMethodContainer internal constructor(private val testInvocationFactory: TestInvocationFactory, val method: Method, val displayName: String, val issues: List<String>, val tags: List<String>, val orgFlow: OrgFlowSpec?, private val initialState: TestState, val autoOpenTab: Tab) {
-    val invocationContexts = mutableMapOf<UUID, TestInvocationContext>()
-    private val _invocations = mutableListOf<TestInvocation>()
+    // Invocations of a single test method run concurrently when a parameterised test is executed in
+    // parallel, and they all share this container, so both collections must tolerate concurrent writes.
+    val invocationContexts: MutableMap<UUID, TestInvocationContext> = ConcurrentHashMap()
+    private val _invocations = CopyOnWriteArrayList<TestInvocation>()
     val invocations: List<TestInvocation> get() = _invocations
+    @Volatile
     private var _parseErrors: List<ParseError> = emptyList()
     internal val parseErrors: List<ParseError> get() = _parseErrors
 
