@@ -3,13 +3,6 @@ import { classifyParamValue } from './paramValueClassifier';
 
 describe('classifyParamValue', () => {
     describe('null-ish', () => {
-        it('classifies empty string as null', () => {
-            const result = classifyParamValue('');
-            expect(result.kind).toBe('null');
-            expect(result.displayValue).toBe('null');
-            expect(result.className).toContain('italic');
-        });
-
         it('classifies "null" as null', () => {
             const result = classifyParamValue('null');
             expect(result.kind).toBe('null');
@@ -95,6 +88,13 @@ describe('classifyParamValue', () => {
     });
 
     describe('strings', () => {
+        it('classifies empty string as string', () => {
+            const result = classifyParamValue('');
+            expect(result.kind).toBe('string');
+            expect(result.displayValue).toBe('""');
+            expect(result.className).toContain('text-emerald-600');
+        });
+
         it('wraps a plain string in quotes', () => {
             const result = classifyParamValue('hello');
             expect(result.kind).toBe('string');

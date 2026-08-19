@@ -15,7 +15,7 @@ const STRING_CLASS = 'text-emerald-600';
 const NUMBER_RE = /^-?\d+(\.\d+)?$/;
 
 export function classifyParamValue(raw: string): ClassifiedValue {
-    if (raw === '' || raw === 'null' || raw === 'undefined') {
+    if (raw === 'null' || raw === 'undefined') {
         return { kind: 'null', displayValue: 'null', className: NULL_CLASS };
     }
     if (NUMBER_RE.test(raw)) {
