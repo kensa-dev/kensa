@@ -137,11 +137,13 @@ internal class TestInvocationParser(private val configuration: Configuration) {
     private fun labelledValue(value: Any?, descriptor: ElementDescriptor, labels: List<String>?): Any? {
         if (value == null || labels == null || descriptor !is ElementDescriptor.ParameterElementDescriptor) return value
         val label = labels.getOrNull(descriptor.index) ?: return value
+        if (configuration.renderers.hasValueRendererFor(value::class)) return value
         return if (value.isOpaque() && label != value.toString()) label else value
     }
 
     // Opaque = a value that renders as noise: it relies on the default `Object.toString()` (`Type@hash`) and is not a
     // collection or array (those are rendered specially by the renderers and must not be replaced by a display label).
+    // A registered value renderer is explicit evidence the value is not noise, so it is checked before opacity.
     private fun Any.isOpaque(): Boolean =
         this !is Collection<*> && !javaClass.isArray &&
             toString() == "${javaClass.name}@${Integer.toHexString(System.identityHashCode(this))}"

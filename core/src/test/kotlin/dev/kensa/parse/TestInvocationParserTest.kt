@@ -23,6 +23,12 @@ import org.mockito.kotlin.mock
 
 class TestInvocationParserTest {
 
+    private interface Renderable {
+        val value: String
+    }
+
+    private class Opaque(override val value: String) : Renderable
+
     @Suppress("unused")
     private class Sample {
         fun aTest(p1: String, @Highlight hl: String, @ParameterizedTestDescription desc: String) {}
@@ -115,6 +121,20 @@ class TestInvocationParserTest {
         )
 
         invocation.namedParameterValues shouldContain NamedValue("p1", array)
+    }
+
+    @Test
+    fun `does not substitute the display name label when a renderer is registered for the value`() {
+        val opaque = Opaque("payload")
+        val configuration = Configuration().apply { renderers.addValueRenderer(Renderable::class) { v -> "<${v.value}>" } }
+
+        val invocation = parse(
+            configuration,
+            arguments = arrayOf(opaque, "hot", "descval"),
+            displayName = "[1] My Nice Label, hot, descval",
+        )
+
+        invocation.namedParameterValues shouldContain NamedValue("p1", opaque)
     }
 
     @Test

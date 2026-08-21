@@ -16,6 +16,7 @@ New features:
 
 Fixes:
   - **Parallel invocations of the same test method no longer lose data.** Every invocation of a test method shares one `TestMethodContainer`, which held plain non-concurrent collections. A parameterised test running its invocations in parallel could lose an invocation's context between starting and ending it, failing with a `NoSuchElementException` on the invocation's own id, or a `NullPointerException` reading the missing context. Both collections are now concurrent.
+  - **Registered value renderers are no longer bypassed for parameterised test arguments.** An argument relying on the default `Object.toString()` was replaced by its display-name label before renderers ran, so a `ValueRenderer` registered for that type never saw it. A registered renderer is now treated as evidence the value is not noise, and the label substitution is skipped (#189).
   - **Empty string parameters are distinguishable from null.** An empty string parameter displayed as `null` in the invocation parameter matrix, so a test passing `""` and one passing `null` looked identical. Empty strings now render as `""` (#185, thanks to Michael Orr).
 
 Changed:

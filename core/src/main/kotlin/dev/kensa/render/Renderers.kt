@@ -64,6 +64,8 @@ class Renderers {
     private fun Any.asList(): List<*> =
         (0 until java.lang.reflect.Array.getLength(this)).map { java.lang.reflect.Array.get(this, it) }
 
+    internal fun hasValueRendererFor(kClass: KClass<*>): Boolean = valueRendererFor(kClass) != null
+
     private fun valueRendererFor(kClass: KClass<*>): ValueRenderer<Any>? =
         valueRenderers.entries
             .filter { entry -> entry.key.isSuperclassOf(kClass) }
