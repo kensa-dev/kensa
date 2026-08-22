@@ -152,9 +152,11 @@ class Configuration {
             field = value
         }
     var flattenOutputPackages: Boolean = false
-    var isOutputEnabled: Boolean = if (System.getProperties().containsKey(KENSA_DISABLE_OUTPUT)) {
-        System.getProperty(KENSA_DISABLE_OUTPUT, "").let { it.isNotBlank() && !it.toBoolean() }
-    } else true
+    // Setting the property at all disables output, so a bare -Dkensa.disable.output works.
+    // An explicit "false" is the escape hatch for a property whose name is already a negative.
+    var isOutputEnabled: Boolean = System.getProperty(KENSA_DISABLE_OUTPUT)
+        ?.equals("false", ignoreCase = true)
+        ?: true
     var antlrPredicationMode: PredictionMode = PredictionMode.LL
     var antlrErrorListenerDisabled: Boolean = true
     val sequenceDiagram: SequenceDiagramConfiguration = SequenceDiagramConfiguration()

@@ -57,7 +57,7 @@ Configuration is typically placed in a test base class, a JUnit 5 `@BeforeAll`, 
 | Property | Effect |
 |----------|--------|
 | `kensa.output.root` | Overrides the output directory root |
-| `kensa.disable.output` | Set to any value to disable output |
+| `kensa.disable.output` | Set to any value to disable output, including no value at all. Set to `false` to leave output enabled |
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
