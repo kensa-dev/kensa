@@ -74,7 +74,7 @@ class KensaSpringExtensionTest {
 
         Kensa.konfigure {
             titleText shouldBe "Spring Bound"
-            issueTrackerUrl.toURI() shouldBe URI.create("https://kensa.example.com")
+            issueTrackerUrl?.toURI() shouldBe URI.create("https://kensa.example.com")
             setupStrategy shouldBe SetupStrategy.Grouped
         }
     }
@@ -84,7 +84,7 @@ private data class ConfigurationSnapshot(
     val outputDir: Path,
     val isOutputEnabled: Boolean,
     val titleText: String,
-    val issueTrackerUrl: java.net.URL,
+    val issueTrackerUrl: java.net.URL?,
     val tabSize: Int,
     val autoOpenTab: Tab,
     val autoExpandNotes: Boolean,
