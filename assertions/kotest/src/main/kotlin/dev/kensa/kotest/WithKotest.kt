@@ -1,8 +1,11 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.kotest
 
 import dev.kensa.CollectorContext
 import dev.kensa.StateCollector
 import dev.kensa.context.TestContextHolder.testContext
+import dev.kensa.context.kensaThreadContext
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.invokeMatcher
 import kotlinx.coroutines.runBlocking
@@ -118,7 +121,7 @@ interface WithKotest {
 
     fun thenEventually(initialDelay: Duration, duration: Duration, interval: Duration, assertions: PollingScope.() -> Unit) {
         val scope = PollingScope(testContext().collectorContext).apply(assertions)
-        runBlocking {
+        runBlocking(kensaThreadContext()) {
             KotestThen.thenEventually(initialDelay, duration, interval, scope)
         }
     }
@@ -130,7 +133,7 @@ interface WithKotest {
 
     fun thenContinually(duration: Duration, assertions: PollingScope.() -> Unit) {
         val scope = PollingScope(testContext().collectorContext).apply(assertions)
-        runBlocking {
+        runBlocking(kensaThreadContext()) {
             KotestThen.thenContinually(duration, scope)
         }
     }

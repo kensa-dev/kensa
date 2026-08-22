@@ -10,6 +10,8 @@ object RenderedValueInvocationContextHolder {
 
     fun renderedValueInvocationContext(): RenderedValueInvocationContext = holder.get()
 
+    fun boundContextOrNull(): RenderedValueInvocationContext? = holder.get()
+
     fun clearFromThread() {
         holder.remove()
     }

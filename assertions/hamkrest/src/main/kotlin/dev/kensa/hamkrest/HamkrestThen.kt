@@ -1,3 +1,5 @@
+@file:OptIn(dev.kensa.KensaInternalApi::class)
+
 package dev.kensa.hamkrest
 
 import com.natpryce.hamkrest.Matcher
@@ -5,6 +7,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import dev.kensa.StateCollector
 import dev.kensa.context.TestContext
 import kotlinx.coroutines.Dispatchers
+import dev.kensa.context.kensaThreadContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -54,6 +57,9 @@ object HamkrestThen {
 
     fun <T> thenEventually(initialDelay: Duration = ZERO, duration: Duration = 10.seconds, interval: Duration = 25.milliseconds, context: TestContext, collector: StateCollector<T>, block: T.() -> Unit) {
         await
+            // Awaitility evaluates the condition on its own thread by default, which loses Kensa's
+            // thread-bound contexts. Poll on the test's thread so they are still in scope.
+            .pollInSameThread()
             .pollDelay(initialDelay.toJavaDuration())
             .pollInterval(interval.toJavaDuration())
             .atMost(duration.toJavaDuration())
@@ -61,7 +67,7 @@ object HamkrestThen {
     }
 
     fun thenEventually(initialDelay: Duration, duration: Duration, interval: Duration, scope: PollingScope) {
-        val results = runBlocking {
+        val results = runBlocking(kensaThreadContext()) {
             scope.checks.map { check ->
                 async(Dispatchers.IO) {
                     runCatching { pollEventually(initialDelay, duration, interval, check) }
@@ -88,7 +94,7 @@ object HamkrestThen {
 
     fun thenContinually(duration: Duration, scope: PollingScope) {
         try {
-            runBlocking {
+            runBlocking(kensaThreadContext()) {
                 scope.checks.forEach { check ->
                     launch(Dispatchers.IO) {
                         val mark = TimeSource.Monotonic.markNow()

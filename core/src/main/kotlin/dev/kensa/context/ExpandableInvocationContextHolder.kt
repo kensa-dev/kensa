@@ -10,6 +10,8 @@ object ExpandableInvocationContextHolder {
 
     fun expandableSentenceInvocationContext(): ExpandableInvocationContext = holder.get()
 
+    fun boundContextOrNull(): ExpandableInvocationContext? = holder.get()
+
     fun clearFromThread() {
         holder.remove()
     }

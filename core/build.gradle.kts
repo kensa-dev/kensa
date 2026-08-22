@@ -70,6 +70,9 @@ val plantUmlBundle: Configuration by configurations.creating {
 
 dependencies {
     compileOnly(project(":antlr"))
+    // Only for KensaThreadContextElement, which exists for the assertion bridges. They bring coroutines
+    // themselves, so core does not force it on consumers that never poll.
+    compileOnly(libs.kotlinCoroutines)
     implementation(libs.antlrRuntime)
     implementation(libs.kotlinReflect)
     implementation(libs.minimalJson)
