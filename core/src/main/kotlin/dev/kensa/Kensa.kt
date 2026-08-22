@@ -86,6 +86,11 @@ class KensaConfigurator(private val configuration: Configuration) {
     fun withService(service: String): KensaConfigurator = apply { configuration.service = service }
 
     fun withSourceLocations(vararg locations: Path): KensaConfigurator = apply { configuration.sourceLocations = locations.toList() }
+
+    fun withTitleText(titleText: String): KensaConfigurator = apply { configuration.titleText = titleText }
+
+    fun withAntlrPredicationMode(mode: PredictionMode): KensaConfigurator = apply { configuration.antlrPredicationMode = mode }
+    fun withAntlrErrorListenerDisabled(value: Boolean): KensaConfigurator = apply { configuration.antlrErrorListenerDisabled = value }
 }
 
 enum class PackageDisplay {
@@ -183,13 +188,19 @@ class Configuration {
     var sectionOrder: List<Section>
         get() = _sectionOrder
         set(order) {
-            if (order.size != 3 || order.groupingBy { it }.eachCount().any { it.value > 1 }) {
-                throw IllegalArgumentException("Invalid section order specified")
+            require(order.toSet() == Section.entries.toSet() && order.size == Section.entries.size) {
+                "Section order must list every section exactly once, got $order"
             }
             _sectionOrder = order
         }
 
+    fun keywords(vararg keywords: String) = dictionary.putKeywords(*keywords)
+    fun keywords(vararg keywords: Keyword) = dictionary.putKeywords(*keywords)
+
+    @Deprecated("Renamed to keywords, to match KensaConfigurator.withKeywords.", ReplaceWith("keywords(*keywords)"))
     fun keyWords(vararg keywords: String) = dictionary.putKeywords(*keywords)
+
+    @Deprecated("Renamed to keywords, to match KensaConfigurator.withKeywords.", ReplaceWith("keywords(*keywords)"))
     fun keyWords(vararg keywords: Keyword) = dictionary.putKeywords(*keywords)
     fun acronyms(vararg acronyms: Acronym) = dictionary.putAcronyms(*acronyms)
     fun protectedPhrases(vararg phrases: ProtectedPhrase) = dictionary.putProtectedPhrases(*phrases)

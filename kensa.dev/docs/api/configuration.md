@@ -89,7 +89,7 @@ Annotate tests with `@Issue("PROJ-123")` and Kensa will link to the issue in the
 
 | Builder method | DSL property | Type | Description |
 |----------------|--------------|------|-------------|
-| `withIssueTrackerUrl(url)` | `issueTrackerUrl` | `URL` | Base URL — issue keys are appended directly |
+| `withIssueTrackerUrl(url)` | `issueTrackerUrl` | `URL?` | Base URL, issue keys are appended directly. Unset by default, in which case `@Issue` renders as a plain badge with no link |
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
@@ -124,6 +124,9 @@ With the above URL, `@Issue("42")` links to `https://github.com/my-org/my-repo/i
 | `withAutoExpandNotes(bool)` | `autoExpandNotes` | `Boolean` | `false` | Expand `@Notes` content automatically |
 | `withTabSize(n)` | `tabSize` | `Int` | `4` | Code indentation width |
 | `withSetupStrategy(strategy)` | `setupStrategy` | `SetupStrategy` | `SetupStrategy.Ungrouped` | How setup interactions appear in sequence diagrams |
+| `withTitleText(text)` | `titleText` | `String` | `Index` | Report title, also settable with the `kensa.source.title` system property |
+
+`sectionOrder` must list every `Section` exactly once.
 
 **`Section` values:** `Tabs`, `Sentences`, `Exception`
 
@@ -148,6 +151,18 @@ Kensa parses method names to build readable sentences. Extend the dictionary to 
 | `withProtectedPhrases(vararg phrases)` | Prevent a multi-word phrase from being split (e.g. `"credit score"`) |
 | `withAcronyms(vararg acronyms)` | Register an acronym and its meaning (e.g. `Acronym.of("API", "Application Programming Interface")`) |
 | `withKeywords(vararg keywords)` | Add custom BDD keywords beyond the defaults |
+
+The DSL equivalents are `protectedPhrases()`, `acronyms()` and `keywords()`. `keyWords()` is the
+former spelling of `keywords()` and is deprecated.
+
+### Parser tuning
+
+Rarely needed. Both affect the ANTLR pass that turns test source into sentences.
+
+| Builder method | DSL property | Type | Default | Description |
+|----------------|--------------|------|---------|-------------|
+| `withAntlrPredicationMode(mode)` | `antlrPredicationMode` | `PredictionMode` | `LL` | ANTLR prediction mode |
+| `withAntlrErrorListenerDisabled(bool)` | `antlrErrorListenerDisabled` | `Boolean` | `true` | Whether ANTLR syntax-error reporting is suppressed |
 
 <Tabs groupId="lang">
 <TabItem value="kotlin" label="Kotlin">
