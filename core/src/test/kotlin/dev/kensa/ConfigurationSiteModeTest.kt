@@ -118,4 +118,9 @@ class ConfigurationSiteModeTest {
         config.programme shouldBe null
         config.service shouldBe null
     }
+
+    @Test
+    fun `issueTrackerUrl defaults to null`() {
+        Configuration().issueTrackerUrl shouldBe null
+    }
 }

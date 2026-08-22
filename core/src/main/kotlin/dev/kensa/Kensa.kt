@@ -13,7 +13,6 @@ import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.state.SetupStrategy
 import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.atn.PredictionMode
-import java.net.URI
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -169,7 +168,7 @@ class Configuration {
         set(value) {
             sequenceDiagram.replaceDirectives(value)
         }
-    var issueTrackerUrl: URL = URI.create("http://empty").toURL()
+    var issueTrackerUrl: URL? = null
     var tabSize: Int = 4
     var autoOpenTab: Tab = Tab.None
     var autoExpandNotes: Boolean = false

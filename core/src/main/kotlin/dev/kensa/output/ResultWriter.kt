@@ -69,7 +69,7 @@ internal class ResultWriter(private val configuration: Configuration, private va
                 .add("autoOpenTab", autoOpenTab.name)
                 .add("autoExpandNotes", autoExpandNotes)
                 .add("titleText", titleText)
-                .add("issueTrackerUrl", issueTrackerUrl.toString())
+                .add("issueTrackerUrl", issueTrackerUrl?.toString())
                 .add("acronyms", acronymsAsJson(dictionary.acronyms))
                 .add("flattenPackages", flattenOutputPackages)
                 .add("packageDisplay", packageDisplay.name)

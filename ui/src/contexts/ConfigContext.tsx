@@ -3,7 +3,7 @@ import {Section} from '@/constants';
 
 export interface KensaConfig {
     titleText: string;
-    issueTrackerUrl: string;
+    issueTrackerUrl: string | null;
     acronyms: Record<string, string>;
     packageDisplay: string;
     packageDisplayRoot?: string;
@@ -16,7 +16,7 @@ export interface KensaConfig {
 // Default fallback configuration
 export const DEFAULT_CONFIG: KensaConfig = {
     titleText: "Kensa",
-    issueTrackerUrl: "",
+    issueTrackerUrl: null,
     acronyms: {},
     packageDisplay: "HideCommonPackages",
     sectionOrder: [Section.Tabs, Section.Sentences, Section.Exception],

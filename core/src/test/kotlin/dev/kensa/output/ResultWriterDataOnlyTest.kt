@@ -8,6 +8,7 @@ import io.kotest.matchers.paths.shouldNotExist
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.readText
@@ -93,5 +94,32 @@ class ResultWriterDataOnlyTest {
         val json = Json.parse(tempDir.resolve("configuration.json").readText()).asObject()
         json.get("programme").isNull shouldBe true
         json.get("service").isNull shouldBe true
+    }
+
+    @Test
+    fun `configuration json serialises issueTrackerUrl as null when unset`(@TempDir tempDir: Path) {
+        val configuration = Configuration().apply {
+            outputDir = tempDir
+            dataOnly = true
+        }
+
+        ResultWriter(configuration, ComponentDiagramFactory()).write(emptyList())
+
+        val json = Json.parse(tempDir.resolve("configuration.json").readText()).asObject()
+        json.get("issueTrackerUrl").isNull shouldBe true
+    }
+
+    @Test
+    fun `configuration json contains issueTrackerUrl when set`(@TempDir tempDir: Path) {
+        val configuration = Configuration().apply {
+            outputDir = tempDir
+            dataOnly = true
+            issueTrackerUrl = URI.create("https://jira.example.com/browse").toURL()
+        }
+
+        ResultWriter(configuration, ComponentDiagramFactory()).write(emptyList())
+
+        val json = Json.parse(tempDir.resolve("configuration.json").readText()).asObject()
+        json.getString("issueTrackerUrl", null) shouldBe "https://jira.example.com/browse"
     }
 }

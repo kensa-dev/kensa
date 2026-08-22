@@ -4,6 +4,7 @@ import {ConfigContext} from "@/contexts/ConfigContext";
 import {useContext} from "react";
 import {cn} from "@/lib/utils";
 import {TestState} from "@/types/Test";
+import {issueHref} from "@/util/issueTrackerLink";
 
 interface IssueBadgeProps {
     issue: string;
@@ -35,17 +36,15 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
                 ]
     );
 
-    if (!issueTrackerUrl) {
+    const href = issueHref(issueTrackerUrl, issue);
+
+    if (!href) {
         return (
             <Badge className={cn(baseClasses, toneClasses)}>
                 {issue}
             </Badge>
         );
     }
-
-    const href = issueTrackerUrl.endsWith("/")
-        ? `${issueTrackerUrl}${issue}`
-        : `${issueTrackerUrl}/${issue}`;
 
     return (
         <Badge asChild className={cn(baseClasses, toneClasses)}>
