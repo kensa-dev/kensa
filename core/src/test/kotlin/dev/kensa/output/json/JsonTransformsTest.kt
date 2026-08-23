@@ -96,6 +96,21 @@ class JsonTransformsTest {
         }
 
         @Test
+        fun `serialises class-level epics`() {
+            val container = fakeTestContainer(
+                testClass = sampleClass,
+                epics = listOf("EPIC-1", "EPIC-2"),
+                methodContainers = emptyList(),
+            )
+
+            val epics = render(container).get("epics").asArray()
+
+            epics.size() shouldBe 2
+            epics[0].asString() shouldBe "EPIC-1"
+            epics[1].asString() shouldBe "EPIC-2"
+        }
+
+        @Test
         fun `serialises method-level tags`() {
             val method = fakeTestMethodContainer(
                 method = alpha,
@@ -111,6 +126,23 @@ class JsonTransformsTest {
             tags.size() shouldBe 2
             tags[0].asString() shouldBe "smoke"
             tags[1].asString() shouldBe "regression"
+        }
+
+        @Test
+        fun `serialises method-level epics`() {
+            val method = fakeTestMethodContainer(
+                method = alpha,
+                epics = listOf("EPIC-3"),
+                invocations = listOf(fakeTestInvocation()),
+            )
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val epics = render(container)
+                .get("tests").asArray()[0].asObject()
+                .get("epics").asArray()
+
+            epics.size() shouldBe 1
+            epics[0].asString() shouldBe "EPIC-3"
         }
 
         @Test
@@ -675,6 +707,88 @@ class JsonTransformsTest {
             tags.size() shouldBe 2
             tags[0].asString() shouldBe "smoke"
             tags[1].asString() shouldBe "regression"
+        }
+
+        @Test
+        fun `index class and child nodes include epics arrays`() {
+            val method = fakeTestMethodContainer(method = alpha, epics = listOf("EPIC-3"), invocations = listOf(fakeTestInvocation()))
+            val container = fakeTestContainer(testClass = sampleClass, epics = listOf("EPIC-1"), methodContainers = listOf(method))
+
+            val json = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
+
+            json.get("epics").asArray().map { it.asString() } shouldBe listOf("EPIC-1")
+            json.get("children").asArray()[0].asObject().get("epics").asArray().map { it.asString() } shouldBe listOf("EPIC-3")
+        }
+
+        @Test
+        fun `index child carries timing per invocation`() {
+            val method = fakeTestMethodContainer(
+                method = alpha,
+                invocations = listOf(
+                    fakeTestInvocation(startTimeMs = 1000L, elapsed = 250.milliseconds),
+                    fakeTestInvocation(startTimeMs = 1300L, elapsed = 75.milliseconds),
+                ),
+            )
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val timing = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
+                .get("children").asArray()[0].asObject().get("timing").asArray()
+
+            timing.map { pair -> pair.asArray().map { it.asLong() } } shouldBe listOf(listOf(1000L, 250L), listOf(1300L, 75L))
+        }
+
+        @Test
+        fun `index child omits timing without invocations`() {
+            val method = fakeTestMethodContainer(method = alpha)
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            JsonTransforms.toIndexJson(id = "cls-1")(container).asObject()
+                .get("children").asArray()[0].asObject().get("timing").shouldBeNull()
+        }
+
+        @Test
+        fun `index child carries interaction and participant counts`() {
+            val method = fakeTestMethodContainer(
+                method = alpha,
+                invocations = listOf(fakeTestInvocation(interactions = setOf(interactionEntry("Request from A to B")))),
+            )
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val child = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject().get("children").asArray()[0].asObject()
+
+            child.getInt("interactions", 0) shouldBe 1
+            child.get("participants").asObject().getInt("A", 0) shouldBe 1
+            child.get("participants").asObject().getInt("B", 0) shouldBe 1
+        }
+
+        @Test
+        fun `index child omits interaction fields without interactions`() {
+            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(fakeTestInvocation()))
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val child = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject().get("children").asArray()[0].asObject()
+
+            child.get("interactions").shouldBeNull()
+            child.get("participants").shouldBeNull()
+        }
+
+        @Test
+        fun `index child carries assertion and expandable counts and omits zeros`() {
+            val withCounts = fakeTestMethodContainer(
+                method = alpha,
+                invocations = listOf(fakeTestInvocation(sentences = listOf(
+                    RenderedSentence(listOf(RenderedToken.RenderedValueToken("Then", setOf("tk-kw")), RenderedToken.RenderedExpandableToken("x", setOf("tk-ex"), null, "x", emptyList(), emptyList())), 1),
+                ))),
+            )
+            val without = fakeTestMethodContainer(method = beta, invocations = listOf(fakeTestInvocation()))
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(withCounts, without))
+
+            val children = JsonTransforms.toIndexJson(id = "cls-1")(container).asObject().get("children").asArray().map { it.asObject() }
+
+            children[0].getInt("assertions", 0) shouldBe 1
+            children[0].getInt("expandables", 0) shouldBe 1
+            children[1].get("assertions").shouldBeNull()
+            children[1].get("expandables").shouldBeNull()
         }
     }
 

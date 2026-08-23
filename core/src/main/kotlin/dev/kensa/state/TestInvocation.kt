@@ -15,6 +15,7 @@ import dev.kensa.util.NamedValue
 import kotlin.time.Duration
 
 class TestInvocation internal constructor(
+    val startTimeMs: Long,
     val elapsed: Duration,
     val displayName: String,
     val executionException: Throwable?,

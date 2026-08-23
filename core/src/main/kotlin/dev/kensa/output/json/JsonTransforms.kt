@@ -29,8 +29,6 @@ import com.eclipsesource.json.Json.`object` as jsonObject
 
 internal object JsonTransforms {
 
-    private val interactionKeyPattern = "^(.*) from (.+) to (.+)$".toRegex()
-
     data class CustomTabContent(
         val tabId: String,
         val label: String,
@@ -49,6 +47,7 @@ internal object JsonTransforms {
             .add("notes", container.notes)
             .add("packageName", container.testClass.packageName)
             .add("issues", asJsonArray(container.issues))
+            .add("epics", asJsonArray(container.epics))
             .add("tags", asJsonArray(container.tags))
             .add("tests", asJsonArray(container.orderedMethodContainers) { testMethodContainer: TestMethodContainer ->
                 var totalElapsed: Duration = Duration.ZERO
@@ -93,6 +92,7 @@ internal object JsonTransforms {
                     .add("testMethod", testMethodContainer.method.name)
                     .add("displayName", testMethodContainer.displayName)
                     .add("issues", asJsonArray(testMethodContainer.issues))
+                    .add("epics", asJsonArray(testMethodContainer.epics))
                     .add("tags", asJsonArray(testMethodContainer.tags))
                     .add("state", testMethodContainer.state.description)
                     .add("autoOpenTab", testMethodContainer.autoOpenTab.name)
@@ -141,6 +141,7 @@ internal object JsonTransforms {
             .add("id", id)
             .add("testClass", container.testClass.name)
             .add("issues", asJsonArray(container.issues))
+            .add("epics", asJsonArray(container.epics))
             .add("tags", asJsonArray(container.tags))
             .add("displayName", container.displayName)
             .add("state", container.state.description)
@@ -149,9 +150,23 @@ internal object JsonTransforms {
                     .add("id", "$id:${invocation.method.name}")
                     .add("testMethod", invocation.method.name)
                     .add("issues", asJsonArray(invocation.issues))
+                    .add("epics", asJsonArray(invocation.epics))
                     .add("tags", asJsonArray(invocation.tags))
                     .add("displayName", invocation.displayName)
                     .add("state", invocation.state.description)
+                if (invocation.invocations.isNotEmpty()) {
+                    childIndexJson.add("timing", Json.array().apply {
+                        invocation.invocations.forEach { i ->
+                            add(Json.array().add(i.startTimeMs).add(i.elapsed.inWholeMilliseconds))
+                        }
+                    })
+                }
+                IndexMetrics.interactionCount(invocation).takeIf { it > 0 }?.let { childIndexJson.add("interactions", it) }
+                IndexMetrics.participantCounts(invocation).takeIf { it.isNotEmpty() }?.let { counts ->
+                    childIndexJson.add("participants", jsonObject().apply { counts.forEach { (name, n) -> add(name, n) } })
+                }
+                IndexMetrics.assertionCount(invocation).takeIf { it > 0 }?.let { childIndexJson.add("assertions", it) }
+                IndexMetrics.expandableCount(invocation).takeIf { it > 0 }?.let { childIndexJson.add("expandables", it) }
                 if (methodHasErrors(invocation)) childIndexJson.add("hasErrors", true)
                 childIndexJson
             })

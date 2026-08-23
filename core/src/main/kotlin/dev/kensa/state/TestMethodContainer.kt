@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.milliseconds
 
-class TestMethodContainer internal constructor(private val testInvocationFactory: TestInvocationFactory, val method: Method, val displayName: String, val issues: List<String>, val tags: List<String>, val orgFlow: OrgFlowSpec?, private val initialState: TestState, val autoOpenTab: Tab) {
+class TestMethodContainer internal constructor(private val testInvocationFactory: TestInvocationFactory, val method: Method, val displayName: String, val issues: List<String>, val epics: List<String>, val tags: List<String>, val orgFlow: OrgFlowSpec?, private val initialState: TestState, val autoOpenTab: Tab) {
     // Invocations of a single test method run concurrently when a parameterised test is executed in
     // parallel, and they all share this container, so both collections must tolerate concurrent writes.
     val invocationContexts: MutableMap<UUID, TestInvocationContext> = ConcurrentHashMap()
@@ -44,6 +44,7 @@ class TestMethodContainer internal constructor(private val testInvocationFactory
     fun endTestInvocation(testContext: TestContext, testId: UUID, executionException: Throwable?, endTimeMs: Long) {
         val (invocation, parseErrors) = invocationContexts.getValue(testId).let { invocationContext ->
             testInvocationFactory.create(
+                invocationContext.startTimeMs,
                 (endTimeMs - invocationContext.startTimeMs).milliseconds,
                 testContext,
                 invocationContext,

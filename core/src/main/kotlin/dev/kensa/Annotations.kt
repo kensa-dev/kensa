@@ -95,6 +95,17 @@ annotation class Highlight(val value: String = "")
 annotation class Issue(vararg val value: String)
 
 /**
+ * Annotation used to specify the epic(s) in a tracking system to which this test or test class belongs.
+ * Rendered as links next to issues (using [dev.kensa.Configuration.issueTrackerUrl]) and used to group
+ * results on the report overview page.
+ *
+ * @property value Array of epic identifiers.
+ */
+@Retention(RUNTIME)
+@Target(ANNOTATION_CLASS, CLASS, FUNCTION)
+annotation class Epic(vararg val value: String)
+
+/**
  * Annotation for marking methods or functions as expandable.
  * These methods can be called from within the main test methods/functions
  * and are usually used to provide further, more detailed assertions that

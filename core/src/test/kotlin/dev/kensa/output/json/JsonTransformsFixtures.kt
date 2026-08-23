@@ -24,6 +24,7 @@ import java.lang.reflect.Method
 import kotlin.time.Duration
 
 internal fun fakeTestInvocation(
+    startTimeMs: Long = 0L,
     elapsed: Duration = Duration.ZERO,
     displayName: String = "invocation",
     parameterizedTestDescription: String? = null,
@@ -41,6 +42,7 @@ internal fun fakeTestInvocation(
 ): TestInvocation {
     val fixtures = mock<Fixtures> { on { specs() } doReturn fixtureSpecs }
     return mock<TestInvocation> {
+        on { it.startTimeMs } doReturn startTimeMs
         on { it.elapsed } doReturn elapsed
         on { it.displayName } doReturn displayName
         on { it.parameterizedTestDescription } doReturn parameterizedTestDescription
@@ -62,6 +64,7 @@ internal fun fakeTestMethodContainer(
     method: Method,
     displayName: String = method.name,
     issues: List<String> = emptyList(),
+    epics: List<String> = emptyList(),
     tags: List<String> = emptyList(),
     orgFlow: OrgFlowSpec? = null,
     state: TestState = TestState.Passed,
@@ -72,6 +75,7 @@ internal fun fakeTestMethodContainer(
     on { it.method } doReturn method
     on { it.displayName } doReturn displayName
     on { it.issues } doReturn issues
+    on { it.epics } doReturn epics
     on { it.tags } doReturn tags
     on { it.orgFlow } doReturn orgFlow
     on { it.state } doReturn state
@@ -86,6 +90,7 @@ internal fun fakeTestContainer(
     state: TestState = TestState.Passed,
     notes: String? = null,
     issues: List<String> = emptyList(),
+    epics: List<String> = emptyList(),
     tags: List<String> = emptyList(),
     methodContainers: List<TestMethodContainer> = emptyList(),
 ): TestContainer {
@@ -96,6 +101,7 @@ internal fun fakeTestContainer(
         on { it.state } doReturn state
         on { it.notes } doReturn notes
         on { it.issues } doReturn issues
+        on { it.epics } doReturn epics
         on { it.tags } doReturn tags
         on { it.methodContainers } doReturn byMethod
         on { it.orderedMethodContainers } doReturn methodContainers

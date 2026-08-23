@@ -19,7 +19,7 @@ internal class TestInvocationFactory(
     private val componentDiagramFactory: ComponentDiagramFactory
 ) {
 
-    fun create(elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?, displayName: String): Pair<TestInvocation, List<ParseError>> {
+    fun create(startTimeMs: Long, elapsedTime: Duration, testContext: TestContext, testInvocationContext: TestInvocationContext, throwable: Throwable?, displayName: String): Pair<TestInvocation, List<ParseError>> {
         val (parsedInvocation, renderErrors) = try {
             testInvocationParser.parse(testInvocationContext, parser)
         } catch (e: KensaException) {
@@ -33,6 +33,7 @@ internal class TestInvocationFactory(
             emptyList()
         }
         val invocation = TestInvocation(
+            startTimeMs,
             elapsedTime,
             displayName,
             throwable,

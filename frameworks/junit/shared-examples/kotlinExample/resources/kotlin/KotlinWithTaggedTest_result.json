@@ -5,6 +5,7 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "epics": [],
   "tags": [
     "smoke",
     "regression"
@@ -14,6 +15,7 @@
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "issues": [],
+      "epics": [],
       "tags": [
         "slow"
       ],

@@ -5,12 +5,14 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "epics": [],
   "tags": [],
   "tests": [
     {
       "testMethod": "passingTest",
       "displayName": "Passing Test",
       "issues": [],
+      "epics": [],
       "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",

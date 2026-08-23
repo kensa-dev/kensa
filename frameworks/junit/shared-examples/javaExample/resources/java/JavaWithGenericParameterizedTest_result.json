@@ -5,6 +5,7 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "epics": [],
   "tags": [],
   "tests": [
     {
@@ -12,6 +13,7 @@
       "testMethod": "theTest",
       "displayName": "The Test",
       "issues": [],
+      "epics": [],
       "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -72,6 +74,7 @@
       "testMethod": "theTestWithArrayParameter",
       "displayName": "The Test With Array Parameter",
       "issues": [],
+      "epics": [],
       "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",

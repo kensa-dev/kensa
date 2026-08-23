@@ -28,6 +28,7 @@ internal class TestContainerFactory(
                 createMethodContainers(),
                 notes(),
                 issues(),
+                epics(),
                 tags(),
             )
         }
@@ -43,6 +44,7 @@ internal class TestContainerFactory(
             this,
             deriveDisplayName { derivedTestName(configuration.dictionary.protectedPhraseValues) },
             issues(),
+            epics(),
             tags(),
             orgFlowOf(this),
             initialState(),
@@ -58,6 +60,8 @@ internal class TestContainerFactory(
     private fun AnnotatedElement.notes(): String? = findAnnotation<Notes>()?.value
 
     private fun AnnotatedElement.issues(): List<String> = findAnnotation<Issue>()?.value?.toList() ?: emptyList()
+
+    private fun AnnotatedElement.epics(): List<String> = findAnnotation<Epic>()?.value?.toList() ?: emptyList()
 
     private fun AnnotatedElement.tags(): List<String> = tagsFor(this)
 }

@@ -44,7 +44,7 @@ class TestInvocationFactoryTest {
         val cause = RuntimeException("root cause detail")
         whenever(invocationParser.parse(any(), any())).thenThrow(KensaException("parse failed", RuntimeException("parse failed", cause)))
 
-        val (invocation) = factory.create(10.milliseconds, testContext, context, null, "display")
+        val (invocation) = factory.create(0L, 10.milliseconds, testContext, context, null, "display")
 
         invocation.state shouldBe Passed
         invocation.sentences.shouldHaveSize(5)
@@ -81,7 +81,7 @@ class TestInvocationFactoryTest {
         whenever(invocationParser.parse(any(), any())).thenReturn(parsedInvocation to emptyList<RenderError>())
         whenever(parser.parse(any())).thenReturn(parsedMethod)
 
-        val (invocation) = factory.create(10.milliseconds, testContext, context, null, "display")
+        val (invocation) = factory.create(0L, 10.milliseconds, testContext, context, null, "display")
 
         invocation.sentences shouldBe emptyList()
     }

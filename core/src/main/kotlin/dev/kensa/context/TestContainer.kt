@@ -13,6 +13,7 @@ class TestContainer(
     val methodContainers: Map<Method, TestMethodContainer>,
     val notes: String?,
     val issues: List<String>,
+    val epics: List<String>,
     val tags: List<String>,
 ) {
 

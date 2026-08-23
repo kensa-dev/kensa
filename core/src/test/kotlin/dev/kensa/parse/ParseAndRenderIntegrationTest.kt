@@ -162,7 +162,7 @@ class ParseAndRenderIntegrationTest {
         whenever(invocationParser.parse(any(), any())).thenReturn(parsedInvocation to renderErrors)
         whenever(methodParser.parse(any())).thenReturn(parsedMethod)
 
-        val (invocation, returnedParseErrors) = factory.create(10.milliseconds, testContext, context, null, "test")
+        val (invocation, returnedParseErrors) = factory.create(0L, 10.milliseconds, testContext, context, null, "test")
 
         invocation.state shouldBe Passed
 

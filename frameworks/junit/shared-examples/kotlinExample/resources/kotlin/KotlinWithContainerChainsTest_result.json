@@ -5,6 +5,7 @@
   "notes": null,
   "packageName": "dev.kensa.example",
   "issues": [],
+  "epics": [],
   "tags": [],
   "tests": [
     {
@@ -12,6 +13,7 @@
       "testMethod": "canCheckSession",
       "displayName": "Can Check Session",
       "issues": [],
+      "epics": [],
       "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",
@@ -143,6 +145,7 @@
       "testMethod": "canCheckSessionForHeldWholesaler",
       "displayName": "Can Check Session For Held Wholesaler",
       "issues": [],
+      "epics": [],
       "tags": [],
       "state": "Passed",
       "autoOpenTab": "None",

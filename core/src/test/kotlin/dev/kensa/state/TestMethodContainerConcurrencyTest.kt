@@ -11,12 +11,15 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Concurrent invocations of a single test method (a parameterised test under
@@ -32,10 +35,10 @@ class TestMethodContainerConcurrencyTest {
     fun `records every concurrent invocation of the same test method`() {
         val method = this::class.java.getDeclaredMethod("sampleTestMethod")
         val factory = mock<TestInvocationFactory>()
-        whenever(factory.create(any(), any(), any(), anyOrNull(), any()))
+        whenever(factory.create(any(), any(), any(), any(), anyOrNull(), any()))
             .thenAnswer { fakeTestInvocation() to emptyList<dev.kensa.parse.ParseError>() }
 
-        val container = TestMethodContainer(factory, method, "sample", emptyList(), emptyList(), null, TestState.NotExecuted, Tab.None)
+        val container = TestMethodContainer(factory, method, "sample", emptyList(), emptyList(), emptyList(), null, TestState.NotExecuted, Tab.None)
 
         val invocations = 500
         val threads = 16
@@ -63,6 +66,23 @@ class TestMethodContainerConcurrencyTest {
         failures.map { "${it::class.simpleName}: ${it.message}" } shouldBe emptyList()
         container.invocations.size shouldBe invocations
         container.invocationContexts.size shouldBe invocations
+    }
+
+    @Test
+    fun `passes the start time given to startTestInvocation through to the invocation factory`() {
+        val method = this::class.java.getDeclaredMethod("sampleTestMethod")
+        val factory = mock<TestInvocationFactory>()
+        whenever(factory.create(any(), any(), any(), any(), anyOrNull(), any()))
+            .thenAnswer { fakeTestInvocation() to emptyList<dev.kensa.parse.ParseError>() }
+
+        val container = TestMethodContainer(factory, method, "sample", emptyList(), emptyList(), emptyList(), null, TestState.NotExecuted, Tab.None)
+
+        val startMs = 1_700_000_000_123L
+        val context = TestContext(CapturedInteractions(SetupStrategy.Grouped), Fixtures(), CapturedOutputs())
+        val id = container.startTestInvocation(this, emptyList(), "sample", startMs, context)
+        container.endTestInvocation(context, id, null, startMs + 250L)
+
+        verify(factory).create(eq(startMs), eq(250.milliseconds), any(), any(), anyOrNull(), any())
     }
 
 }
