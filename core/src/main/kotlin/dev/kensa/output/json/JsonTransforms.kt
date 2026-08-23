@@ -12,7 +12,6 @@ import dev.kensa.fixture.FixtureSpec
 import dev.kensa.render.Renderers
 import dev.kensa.sentence.RenderedSentence
 import dev.kensa.sentence.RenderedToken
-import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
 import dev.kensa.state.Inbound
 import dev.kensa.state.SeamDefinition
 import dev.kensa.state.TestInvocation
@@ -62,7 +61,7 @@ internal object JsonTransforms {
                             .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
                             .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
                             .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
-                            .add("capturedInteractions", asJsonArray(i.interactions.filter { it.key != sdMarkerKey }, interactionEntryAsJson(renderers)))
+                            .add("capturedInteractions", asJsonArray(i.interactions.filter { it.isRenderedInteraction() }, interactionEntryAsJson(renderers)))
                             .add("capturedOutputs", asJsonArray(i.outputNamesAndValues, nvAsJson(renderers)))
                             .add("fixtures", asJsonArray(i.fixturesNamesAndValues, nvAsJson(renderers)))
                             .add("fixtureSpecs", asJsonArray(i.fixtures.specs(), fixtureSpecAsJson()))
@@ -256,9 +255,7 @@ internal object JsonTransforms {
     }
 
     private fun interactionEntryAsJson(renderers: Renderers): (KensaMap.Entry) -> JsonValue? = { entry ->
-        entry.takeUnless {
-            it.key.matches("^\\{.+}.*$".toRegex())
-        }?.let {
+        entry.takeIf { it.isRenderedInteraction() }?.let {
             val implicitId = it.attributes.get<String>(Attributes.Key.InteractionId) ?: it.key.hashCode().toString()
 
             val match = interactionKeyPattern.matchEntire(it.key)

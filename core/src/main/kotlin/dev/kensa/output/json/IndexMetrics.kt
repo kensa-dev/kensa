@@ -7,7 +7,7 @@ internal object IndexMetrics {
     private const val KEYWORD_CSS = "tk-kw"
 
     fun interactionCount(container: TestMethodContainer): Int =
-        container.invocations.sumOf { it.interactions.size }
+        container.invocations.sumOf { invocation -> invocation.interactions.count { it.isRenderedInteraction() } }
 
     fun participantCounts(container: TestMethodContainer): Map<String, Int> {
         val counts = LinkedHashMap<String, Int>()

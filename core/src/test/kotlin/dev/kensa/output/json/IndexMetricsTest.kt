@@ -1,6 +1,7 @@
 package dev.kensa.output.json
 
 import dev.kensa.sentence.RenderedSentence
+import dev.kensa.state.CapturedInteractions.Companion.sdMarkerKey
 import dev.kensa.sentence.RenderedToken
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -25,6 +26,22 @@ class IndexMetricsTest {
         )
 
         IndexMetrics.interactionCount(container) shouldBe 3
+    }
+
+    @Test
+    fun `excludes dividers and sequence diagram markers from the interaction count`() {
+        val container = fakeTestMethodContainer(
+            method = alpha,
+            invocations = listOf(
+                fakeTestInvocation(interactions = setOf(
+                    interactionEntry("Request from A to B"),
+                    interactionEntry("{divider} some time passes"),
+                    interactionEntry(sdMarkerKey),
+                )),
+            ),
+        )
+
+        IndexMetrics.interactionCount(container) shouldBe 1
     }
 
     @Test
