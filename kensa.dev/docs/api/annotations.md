@@ -483,6 +483,37 @@ void refundIsProcessedWithin24Hours() { ... }
 
 ---
 
+### `@Epic`
+
+Links a test or class to one or more epics in your issue tracker. Kensa appends the id to the URL configured via [`issueTrackerUrl`](./configuration#issue-tracker) and renders the result as a badge beside any `@Issue` badges. Epics are filterable in the report tree with `epic:`.
+
+**Targets:** `CLASS`, `FUNCTION`, `ANNOTATION_CLASS`. Pass multiple ids in one annotation (`vararg`).
+
+<Tabs groupId="lang">
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+@Epic("PROJ-1")
+@Issue("PROJ-42", "PROJ-43")
+@Test
+fun `refund is processed within 24 hours`() { ... }
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Epic("PROJ-1")
+@Issue({"PROJ-42", "PROJ-43"})
+@Test
+void refundIsProcessedWithin24Hours() { ... }
+```
+
+</TabItem>
+</Tabs>
+
+---
+
 ### `@ParameterizedTestDescription`
 
 Marks one parameter of a parameterised test as the invocation's **display description**. The parameter's per-invocation value becomes the label for that invocation in the report, and the parameter is excluded from normal parameter-value substitution in the rendered sentence.

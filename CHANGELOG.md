@@ -4,6 +4,11 @@
 
 The API freeze ahead of 1.0. The supported surface is now sealed by the compiler rather than by convention, so that 1.0 can commit to semantic versioning over something we actually mean. See `COMPATIBILITY.md` for the full policy and support matrix.
 
+Added:
+  - **`@Epic`.** Class or method level, rendered beside issues and filterable with `epic:` in the report. (#194)
+  - **Report overview page.** A landing view per source with result, tag, package, epic/issue, duration, failure, interaction and density panels, every segment a filter. Includes wall clock vs total elapsed so you can see what parallel execution saves. (#195)
+  - **`indices.json` gained per-test `epics`, `timing`, `interactions`, `participants`, `assertions` and `expandables` fields**, additive alongside what was already there.
+
 Breaking:
   - **Implementation packages are now `internal`.** The parser, runtime, state machine, sentence scanner, output writers and utility code in `dev.kensa.parse`, `dev.kensa.state`, `dev.kensa.output`, `dev.kensa.service`, `dev.kensa.util` and the implementation parts of `dev.kensa.context` can no longer be imported by Kotlin consumers. Nothing in the documented API is affected. Note that `internal` is a Kotlin concept with no bytecode equivalent, so Java consumers are not blocked from these types, but they are equally unsupported.
   - **Upgrade core and the framework adapters together.** Kotlin mangles the JVM names of `internal` functions, so mixing a 0.9.0 core with an older `kensa-junit5` / `kensa-testng` / `kensa-kotest` can fail at runtime rather than at compile time.

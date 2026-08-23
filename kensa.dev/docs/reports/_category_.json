@@ -1,0 +1,8 @@
+{
+  "label": "Reports",
+  "position": 3.5,
+  "link": {
+    "type": "generated-index",
+    "description": "The generated HTML report, starting with the Overview page and the panels that summarise a run."
+  }
+}
