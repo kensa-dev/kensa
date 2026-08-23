@@ -112,6 +112,7 @@ export interface Test {
     testMethod: string
     displayName: string
     issues: string[]
+    epics?: string[]
     tags?: string[]
     state: TestState
     autoOpenTab?: TabType
@@ -127,6 +128,7 @@ export interface TestDetail {
     notes: string | null
     packageName: string
     issues: string[]
+    epics?: string[]
     tags?: string[]
     tests: Test[]
 }

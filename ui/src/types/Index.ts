@@ -1,6 +1,6 @@
 import {TestState} from "@/types/Test";
 
-export type NodeType = 'project' | 'package' | 'test' | 'system-view'
+export type NodeType = 'project' | 'package' | 'test' | 'system-view' | 'overview'
 
 export interface Index {
     id: string;
@@ -9,11 +9,17 @@ export interface Index {
     state: TestState;
     type?: NodeType;
     issues?: string[];
+    epics?: string[];
     tags?: string[];
     children?: Indices;
     testMethod?: string;
     hasErrors?: boolean;
     sourceId?: string;
+    timing?: [number, number][];
+    interactions?: number;
+    participants?: Record<string, number>;
+    assertions?: number;
+    expandables?: number;
 }
 
 export type Indices = Index[]

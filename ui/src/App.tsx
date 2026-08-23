@@ -11,6 +11,7 @@ import {SourceContext} from "@/contexts/SourceContext";
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {Index, Indices, SelectedIndex} from "@/types/Index";
 import {TestDetail} from "@/types/Test";
+import {EpicList} from './components/EpicList';
 import {IssueList} from './components/IssueList';
 import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from "@/components/ui/command"
 import {Badge} from "@/components/ui/badge";
@@ -18,6 +19,7 @@ import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSe
 import {TestContainer} from './components/TestContainer';
 import {NotesCard} from './components/NotesCard';
 import {SystemViewPage} from './components/SystemViewPage';
+import {OverviewPage} from './components/OverviewPage';
 import {TooltipProvider} from "@/components/ui/tooltip";
 import {hasOpenDialog, shouldClearSearchOnEscape} from "@/util/escapeGuard";
 import {nextQueryAfterTagClick, selectedTagsFromQuery} from "@/util/tagClick";
@@ -27,6 +29,9 @@ import {SuiteSearchResults} from "@/components/SuiteSearchResults";
 import {type MergedIndex} from "@/lib/suiteSearch";
 import {loadTreeData, loadSearchIndexes, statusFor, type LoadStatus} from "@/lib/initialLoad";
 import {nodeIdForLocation} from "@/util/suiteSearchNav";
+import {overviewPathFor} from "@/util/overviewPath";
+import {collectLeaves, packageDepthFor} from "@/lib/overview";
+import {findCommonPackage} from "@/utils/treeUtils";
 
 const App = () => {
     const [config, setConfig] = useState<KensaConfig>(DEFAULT_CONFIG);
@@ -66,6 +71,14 @@ const App = () => {
     const navigate = useNavigateWithSearch();
     const location = useLocation();
 
+    const isOverview = location.pathname === '/overview';
+    const isSystemView = location.pathname === '/system-view';
+    const overviewSourceId = searchParams.get('source') ?? indices[0]?.sourceId ?? null;
+    const overviewSources = useMemo(
+        () => indices.flatMap(index => index.type === 'project' && index.sourceId ? [{id: index.sourceId, title: index.displayName}] : []),
+        [indices],
+    );
+
     const onSearchChange = (query: string) => {
         setSearchParams(prev => {
             if (query) prev.set("q", query);
@@ -86,6 +99,9 @@ const App = () => {
     const selectedTags = useMemo(() => selectedTagsFromQuery(searchQuery), [searchQuery]);
 
     const handleFilterApplied = (firstTest: Index | null, firstMethod: string | null, matchingMethodsMap: Map<string, string[]>) => {
+        // The overview and system view are source-level pages with no test selection to
+        // move, so a filter change must not navigate away from them.
+        if (isOverview || isSystemView) return;
         if (firstTest && firstTest.id) {
             if (selectedIndex?.id !== firstTest.id) {
                 navigate(`/test/${firstTest.id}`, {replace: true});
@@ -142,6 +158,12 @@ const App = () => {
         }
         setSelectedIndex(null);
         setTestDetail(null);
+    }, [location.pathname, location.search, indices]);
+
+    useEffect(() => {
+        if (location.pathname === '/' && indices.length > 0 && indices[0].sourceId) {
+            navigate(overviewPathFor(location.search, indices[0].sourceId), {replace: true});
+        }
     }, [location.pathname, location.search, indices]);
 
     const sidebarRef = useRef<ImperativePanelHandle>(null);
@@ -399,9 +421,17 @@ const App = () => {
         );
     }, [allTests, commandQuery]);
 
-    const isSystemView = location.pathname === '/system-view';
     const systemViewSourceId = searchParams.get('source') ?? Object.keys(aggregateComponentDiagramsBySource)[0];
     const systemViewDiagram = systemViewSourceId ? aggregateComponentDiagramsBySource[systemViewSourceId] ?? "" : "";
+
+    const overviewPackageDepth = useMemo(() => {
+        const sourceRoot = overviewSourceId ? indices.find(index => index.sourceId === overviewSourceId) : undefined;
+        if (!sourceRoot) return 0;
+        const sourceConfig = (overviewSourceId ? sourceConfigs[overviewSourceId] : undefined) ?? config;
+        const root = sourceConfig.packageDisplayRoot
+            ?? findCommonPackage(collectLeaves([sourceRoot]).map(leaf => leaf.classNode.testClass));
+        return packageDepthFor(sourceConfig.packageDisplay, root);
+    }, [indices, overviewSourceId, sourceConfigs, config]);
 
     const activeSourceBaseUrl = selectedIndex?.sourceId ? (sourceUrls[selectedIndex.sourceId] ?? '.') : '.';
 
@@ -496,6 +526,10 @@ const App = () => {
                                 onEnvChange={setEnvironment}
                                 onSelect={(node, firstMatchingMethod, allMatchingMethods) => {
                                     if (node.id.startsWith('pkg:') || node.id.startsWith('src:')) {
+                                        return;
+                                    }
+                                    if (node.type === 'overview' && node.sourceId) {
+                                        navigate(overviewPathFor(location.search, node.sourceId));
                                         return;
                                     }
                                     if (node.type === 'system-view' && node.sourceId) {
@@ -600,6 +634,7 @@ const App = () => {
                                                     <h1 className="text-[14px] font-black truncate text-neutral-800 dark:text-neutral-100 leading-tight">
                                                         {selectedIndex.displayName}
                                                     </h1>
+                                                    <EpicList epics={testDetail?.epics} testState={selectedIndex.state} />
                                                     <IssueList issues={testDetail?.issues} testState={selectedIndex.state} />
                                                 </div>
                                             </div>
@@ -615,7 +650,24 @@ const App = () => {
                                 </header>
 
                                 <main ref={contentRef} className="flex-1 overflow-y-auto bg-muted/30">
-                                    {isSystemView ? (
+                                    {isOverview && overviewSourceId ? (
+                                        <OverviewPage
+                                            sourceId={overviewSourceId}
+                                            indices={indices}
+                                            searchQuery={searchQuery}
+                                            onSearchChange={onSearchChange}
+                                            packageDepth={overviewPackageDepth}
+                                            sources={overviewSources}
+                                            onSourceChange={(id) => navigate(overviewPathFor(location.search, id))}
+                                            onNavigate={(classId, testMethod) => {
+                                                const params = new URLSearchParams(location.search);
+                                                if (testMethod) params.set('method', testMethod);
+                                                else params.delete('method');
+                                                params.delete('invocation');
+                                                navigate(`/test/${classId}?${params.toString()}`);
+                                            }}
+                                        />
+                                    ) : isSystemView ? (
                                         <SystemViewPage aggregateComponentDiagram={systemViewDiagram}/>
                                     ) : selectedIndex ? (
                                         <div className="p-6 lg:p-4">

@@ -1,6 +1,6 @@
 import {Index, Indices} from "@/types/Index";
 
-const findCommonPackage = (fqcns: string[]): string => {
+export const findCommonPackage = (fqcns: string[]): string => {
     if (fqcns.length === 0) return "";
     const packages = fqcns.map(fqcn => fqcn.split('.').slice(0, -1));
     const shortest = packages.reduce((a, b) => a.length <= b.length ? a : b);
@@ -88,12 +88,13 @@ export const expandProjectChildren = (
     nodes.map(node => {
         if (node.type !== 'project') return node;
         const allChildren = node.children || [];
-        const sysviewChildren = allChildren.filter(c => c.type === 'system-view');
-        const testChildren = allChildren.filter(c => c.type !== 'system-view');
+        const isSynthetic = (c: Index) => c.type === 'overview' || c.type === 'system-view';
+        const syntheticChildren = allChildren.filter(isSynthetic);
+        const testChildren = allChildren.filter(c => !isSynthetic(c));
         return {
             ...node,
             children: [
-                ...sysviewChildren,
+                ...syntheticChildren,
                 ...buildTree(testChildren, packageDisplay, packageDisplayRoot),
             ],
         };

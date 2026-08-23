@@ -1,6 +1,7 @@
 import * as React from "react"
-import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, Network, RefreshCw, Search, X} from "lucide-react"
+import {AlertTriangle, ChevronRight, Diamond, Folder, FolderOpen, Globe, LayoutDashboard, Network, RefreshCw, Search, X} from "lucide-react"
 import {expandProjectChildren} from "@/utils/treeUtils"
+import {filterIndices} from "@/utils/filterIndices"
 import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
 import {SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub,} from "@/components/ui/sidebar"
@@ -13,8 +14,7 @@ import {Kbd, KbdGroup} from "@/components/ui/kbd"
 import {Skeleton} from "@/components/ui/skeleton"
 import type {LoadStatus} from "@/lib/initialLoad"
 import {useConfig} from "@/contexts/ConfigContext"
-import {matchesAnyIssue} from "@/util/issueMatch"
-import {tagMatch} from "@/util/tagMatch"
+import {isFilterTerm, parseQuery} from "@/util/queryMeta"
 import {hasOpenDialog} from "@/util/escapeGuard"
 import {setStateFilter} from "@/util/stateFilterToggle"
 import {useLocation} from "react-router-dom"
@@ -53,7 +53,7 @@ const countChildStates = (node: Index): StateCounts => {
     return countStates(node.children ?? []);
 };
 
-const FILTER_STATES = ['passed', 'failed', 'disabled'] as const;
+const FILTER_STATES = ['passed', 'failed', 'disabled', 'notexecuted'] as const;
 
 const BAR_SEGMENTS = [
     {key: "passed" as const, color: "text-success", bg: "bg-success/5", barCls: "bg-success/80"},
@@ -155,6 +155,18 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
         return Array.from(issues).sort();
     }, [indices]);
 
+    const allEpics = React.useMemo(() => {
+        const epics = new Set<string>();
+        const collect = (nodes: Indices) => {
+            nodes.forEach(n => {
+                (n.epics || []).forEach((e: string) => epics.add(e));
+                if (n.children) collect(n.children);
+            });
+        };
+        collect(indices);
+        return Array.from(epics).sort();
+    }, [indices]);
+
     const allTags = React.useMemo(() => {
         const tags = new Set<string>();
         const collect = (nodes: Indices) => {
@@ -171,7 +183,7 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
 
     const [inputValue, setInputValue] = React.useState("");
     const [showPicker, setShowPicker] = React.useState(false);
-    const [pickerType, setPickerType] = React.useState<'state' | 'issue' | 'tag' | null>(null);
+    const [pickerType, setPickerType] = React.useState<'state' | 'issue' | 'epic' | 'tag' | null>(null);
     const [pickerIndex, setPickerIndex] = React.useState(0);
 
     const pickerListRef = React.useRef<HTMLDivElement>(null);
@@ -202,9 +214,10 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
     const pickerItems = React.useMemo(() => {
         if (pickerType === 'state') return [...states];
         if (pickerType === 'issue') return allIssues;
+        if (pickerType === 'epic') return allEpics;
         if (pickerType === 'tag') return allTags;
         return [];
-    }, [pickerType, states, allIssues, allTags]);
+    }, [pickerType, states, allIssues, allEpics, allTags]);
 
     const handleRemoveBadge = (token: string) => {
         const newQuery = searchQuery
@@ -218,12 +231,7 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
     const handleRemoveText = () => {
         const newQuery = searchQuery
             .split(/\s+/)
-            .filter(p =>
-                (p.startsWith('issue:') && p.length > 6) ||
-                (p.startsWith('state:') && p.length > 6) ||
-                (p.startsWith('tag:') && p.length > 4) ||
-                (p.startsWith('pkg:') && p.length > 4)
-            )
+            .filter(isFilterTerm)
             .join(' ')
             .trim();
         onSearchChange(newQuery);
@@ -237,6 +245,10 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
             setShowPicker(true);
         } else if (val.endsWith('issue:')) {
             setPickerType('issue');
+            setPickerIndex(0);
+            setShowPicker(true);
+        } else if (val.endsWith('epic:')) {
+            setPickerType('epic');
             setPickerIndex(0);
             setShowPicker(true);
         } else if (val.endsWith('tag:')) {
@@ -258,152 +270,12 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
         setTimeout(() => inputRef?.current?.focus(), 0);
     };
 
-    const queryMeta = React.useMemo(() => {
-        const parts = searchQuery.split(/\s+/).filter(Boolean);
-        const issues = parts.filter(p => p.startsWith('issue:') && p.length > 6).map(p => p.slice(6));
-        const states = parts.filter(p => p.startsWith('state:') && p.length > 6).map(p => p.slice(6).toLowerCase());
-        const tags = parts.filter(p => p.startsWith('tag:') && p.length > 4).map(p => p.slice(4));
-        const packages = parts.filter(p => p.startsWith('pkg:') && p.length > 4).map(p => p.slice(4));
+    const queryMeta = React.useMemo(() => parseQuery(searchQuery), [searchQuery]);
 
-        const text = parts.filter(p =>
-            !(p.startsWith('issue:') && p.length > 6) &&
-            !(p.startsWith('state:') && p.length > 6) &&
-            !(p.startsWith('tag:') && p.length > 4) &&
-            !(p.startsWith('pkg:') && p.length > 4)
-        ).join(' ');
-
-        return {text, issues, states, tags, packages};
-    }, [searchQuery]);
-
-    const {filteredIndices, firstMatchingTest, firstMatchingMethod, testMethodMap, matchingMethodsMap} = React.useMemo(() => {
-        const {states, issues, tags, packages, text: committedText} = queryMeta;
-
-        const activeTyping = inputValue.toLowerCase();
-        const typingState = activeTyping.startsWith('state:') ? activeTyping.split(':')[1] : null;
-        const typingIssue = activeTyping.startsWith('issue:') ? activeTyping.split(':')[1] : null;
-        const typingTag = activeTyping.startsWith('tag:') && activeTyping.length > 4 ? activeTyping.slice(4) : null;
-        const typingPkg = activeTyping.startsWith('pkg:') && activeTyping.length > 4 ? activeTyping.slice(4) : null;
-        const typingText = (!typingState && !typingIssue && !typingTag && !typingPkg) ? activeTyping : "";
-
-        const requiredStates = typingState ? [...states, typingState] : states;
-        const requiredPackages = typingPkg ? [...packages, typingPkg] : packages;
-        const requiredIssues = typingIssue ? [...issues, typingIssue] : issues;
-        const requiredTags = new Set(typingTag ? [...tags, typingTag] : tags);
-
-        let firstTest: Index | null = null;
-        let firstMethod: string | null = null;
-        const methodMap = new Map<string, string | null>();
-        const allMatchingMethodsMap = new Map<string, string[]>();
-
-        const filterNode = (node: Index): Index | null => {
-            // Sysview entries are navigation affordances, not tests — always preserve
-            // regardless of search / state / issue filters. Without this short-circuit
-            // they fall through to the `return null` at the bottom because testClass is
-            // '' (so isLeaf is false) and they have no children to recurse into.
-            if (node.type === 'system-view') return node;
-
-            const isLeaf = node.testClass && (!node.children || node.children.every((c: Index) => c.testMethod));
-
-            if (isLeaf) {
-                const nodeName = (node.displayName || "").toLowerCase();
-                const nodeClass = (node.testClass || "").toLowerCase();
-                const nodeState = (node.state || "").toLowerCase();
-                const nodeIssues = (node.issues || []).map((i: string) => i.toLowerCase());
-
-                const matchesText =
-                    (!committedText || nodeName.includes(committedText) || nodeClass.includes(committedText)) &&
-                    (!typingText || nodeName.includes(typingText) || nodeClass.includes(typingText));
-                const matchesPackage = requiredPackages.length === 0 ||
-                    requiredPackages.some(pkg => nodeClass.startsWith(pkg.toLowerCase()));
-
-                const matchesState = requiredStates.length === 0 ||
-                    requiredStates.some(s => nodeState.startsWith(s.toLowerCase()));
-
-                // Class issues...
-                const classMatchesIssue = requiredIssues.length === 0 ||
-                    matchesAnyIssue(nodeIssues, requiredIssues);
-
-                const classMatchesTag = tagMatch(node.tags, requiredTags);
-
-                // If we have state/issue/tag filters, we MUST filter children
-                if (node.children && (requiredStates.length > 0 || requiredIssues.length > 0 || requiredTags.size > 0)) {
-                    const matchingChildren = node.children.filter((child: Index) => {
-                        const childState = (child.state || "").toLowerCase();
-                        const childMatchesState = requiredStates.length === 0 ||
-                            requiredStates.some(s => childState.startsWith(s.toLowerCase()));
-
-                        const childMatchesIssueFilter = requiredIssues.length === 0
-                            ? true
-                            : (classMatchesIssue || matchesAnyIssue(child.issues || [], requiredIssues));
-
-                        const childMatchesTagFilter = requiredTags.size === 0
-                            ? true
-                            : (classMatchesTag || tagMatch(child.tags, requiredTags));
-
-                        return childMatchesState && childMatchesIssueFilter && childMatchesTagFilter;
-                    });
-
-                    if (matchingChildren.length > 0 && matchesText && matchesPackage) {
-                        const matchingMethod = matchingChildren[0]?.testMethod || null;
-                        const allMethods = matchingChildren.map(c => c.testMethod).filter((m): m is string => Boolean(m));
-                        methodMap.set(node.id, matchingMethod);
-                        allMatchingMethodsMap.set(node.id, allMethods);
-                        if (!firstTest) {
-                            firstTest = node;
-                            firstMethod = matchingMethod;
-                        }
-                        return {...node, children: matchingChildren};
-                    }
-                    // If no children match the state/issue filter, don't show this node
-                    return null;
-                }
-
-                // No state/issue/tag filters - use class-level matching
-                if (matchesText && matchesPackage && matchesState && classMatchesIssue && classMatchesTag) {
-                    methodMap.set(node.id, null);
-                    allMatchingMethodsMap.set(node.id, []);
-                    if (!firstTest) firstTest = node;
-                    return node;
-                }
-
-                return null;
-            }
-
-            if (node.children) {
-                const filteredChildren: Indices = node.children
-                    .map((child: Index) => filterNode(child))
-                    .filter((child): child is Index => Boolean(child));
-
-                if (filteredChildren.length > 0) {
-                    const firstChildMethod = filteredChildren[0]?.testMethod || null;
-                    const allMethods = filteredChildren.map(c => c.testMethod).filter((m): m is string => Boolean(m));
-                    if (firstChildMethod && node.id) {
-                        methodMap.set(node.id, firstChildMethod);
-                        allMatchingMethodsMap.set(node.id, allMethods);
-                        if (!firstTest) {
-                            firstTest = node;
-                            firstMethod = firstChildMethod;
-                        }
-                    }
-                    return {...node, children: filteredChildren};
-                }
-            }
-
-            return null;
-        };
-
-        const filtered = indices
-            .map(idx => filterNode(idx))
-            .filter((idx): idx is Index => Boolean(idx));
-
-        return {
-            filteredIndices: filtered,
-            firstMatchingTest: firstTest,
-            firstMatchingMethod: firstMethod,
-            testMethodMap: methodMap,
-            matchingMethodsMap: allMatchingMethodsMap
-        };
-    }, [indices, queryMeta, inputValue]);
+    const {filteredIndices, firstMatchingTest, firstMatchingMethod, testMethodMap, matchingMethodsMap} = React.useMemo(
+        () => filterIndices(indices, queryMeta, inputValue),
+        [indices, queryMeta, inputValue],
+    );
 
     const renderedIndices = React.useMemo(
         () => expandProjectChildren(filteredIndices, packageDisplay, packageDisplayRoot),
@@ -502,6 +374,14 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
                                                     </span>
                                             </Badge>
                                         ))}
+                                        {queryMeta.epics.map(e => (
+                                            <Badge key={e} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800">
+                                                epic:{e}
+                                                <span className="cursor-pointer" onPointerDown={(ev) => { ev.stopPropagation(); ev.preventDefault(); handleRemoveBadge(`epic:${e}`); }}>
+                                                        <X size={10} className="pointer-events-none" />
+                                                    </span>
+                                            </Badge>
+                                        ))}
                                         {queryMeta.tags.map(t => (
                                             <Badge key={t} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-neutral-500/10 text-neutral-700 dark:text-neutral-300 border-neutral-400/60 max-w-[160px]">
                                                 <span className="truncate">tag:{t}</span>
@@ -550,7 +430,7 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
 
                                                 if (e.key === 'Enter' && !showPicker && inputValue.trim() !== "") {
                                                     const val = inputValue.trim();
-                                                    if (val.startsWith('state:') || val.startsWith('issue:') || val.startsWith('tag:')) {
+                                                    if (val.startsWith('state:') || val.startsWith('issue:') || val.startsWith('epic:') || val.startsWith('tag:')) {
                                                         onSearchChange(`${searchQuery} ${val}`.trim());
                                                         setInputValue("");
                                                     }
@@ -586,7 +466,7 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
                             >
                                 <div className="rounded-lg bg-popover p-1">
                                     <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                                        {pickerType === 'state' ? "Select State" : pickerType === 'tag' ? "Select Tag" : "Select Issue"}
+                                        {pickerType === 'state' ? "Select State" : pickerType === 'epic' ? "Select Epic" : pickerType === 'tag' ? "Select Tag" : "Select Issue"}
                                     </div>
                                     <div ref={pickerListRef} className="max-h-[200px] overflow-y-auto">
                                         {pickerItems.length === 0 ? (
@@ -876,6 +756,30 @@ function SystemViewMenuItem({node, onSelect}: {node: Index; onSelect: RecursiveM
     );
 }
 
+// Split out for the same reason as SystemViewMenuItem: only Overview rows
+// subscribe to the router so a URL change doesn't re-render every tree row.
+function OverviewMenuItem({node, onSelect}: {node: Index; onSelect: RecursiveMenuItemProps['onSelect']}) {
+    const location = useLocation();
+    const isActive = location.pathname === '/overview'
+        && new URLSearchParams(location.search).get('source') === node.sourceId;
+    return (
+        <SidebarMenuItem>
+            <SidebarMenuButton
+                size="sm"
+                isActive={isActive}
+                onClick={() => onSelect(node, null, [])}
+                className={cn(
+                    "text-[13px] transition-all",
+                    isActive ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground"
+                )}
+            >
+                <LayoutDashboard className="h-3.5 w-3.5 shrink-0"/>
+                <span>{node.displayName}</span>
+            </SidebarMenuButton>
+        </SidebarMenuItem>
+    );
+}
+
 const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect, selectedId, stateCountsById, testMethodMap, matchingMethodsMap}: RecursiveMenuItemProps) {
     const sourceMetaById = React.useContext(SourceMetaContext);
     const isSelected = selectedId === node.id;
@@ -924,6 +828,10 @@ const RecursiveMenuItem = React.memo(function RecursiveMenuItem({node, onSelect,
 
     if (node.type === 'system-view') {
         return <SystemViewMenuItem node={node} onSelect={onSelect}/>;
+    }
+
+    if (node.type === 'overview') {
+        return <OverviewMenuItem node={node} onSelect={onSelect}/>;
     }
 
     return (

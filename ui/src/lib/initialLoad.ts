@@ -1,7 +1,7 @@
 import {loadJson} from "@/lib/utils";
 import {mergeIndexes, type MergedIndex} from "@/lib/suiteSearch";
 import type {KensaConfig} from "@/contexts/ConfigContext";
-import type {Indices} from "@/types/Index";
+import type {Index, Indices} from "@/types/Index";
 import type {Manifest} from "@/types/Manifest";
 import type {RawSearchIndex} from "@/types/SearchIndex";
 
@@ -48,11 +48,21 @@ export async function loadTreeData(manifest: Manifest): Promise<TreeData> {
         if (sourceDiagram) diagramsBySource[source.id] = sourceDiagram;
         if (sourceIndices.length === 0) continue;
         const tagged = tagWithSourceId(sourceIndices, source.id);
-        // Each source root's first child is a synthetic "System View" entry pointing at
-        // that source's own aggregate component diagram — keeps per-source architectures
+        // Each source root's first children are synthetic "Overview" and "System View"
+        // entries — Overview summarises the source's run, System View points at that
+        // source's own aggregate component diagram — keeping per-source architectures
         // separate in the sidebar tree rather than conflating them under one global view.
+        const overviewNode: Index = {
+            id: `overview:${source.id}`,
+            type: 'overview',
+            displayName: 'Overview',
+            testClass: '',
+            state: 'Passed',
+            sourceId: source.id,
+        };
         const children: Indices = sourceDiagram
             ? [
+                overviewNode,
                 {
                     id: `sysview:${source.id}`,
                     type: 'system-view',
@@ -63,7 +73,7 @@ export async function loadTreeData(manifest: Manifest): Promise<TreeData> {
                 },
                 ...tagged,
             ]
-            : tagged;
+            : [overviewNode, ...tagged];
         roots.push({
             id: `src:${source.id}`,
             type: 'project',

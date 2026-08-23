@@ -29,6 +29,12 @@
     --failure: 346 72% 47%;
     --disabled: 35 80% 44%;
 
+    --chart-1: 221 83% 53%;
+    --chart-2: 262 83% 58%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 43 96% 56%;
+    --chart-5: 330 81% 60%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -63,6 +69,12 @@
     --success: 158 65% 48%;
     --failure: 346 68% 58%;
     --disabled: 35 75% 52%;
+
+    --chart-1: 217 91% 60%;
+    --chart-2: 263 70% 66%;
+    --chart-3: 199 95% 60%;
+    --chart-4: 43 96% 64%;
+    --chart-5: 330 85% 68%;
 
     --sidebar-background: 0 0% 6.5%;
     --sidebar-foreground: 240 4.8% 90%;

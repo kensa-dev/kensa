@@ -64,6 +64,17 @@ describe('expandProjectChildren', () => {
         expect(tree[0].children![0].type).toBe('system-view');
     });
 
+    it('keeps overview ahead of system-view and both ahead of packages', () => {
+        const tree = expandProjectChildren([{
+            id: 'src:1', type: 'project', displayName: 'P', testClass: '', state: 'Passed', children: [
+                {id: 'ov:1', type: 'overview', displayName: 'Overview', testClass: '', state: 'Passed'},
+                {id: 'sv:1', type: 'system-view', displayName: 'System View', testClass: '', state: 'Passed'},
+                {id: 'a.b.FooTest', displayName: 'FooTest', testClass: 'a.b.FooTest', state: 'Passed'},
+            ],
+        }], 'Full');
+        expect(tree[0].children!.map(c => c.type ?? 'pkg')).toEqual(['overview', 'system-view', 'package']);
+    });
+
     // Regression test for collapse-all only collapsing project roots: the
     // package nodes were built per-render inside RecursiveMenuItem so their
     // 'pkg:*' ids never reached collectFolderIds. Pre-expanding here is what

@@ -26,7 +26,7 @@ afterEach(() => {
 });
 
 describe('loadTreeData', () => {
-    it('builds a tagged root with a System View child when an aggregate diagram is present', async () => {
+    it('builds a tagged root with Overview and System View children when an aggregate diagram is present', async () => {
         vi.stubGlobal('fetch', fetchByPath({
             'configuration.json': () => json(config),
             'indices.json': () => json({indices: [suiteIndex], aggregateComponentDiagram: '<svg/>'}),
@@ -39,11 +39,25 @@ describe('loadTreeData', () => {
         const root = result.roots[0];
         expect(root.id).toBe('src:projA');
         expect(root.displayName).toBe('Configured Title');
-        expect(root.children?.[0]).toMatchObject({type: 'system-view', sourceId: 'projA'});
-        expect(root.children?.[1]).toMatchObject({id: 'projA::com.example.FooTest', sourceId: 'projA'});
+        expect(root.children?.[0]).toMatchObject({type: 'overview', sourceId: 'projA'});
+        expect(root.children?.[1]).toMatchObject({type: 'system-view', sourceId: 'projA'});
+        expect(root.children?.[2]).toMatchObject({id: 'projA::com.example.FooTest', sourceId: 'projA'});
         expect(result.diagramsBySource['projA']).toBe('<svg/>');
         expect(result.titles['projA']).toBe('Configured Title');
         expect(result.urls['projA']).toBe('sources/projA');
+    });
+
+    it('leads with an Overview child even without an aggregate diagram', async () => {
+        vi.stubGlobal('fetch', fetchByPath({
+            'configuration.json': () => json(config),
+            'indices.json': () => json({indices: [suiteIndex]}),
+        }));
+
+        const result = await loadTreeData(manifestFor('projA'));
+
+        const root = result.roots[0];
+        expect(root.children?.[0]).toMatchObject({type: 'overview', sourceId: 'projA'});
+        expect(root.children?.[1]).toMatchObject({id: 'projA::com.example.FooTest', sourceId: 'projA'});
     });
 
     it('fetches configuration and indices in parallel', async () => {
