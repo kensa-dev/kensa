@@ -2,40 +2,38 @@
 
 ### v0.9.0
 
-The API freeze ahead of 1.0. The supported surface is now sealed by the compiler rather than by convention, so that 1.0 can commit to semantic versioning over something we actually mean. See `COMPATIBILITY.md` for the full policy and support matrix.
+The API freeze ahead of 1.0. The supported surface is now sealed by the compiler rather than by convention. See `COMPATIBILITY.md` for the policy and support matrix.
 
 Added:
-  - **`@Epic`.** Class or method level, rendered beside issues and filterable with `epic:` in the report. (#194)
-  - **Report overview page.** A landing view per source with result, tag, package, epic/issue, duration, failure, interaction and density panels, every segment a filter. Includes wall clock vs total elapsed so you can see what parallel execution saves. (#195)
-  - **`indices.json` gained per-test `epics`, `timing`, `interactions`, `participants`, `assertions` and `expandables` fields**, additive alongside what was already there.
+  - **`@Epic`.** Class or method level, rendered beside issues, filterable with `epic:` in the report. (#194)
+  - **Report overview page.** A landing view per source with result, tag, package, epic/issue, duration, failure, interaction and density panels, every segment a filter. Shows wall clock vs total elapsed so you can see what parallel execution saves. (#195)
+  - **`indices.json` gains per-test `epics`, `timing`, `interactions`, `participants`, `assertions` and `expandables` fields**, additive.
+  - **Replay links on issue badges.** When a report is served with a `replayUrl` in its manifest, issue badges gain a replay glyph and a right-click menu offering the issue tracker and Replay filtered to that issue. Reports without the key render exactly as before.
+  - **`@KensaInternalApi` and `@KensaExperimental`.** The first marks plumbing that is public only because Kensa spans Gradle modules: do not call it. The second marks features still being designed and open to feedback, currently the org-flow surfaces only.
+  - **`COMPATIBILITY.md`.** What semver covers, what the two markers exclude, and the support matrix of Kensa version against required Kotlin and minimum JDK.
 
 Breaking:
-  - **Implementation packages are now `internal`.** The parser, runtime, state machine, sentence scanner, output writers and utility code in `dev.kensa.parse`, `dev.kensa.state`, `dev.kensa.output`, `dev.kensa.service`, `dev.kensa.util` and the implementation parts of `dev.kensa.context` can no longer be imported by Kotlin consumers. Nothing in the documented API is affected. Note that `internal` is a Kotlin concept with no bytecode equivalent, so Java consumers are not blocked from these types, but they are equally unsupported.
-  - **Upgrade core and the framework adapters together.** Kotlin mangles the JVM names of `internal` functions, so mixing a 0.9.0 core with an older `kensa-junit5` / `kensa-testng` / `kensa-kotest` can fail at runtime rather than at compile time.
-  - **`findAnnotationNames` moved.** Now a top-level `dev.kensa.parse.kotlin.findAnnotationNames` instead of a member of `KotlinParserDelegate.Companion`, which is itself now `internal`. Affects custom framework adapters only.
-  - **`@KensaInternalApi` is an error, not a warning.** Code reaching for the integration SPI (`FrameworkDescriptor`, `KensaLifecycleManager`, the invocation-context hooks) must now opt in explicitly with `@file:OptIn(dev.kensa.KensaInternalApi::class)`.
-  - **`Configuration.issueTrackerUrl` is nullable.** It defaulted to a `http://empty` sentinel and is now `URL?` defaulting to `null`. Reading the property in Kotlin needs a null check; `withIssueTrackerUrl` is unchanged. See the fix below for why the sentinel had to go.
-
-New features:
-  - **Two opt-in markers with opposite meanings.** `@KensaInternalApi` marks plumbing that is public only because Kensa's adapters and compiler plugin span Gradle modules: do not call it. `@KensaExperimental` marks features still being designed and open to feedback, currently the org-flow surfaces only. Opting in to one does not opt you in to the other.
-  - **`COMPATIBILITY.md`.** States what semver covers, what the two markers exclude, and the support matrix of Kensa version against required Kotlin and minimum JDK, including why a Kotlin bump is a documented compatibility note rather than an API-major.
+  - **Implementation packages are now `internal`**: `dev.kensa.parse`, `dev.kensa.state`, `dev.kensa.output`, `dev.kensa.service`, `dev.kensa.util` and the implementation parts of `dev.kensa.context`. The documented API is unaffected. `internal` has no bytecode equivalent, so Java consumers are not blocked from these types, but they are equally unsupported.
+  - **Upgrade core and the framework adapters together.** Kotlin mangles the JVM names of `internal` functions, so a 0.9.0 core with an older `kensa-junit5` / `kensa-testng` / `kensa-kotest` can fail at runtime rather than at compile time.
+  - **`findAnnotationNames` moved** to a top-level `dev.kensa.parse.kotlin.findAnnotationNames`; `KotlinParserDelegate.Companion` is now `internal`. Affects custom framework adapters only.
+  - **`@KensaInternalApi` is an error, not a warning.** The integration SPI (`FrameworkDescriptor`, `KensaLifecycleManager`, the invocation-context hooks) now requires `@file:OptIn(dev.kensa.KensaInternalApi::class)`.
+  - **`Configuration.issueTrackerUrl` is now `URL?`** defaulting to `null`, replacing a `http://empty` sentinel. Reading the property in Kotlin needs a null check; `withIssueTrackerUrl` is unchanged.
 
 Fixes:
-  - **Parallel invocations of the same test method no longer lose data.** Every invocation of a test method shares one `TestMethodContainer`, which held plain non-concurrent collections. A parameterised test running its invocations in parallel could lose an invocation's context between starting and ending it, failing with a `NoSuchElementException` on the invocation's own id, or a `NullPointerException` reading the missing context. Both collections are now concurrent.
-  - **Registered value renderers are no longer bypassed for parameterised test arguments.** An argument relying on the default `Object.toString()` was replaced by its display-name label before renderers ran, so a `ValueRenderer` registered for that type never saw it. A registered renderer is now treated as evidence the value is not noise, and the label substitution is skipped (#189).
-  - **Empty string parameters are distinguishable from null.** An empty string parameter displayed as `null` in the invocation parameter matrix, so a test passing `""` and one passing `null` looked identical. Empty strings now render as `""` (#185, thanks to Michael Orr).
-  - **An unconfigured issue tracker no longer renders dead links.** `issueTrackerUrl` defaulted to a `http://empty` sentinel that the result writer emitted unconditionally, and the report guarded against it with a falsy check that a non-empty sentinel passes. A project using `@Issue` without configuring a tracker got a clickable badge pointing at `http://empty/PROJ-123`, and the plain-badge fallback was unreachable. The property is now unset by default and omitted from the report config, and reports written by earlier versions are recognised by their sentinel and stop linking too (#191).
-  - **`kensa.disable.output` honours every value.** The property was read as `isNotBlank() && !toBoolean()`, so anything `String.toBoolean()` did not recognise left output enabled. A bare flag and `=true` disabled it as documented, while `=1`, `=yes` and every other value silently did nothing against docs promising that any value would disable. Setting the property now disables output whatever the value, with an explicit `=false` as the escape hatch for a name that is already a negative (#192).
-  - **Fixtures and outputs resolve inside polling blocks.** Multi-assertion `thenEventually { }` and `thenContinually { }` blocks run each check on another thread, which lost the test context, so a `by fixtures(...)` delegate or a `ThenSpec` reading captured outputs silently resolved to nothing inside a block while working outside one. Hamkrest's single-assertion `thenEventually` lost it too, via Awaitility (#190).
+  - **Parallel invocations of the same test method no longer lose data.** The shared `TestMethodContainer` held non-concurrent collections, so parallel parameterised invocations could fail with a `NoSuchElementException` or `NullPointerException`. Both collections are now concurrent.
+  - **Registered value renderers are no longer bypassed for parameterised test arguments.** The display-name label substitution ran before renderers; a registered `ValueRenderer` now wins (#189).
+  - **Empty string parameters render as `""`** instead of `null` in the invocation parameter matrix (#185, thanks to Michael Orr).
+  - **An unconfigured issue tracker no longer renders dead links.** The sentinel default made `@Issue` badges link to `http://empty/PROJ-123`. The property is now omitted from the report config when unset, and reports written by earlier versions stop linking too (#191).
+  - **`kensa.disable.output` honours every value.** Only a bare flag or `=true` disabled output; `=1`, `=yes` and the rest silently did nothing. Any value now disables, with `=false` as the escape hatch (#192).
+  - **Fixtures and outputs resolve inside polling blocks.** Multi-assertion `thenEventually { }` and `thenContinually { }` run each check on another thread, which lost the test context, so `by fixtures(...)` delegates and `ThenSpec` outputs resolved to nothing inside a block. Hamkrest's single-assertion `thenEventually` lost it too, via Awaitility (#190).
 
 Changed:
-  - **`keyWords` is now `keywords`.** The DSL spelled it `keyWords` while the builder spelled it `withKeywords`, for the same call. The DSL now offers `keywords`, and `keyWords` remains as a deprecation (#193).
-  - **The Java builder reaches everything the Kotlin DSL does.** `KensaConfigurator` gains `withTitleText`, `withAntlrPredicationMode` and `withAntlrErrorListenerDisabled`, which were settable only from the DSL. Freezing an incomplete facade at 1.0 would have been worse than freezing a complete one (#193).
-  - **`sectionOrder` validates against the `Section` enum.** It checked for a hardcoded size of three, so adding a section would have silently broken the rule, and it threw an `IllegalArgumentException` naming nothing. It now requires each `Section` exactly once and reports the order it rejected (#193).
-  - **Tab services are supported API.** `Configuration.registerTabService` and `KensaTabServices` were tagged experimental despite being documented, so registering a log-tab service demanded an opt-in. They are now part of the stable surface and need none.
-  - **`TestContext` and `TestContextHolder` are stable.** The thread-local accessor pair that application code uses is now documented as frozen rather than disclaimed in prose.
-  - **Deriving from a `by fixtures(...)` property is documented as a trap.** Only the delegated property is re-read. A `val` initialised from one is evaluated once at construction, and a `by lazy` one at first access, so on an object shared across invocations, which is exactly what the delegate exists to support, either freezes whichever invocation got there first and every later invocation silently reads a stale value. Derive with `get()`, or with a secondary fixture when the derivation should appear in the report.
-
+  - **`keyWords` is now `keywords`** in the DSL, matching the builder's `withKeywords`. `keyWords` remains as a deprecation (#193).
+  - **The Java builder reaches everything the Kotlin DSL does.** `KensaConfigurator` gains `withTitleText`, `withAntlrPredicationMode` and `withAntlrErrorListenerDisabled` (#193).
+  - **`sectionOrder` validates against the `Section` enum.** Each `Section` exactly once, and the error reports the rejected order (#193).
+  - **Tab services are supported API.** `Configuration.registerTabService` and `KensaTabServices` no longer need an experimental opt-in.
+  - **`TestContext` and `TestContextHolder` are stable**, documented as frozen rather than disclaimed in prose.
+  - **Deriving from a `by fixtures(...)` property is documented as a trap.** Only the delegated property is re-read; a `val` or `by lazy` initialised from one goes stale across invocations. Derive with `get()`, or with a secondary fixture when the derivation should appear in the report.
 ### v0.8.16
 
 New features:
