@@ -99,9 +99,10 @@ The required Kotlin version and the minimum JDK are a **separate support axis** 
 API-semver promise. A Kotlin bump is published as a **documented compatibility note**
 (a minor release with a caveat), **not** an API-major — see the binary-lock note below.
 
-| Kensa | Required Kotlin (consumer) | Min JDK | Test frameworks verified |
-|-------|----------------------------|---------|--------------------------|
-| 0.8.x | 2.4.10                     | 17      | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.1.x) |
+| Kensa | Required Kotlin (consumer) | Min JDK | Min kotlinx-coroutines (runtime) | Test frameworks verified |
+|-------|----------------------------|---------|----------------------------------|--------------------------|
+| 0.9.x | 2.4.10                     | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.1.x) |
+| 0.8.x | 2.4.10                     | 17      | none documented                  | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.1.x) |
 
 Notes:
 - **Min JDK 17** for the published modules (`core`, `frameworks/*`, `assertions/*`,
@@ -109,6 +110,14 @@ Notes:
   it is not a published artifact.)
 - **Required Kotlin 2.4.10**: consumers must compile with Kotlin 2.4.10. This is driven by
   the compiler plugin (below), not merely by stdlib usage.
+- **Min kotlinx-coroutines 1.11 (0.9.x)**: Kensa is built against kotlinx-coroutines
+  1.11, whose `runBlocking` has a new JVM binary signature, so an older coroutines on the
+  **runtime classpath** fails Kensa's polling assertions with
+  `NoSuchMethodError: kotlinx.coroutines.BuildersKt.runBlockingK`. Kensa pulls 1.11 in
+  transitively; the floor only bites when other dependency management pins coroutines
+  lower. Spring Boot's BOM does exactly that (1.8.x as of Boot 3.5) — override the
+  managed version: `extra["kotlin-coroutines.version"] = "1.11.0"` in Gradle, or the
+  `kotlin-coroutines.version` property in Maven.
 
 ## Why a Kotlin bump is a compatibility note, not an API-major
 
