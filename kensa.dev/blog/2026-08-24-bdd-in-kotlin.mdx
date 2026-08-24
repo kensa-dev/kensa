@@ -1,0 +1,169 @@
+---
+slug: bdd-in-kotlin
+title: "BDD in Kotlin: The Options, and How to Choose"
+description: A short, biased guide to Given-When-Then acceptance testing on the JVM, and why the report your test produces matters more than the syntax you write it in.
+authors:
+  - name: Paul Brooks
+    title: Creator of Kensa
+    url: https://github.com/kensa-dev
+tags: [kotlin, java, bdd, testing, acceptance-testing, cucumber, kotest, junit, serenity]
+---
+
+import BlogImage from '@site/src/components/BlogImage';
+
+I've been writing acceptance tests on the JVM since 2009. Concordion first, then Cucumber on the teams around me, then Yatspec, and eventually I wrote my own.
+
+Yatspec's trick was that it read the test method itself. You wrote:
+
+```java
+given(orchestration.sends(anOrder));
+```
+
+and the report showed:
+
+> **Given** orchestration sends an order
+
+No feature file, no step definitions, no glue. The test *was* the sentence.
+
+That's the idea I've been chasing ever since, and it's why I wrote [Kensa](https://kensa.dev). So this is a biased guide. It's also a short one.
+
+{/* truncate */}
+
+## The question that decides it
+
+Everyone starts by comparing syntax. That's the wrong place to start.
+
+The question is: **who reads the output, and do they have to?**
+
+If the answer is "the developers", don't add a framework. Kotest or JUnit with well-named tests does everything you want, and anything layered on top is costing you time for nothing.
+
+If the answer is "a tester, an analyst or a product owner, and they'll make a decision from it", you need an artefact for someone who can't read Kotlin. That's a different problem, and it's the one every tool below is trying to solve.
+
+## The field, briefly
+
+**Cucumber and JBehave.** Scenarios in Gherkin, step definitions matched to the text. The feature file is readable by anyone and can exist before the code, which is real value when scenarios are genuinely written together up front. The cost is three things to maintain instead of one, bound by text your IDE can't refactor. Rename a method and the `.feature` file doesn't follow. And the report shows you the Gherkin, not what ran.
+
+**Kotest `BehaviorSpec`.** Given-When-Then with no extra dependency, no separate files, and refactoring works because it's all just code. For tests developers read it's the right answer and I use it myself. The output is a test result, which is exactly no use to a product owner.
+
+**Spek.** Kotlin-native, Gherkin-shaped DSL. Last release was 2.0.19 in August 2022. Fine if you're on it.
+
+**JGiven.** Readable text derived from method names, so refactoring keeps them in sync. That instinct is correct, and it's the same one behind Yatspec and Kensa. The cost is stage classes: every scenario needs Given, When and Then defined as separate types, and a method name can't carry a runtime value.
+
+**Serenity BDD.** The closest to what Kensa is for, and the one I haven't used in anger. It generates a substantial report aimed at the same reader, with results by requirement and screenshots through the run. The cost is how much framework you take on, most of it WebDriver and Screenplay, and a report that's static once written.
+
+**Concordion.** Where I started. The specification is a document written for the reader, which is a genuinely different artefact and the thing the rest of the field misses.
+
+Every one of those produces something a person can read. None of them produces something a person can *ask a question of*, and that gap is most of why I kept going.
+
+## "But our analysts write the specifications"
+
+This is the argument I hear most often for Cucumber, and for years I thought it settled the matter.
+
+The assumption underneath it is that if non-developers write Given-When-Then, they have to write it somewhere the test tooling can read. That isn't true. Think about where those sentences actually get written on your project. It's the ticket. Someone writes acceptance criteria in Jira as Given/When/Then, because that's where the work is described and that's the tool the business already lives in. Nobody opens the repository to write a `.feature` file. If they do, it's a developer typing up what the ticket already said.
+
+So the specification exists, and it's already somewhere shared and readable. What Gherkin adds is a second copy of it in your source tree, the step definitions to bind it, and the job of keeping all three in agreement.
+
+Close the loop instead. The ticket's Given/When/Then gets implemented as the test, in the same words, carrying the reference:
+
+```kotlin
+@Issue("PROJ-42")
+@Test
+fun `refund is processed within 24 hours`() {
+    given(anOrderPaidBy(card))
+
+    whenever(aRefundIsRequested())
+
+    then(theRefund(), isProcessedWithin(24.hours))
+}
+```
+
+Set `issueTrackerUrl` once and the report badge links back to the ticket. The ticket links forward to the report. An analyst opens what they wrote, clicks through, and sees what the system actually did.
+
+## Outside in
+
+Kensa is built for acceptance tests. Not unit tests with better names. The system under test is a deployed application or a set of services, and the test sits outside it. You push a message in, you wait, and you verify what came back and what the system did on the way.
+
+That means no special build. No test profile exposing a generated key so an assertion can find it, no reaching into a repository to check a row landed. If the only way to observe something is from inside the application, the test doesn't get to see it either, which is also the position you're in when it misbehaves in production.
+
+Testing that way makes the report harder to build and far more useful. The evidence worth showing isn't the test's own variables, it's the traffic: the request that went in, the messages that crossed between services, their payloads, headers and queue names, and the response that came back.
+
+<BlogImage src="/img/clearwave-screen-1.png" alt="Kensa report showing Given-When-Then sentences alongside a sequence diagram built from the messages captured between services" />
+
+Nothing in that diagram was drawn by hand or declared anywhere. It's the six interactions the test observed crossing between the customer, the service under test and its two suppliers.
+
+Outside in includes a browser, since a click is as external as a queue message. Kensa puts Playwright or Selenium behind a driver-agnostic user object, so tests read as `theUser.submitsTheApplication()` rather than as selectors, and labelled screenshots collect into their own tab. And if the thing outside your test is a Spring service, the Spring Boot starter takes the wiring: one annotation for the boilerplate, `kensa.*` properties from `application.yml`, and automatic capture of MockMvc, WebTestClient, `RestTemplate` and `WebClient` traffic.
+
+## What a test looks like
+
+```kotlin
+class CheckoutTest : KensaTest, WithKotest {
+
+    @RenderedValue
+    private val itemCount = 3
+
+    private val checkout = CheckoutService()
+    private lateinit var basket: Basket
+    private lateinit var order: Order
+
+    @Test
+    fun `customer checks out a full basket`() {
+        given(aBasketOf(itemCount))
+
+        whenever(theCustomerChecksOut())
+
+        then(theOrder()) { status shouldBe Created }
+    }
+
+    private fun aBasketOf(count: Int) = Action<GivensContext> {
+        basket = Basket.of(count)
+    }
+
+    private fun theCustomerChecksOut() = Action<ActionContext> {
+        order = checkout.submit(basket)
+    }
+
+    private fun theOrder() = StateCollector { order }
+}
+```
+
+That's the whole file. Kensa parses it at runtime and renders those three lines as sentences with the real values substituted in, so the report shows what the fixtures actually produced on this run rather than the names of the variables that held them.
+
+That example is deliberately minimal. Constructing `CheckoutService()` in the test keeps it to one readable file, and it is not how you would run this for real. In a working acceptance suite the service is deployed, its collaborators are stubs running as singletons in the environment, and the test reaches all of them over the wire.
+
+Because the report is generated rather than written, you can interrogate it. Open a captured message and read the payload:
+
+<BlogImage src="/img/clearwave-screen-2.png" alt="A captured supplier response opened in the Kensa report, showing the full JSON payload with search and formatting controls" />
+
+Collapse the assertions you don't care about. Follow a rendered value back to the fixture that produced it. Filter to the tests touching the thing you're chasing. There's one artefact, it can't drift from the code, and refactoring just works.
+
+Zoom out and the same run reads as a whole: what passed, where the time went, and which services did the talking.
+
+<BlogImage src="/img/clearwave-overview.png" alt="Kensa overview page showing run timing, results, results by package, tests by duration, slowest tests, interactions by participant and specification density" />
+
+The participants panel is the one no other tool has an equivalent for. Five services, 260 messages captured, and the shape of who talks to whom, none of it declared anywhere. It is just the traffic the tests observed, counted.
+
+Every screenshot here is from the [Clearwave example report](https://kensa-dev.github.io/clearwave-example), which is published and live. Go and click around it rather than taking my word for any of this.
+
+There's more machinery here than in a test library, and it's opinionated about structure. It also doesn't have Cucumber's twenty years of Stack Overflow answers.
+
+The compiler plugin sounds like more of that than it is. It's Kotlin only, Java capture goes through the runtime instead, the Gradle plugin applies it for you, and you only need it for the richer capture: `@RenderedValue` substitution and expandable sentences, parameterised ones included.
+
+## So which one
+
+**Only developers read it.** Kotest `BehaviorSpec` or plain JUnit. Don't add a framework.
+
+**You're testing a deployed system from outside it.** Kensa. Services exchanging messages, no test hooks in the application, the report assembled from the traffic.
+
+**Non-developers write the scenarios.** Kensa, and this is the case people get wrong most often. Implement the ticket's Given/When/Then as the test, link the two with `@Issue`, skip the feature file. The only version that genuinely needs Gherkin is one where non-developers execute the features themselves, which is rarer than the marketing suggests.
+
+**You're already deep in Cucumber and want a better report.** Serenity is the shortest path from where you're standing.
+
+**You want a hand-authored document.** Concordion, if static is genuinely what you want.
+
+The thing I'd push back on hardest is the assumption that BDD means Gherkin. It doesn't, and it never did. Gherkin is one way of getting a readable specification, and a good one if a non-developer is holding the pen. If nobody outside your team ever writes a `.feature` file, and on most teams I've seen nobody does, you're paying the whole cost of the format for none of its benefit.
+
+Write the test once. Make the report readable. That's the whole idea.
+
+---
+
+*Kensa is open source. The [Kotlin quickstart](https://kensa.dev/docs/quickstart/kotlin-quickstart) takes about five minutes.*
