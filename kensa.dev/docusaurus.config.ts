@@ -72,6 +72,8 @@ const config: Config = {
         blog: {
           // Drives the /blog listing <title>; the default is a bare "Blog".
           blogTitle: 'Kensa Blog — BDD & Testing for the JVM',
+          // Drives the /blog listing meta description; the default is empty.
+          blogDescription: 'Writing readable Given-When-Then tests for Kotlin and Java — BDD without Gherkin, feature files or step definitions.',
           showReadingTime: true,
           blogSidebarTitle: 'All posts',
           blogSidebarCount: 'ALL',

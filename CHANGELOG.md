@@ -14,7 +14,7 @@ Added:
 
 Breaking:
   - **Implementation packages are now `internal`**: `dev.kensa.parse`, `dev.kensa.state`, `dev.kensa.output`, `dev.kensa.service`, `dev.kensa.util` and the implementation parts of `dev.kensa.context`. The documented API is unaffected. `internal` has no bytecode equivalent, so Java consumers are not blocked from these types, but they are equally unsupported.
-  - **Upgrade core and the framework adapters together.** Kotlin mangles the JVM names of `internal` functions, so a 0.9.0 core with an older `kensa-junit5` / `kensa-testng` / `kensa-kotest` can fail at runtime rather than at compile time.
+  - **Upgrade core and the framework adapters together.** Kotlin mangles the JVM names of `internal` functions, so a 0.9.0 core with an older `kensa-junit5` / `kensa-testng` / `kensa-kotest` can fail at runtime rather than at compile time. **Use `kensa-bom` and this cannot happen** — it pins every Kensa artifact to a single version, so a partial upgrade is not expressible. The quickstarts on [kensa.dev](https://kensa.dev/docs/quickstart/kotlin-quickstart) show it for Gradle and Maven.
   - **`findAnnotationNames` moved** to a top-level `dev.kensa.parse.kotlin.findAnnotationNames`; `KotlinParserDelegate.Companion` is now `internal`. Affects custom framework adapters only.
   - **`@KensaInternalApi` is an error, not a warning.** The integration SPI (`FrameworkDescriptor`, `KensaLifecycleManager`, the invocation-context hooks) now requires `@file:OptIn(dev.kensa.KensaInternalApi::class)`.
   - **`Configuration.issueTrackerUrl` is now `URL?`** defaulting to `null`, replacing a `http://empty` sentinel. Reading the property in Kotlin needs a null check; `withIssueTrackerUrl` is unchanged.

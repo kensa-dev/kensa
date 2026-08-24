@@ -1,5 +1,7 @@
 ---
 sidebar_position: 4
+title: Test Tags & Filtering in Kensa Reports
+sidebar_label: Tags
 description: Surface framework-native tag annotations (JUnit @Tag, Kotest @Tags, TestNG groups) as badges and a multi-select sidebar filter in the Kensa report.
 ---
 

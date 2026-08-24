@@ -4,11 +4,21 @@
 
 **Kensa** is a BDD testing framework for Kotlin and Java. Write Given-When-Then tests directly in code — no Gherkin files, no step definitions. Kensa parses your test source at runtime to produce rich HTML reports and sequence diagrams.
 
-Check out the [documentation](https://kensa.dev) for quickstarts, API reference, and examples. See the [roadmap](https://kensa.dev/docs/roadmap) for what's coming in v0.7 and v0.8.
+Check out the [documentation](https://kensa.dev) for quickstarts, API reference, and examples. See the [roadmap](https://kensa.dev/docs/roadmap) for the road to 1.0 and what follows it.
 
 | Write this… | …get this |
 |---|---|
 | ![Kensa test written in Kotlin](kensa.dev/static/img/code-example.png) | ![Kensa generated HTML report with sequence diagram](kensa.dev/static/img/report-example.png) |
+
+## BDD in Kotlin and Java — without Gherkin
+
+Most JVM testing tools produce output for the person who wrote the test. Kensa produces output for
+everyone else. Testers, analysts and product owners read a Kensa report to get an honest account of
+what an application actually does — and it is honest because it is generated from the test source
+that ran, not from a document maintained alongside it.
+
+That is the whole idea: keep the readable specification, drop the Gherkin file, the step definitions
+and the drift between them.
 
 ## Features
 
@@ -37,6 +47,11 @@ Because everything is plain code, your IDE's refactoring tools work across the f
 
 Kensa is the right fit if your team writes and owns the tests in code and wants reports that stay honest to what is actually being tested.
 
+It is not trying to replace your unit-testing tools. Kotest's `BehaviorSpec` and Spek give you
+Given-When-Then structure for unit and integration tests, and they are good at it — reach for them
+there. Kensa earns its place when someone who cannot read the code needs to understand what the
+system does.
+
 ## Getting Started
 
 Add the dependency for your test framework:
@@ -44,17 +59,19 @@ Add the dependency for your test framework:
 ```kotlin
 // build.gradle.kts
 dependencies {
-    testImplementation("dev.kensa:kensa-junit:<version>")   // JUnit 5 & 6
-    // or
-    testImplementation("dev.kensa:kensa-kotest:<version>")  // Kotest runner
+    // The BOM lines up every Kensa artifact on one version — always use it.
+    testImplementation(platform("dev.kensa:kensa-bom:<version>"))
 
-    // Assertions bridge (pick one or more)
-    testImplementation("dev.kensa:kensa-kotest:<version>")
-    testImplementation("dev.kensa:kensa-assertj:<version>")
+    // Pick your test framework
+    testImplementation("dev.kensa:kensa-framework-junit5")   // or -junit6, -kotest, -testng
+
+    // Pick one or more assertions bridges
+    testImplementation("dev.kensa:kensa-assertions-assertj") // or -kotest, -hamcrest, -hamkrest
 }
 ```
 
-Find the latest version on the [releases page](https://github.com/kensa-dev/kensa/releases).
+`kensa-core` arrives transitively — you don't declare it. Find the latest version on the
+[releases page](https://github.com/kensa-dev/kensa/releases).
 
 See the [Kotlin quickstart](https://kensa.dev/docs/quickstart/kotlin-quickstart) or [Java quickstart](https://kensa.dev/docs/quickstart/java-quickstart) for a full setup walkthrough.
 
