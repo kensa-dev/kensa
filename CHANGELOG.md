@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v0.9.1
+
+Fixes:
+  - **`TestContextUtil.withTestContext` is public again.** The 0.9.0 freeze made `TestContextUtil` and `TestContextRunner` `internal`, breaking test projects that use `withTestContext` as the setup bridge predating `SetupStep`. Both are restored as public, gated behind `@KensaInternalApi` (opt-in error) and deprecated in favour of `SetupStep`. Existing consumers opt in with `@file:OptIn(dev.kensa.KensaInternalApi::class)` or `-opt-in=dev.kensa.KensaInternalApi` in the build (#208).
+
 ### v0.9.0
 
 The API freeze ahead of 1.0. The supported surface is now sealed by the compiler rather than by convention. See `COMPATIBILITY.md` for the policy and support matrix.
