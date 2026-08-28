@@ -71,7 +71,8 @@ func resolveDir(cwd, spec string) (string, error) {
 // expand turns a directory into the bundles it contains: itself for a single
 // bundle, or one per source for a site-mode root.
 func expand(dir string) ([]bundleRef, error) {
-	if fileExists(filepath.Join(dir, "indices.json")) {
+	shape := probe(dir)
+	if shape.hasIndices() || shape.hasMarker {
 		return []bundleRef{{Dir: dir}}, nil
 	}
 
@@ -98,7 +99,13 @@ func expand(dir string) ([]bundleRef, error) {
 	if !isDir(dir) {
 		return nil, fmt.Errorf("%s is not a readable directory", dir)
 	}
-	return nil, fmt.Errorf("%s is not a Kensa output directory: expected indices.json (a test bundle), or manifest.json (a site-mode root)", dir)
+	// Kensa before 0.9.2 writes no run.json, so a bundle mid-run is results/
+	// with nothing else. Only a non-empty results/ counts: a stray empty
+	// directory of that name is not a bundle.
+	if shape.isBundle() {
+		return []bundleRef{{Dir: dir}}, nil
+	}
+	return nil, fmt.Errorf("%s is not a Kensa output directory: expected indices.json or run.json (a test bundle), or manifest.json (a site-mode root)", dir)
 }
 
 // sourceLabels names the bundles searched, for error messages.

@@ -1,0 +1,928 @@
+{
+ "testClass": "feature.migrate.StartMigrateOutHappyPathTest",
+ "displayName": "Start Migrate Out Happy Path Test",
+ "state": "Failed",
+ "notes": null,
+ "packageName": "feature.migrate",
+ "issues": [
+  "OSS-871"
+ ],
+ "tags": [],
+ "tests": [
+  {
+   "elapsedTime": "1 S",
+   "testMethod": "handlesFastweb",
+   "displayName": "Handles Fastweb",
+   "issues": [],
+   "tags": [],
+   "state": "Failed",
+   "autoOpenTab": null,
+   "invocations": [
+    {
+     "elapsedTime": "120 Ms",
+     "highlights": [],
+     "parameters": [],
+     "sentences": [
+      {
+       "lineNumber": 101,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "Given"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "a valid session for"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-fx"
+         ],
+         "value": "Fastweb"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 103,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "When"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "migrate out is started"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 107,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "Then"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "the orchestration result has type"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-fx"
+         ],
+         "value": "SessionCodeValid"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 112,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "And"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "the session is closed"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      }
+     ],
+     "capturedInteractions": [
+      {
+       "id": "i1",
+       "name": "Start Request from Client to Orchestrator",
+       "from": "Client",
+       "to": "Orchestrator",
+       "rendered": {
+        "values": [
+         {
+          "name": "Value",
+          "value": "POST /migrate-out/start",
+          "language": "plainText"
+         }
+        ],
+        "attributes": []
+       },
+       "attributes": [
+        {
+         "Group": "Test"
+        },
+        {
+         "ArrowStyle": "UmlSynchronous"
+        },
+        {
+         "InteractionId": "i1"
+        }
+       ]
+      },
+      {
+       "id": "i2",
+       "name": "Start Response from Orchestrator to Client",
+       "from": "Orchestrator",
+       "to": "Client",
+       "rendered": {
+        "values": [
+         {
+          "name": "Response Body",
+          "value": "{\"type\":\"MigrateOutInitiated\"}",
+          "language": "json"
+         }
+        ],
+        "attributes": [
+         {
+          "name": "Status",
+          "attributes": [
+           {
+            "Status": "200"
+           }
+          ]
+         },
+         {
+          "name": "Headers",
+          "attributes": [
+           {
+            "content-type": "application/json"
+           }
+          ]
+         }
+        ]
+       },
+       "attributes": [
+        {
+         "Group": "Test"
+        },
+        {
+         "ArrowStyle": "UmlSynchronous"
+        },
+        {
+         "InteractionId": "i2"
+        }
+       ]
+      }
+     ],
+     "capturedOutputs": [],
+     "fixtures": [
+      {
+       "Operator": "Fastweb"
+      }
+     ],
+     "fixtureSpecs": [],
+     "sequenceDiagram": "<svg/>",
+     "componentDiagram": null,
+     "state": "Failed",
+     "executionException": {
+      "message": "/type: expected:<SessionCodeValid> but was:<MigrateOutInitiated>",
+      "stackTrace": "org.opentest4j.AssertionFailedError: /type: expected:<SessionCodeValid> but was:<MigrateOutInitiated>\n\tat org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:38)\n\tat dev.kensa.assertions.KensaAssert.check(KensaAssert.kt:12)\n\tat feature.migrate.StartMigrateOutHappyPathTest.handlesFastweb$lambda$3(StartMigrateOutHappyPathTest.kt:109)\n\tat feature.migrate.StartMigrateOutHappyPathTest.handlesFastweb(StartMigrateOutHappyPathTest.kt:107)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\n"
+     },
+     "displayName": "Fastweb()"
+    }
+   ]
+  },
+  {
+   "elapsedTime": "1 S",
+   "testMethod": "handlesFiberCop",
+   "displayName": "Handles Fiber Cop",
+   "issues": [],
+   "tags": [],
+   "state": "Failed",
+   "autoOpenTab": null,
+   "invocations": [
+    {
+     "elapsedTime": "120 Ms",
+     "highlights": [],
+     "parameters": [],
+     "sentences": [
+      {
+       "lineNumber": 101,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "Given"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "a valid session for"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-fx"
+         ],
+         "value": "Fastweb"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 103,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "When"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "migrate out is started"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 107,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "Then"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "the orchestration result has type"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-fx"
+         ],
+         "value": "SessionCodeValid"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 112,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "And"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "the session is closed"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      }
+     ],
+     "capturedInteractions": [
+      {
+       "id": "i1",
+       "name": "Start Request from Client to Orchestrator",
+       "from": "Client",
+       "to": "Orchestrator",
+       "rendered": {
+        "values": [
+         {
+          "name": "Value",
+          "value": "POST /migrate-out/start",
+          "language": "plainText"
+         }
+        ],
+        "attributes": []
+       },
+       "attributes": [
+        {
+         "Group": "Test"
+        },
+        {
+         "ArrowStyle": "UmlSynchronous"
+        },
+        {
+         "InteractionId": "i1"
+        }
+       ]
+      },
+      {
+       "id": "i2",
+       "name": "Start Response from Orchestrator to Client",
+       "from": "Orchestrator",
+       "to": "Client",
+       "rendered": {
+        "values": [
+         {
+          "name": "Response Body",
+          "value": "{\"type\":\"MigrateOutInitiated\"}",
+          "language": "json"
+         }
+        ],
+        "attributes": [
+         {
+          "name": "Status",
+          "attributes": [
+           {
+            "Status": "200"
+           }
+          ]
+         },
+         {
+          "name": "Headers",
+          "attributes": [
+           {
+            "content-type": "application/json"
+           }
+          ]
+         }
+        ]
+       },
+       "attributes": [
+        {
+         "Group": "Test"
+        },
+        {
+         "ArrowStyle": "UmlSynchronous"
+        },
+        {
+         "InteractionId": "i2"
+        }
+       ]
+      }
+     ],
+     "capturedOutputs": [],
+     "fixtures": [
+      {
+       "Operator": "FiberCop"
+      }
+     ],
+     "fixtureSpecs": [],
+     "sequenceDiagram": "<svg/>",
+     "componentDiagram": null,
+     "state": "Failed",
+     "executionException": {
+      "message": "/type: expected:<SessionCodeValid> but was:<MigrateOutInitiated>",
+      "stackTrace": "org.opentest4j.AssertionFailedError: /type: expected:<SessionCodeValid> but was:<MigrateOutInitiated>\n\tat org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:38)\n\tat dev.kensa.assertions.KensaAssert.check(KensaAssert.kt:12)\n\tat feature.migrate.StartMigrateOutHappyPathTest.handlesFiberCop$lambda$3(StartMigrateOutHappyPathTest.kt:109)\n\tat feature.migrate.StartMigrateOutHappyPathTest.handlesFiberCop(StartMigrateOutHappyPathTest.kt:107)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\n"
+     },
+     "displayName": "FiberCop()"
+    }
+   ]
+  },
+  {
+   "elapsedTime": "1 S",
+   "testMethod": "rejectsUnknownSession",
+   "displayName": "Rejects Unknown Session",
+   "issues": [],
+   "tags": [],
+   "state": "Passed",
+   "autoOpenTab": null,
+   "invocations": [
+    {
+     "elapsedTime": "120 Ms",
+     "highlights": [],
+     "parameters": [],
+     "sentences": [
+      {
+       "lineNumber": 101,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "Given"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "a valid session for"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-fx"
+         ],
+         "value": "Fastweb"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 103,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "When"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "migrate out is started"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 107,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "Then"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "the orchestration result has type"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-fx"
+         ],
+         "value": "SessionCodeValid"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      },
+      {
+       "lineNumber": 112,
+       "tokens": [
+        {
+         "types": [
+          "tk-kw"
+         ],
+         "value": "And"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-wd"
+         ],
+         "value": "the session is closed"
+        },
+        {
+         "types": [
+          "tk-nl"
+         ],
+         "value": ""
+        },
+        {
+         "types": [
+          "tk-in"
+         ],
+         "value": ""
+        }
+       ]
+      }
+     ],
+     "capturedInteractions": [
+      {
+       "id": "i1",
+       "name": "Start Request from Client to Orchestrator",
+       "from": "Client",
+       "to": "Orchestrator",
+       "rendered": {
+        "values": [
+         {
+          "name": "Value",
+          "value": "POST /migrate-out/start",
+          "language": "plainText"
+         }
+        ],
+        "attributes": []
+       },
+       "attributes": [
+        {
+         "Group": "Test"
+        },
+        {
+         "ArrowStyle": "UmlSynchronous"
+        },
+        {
+         "InteractionId": "i1"
+        }
+       ]
+      },
+      {
+       "id": "i2",
+       "name": "Start Response from Orchestrator to Client",
+       "from": "Orchestrator",
+       "to": "Client",
+       "rendered": {
+        "values": [
+         {
+          "name": "Response Body",
+          "value": "{\"type\":\"MigrateOutInitiated\"}",
+          "language": "json"
+         }
+        ],
+        "attributes": [
+         {
+          "name": "Status",
+          "attributes": [
+           {
+            "Status": "200"
+           }
+          ]
+         },
+         {
+          "name": "Headers",
+          "attributes": [
+           {
+            "content-type": "application/json"
+           }
+          ]
+         }
+        ]
+       },
+       "attributes": [
+        {
+         "Group": "Test"
+        },
+        {
+         "ArrowStyle": "UmlSynchronous"
+        },
+        {
+         "InteractionId": "i2"
+        }
+       ]
+      }
+     ],
+     "capturedOutputs": [],
+     "fixtures": [
+      {
+       "Operator": "Fastweb"
+      }
+     ],
+     "fixtureSpecs": [],
+     "sequenceDiagram": "<svg/>",
+     "componentDiagram": null,
+     "state": "Passed",
+     "executionException": {},
+     "displayName": "Fastweb()"
+    }
+   ]
+  }
+ ]
+}

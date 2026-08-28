@@ -12,7 +12,7 @@ kensa mcp
 
 ## Tool groups
 
-The server registers six tools in two groups.
+The server registers nine tools in two groups.
 
 ### Group A — bundle inspection
 
@@ -23,10 +23,13 @@ nothing to read.
 
 | Tool | Args | Returns |
 |------|------|---------|
-| `list_tests` | `bundle_dir` (optional), `state` (string, optional) | `{ tests: TestEntry[] }` — every test class, optionally filtered by state. Each `TestEntry` has `id`, `testClass`, `displayName`, `state`, `tags`, `issues`, `hasErrors`, `source`, and nested `children`. |
-| `list_failures` | `bundle_dir` (optional) | `{ failures: TestEntry[] }` — only the test classes whose `state` is `Failed`. |
-| `get_test` | `bundle_dir` (optional), `id` (string) | The full result JSON for one test class: `testClass`, `displayName`, `state`, `packageName`, and `tests[]` (per-method invocations, sentences, tokens, exceptions). |
-| `failure_evidence` | `bundle_dir` (optional), `id` (string) | `{ testClass, testMethod, failingSentence, exception, state }` — the failing sentence text and exception message for a failed class, distilled for quick triage. |
+| `list_tests` | `bundle_dir` (optional), `state` (string, optional) | `{ tests: TestEntry[], bundleWrittenAt, bundleAge }` — every test class, optionally filtered by state. Each `TestEntry` has `id`, `testClass`, `displayName`, `state`, `tags`, `issues`, `hasErrors`, `source`, and nested `children`. |
+| `list_failures` | `bundle_dir` (optional) | `{ failures: TestEntry[], bundleWrittenAt, bundleAge }` — only the test classes whose `state` is `Failed`. |
+| `get_test` | `bundle_dir` (optional), `id` (string), `raw` (bool, optional) | The result for one test class, rendered: `tests[]` → `invocations[]` with `sentences[{line, text}]`, `fixtures`, `interactions` (names) and `exception {message, sourceLocation}` where one failed. `raw: true` returns the result file verbatim, token stream and diagrams included. |
+| `failure_evidence` | `bundle_dir` (optional), `id` (string) | `{ testClass, state, failures[], distinctExceptions }` — one entry per failed invocation with `testMethod`, `failingSentence`, `failingSentenceLine`, `exception` and `sourceLocation` (the deepest stack frame inside the test class, e.g. `PaymentTest.kt:107`). |
+| `captured_interactions` | `bundle_dir` (optional), `id` (string) | `{ testClass, methods[] }` — every interaction Kensa captured, per method and invocation: `name`, `from`, `to`, `values[{name, value, language}]` (request and response bodies, URLs) and `attributes` grouped by name (`Status`, `Headers`). A child id `<class>:<method>` narrows to one method. |
+| `run_status` | `bundle_dir` (optional) | `{ runState, runStartedAt, runFinishedAt, runAge, classesWritten, pid, sources[] }` — the state of the run that produced the bundle. `runState` is `complete`, `running`, `abandoned` or `incomplete`. `sources` breaks a site root down per source. |
+| `await_results` | `bundle_dir` (optional), `timeout_seconds` (int, optional, default 600, max 3600) | `{ completed, timedOut, runState, ... }` — blocks until the next run completes, then reports it. |
 
 **`bundle_dir` accepts four things**, so the agent rarely needs a literal path:
 
@@ -43,9 +46,60 @@ Pointing at one source directory (`build/kensa-site/sources/uiTest`) also works,
 since each is a complete bundle. `.kensa-properties` is read from the server's
 working directory, which is the project root when the client spawns it there.
 
+**Run state.** Kensa core (0.9.2 and later) writes `run.json` into the bundle
+when the first test starts (`startedAt`, `pid`, `hostname`) and finalises it
+with `finishedAt` once the whole report is on disk. From that the server
+classifies a bundle as:
+
+| `runState` | Meaning |
+|---|---|
+| `complete` | `finishedAt` set, or `indices.json` present. The results are the whole run. |
+| `running` | No `finishedAt`, and the JVM in `pid` is alive on this host. |
+| `abandoned` | No `finishedAt`, no `indices.json`, and the JVM is gone. The run crashed or was killed. |
+| `incomplete` | `results/` without `indices.json` and no way to tell: no `run.json` (Kensa before 0.9.2), or a marker written on another host, whose pid means nothing here. |
+
+`list_tests` and `list_failures` refuse anything but `complete` with an error
+that says which state it is, how many classes are written so far, and what to
+do next; for a site root it names each source that is not complete. A partial
+listing would read as a clean one. `get_test` and `failure_evidence` still
+work mid-run for classes already written.
+
+The marker is written when the first Kensa test *starts*, so between launching
+the tests and that moment the previous bundle is still on disk and still reads
+as complete. `await_results` covers that gap: called straight after launching
+the tests, it waits for the next completion, whether the run has started
+writing yet or not, and returns `completed: true` with the new state, or
+`timedOut: true` with the current state. A source abandoned by an earlier run
+does not hold the wait up; it shows in the returned state. Progress
+notifications go out every 5 seconds when the client supplies a progress
+token.
+
+The pid check assumes the reader and the test JVM share a host and pid
+namespace. A bundle produced in a container or on a CI agent and read
+elsewhere carries a different `hostname`, so it is never probed: with
+`indices.json` it is `complete`, without it `incomplete`.
+
+**Freshness.** Both listings report `bundleWrittenAt` (the run marker's
+`finishedAt`, or the modification time of `indices.json` for older bundles,
+RFC 3339 UTC) and `bundleAge` (`3h12m`, `2d1h`). The tools read whatever the
+last run wrote, so an old bundle says nothing about the current code. The
+fields are omitted if the write time cannot be read.
+
 **States** are exactly those Kensa writes: `Passed`, `Failed`, `Disabled`, `Not Executed`.
 The `state` filter ignores case and spacing, so `not executed` and `NotExecuted`
 both match.
+
+**Triage path.** `list_failures` → `failure_evidence` on the class → fix at
+`sourceLocation`, or `captured_interactions` on the method when the assertion
+message alone does not explain it → re-run → `await_results` → `list_failures`
+again. `get_test` is for reading a whole class; it renders sentences as text
+because the raw token stream is several thousand tokens per method and none of
+it helps a diagnosis.
+
+**Which sentence failed.** Kensa parses sentences from source and does not
+record which one threw, so `failure_evidence` derives it: the last sentence
+starting at or before the `sourceLocation` line. Without a test-class frame in
+the trace it falls back to the last sentence of the method.
 
 **Ids.** `list_tests` returns a class id (`com.example.PaymentTest`) and child
 ids of the form `<class>:<method>`. Results are written per class, so passing a

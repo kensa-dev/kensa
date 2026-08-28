@@ -8,9 +8,9 @@ const (
 )
 
 func TestReadResult(t *testing.T) {
-	r, err := readResult("testdata/bundle", failingClass)
+	r, err := findResult("testdata/bundle", failingClass)
 	if err != nil {
-		t.Fatalf("readResult: %v", err)
+		t.Fatalf("findResult: %v", err)
 	}
 	if r.State != "Failed" || len(r.Tests) != 2 {
 		t.Fatalf("unexpected result: state=%q tests=%d", r.State, len(r.Tests))
@@ -18,9 +18,9 @@ func TestReadResult(t *testing.T) {
 }
 
 func TestReadResultAcceptsChildId(t *testing.T) {
-	r, err := readResult("testdata/bundle", failingClass+":canAdoptAnAvailableRobot")
+	r, err := findResult("testdata/bundle", failingClass+":canAdoptAnAvailableRobot")
 	if err != nil {
-		t.Fatalf("readResult with child id: %v", err)
+		t.Fatalf("findResult with child id: %v", err)
 	}
 	if r.TestClass != failingClass {
 		t.Errorf("testClass = %q, want %q", r.TestClass, failingClass)
@@ -32,16 +32,20 @@ func TestFailureEvidenceReadsExecutionException(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failureEvidence: %v", err)
 	}
+	if len(ev.Failures) != 1 {
+		t.Fatalf("failures = %+v", ev.Failures)
+	}
+	f := ev.Failures[0]
 	wantExc := "Status: expected:<400 Bad Request> but was:<200 OK>"
-	if ev.Exception != wantExc {
-		t.Errorf("exception = %q, want %q", ev.Exception, wantExc)
+	if f.Exception != wantExc {
+		t.Errorf("exception = %q, want %q", f.Exception, wantExc)
 	}
 	wantSentence := "Then the response should have status BAD_REQUEST"
-	if ev.FailingSentence != wantSentence {
-		t.Errorf("failingSentence = %q, want %q", ev.FailingSentence, wantSentence)
+	if f.FailingSentence != wantSentence {
+		t.Errorf("failingSentence = %q, want %q", f.FailingSentence, wantSentence)
 	}
-	if ev.TestMethod != "canAdoptAnAvailableRobot" {
-		t.Errorf("testMethod = %q, want canAdoptAnAvailableRobot", ev.TestMethod)
+	if f.TestMethod != "canAdoptAnAvailableRobot" {
+		t.Errorf("testMethod = %q, want canAdoptAnAvailableRobot", f.TestMethod)
 	}
 }
 
@@ -53,7 +57,7 @@ func TestFailureEvidenceIgnoresEmptyExecutionException(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failureEvidence: %v", err)
 	}
-	if ev.Exception != "" || ev.FailingSentence != "" || ev.TestMethod != "" {
+	if len(ev.Failures) != 0 {
 		t.Errorf("expected no evidence for a passing class, got %+v", ev)
 	}
 }

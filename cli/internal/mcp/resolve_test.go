@@ -150,17 +150,17 @@ func TestListTestsAcrossSiteSources(t *testing.T) {
 }
 
 func TestGetTestFindsClassInAnySiteSource(t *testing.T) {
-	r, _, err := getTestFor("testdata/site", "dev.kensa.example.adoptabot.ShelterUiTest")
+	out, _, err := getTestFor("testdata/site", "dev.kensa.example.adoptabot.ShelterUiTest", false)
 	if err != nil {
 		t.Fatalf("getTest: %v", err)
 	}
-	if r.TestClass != "dev.kensa.example.adoptabot.ShelterUiTest" {
+	if r := out.(renderedResult); r.TestClass != "dev.kensa.example.adoptabot.ShelterUiTest" {
 		t.Errorf("testClass = %q", r.TestClass)
 	}
 }
 
 func TestGetTestReportsWhereItLooked(t *testing.T) {
-	_, _, err := getTestFor("testdata/site", "com.example.NotHere")
+	_, _, err := getTestFor("testdata/site", "com.example.NotHere", false)
 	if err == nil {
 		t.Fatal("expected an error for an unknown class")
 	}

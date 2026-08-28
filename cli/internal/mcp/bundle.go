@@ -42,24 +42,34 @@ func readIndices(bundle string) ([]TestEntry, error) {
 }
 
 // readAllIndices reads every resolved bundle, tagging entries with the site
-// source they came from.
-func readAllIndices(spec string) ([]TestEntry, error) {
+// source they came from, and reports how fresh the newest of them is. A
+// bundle whose run has not completed is refused with an error saying so,
+// since a partial listing would read as a clean one.
+func readAllIndices(spec string) ([]TestEntry, bundleFreshness, error) {
 	refs, err := resolveBundles(spec)
 	if err != nil {
-		return nil, err
+		return nil, bundleFreshness{}, err
+	}
+	shapes, err := probeAll(refs)
+	if err != nil {
+		return nil, bundleFreshness{}, err
+	}
+	sources := states(refs, shapes)
+	if !allComplete(sources) {
+		return nil, bundleFreshness{}, runInProgressError(sources)
 	}
 	var all []TestEntry
-	for _, ref := range refs {
-		entries, err := readIndices(ref.Dir)
+	for _, s := range sources {
+		entries, err := readIndices(s.Dir)
 		if err != nil {
-			return nil, err
+			return nil, bundleFreshness{}, err
 		}
 		for _, e := range entries {
-			e.Source = ref.Source
+			e.Source = s.Source
 			all = append(all, e)
 		}
 	}
-	return all, nil
+	return all, freshnessOf(shapes), nil
 }
 
 type Token struct {
@@ -75,16 +85,61 @@ type Exception struct {
 	StackTrace string `json:"stackTrace"`
 }
 
+// RenderedValue is one captured value on an interaction: a request body, a
+// response body, a URL.
+type RenderedValue struct {
+	Name     string `json:"name"`
+	Value    string `json:"value"`
+	Language string `json:"language"`
+}
+
+// attributeGroup is a named group of key/value pairs on an interaction, such
+// as Status or Headers. The writer encodes the pairs as a list of single-key
+// objects.
+type attributeGroup struct {
+	Name       string           `json:"name"`
+	Attributes []map[string]any `json:"attributes"`
+}
+
+// Interaction mirrors one entry of an invocation's "capturedInteractions".
+type Interaction struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	From     string `json:"from"`
+	To       string `json:"to"`
+	Rendered struct {
+		Values     []RenderedValue  `json:"values"`
+		Attributes []attributeGroup `json:"attributes"`
+	} `json:"rendered"`
+}
+
 // Invocation mirrors one entry of a test method's "invocations" array.
 //
 // The writer always emits the executionException key, using an empty object
 // for a passing invocation, so a non-nil pointer says nothing about failure —
 // only a message does. See JsonTransforms.executionExceptionFrom in core.
 type Invocation struct {
-	ElapsedTime        string     `json:"elapsedTime"`
-	State              string     `json:"state"`
-	Sentences          []Sentence `json:"sentences"`
-	ExecutionException *Exception `json:"executionException"`
+	DisplayName          string           `json:"displayName"`
+	ElapsedTime          string           `json:"elapsedTime"`
+	State                string           `json:"state"`
+	Sentences            []Sentence       `json:"sentences"`
+	Fixtures             []map[string]any `json:"fixtures"`
+	CapturedInteractions []Interaction    `json:"capturedInteractions"`
+	ExecutionException   *Exception       `json:"executionException"`
+}
+
+// flattenPairs turns the writer's list of single-key objects into one map.
+func flattenPairs(pairs []map[string]any) map[string]any {
+	if len(pairs) == 0 {
+		return nil
+	}
+	out := make(map[string]any, len(pairs))
+	for _, p := range pairs {
+		for k, v := range p {
+			out[k] = v
+		}
+	}
+	return out
 }
 
 func (i Invocation) failed() bool {
@@ -105,31 +160,35 @@ type Result struct {
 	Tests       []TestCase `json:"tests"`
 }
 
-// readResult loads the result file for a test class. Results are written per
-// class, but list_tests also hands out child ids of the form
+// readRawResult loads the result file for a test class as written. Results
+// are written per class, but list_tests also hands out child ids of the form
 // "<class>:<method>", so a child id resolves to its owning class.
-func readResult(bundle, id string) (Result, error) {
-	var r Result
-	b, err := os.ReadFile(filepath.Join(bundle, "results", classOf(id)+".json"))
-	if err != nil {
-		return r, err
-	}
-	return r, json.Unmarshal(b, &r)
+func readRawResult(bundle, id string) ([]byte, error) {
+	return os.ReadFile(filepath.Join(bundle, "results", classOf(id)+".json"))
 }
 
-// findResult locates a test class across every resolved bundle, so a class in
-// any source of a site is reachable without naming the source.
-func findResult(spec, id string) (Result, error) {
+// findRawResult locates a test class across every resolved bundle, so a class
+// in any source of a site is reachable without naming the source.
+func findRawResult(spec, id string) ([]byte, error) {
 	refs, err := resolveBundles(spec)
+	if err != nil {
+		return nil, err
+	}
+	for _, ref := range refs {
+		if b, err := readRawResult(ref.Dir, id); err == nil {
+			return b, nil
+		}
+	}
+	return nil, fmt.Errorf("no result for %q in %s", classOf(id), sourceLabels(refs))
+}
+
+func findResult(spec, id string) (Result, error) {
+	b, err := findRawResult(spec, id)
 	if err != nil {
 		return Result{}, err
 	}
-	for _, ref := range refs {
-		if r, err := readResult(ref.Dir, id); err == nil {
-			return r, nil
-		}
-	}
-	return Result{}, fmt.Errorf("no result for %q in %s", classOf(id), sourceLabels(refs))
+	var r Result
+	return r, json.Unmarshal(b, &r)
 }
 
 func classOf(id string) string {
@@ -137,6 +196,12 @@ func classOf(id string) string {
 		return class
 	}
 	return id
+}
+
+// methodOf returns the method part of a child id, or "" for a class id.
+func methodOf(id string) string {
+	_, method, _ := strings.Cut(id, ":")
+	return method
 }
 
 // normaliseState makes state filters forgiving. The writer emits "Not Executed"

@@ -74,11 +74,11 @@ func TestIntegrationFailureEvidence(t *testing.T) {
 
 	var out failureEvidenceOut
 	decodeStructured(t, res, &out)
-	if out.Exception == "" {
-		t.Error("no exception message reached the client")
+	if len(out.Failures) != 1 || out.Failures[0].Exception == "" {
+		t.Fatalf("failures = %+v", out.Failures)
 	}
-	if out.FailingSentence != "Then the response should have status BAD_REQUEST" {
-		t.Errorf("failingSentence = %q", out.FailingSentence)
+	if out.Failures[0].FailingSentence != "Then the response should have status BAD_REQUEST" {
+		t.Errorf("failingSentence = %q", out.Failures[0].FailingSentence)
 	}
 }
 
@@ -129,7 +129,7 @@ func TestIntegrationServerInfo(t *testing.T) {
 	}
 }
 
-func TestIntegrationListsSixTools(t *testing.T) {
+func TestIntegrationListsNineTools(t *testing.T) {
 	ctx := context.Background()
 	session := newConnectedSession(t, ctx)
 
@@ -137,12 +137,12 @@ func TestIntegrationListsSixTools(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools: %v", err)
 	}
-	if len(res.Tools) != 6 {
+	if len(res.Tools) != 9 {
 		names := make([]string, len(res.Tools))
 		for i, tool := range res.Tools {
 			names[i] = tool.Name
 		}
-		t.Fatalf("ListTools returned %d tools %v, want 6", len(res.Tools), names)
+		t.Fatalf("ListTools returned %d tools %v, want 9", len(res.Tools), names)
 	}
 }
 
