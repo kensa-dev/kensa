@@ -79,7 +79,7 @@ See the [Kotlin quickstart](https://kensa.dev/docs/quickstart/kotlin-quickstart)
 
 ### CLI — serve reports locally
 
-Copy the wrapper script from [`cli/wrappers/`](https://github.com/kensa-dev/kensa/tree/master/cli/wrappers) into your project root (`kensa` for macOS/Linux, `kensa.bat` for Windows) and commit it. The wrapper auto-downloads and keeps the binary up to date from GitHub releases.
+Copy the wrapper script from [`cli/wrappers/`](https://github.com/kensa-dev/kensa/tree/master/cli/wrappers) into your project root (`kensa` for macOS/Linux, `kensa.bat` for Windows) and commit it. The wrapper auto-downloads the binary for your OS and architecture from GitHub releases and keeps it up to date; set `KENSA_VERSION` to pin a release instead.
 
 ```bash
 kensa --dir build/kensa-output
