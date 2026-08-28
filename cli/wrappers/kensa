@@ -1,48 +1,130 @@
 #!/bin/bash
 
-# Configuration
-REPO_URL="https://github.com/kensa-dev/kensa/releases/latest/download"
-BIN_DIR=".kensa/bin"
-VERSION_FILE=".kensa/version.txt"
-REMOTE_VERSION_URL="${REPO_URL}/version.txt"
+# Kensa CLI wrapper. Installs the release binary under .kensa/bin beside this
+# script on first run and keeps it current. Everything it prints goes to
+# stderr so that `kensa mcp`, which speaks JSON-RPC over stdout, has an
+# uncontaminated stream.
+#
+# Set KENSA_VERSION (e.g. KENSA_VERSION=0.9.1) to pin a release. The wrapper
+# then never asks GitHub for the latest version and only downloads when the
+# pinned version is not the one installed. Unset, it tracks the latest release.
+#
+# Set KENSA_HOME to install somewhere other than beside the script. Symlinks
+# to the script are followed, and a script that already lives in a directory
+# named .kensa uses that directory rather than nesting another.
+#
+# Downloads are verified against the release's checksums.txt. A release that
+# publishes none (0.9.1 and earlier) installs unverified with a warning; a
+# checksums.txt that cannot be fetched or does not match aborts the install.
 
-# Detect OS and architecture
+set -u
+
+script_dir() {
+    local src="${BASH_SOURCE[0]}"
+    while [ -L "$src" ]; do
+        local dir
+        dir="$(cd "$(dirname "$src")" && pwd)"
+        src="$(readlink "$src")"
+        [[ "$src" != /* ]] && src="$dir/$src"
+    done
+    cd "$(dirname "$src")" && pwd
+}
+
+if [ -z "${KENSA_HOME:-}" ]; then
+    KENSA_HOME="$(script_dir)"
+    [ "$(basename "$KENSA_HOME")" = ".kensa" ] || KENSA_HOME="$KENSA_HOME/.kensa"
+fi
+BIN_DIR="$KENSA_HOME/bin"
+VERSION_FILE="$KENSA_HOME/version.txt"
+RELEASES="https://github.com/kensa-dev/kensa/releases"
+
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH=$(uname -m)
-if [ "$OS" = "darwin" ]; then OS="darwin"; fi
-if [ "$OS" = "linux" ]; then OS="linux"; fi
-# Assume amd64 for simplicity; add arm64 if needed
-BIN_NAME="kensa-${OS}-amd64"
-if [ "$OS" = "windows" ]; then BIN_NAME="${BIN_NAME}.exe"; fi  # Handled by kensa.bat on Windows
+case "$OS" in
+    darwin|linux) ;;
+    mingw*|msys*|cygwin*) OS="windows" ;;
+    *) echo "kensa: unsupported operating system: $OS" >&2; exit 1 ;;
+esac
+MACHINE=$(uname -m)
+case "$MACHINE" in
+    x86_64|amd64) ARCH="amd64" ;;
+    arm64|aarch64) ARCH="arm64" ;;
+    *) echo "kensa: unsupported architecture: $MACHINE" >&2; exit 1 ;;
+esac
+BIN_NAME="kensa-${OS}-${ARCH}"
+if [ "$OS" = "windows" ]; then BIN_NAME="${BIN_NAME}.exe"; fi
+BIN="$BIN_DIR/$BIN_NAME"
 
-# Create directory for binaries
+sha256_of() {
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$1" | awk '{print $1}'
+    elif command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$1" | awk '{print $1}'
+    fi
+}
+
 mkdir -p "$BIN_DIR"
 
-# Check or update version
-if [ -f "$VERSION_FILE" ]; then
-    LOCAL_VERSION=$(cat "$VERSION_FILE")
+LOCAL_VERSION="0.0.0"
+if [ -f "$VERSION_FILE" ]; then LOCAL_VERSION=$(cat "$VERSION_FILE"); fi
+
+if [ -n "${KENSA_VERSION:-}" ]; then
+    WANT_VERSION="$KENSA_VERSION"
+    DOWNLOAD_URL="$RELEASES/download/$KENSA_VERSION"
 else
-    LOCAL_VERSION="0.0.0"
+    DOWNLOAD_URL="$RELEASES/latest/download"
+    WANT_VERSION=$(curl -fsL --max-time 10 "$DOWNLOAD_URL/version.txt")
+    if [ $? -ne 0 ] || [ -z "$WANT_VERSION" ]; then
+        echo "kensa: could not check for updates; using local version $LOCAL_VERSION." >&2
+        WANT_VERSION="$LOCAL_VERSION"
+    fi
 fi
 
-REMOTE_VERSION=$(curl -sL "$REMOTE_VERSION_URL")
-if [ $? -ne 0 ]; then
-    echo "Failed to check for updates. Please check your internet connection. Using local version if available." >&2
-    REMOTE_VERSION="$LOCAL_VERSION"
-fi
-
-if [ "$REMOTE_VERSION" != "$LOCAL_VERSION" ] || [ ! -f "$BIN_DIR/$BIN_NAME" ]; then
-    echo "Downloading kensa $REMOTE_VERSION for $OS-$ARCH..." >&2
-    curl -sSL -o "$BIN_DIR/$BIN_NAME" "${REPO_URL}/${BIN_NAME}"
-    if [ $? -ne 0 ]; then
-        echo "Failed to download kensa $REMOTE_VERSION. Please check your connection or the repository." >&2
+if [ "$WANT_VERSION" != "$LOCAL_VERSION" ] || [ ! -f "$BIN" ]; then
+    if [ "$WANT_VERSION" = "0.0.0" ]; then
+        echo "kensa: no installed binary and no reachable release. Set KENSA_VERSION or retry with a connection." >&2
         exit 1
     fi
-    chmod +x "$BIN_DIR/$BIN_NAME"
-    echo "$REMOTE_VERSION" > "$VERSION_FILE"
-    echo "Successfully updated to kensa $REMOTE_VERSION." >&2
+    echo "Downloading kensa $WANT_VERSION for $OS-$ARCH..." >&2
+    TMP=$(mktemp "$BIN_DIR/.$BIN_NAME.XXXXXX") || exit 1
+    CHECKSUMS="$KENSA_HOME/checksums.txt"
+    trap 'rm -f "$TMP" "$CHECKSUMS"' EXIT
+    if ! curl -fsSL --max-time 300 -o "$TMP" "$DOWNLOAD_URL/$BIN_NAME"; then
+        echo "kensa: failed to download $DOWNLOAD_URL/$BIN_NAME" >&2
+        exit 1
+    fi
+
+    HTTP_STATUS=$(curl -sL --max-time 10 -o "$CHECKSUMS" -w '%{http_code}' "$DOWNLOAD_URL/checksums.txt" 2>/dev/null) || HTTP_STATUS="000"
+    case "$HTTP_STATUS" in
+        200)
+            EXPECTED=$(awk -v f="$BIN_NAME" '$2 == f || $2 == "*" f { print $1 }' "$CHECKSUMS")
+            if [ -z "$EXPECTED" ]; then
+                echo "kensa: checksums.txt for $WANT_VERSION has no entry for $BIN_NAME. Not installing." >&2
+                exit 1
+            fi
+            ACTUAL=$(sha256_of "$TMP")
+            if [ -z "$ACTUAL" ]; then
+                echo "kensa: neither sha256sum nor shasum is available; skipping verification." >&2
+            elif [ "$ACTUAL" != "$EXPECTED" ]; then
+                echo "kensa: checksum mismatch for $BIN_NAME (expected $EXPECTED, got $ACTUAL). Not installing." >&2
+                exit 1
+            fi
+            ;;
+        404)
+            echo "kensa: release $WANT_VERSION publishes no checksums.txt; installing unverified." >&2
+            ;;
+        *)
+            echo "kensa: could not fetch $DOWNLOAD_URL/checksums.txt (HTTP $HTTP_STATUS). Not installing; retry when the release is reachable." >&2
+            exit 1
+            ;;
+    esac
+    rm -f "$CHECKSUMS"
+
+    chmod +x "$TMP" && mv "$TMP" "$BIN" || {
+        echo "kensa: could not install $BIN" >&2
+        exit 1
+    }
+    echo "$WANT_VERSION" > "$VERSION_FILE"
+    echo "Successfully installed kensa $WANT_VERSION." >&2
 fi
 
-# Run the CLI. Everything above writes to stderr so that `kensa mcp`, which
-# speaks JSON-RPC over stdout, has an uncontaminated stream.
-"$BIN_DIR/$BIN_NAME" "$@"
+exec "$BIN" "$@"
