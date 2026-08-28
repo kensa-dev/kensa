@@ -38,6 +38,13 @@ class KensaLifecycleManager private constructor(
     }
 
     fun beforeTest(testClass: Class<*>, testMethod: Method) {
+        // The first Kensa test to start is the start of the run. Forcing the
+        // writer here, rather than when the first result lands, replaces the
+        // previous bundle and writes run.json before any test body executes.
+        // Not in beforeClass: a JUnit @BeforeAll that calls Kensa.konfigure
+        // (a documented placement) runs after the BeforeAllCallback, so the
+        // output dir is only settled by the time the first test starts.
+        if (isOutputEnabled) resultWriter.value
         TestContext(testClass, testMethod, configuration.setupStrategy).also {
             TestContextHolder.bindToCurrentThread(it)
         }
@@ -78,6 +85,10 @@ class KensaLifecycleManager private constructor(
         }
     }
 
+    // Writing a skipped class forces the writer before any test has started,
+    // so a run whose first class is @Disabled still settles the output dir at
+    // that point, ahead of a later class's @BeforeAll configuration. That
+    // ordering predates the run marker and is unchanged by it.
     fun skipClass(testClass: Class<*>, displayName: String) {
         if (!isOutputEnabled) return
         val container = kensaContext.createTestContainer(testClass, displayName)

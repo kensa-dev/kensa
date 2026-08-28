@@ -116,6 +116,44 @@ internal class KensaLifecycleManagerTest {
     }
 
     @Test
+    fun `first test to start marks the run as started, after class setup has had its chance to configure`(@TempDir tempDir: Path) {
+        val outputDir = tempDir.resolve("kensa-output").also { it.createDirectories() }
+        val stale = outputDir.resolve("indices.json")
+        stale.writeText("previous run")
+        val manager = createManager(tempDir)
+        val method = DummyTest::class.java.declaredMethods.first { it.name == "dummyMethod" }
+
+        manager.beforeClass(DummyTest::class.java, "Dummy Test")
+        stale.shouldExist()
+        outputDir.resolve("run.json").shouldNotExist()
+
+        manager.beforeTest(DummyTest::class.java, method)
+        try {
+            outputDir.resolve("run.json").shouldExist()
+            stale.shouldNotExist()
+        } finally {
+            manager.endInvocation(DummyTest::class.java, method, null, null)
+        }
+    }
+
+    @Test
+    fun `output dir configured after beforeClass is the one the run marker lands in`(@TempDir tempDir: Path) {
+        val manager = createManager(tempDir)
+        val method = DummyTest::class.java.declaredMethods.first { it.name == "dummyMethod" }
+        val configuredLate = tempDir.resolve("configured-in-before-all")
+
+        manager.beforeClass(DummyTest::class.java, "Dummy Test")
+        manager.configuration.outputDir = configuredLate
+        manager.beforeTest(DummyTest::class.java, method)
+        try {
+            configuredLate.resolve("run.json").shouldExist()
+            tempDir.resolve("kensa-output").resolve("run.json").shouldNotExist()
+        } finally {
+            manager.endInvocation(DummyTest::class.java, method, null, null)
+        }
+    }
+
+    @Test
     fun `writeAllResults produces report when a test class participated`(@TempDir tempDir: Path) {
         val manager = createManager(tempDir)
         manager.beforeClass(DummyTest::class.java, "Dummy Test")
