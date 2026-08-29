@@ -31,6 +31,7 @@ import {type MergedIndex} from "@/lib/suiteSearch";
 import {loadTreeData, loadSearchIndexes, statusFor, type LoadStatus} from "@/lib/initialLoad";
 import {nodeIdForLocation} from "@/util/suiteSearchNav";
 import {overviewPathFor} from "@/util/overviewPath";
+import {resolveFilterSelection} from "@/util/filterSelection";
 import {collectLeaves, packageDepthFor} from "@/lib/overview";
 import {findCommonPackage} from "@/utils/treeUtils";
 
@@ -103,20 +104,15 @@ const App = () => {
         // The overview and system view are source-level pages with no test selection to
         // move, so a filter change must not navigate away from them.
         if (isOverview || isSystemView) return;
-        if (firstTest && firstTest.id) {
-            if (selectedIndex?.id !== firstTest.id) {
-                navigate(`/test/${firstTest.id}`, {replace: true});
-            }
-            setTestToExpand(firstMethod || "");
-        } else {
-            setTestToExpand("");
+        const pathTestId = location.pathname.match(/^\/test\/(.+)$/)?.[1] ?? null;
+        const {testId, method} = resolveFilterSelection(pathTestId, firstTest, firstMethod, matchingMethodsMap);
+        if (testId && testId !== pathTestId) {
+            navigate(`/test/${testId}`, {replace: true});
         }
+        setTestToExpand(method);
         setTestToExpandInvocation(-1);
 
-        if (selectedIndex?.id) {
-            const methods = matchingMethodsMap.get(selectedIndex.id) || [];
-            setMatchingMethods(methods);
-        }
+        setMatchingMethods(testId ? matchingMethodsMap.get(testId) || [] : []);
     };
 
     useEffect(() => {
