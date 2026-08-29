@@ -217,3 +217,32 @@ func TestAwaitResultsLegacyBundleUsesIndicesWriteTime(t *testing.T) {
 		t.Errorf("got %+v", out)
 	}
 }
+
+func markerWithCountsJSON(startedAt string, pid, classes, passed, failed, disabled int) string {
+	return `{"startedAt":"` + startedAt + `","pid":` + itoa(pid) + `,"finishedAt":null,"classes":` + itoa(classes) + `,"passed":` + itoa(passed) + `,"failed":` + itoa(failed) + `,"disabled":` + itoa(disabled) + `}`
+}
+
+func TestRunInfoReportsMarkerCounts(t *testing.T) {
+	fixNow(t, time.Date(2026, 8, 27, 9, 2, 0, 0, time.UTC))
+	dir := runningBundle(t, os.Getpid())
+	writeFile(t, filepath.Join(dir, "run.json"), markerWithCountsJSON("2026-08-27T09:00:00Z", os.Getpid(), 12, 40, 1, 3))
+
+	info := runInfoOf(dir)
+	if info.RunState != "running" || info.ClassesWritten != 12 || info.Passed == nil || *info.Passed != 40 || info.Failed == nil || *info.Failed != 1 || info.Disabled == nil || *info.Disabled != 3 {
+		t.Errorf("got %+v", info)
+	}
+	if got := describeRun(info); got != "started 2m ago, 12 classes written, 40 passed, 1 failed, 3 disabled" {
+		t.Errorf("got %q", got)
+	}
+}
+
+func TestRunInfoWithoutMarkerCountsIsUnchanged(t *testing.T) {
+	fixNow(t, time.Date(2026, 8, 27, 9, 2, 0, 0, time.UTC))
+	info := runInfoOf(runningBundle(t, os.Getpid()))
+	if info.ClassesWritten != 2 || info.Passed != nil || info.Failed != nil || info.Disabled != nil {
+		t.Errorf("got %+v", info)
+	}
+	if got := describeRun(info); got != "started 2m ago, 2 classes written" {
+		t.Errorf("got %q", got)
+	}
+}

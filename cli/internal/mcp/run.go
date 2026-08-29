@@ -23,11 +23,17 @@ const (
 
 // runMarker is run.json as Kensa core writes it: startedAt, pid and hostname
 // when the first test starts, finishedAt once the whole report is on disk.
+// The counts are rewritten as each class finishes; markers from early 0.9.2
+// builds lack them, so they are pointers to tell absent from zero.
 type runMarker struct {
 	StartedAt  string `json:"startedAt"`
 	FinishedAt string `json:"finishedAt"`
 	Pid        int    `json:"pid"`
 	Hostname   string `json:"hostname"`
+	Classes    *int   `json:"classes"`
+	Passed     *int   `json:"passed"`
+	Failed     *int   `json:"failed"`
+	Disabled   *int   `json:"disabled"`
 }
 
 // runInfo describes the state of the run that produced a bundle.
@@ -37,9 +43,15 @@ type runInfo struct {
 	RunFinishedAt string `json:"runFinishedAt,omitempty"`
 	// RunAge is how long ago the run started, for runs that have not finished.
 	RunAge string `json:"runAge,omitempty"`
-	// ClassesWritten counts results/*.json so far, for runs that have not finished.
+	// ClassesWritten is the marker's class count, or results/*.json counted
+	// when the marker has none, for runs that have not finished.
 	ClassesWritten int `json:"classesWritten,omitempty"`
-	Pid            int `json:"pid,omitempty"`
+	// Passed, Failed and Disabled are the marker's method counts, for runs
+	// that have not finished; absent when the marker carries none.
+	Passed   *int `json:"passed,omitempty"`
+	Failed   *int `json:"failed,omitempty"`
+	Disabled *int `json:"disabled,omitempty"`
+	Pid      int  `json:"pid,omitempty"`
 }
 
 // sourceRun is the run state of one resolved bundle.
@@ -153,6 +165,10 @@ func (s bundleShape) runInfo() runInfo {
 		info.RunState = runAbandoned
 	}
 	info.ClassesWritten = s.classFiles
+	if m.Classes != nil {
+		info.ClassesWritten = *m.Classes
+	}
+	info.Passed, info.Failed, info.Disabled = m.Passed, m.Failed, m.Disabled
 	if started, err := time.Parse(time.RFC3339Nano, m.StartedAt); err == nil {
 		info.RunAge = formatAge(now().Sub(started))
 	}
@@ -248,14 +264,17 @@ func runInProgressError(sources []sourceRun) error {
 }
 
 func describeRun(info runInfo) string {
-	written := classes(info.ClassesWritten)
+	written := classes(info.ClassesWritten) + " written"
+	if info.Passed != nil && info.Failed != nil && info.Disabled != nil {
+		written += fmt.Sprintf(", %d passed, %d failed, %d disabled", *info.Passed, *info.Failed, *info.Disabled)
+	}
 	switch info.RunState {
 	case runRunning:
-		return fmt.Sprintf("started %s ago, %s written", info.RunAge, written)
+		return fmt.Sprintf("started %s ago, %s", info.RunAge, written)
 	case runAbandoned:
-		return fmt.Sprintf("started %s ago, process %d gone, %s written", info.RunAge, info.Pid, written)
+		return fmt.Sprintf("started %s ago, process %d gone, %s", info.RunAge, info.Pid, written)
 	default:
-		return fmt.Sprintf("%s written, no indices.json", written)
+		return fmt.Sprintf("%s, no indices.json", written)
 	}
 }
 
