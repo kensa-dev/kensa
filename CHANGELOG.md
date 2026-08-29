@@ -3,7 +3,7 @@
 ### v0.9.2
 
 Added:
-  - **`run.json` run marker.** Written when the first Kensa test starts (`startedAt`, `pid`, `hostname`) and finalised with `finishedAt` once the whole report is on disk. The previous bundle is wiped at that first-test point. Readers can tell a finished bundle from one in flight or abandoned (#217).
+  - **`run.json` run marker.** Written when the first Kensa test starts (`startedAt`, `pid`, `hostname`) and finalised with `finishedAt` once the whole report is on disk. The previous bundle is wiped at that first-test point. Readers can tell a finished bundle from one in flight or abandoned (#217). The marker also carries live counts: `classes` written so far and the methods `passed`, `failed` and `disabled` across them, updated as each class finishes.
   - **MCP run-state tools.** `run_status` classifies a bundle `complete`, `running`, `abandoned` or `incomplete`; `await_results` blocks until the next run completes. `list_tests` and `list_failures` refuse an unfinished bundle, and every listing carries `bundleWrittenAt` and `bundleAge`. New `captured_interactions`, per-method `failure_evidence`, and `get_test` rendered as text (#217).
   - **CLI wrapper pinning and checksums.** Detects the architecture (Apple Silicon no longer runs the Intel binary), installs beside itself, `KENSA_VERSION` pins, `KENSA_HOME` relocates, and downloads are verified against the release's `checksums.txt` (#216).
 

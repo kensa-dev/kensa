@@ -136,7 +136,7 @@ Two tools deal with the run itself:
 
 | Tool | Returns |
 |------|---------|
-| `run_status` | Whether the run that produced the bundle is `complete`, `running`, `abandoned` (the JVM died part way) or `incomplete` (a pre-0.9.2 bundle with no way to tell), with start and finish times and how many classes are written so far. |
+| `run_status` | Whether the run that produced the bundle is `complete`, `running`, `abandoned` (the JVM died part way) or `incomplete` (a pre-0.9.2 bundle with no way to tell), with start and finish times and, while it runs, how many classes are written so far and how many methods have passed, failed or were disabled. |
 | `await_results` | Blocks until the next run completes, then reports its state. Default timeout 600 seconds, maximum 3600. |
 
 `server_info` reports the server name and version, useful as a connectivity check.
@@ -147,6 +147,8 @@ The tools read whatever the last test run wrote. An empty `list_failures` can me
 
 - `list_tests` and `list_failures` refuse a bundle whose run is `running`, `abandoned` or `incomplete`, with an error saying which and what to do. A partial listing would look like a clean one.
 - Every listing carries `bundleWrittenAt` (RFC 3339 UTC) and `bundleAge` (`3h12m`, `2d1h`). An agent triaging a red build should check the age before trusting the result, and re-run the tests if it predates the change under investigation.
+
+The marker also carries live counts. Each time a class finishes, Kensa adds it to `classes` and its methods to `passed`, `failed` and `disabled`, so `run_status` can report progress mid-run and an agent can react to the first failure without waiting for the whole run. Counts cover completed classes only; a class still executing contributes nothing until it finishes. A burst of completions is written once, and the file is replaced atomically, so a reader never sees a torn marker.
 
 The marker appears when the first Kensa test starts, so between launching the tests and that moment the previous bundle is still on disk and still reads as complete. The workflow that avoids the gap is: launch the tests, call `await_results` straight away, and read the listings when it returns `completed: true`. If it returns `timedOut: true`, nothing finished in the window; `run_status` says where things stand.
 
