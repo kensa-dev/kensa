@@ -32,6 +32,7 @@ import {loadTreeData, loadSearchIndexes, statusFor, type LoadStatus} from "@/lib
 import {nodeIdForLocation} from "@/util/suiteSearchNav";
 import {overviewPathFor} from "@/util/overviewPath";
 import {resolveFilterSelection} from "@/util/filterSelection";
+import {AnchorLink} from "@/components/AnchorLink";
 import {collectLeaves, packageDepthFor} from "@/lib/overview";
 import {findCommonPackage} from "@/utils/treeUtils";
 
@@ -631,10 +632,11 @@ const App = () => {
                                                         })}
                                                     </BreadcrumbList>
                                                 </Breadcrumb>
-                                                <div className="flex items-center gap-3">
+                                                <div className="group/anchor flex items-center gap-3">
                                                     <h1 className="text-[14px] font-black truncate text-neutral-800 dark:text-neutral-100 leading-tight">
                                                         {selectedIndex.displayName}
                                                     </h1>
+                                                    <AnchorLink testId={selectedIndex.id} />
                                                     <EpicList epics={testDetail?.epics} testState={selectedIndex.state} />
                                                     <IssueList issues={testDetail?.issues} testState={selectedIndex.state} />
                                                 </div>
@@ -687,6 +689,7 @@ const App = () => {
                                                             key={`${selectedIndex?.id}-${testToExpand}-${searchQuery}`}
                                                             tests={testDetail.tests}
                                                             testClass={testDetail.testClass}
+                                                            testId={selectedIndex.id}
                                                             testToExpand={testToExpand}
                                                             invocationToExpand={testToExpandInvocation}
                                                             matchingMethods={matchingMethods}

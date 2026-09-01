@@ -6,6 +6,7 @@ import {InvocationParameters} from './InvocationParameters';
 import {Invocation, ParseError} from "@/types/Test";
 import {summarizeInvocation} from "@/util/invocationSummary";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {AnchorLink} from './AnchorLink';
 
 interface InvocationCardProps {
     invocation: Invocation;
@@ -16,10 +17,13 @@ interface InvocationCardProps {
     onToggle: () => void;
     testClass: string;
     index?: number;
+    testId: string;
+    method: string;
+    invocationIdx: number;
 }
 
 export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardProps>(
-    ({invocation, parseErrors, autoOpenTab, isLast, expanded, onToggle, testClass, index}, ref) => {
+    ({invocation, parseErrors, autoOpenTab, isLast, expanded, onToggle, testClass, index, testId, method, invocationIdx}, ref) => {
         const isPassed = invocation.state === 'Passed';
         const summary = summarizeInvocation(invocation);
 
@@ -33,7 +37,7 @@ export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardPro
                 )}>
                 <div
                     className={cn(
-                        "px-4 py-2 flex items-center justify-between cursor-pointer select-none transition-colors",
+                        "group/anchor px-4 py-2 flex items-center justify-between cursor-pointer select-none transition-colors",
                         isPassed ? "hover:bg-success/10 text-neutral-800 dark:text-neutral-100" : "hover:bg-failure/10 text-neutral-800 dark:text-neutral-100"
                     )}
                     onClick={onToggle}
@@ -72,6 +76,7 @@ export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardPro
                                 </TooltipContent>
                             </Tooltip>
                         )}
+                        <AnchorLink testId={testId} method={method} invocation={invocationIdx} />
                     </div>
                     {invocation.elapsedTime && <span className="text-[10px] font-mono opacity-40 shrink-0 ml-2">{invocation.elapsedTime}</span>}
                 </div>

@@ -1,5 +1,8 @@
 <h2 class="github">Changelog</h2>
 
+
+Added:
+  - **Copy a deep link from the report.** A link icon appears on hover over the class header, each test header, and each invocation header; clicking copies a URL that reopens the report with that test (and invocation) selected and expanded. When the clipboard is unavailable (a report served over plain HTTP), the URL is logged to the console instead (#219).
 ### v0.9.3
 
 Fixes:

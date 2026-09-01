@@ -11,9 +11,10 @@ interface TestContainerProps {
     invocationToExpand?: number;
     matchingMethods?: string[];
     onClearFilter?: () => void;
+    testId: string;
 }
 
-export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpand = -1, matchingMethods = [], onClearFilter }: TestContainerProps) => {
+export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpand = -1, matchingMethods = [], onClearFilter, testId }: TestContainerProps) => {
     const cardRefs = React.useRef<(HTMLDivElement | null)[]>([]);
     const [expandedTestIndex, setExpandedTestIndex] = React.useState<number>(-1);
     const [expandedInvocationIndex, setExpandedInvocationIndex] = React.useState<number>(-1);
@@ -127,6 +128,7 @@ export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpa
                         initialExpanded={i === expandedTestIndex}
                         initialExpandedInvocation={expandedInvocationIndex}
                         testClass={testClass}
+                        testId={testId}
                     />
                 </div>
             ))}
