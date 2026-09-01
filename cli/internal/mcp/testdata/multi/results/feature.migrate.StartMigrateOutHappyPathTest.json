@@ -587,6 +587,10 @@
             "content-type": "application/json"
            }
           ]
+         },
+         {
+          "name": "Cookies",
+          "attributes": []
          }
         ]
        },

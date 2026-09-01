@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v0.9.3
+
+Fixes:
+  - **`captured_interactions` no longer fails on empty attribute groups.** A response captured with no headers made the whole tool call fail output-schema validation (`"Headers": null`); empty groups are now omitted and sibling groups survive (#218).
+
 ### v0.9.2
 
 Added:

@@ -56,10 +56,16 @@ func capturedInteractionsFor(bundle, id string) (capturedInteractionsOut, *mcp.C
 					c.Values = []RenderedValue{}
 				}
 				for _, g := range ci.Rendered.Attributes {
+					flat := flattenPairs(g.Attributes)
+					if flat == nil {
+						// An empty group (a response with no headers) would
+						// marshal as null and fail the output schema; omit it.
+						continue
+					}
 					if c.Attributes == nil {
 						c.Attributes = map[string]map[string]any{}
 					}
-					c.Attributes[g.Name] = flattenPairs(g.Attributes)
+					c.Attributes[g.Name] = flat
 				}
 				m.Interactions = append(m.Interactions, c)
 			}
