@@ -80,6 +80,7 @@ dependencies {
     plantUmlBundle(libs.plantuml)
     "agentImplementation"(libs.byteBuddyCore)
 
+    testImplementation(libs.kotlinCoroutines)
     testImplementation(platform(libs.junit6Bom))
     testImplementation(project(":antlr"))
     testImplementation(libs.junit6PlatformLauncher)

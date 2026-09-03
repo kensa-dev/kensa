@@ -17,6 +17,8 @@ import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.Path
 import kotlin.reflect.KClass
 
@@ -75,6 +77,8 @@ class KensaConfigurator(private val configuration: Configuration) {
     fun withAutoExpandNotes(value: Boolean): KensaConfigurator = apply { configuration.autoExpandNotes = value }
 
     fun withSetupStrategy(setupStrategy: SetupStrategy): KensaConfigurator = apply { configuration.setupStrategy = setupStrategy }
+
+    fun withCoroutineContextProviders(vararg providers: () -> CoroutineContext): KensaConfigurator = apply { configuration.coroutineContextProviders += providers }
 
     fun withTabSize(tabSize: Int): KensaConfigurator = apply { configuration.tabSize = tabSize }
 
@@ -138,6 +142,11 @@ class Configuration {
         extras.computeIfAbsent(type) { factory() } as T
 
     val renderers: Renderers = Renderers()
+
+    // Invoked on the test thread each time Kensa assembles the coroutine context for a polling block
+    // (thenEventually/thenContinually), so a ThreadLocal.asContextElement() provider captures the
+    // calling thread's current value. Lets user thread locals survive the Dispatchers.IO dispatch.
+    val coroutineContextProviders: MutableList<() -> CoroutineContext> = CopyOnWriteArrayList()
     var dataOnly: Boolean = !System.getProperty(KENSA_SOURCE_ID).isNullOrBlank()
     var outputDir: Path = run {
         val root = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")))

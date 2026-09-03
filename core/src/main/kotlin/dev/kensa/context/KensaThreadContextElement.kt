@@ -1,5 +1,6 @@
 package dev.kensa.context
 
+import dev.kensa.Kensa
 import dev.kensa.KensaInternalApi
 import kotlinx.coroutines.ThreadContextElement
 import kotlin.coroutines.CoroutineContext
@@ -65,10 +66,16 @@ class KensaThreadContextElement internal constructor(
 /**
  * Captures the Kensa contexts bound to the calling thread, for propagation into coroutines that may run
  * on another thread. See [KensaThreadContextElement].
+ *
+ * User-registered coroutine context providers (`withCoroutineContextProviders`) are invoked here, on the
+ * calling thread, and their elements folded into the returned context — so a
+ * `ThreadLocal.asContextElement()` provider captures the value bound to the test thread at this moment.
  */
 @KensaInternalApi
-fun kensaThreadContext(): CoroutineContext = KensaThreadContextElement(
-    TestContextHolder.testContextOrNull(),
-    ExpandableInvocationContextHolder.boundContextOrNull(),
-    RenderedValueInvocationContextHolder.boundContextOrNull(),
-)
+fun kensaThreadContext(): CoroutineContext = Kensa.configuration.coroutineContextProviders.fold(
+    KensaThreadContextElement(
+        TestContextHolder.testContextOrNull(),
+        ExpandableInvocationContextHolder.boundContextOrNull(),
+        RenderedValueInvocationContextHolder.boundContextOrNull(),
+    ) as CoroutineContext
+) { context, provider -> context + provider() }
