@@ -1,12 +1,14 @@
 <h2 class="github">Changelog</h2>
 
 
-Added:
-  - **Copy a deep link from the report.** A link icon appears on hover over the class header, each test header, and each invocation header; clicking copies a URL that reopens the report with that test (and invocation) selected and expanded. When the clipboard is unavailable (a report served over plain HTTP), the URL is logged to the console instead (#219).
 ### v0.9.3
 
+Added:
+  - **User thread locals in polling blocks.** `withCoroutineContextProviders` registers `() -> CoroutineContext` providers, invoked on the test thread each time `thenEventually`/`thenContinually` assembles its polling context — so a `ThreadLocal.asContextElement()` provider (a tracking-id holder, MDC) is visible inside checks on the polling threads (#220).
+  - **Copy a deep link from the report.** A link icon appears on hover over the class header, each test header, and each invocation header; clicking copies a URL that reopens the report with that test (and invocation) selected and expanded. When the clipboard is unavailable (a report served over plain HTTP), the URL is logged to the console instead (#219).
+
 Fixes:
-  - **`captured_interactions` no longer fails on empty attribute groups.** A response captured with no headers made the whole tool call fail output-schema validation (`"Headers": null`); empty groups are now omitted and sibling groups survive (#218).
+  - **The MCP `captured_interactions` tool no longer fails on empty attribute groups.** A response captured with no headers made the whole tool call fail output-schema validation (`"Headers": null`); empty groups are now omitted and sibling groups survive (#218).
 
 ### v0.9.2
 
