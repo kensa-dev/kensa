@@ -42,6 +42,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.14     | 0.9.2              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.2 (`run.json` run marker with live counts, MCP run-state tools #217; CLI wrapper arch detection, pinning and checksums #216; issue-filter deep-link fix #215). No Maven-side change. |
 | 0.9.13     | 0.9.0              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.0 — the API freeze ahead of 1.0. Implementation packages are now `internal` and core must pair with same-version adapters, so move explicit adapter pins to 0.9.0 together. Also brings `@Epic` (#194), the report overview page (#195), replay links on issue badges and fixes #185, #189–#193. No Maven-side change. |
 | 0.9.12     | 0.8.16             | 0.8.0          | Built with Kotlin 2.4.10; default `kensaCoreVersion` bumped to 0.8.16 (container chains, `by fixtures(fx)` delegate, qualified enum constants #180, diagram glyphs #179). No Maven-side change. |
 | 0.9.11     | 0.8.15             | 0.8.0          | Default `kensaCoreVersion` bumped to 0.8.15 (`kensa mcp` CLI server, negative matcher assertions, #174/#176/#177). No Maven-side change. |
