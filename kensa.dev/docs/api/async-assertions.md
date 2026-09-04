@@ -167,6 +167,31 @@ thenContinually(2.seconds, theCapturedEvents(), noneMatching(aCancelledOrderEven
 
 `noneMatching(matcher)` builds a `Matcher<Collection<T>>` that passes when no element matches — other elements are ignored, so unrelated traffic doesn't fail the assertion — and fails with the matching elements listed.
 
+## Thread locals and polling threads
+
+Checks inside the polling forms run on background threads, not the thread running the test. Kensa carries its own thread-bound state across automatically — `by fixtures(...)` delegates, `WithFixturesAndOutputs`, and `@RenderedValue`/`@ExpandableSentence` capture all work inside a check with no setup.
+
+A thread local your *own* code binds to the test thread does not come along by default. If a check reads one — a tracking-id holder, MDC, a tenant context — register a coroutine context provider once at configuration time:
+
+```kotlin
+object TrackingContext {
+    private val threadLocal = ThreadLocal<TrackingId>()
+
+    fun asContextElement(): CoroutineContext = threadLocal.asContextElement()
+
+    // ...
+}
+
+Kensa.configure()
+    .withCoroutineContextProviders(TrackingContext::asContextElement)
+```
+
+Each time a polling block starts, Kensa invokes every provider on the test thread and adds the resulting elements to the polling context — so `ThreadLocal.asContextElement()` captures the value the current test bound, and each check sees it on the polling thread, correctly per test even when tests run in parallel.
+
+A provider is any `() -> CoroutineContext`, so anything producing a context element works the same way — for example SLF4J's `MDCContext()` to keep MDC entries visible in checks.
+
+*Available from 0.9.3.*
+
 ## In the report
 
 The keywords are recognised by the sentence renderer, so
