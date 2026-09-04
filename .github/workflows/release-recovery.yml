@@ -1,0 +1,43 @@
+# Manual recovery for a release where the Sonatype upload succeeded but the Publish Artifacts
+# workflow failed afterwards (e.g. a transient status-poll error), leaving the downstream
+# dispatches unfired. Run with the released version once Central actually serves it —
+# the maven-central-released environment gate holds the job for the same manual approval
+# as the normal release path. Fires the same three repository_dispatch events as publish.yml.
+name: Release Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Released version to re-dispatch (e.g. 0.9.3)'
+        required: true
+        type: string
+
+jobs:
+  RedispatchReleaseEvents:
+    runs-on: ubuntu-latest
+    environment: maven-central-released
+    steps:
+      - name: Dispatch Release Event
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: kensa-dev/kensa
+          event-type: kensa-release
+          client-payload: '{"version": "${{ inputs.version }}"}'
+
+      - name: Notify build-plugins of new Kensa release
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: kensa-dev/build-plugins
+          event-type: kensa-released
+          client-payload: '{"version": "${{ inputs.version }}"}'
+
+      - name: Notify agent-skills of new Kensa release
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: kensa-dev/agent-skills
+          event-type: kensa-released
+          client-payload: '{"version": "${{ inputs.version }}"}'
