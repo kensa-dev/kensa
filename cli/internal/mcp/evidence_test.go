@@ -116,6 +116,53 @@ func TestGetTestRendersSentencesAsText(t *testing.T) {
 	}
 }
 
+func TestGetTestRendersMethodElapsedTime(t *testing.T) {
+	out, _, err := getTestFor("testdata/bundle", failingClass, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := out.(renderedResult)
+	if r.Tests[0].ElapsedTime != "35 Ms" {
+		t.Errorf("elapsedTime = %q, want %q", r.Tests[0].ElapsedTime, "35 Ms")
+	}
+}
+
+func TestGetTestWithChildIdReturnsOnlyThatMethod(t *testing.T) {
+	out, _, err := getTestFor("testdata/bundle", failingClass+":canAdoptAnAvailableRobot", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := out.(renderedResult)
+	if len(r.Tests) != 1 || r.Tests[0].TestMethod != "canAdoptAnAvailableRobot" {
+		t.Fatalf("got %+v", r.Tests)
+	}
+}
+
+func TestGetTestWithUnknownChildIdIsAnError(t *testing.T) {
+	_, _, err := getTestFor("testdata/bundle", failingClass+":nope", false)
+	if err == nil || !strings.Contains(err.Error(), "nope") || !strings.Contains(err.Error(), failingClass) {
+		t.Errorf("got %v", err)
+	}
+}
+
+func TestGetTestRawWithChildIdReturnsTheWholeFile(t *testing.T) {
+	out, _, err := getTestFor("testdata/bundle", failingClass+":canAdoptAnAvailableRobot", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, ok := out.(json.RawMessage)
+	if !ok {
+		t.Fatalf("got %T", out)
+	}
+	var m map[string]any
+	if err := json.Unmarshal(raw, &m); err != nil {
+		t.Fatal(err)
+	}
+	if len(m["tests"].([]any)) != 2 {
+		t.Errorf("raw with a child id should still return the whole file, got %d tests", len(m["tests"].([]any)))
+	}
+}
+
 func TestGetTestRawReturnsTheFileVerbatim(t *testing.T) {
 	out, _, err := getTestFor("testdata/multi", multiClass, true)
 	if err != nil {

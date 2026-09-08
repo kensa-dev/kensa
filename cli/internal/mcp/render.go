@@ -36,6 +36,7 @@ type renderedTest struct {
 	TestMethod  string               `json:"testMethod"`
 	DisplayName string               `json:"displayName"`
 	State       string               `json:"state"`
+	ElapsedTime string               `json:"elapsedTime"`
 	Invocations []renderedInvocation `json:"invocations"`
 }
 
@@ -50,7 +51,7 @@ type renderedResult struct {
 func render(r Result) renderedResult {
 	out := renderedResult{TestClass: r.TestClass, DisplayName: r.DisplayName, State: r.State, PackageName: r.PackageName, Tests: []renderedTest{}}
 	for _, tc := range r.Tests {
-		t := renderedTest{TestMethod: tc.TestMethod, DisplayName: tc.DisplayName, State: tc.State, Invocations: []renderedInvocation{}}
+		t := renderedTest{TestMethod: tc.TestMethod, DisplayName: tc.DisplayName, State: tc.State, ElapsedTime: tc.ElapsedTime, Invocations: []renderedInvocation{}}
 		for _, inv := range tc.Invocations {
 			ri := renderedInvocation{DisplayName: inv.DisplayName, State: inv.State, ElapsedTime: inv.ElapsedTime, Sentences: []renderedSentence{}, Fixtures: flattenPairs(inv.Fixtures)}
 			for _, s := range inv.Sentences {

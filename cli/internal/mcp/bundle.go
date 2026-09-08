@@ -169,6 +169,7 @@ type TestCase struct {
 	TestMethod  string       `json:"testMethod"`
 	DisplayName string       `json:"displayName"`
 	State       string       `json:"state"`
+	ElapsedTime string       `json:"elapsedTime"`
 	Invocations []Invocation `json:"invocations"`
 }
 type Result struct {

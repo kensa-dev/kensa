@@ -25,7 +25,7 @@ nothing to read.
 |------|------|---------|
 | `list_tests` | `bundle_dir` (optional), `state` (string, optional), `children` (bool, optional) | `{ tests: TestEntry[], bundleWrittenAt, bundleAge }` — every test class, optionally filtered by state. Compact by default: each class row carries `methods` (state counts — `passed`, `failed`, `disabled`, `notExecuted`, `total`) and `elapsedMs` (its methods' `timing` summed), with `children` left out. Pass `children: true` to include the method rows under each class. A class whose immediate children are not all methods (a nested container, e.g. site-mode or the `multi` fixture) is left as-is regardless of `children`: children kept, no counts. Each `TestEntry` has `id`, `testClass`, `testMethod` (child entries only), `displayName`, `state`, `tags`, `issues`, `epics`, `hasErrors`, `source`, `timing` (one `[startMs, elapsedMs]` pair per invocation), `participants` (interaction count per named participant), `assertions`, `expandables`, `methods`, `elapsedMs`, and nested `children`. |
 | `list_failures` | `bundle_dir` (optional) | `{ failures: TestEntry[], bundleWrittenAt, bundleAge }` — only the test classes whose `state` is `Failed`, with `children` and their `methods`/`elapsedMs` always populated. |
-| `get_test` | `bundle_dir` (optional), `id` (string), `raw` (bool, optional) | The result for one test class, rendered: `tests[]` → `invocations[]` with `sentences[{line, text}]`, `fixtures`, `interactions` (names) and `exception {message, sourceLocation}` where one failed. `raw: true` returns the result file verbatim, token stream and diagrams included. |
+| `get_test` | `bundle_dir` (optional), `id` (string), `raw` (bool, optional) | The result for one test class, rendered: `tests[]` → `{testMethod, displayName, state, elapsedTime, invocations[]}` with `sentences[{line, text}]`, `fixtures`, `interactions` (names) and `exception {message, sourceLocation}` where one failed. A child id `<class>:<method>` narrows `tests[]` to that one method. `raw: true` returns the result file verbatim, token stream and diagrams included, always for the whole class regardless of a child id. |
 | `failure_evidence` | `bundle_dir` (optional), `id` (string) | `{ testClass, state, failures[], distinctExceptions }` — one entry per failed invocation with `testMethod`, `failingSentence`, `failingSentenceLine`, `exception` and `sourceLocation` (the deepest stack frame inside the test class, e.g. `PaymentTest.kt:107`). |
 | `captured_interactions` | `bundle_dir` (optional), `id` (string) | `{ testClass, methods[] }` — every interaction Kensa captured, per method and invocation: `name`, `from`, `to`, `values[{name, value, language}]` (request and response bodies, URLs) and `attributes` grouped by name (`Status`, `Headers`). A child id `<class>:<method>` narrows to one method. |
 | `run_status` | `bundle_dir` (optional) | `{ runState, runStartedAt, runFinishedAt, runAge, classesWritten, passed, failed, disabled, pid, sources[] }` — the state of the run that produced the bundle. `passed`, `failed` and `disabled` are the method counts so far while a run is unfinished, present only when the marker carries them. `runState` is `complete`, `running`, `abandoned` or `incomplete`. `sources` breaks a site root down per source. |
@@ -104,8 +104,10 @@ starting at or before the `sourceLocation` line. Without a test-class frame in
 the trace it falls back to the last sentence of the method.
 
 **Ids.** `list_tests` returns a class id (`com.example.PaymentTest`) and child
-ids of the form `<class>:<method>`. Results are written per class, so passing a
-child id to `get_test` or `failure_evidence` resolves to its owning class.
+ids of the form `<class>:<method>`. Results are written per class: a child id
+to `failure_evidence` resolves to its owning class, and to `get_test` narrows
+the rendered result to that one method (`raw: true` still returns the whole
+file, since that is the file as written).
 
 **`hasErrors`** marks a test Kensa could not fully parse or render. It is
 independent of `state` — a passing test may still carry parse errors, and its

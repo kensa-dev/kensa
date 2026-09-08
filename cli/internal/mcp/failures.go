@@ -3,6 +3,7 @@ package mcp
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -49,12 +50,14 @@ func listTests(_ context.Context, _ *mcp.CallToolRequest, in listTestsIn) (*mcp.
 
 type getTestIn struct {
 	BundleDir string `json:"bundle_dir,omitempty" jsonschema:"kensa-output bundle, site-mode root, or a test folder name from .kensa-properties; omit when the project configures exactly one"`
-	ID        string `json:"id" jsonschema:"test class id, e.g. com.example.PaymentTest; a child id of the form <class>:<method> resolves to its class"`
+	ID        string `json:"id" jsonschema:"test class id, e.g. com.example.PaymentTest; a child id of the form <class>:<method> narrows the rendered form to that method (raw always returns the whole class)"`
 	Raw       bool   `json:"raw,omitempty" jsonschema:"return the result file verbatim, token stream and diagrams included, instead of the rendered form"`
 }
 
 // getTestFor returns the rendered form of a class result, or the file
-// verbatim when raw is set.
+// verbatim when raw is set. A child id narrows the rendered form to that one
+// method; raw always returns the whole file, since the result is written per
+// class.
 func getTestFor(bundle, id string, raw bool) (any, *mcp.CallToolResult, error) {
 	b, err := findRawResult(bundle, id)
 	if err != nil {
@@ -66,6 +69,19 @@ func getTestFor(bundle, id string, raw bool) (any, *mcp.CallToolResult, error) {
 	var r Result
 	if err := json.Unmarshal(b, &r); err != nil {
 		return nil, nil, err
+	}
+	if method := methodOf(id); method != "" {
+		var found bool
+		for _, tc := range r.Tests {
+			if tc.TestMethod == method {
+				r.Tests = []TestCase{tc}
+				found = true
+				break
+			}
+		}
+		if !found {
+			return nil, nil, fmt.Errorf("no method %q in %s", method, r.TestClass)
+		}
 	}
 	return render(r), nil, nil
 }

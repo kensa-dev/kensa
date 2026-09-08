@@ -85,8 +85,8 @@ func testEntrySchema(property string) *jsonschema.Schema {
 // and the integration test.
 func registerTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{Name: "server_info", Description: "Kensa MCP server name and version"}, serverInfo)
-	mcp.AddTool(server, &mcp.Tool{Name: "list_tests", Description: "List tests in a kensa-output bundle, optionally filtered by state", OutputSchema: testEntrySchema("tests")}, listTests)
-	mcp.AddTool(server, &mcp.Tool{Name: "get_test", Description: "The result for a test class: per method and invocation, the sentences as text, fixtures, interaction names and any failure with its source location. Pass raw for the file verbatim"}, getTest)
+	mcp.AddTool(server, &mcp.Tool{Name: "list_tests", Description: "List tests in a kensa-output bundle, optionally filtered by state. Rows are compact class rows with method counts and elapsed time by default; children: true adds the method rows under each class", OutputSchema: testEntrySchema("tests")}, listTests)
+	mcp.AddTool(server, &mcp.Tool{Name: "get_test", Description: "The result for a test class, or one method when given a child id: per method and invocation, the sentences as text, fixtures, interaction names and any failure with its source location. Pass raw for the file verbatim, which is always the whole class"}, getTest)
 	mcp.AddTool(server, &mcp.Tool{Name: "list_failures", Description: "List failed tests in a kensa-output bundle", OutputSchema: testEntrySchema("failures")}, listFailures)
 	mcp.AddTool(server, &mcp.Tool{Name: "failure_evidence", Description: "Every failed method of a test class with its failing sentence, exception message and the source location inside the test that threw"}, failureEvidence)
 	mcp.AddTool(server, &mcp.Tool{Name: "captured_interactions", Description: "Every interaction Kensa captured for a test class or one method: actors, request and response bodies, status and headers"}, capturedInteractions)
