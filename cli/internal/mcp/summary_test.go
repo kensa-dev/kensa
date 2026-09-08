@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -95,6 +96,71 @@ func TestSuiteSummaryRefusesIncompleteRun(t *testing.T) {
 	_, _, err := suiteSummaryFor(dir, 10)
 	if err == nil || !strings.Contains(err.Error(), "in progress") {
 		t.Errorf("suiteSummaryFor on running bundle: %v", err)
+	}
+}
+
+func TestGroupByTagCountsClassTagOnEveryMethod(t *testing.T) {
+	class := TestEntry{
+		TestClass: "pkg.TaggedTest",
+		Tags:      []string{"a"},
+		Children: []TestEntry{
+			{TestMethod: "one", State: "Passed"},
+			{TestMethod: "two", State: "Failed", Tags: []string{"b"}},
+		},
+	}
+	_, _, leaves := classAndMethodCounts([]TestEntry{class})
+	byTag := groupBy(leaves, effectiveTags)
+	want := []groupCounts{
+		{Key: "a", stateCounts: stateCounts{Passed: 1, Failed: 1, Total: 2}},
+		{Key: "b", stateCounts: stateCounts{Failed: 1, Total: 1}},
+	}
+	if !reflect.DeepEqual(byTag, want) {
+		t.Errorf("byTag = %+v, want %+v", byTag, want)
+	}
+}
+
+func TestSummariseLeavesElapsedMsNilWithoutTiming(t *testing.T) {
+	e := TestEntry{
+		TestClass: "pkg.NoTimingTest",
+		Children: []TestEntry{
+			{TestMethod: "one", State: "Passed"},
+			{TestMethod: "two", State: "Passed"},
+		},
+	}
+	if !summarise(&e) {
+		t.Fatal("summarise returned false, want true")
+	}
+	if e.Methods == nil || e.Methods.Total != 2 {
+		t.Errorf("methods = %+v", e.Methods)
+	}
+	if e.ElapsedMs != nil {
+		t.Errorf("elapsedMs = %v, want nil", e.ElapsedMs)
+	}
+}
+
+func TestSuiteSummaryRunWindowSpansSources(t *testing.T) {
+	site := t.TempDir()
+	writeFile(t, filepath.Join(site, "manifest.json"), `{"sources":[{"id":"api","url":"sources/api"},{"id":"ui","url":"sources/ui"}]}`)
+	writeFile(t, filepath.Join(site, "sources", "api", "indices.json"), indicesJSON(t))
+	writeFile(t, filepath.Join(site, "sources", "api", "run.json"), markerJSON("2026-08-27T09:00:00Z", "2026-08-27T09:03:00Z", deadPid))
+	writeFile(t, filepath.Join(site, "sources", "ui", "indices.json"), indicesJSON(t))
+	writeFile(t, filepath.Join(site, "sources", "ui", "run.json"), markerJSON("2026-08-27T09:01:00Z", "2026-08-27T09:05:00Z", deadPid))
+
+	out, _, err := suiteSummaryFor(site, 10)
+	if err != nil {
+		t.Fatalf("suiteSummaryFor: %v", err)
+	}
+	if out.RunState != runComplete {
+		t.Errorf("runState = %q, want %q", out.RunState, runComplete)
+	}
+	if out.RunStartedAt != "2026-08-27T09:00:00Z" {
+		t.Errorf("runStartedAt = %q, want the earlier source's start", out.RunStartedAt)
+	}
+	if out.RunFinishedAt != "2026-08-27T09:05:00Z" {
+		t.Errorf("runFinishedAt = %q, want the later source's finish", out.RunFinishedAt)
+	}
+	if out.RunDuration != "5m0s" {
+		t.Errorf("runDuration = %q, want 5m0s", out.RunDuration)
 	}
 }
 

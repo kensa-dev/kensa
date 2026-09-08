@@ -39,8 +39,9 @@ type TestEntry struct {
 	// list_tests in its default compact form). Absent on a method entry, and
 	// on a class entry whose children are not all methods.
 	Methods *stateCounts `json:"methods,omitempty"`
-	// ElapsedMs is the class entry's methods' timing summed. Same presence
-	// rules as Methods.
+	// ElapsedMs is the class entry's methods' timing summed. Present under the
+	// same rules as Methods, except it stays nil when none of the children
+	// carry timing (a pre-0.9.2 bundle): zero must mean zero, not unknown.
 	ElapsedMs *int64 `json:"elapsedMs,omitempty"`
 }
 

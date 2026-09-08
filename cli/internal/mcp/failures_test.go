@@ -163,16 +163,31 @@ func TestListTestsChildrenTrueKeepsChildren(t *testing.T) {
 }
 
 func TestListTestsLeavesNestedContainersAlone(t *testing.T) {
-	out, _, err := listTestsHandlerFor("testdata/multi", "", false)
-	if err != nil {
-		t.Fatalf("listTests: %v", err)
+	e := TestEntry{
+		TestClass: "pkg.SuiteContainer",
+		State:     "Failed",
+		Children: []TestEntry{
+			{
+				TestClass: "pkg.FirstTest",
+				State:     "Passed",
+				Children: []TestEntry{
+					{TestMethod: "one", State: "Passed"},
+				},
+			},
+			{
+				TestClass: "pkg.SecondTest",
+				State:     "Failed",
+				Children: []TestEntry{
+					{TestMethod: "two", State: "Failed"},
+				},
+			},
+		},
 	}
-	if len(out.Tests) != 1 {
-		t.Fatalf("tests = %+v", out.Tests)
+	if summarise(&e) {
+		t.Fatal("summarise returned true, want false")
 	}
-	e := out.Tests[0]
-	if len(e.Children) != 3 {
-		t.Errorf("children = %+v, want 3", e.Children)
+	if len(e.Children) != 2 {
+		t.Errorf("children = %+v, want 2", e.Children)
 	}
 	if e.Methods != nil {
 		t.Errorf("methods = %+v, want nil", e.Methods)

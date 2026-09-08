@@ -97,22 +97,29 @@ func classAndMethodCounts(entries []TestEntry) (classes, methods stateCounts, le
 }
 
 // summarise fills Methods and ElapsedMs on a class entry whose children are
-// all methods, summing their state and timing. A nested container (children
-// present but not all methods) is left alone: no counts, reports false.
+// all methods, summing their state and timing. ElapsedMs is left nil when no
+// child carries timing, so zero (a genuinely instant run) is never confused
+// with unknown (a pre-0.9.2 bundle with no timing at all). A nested container
+// (children present but not all methods) is left alone: no counts, reports
+// false.
 func summarise(e *TestEntry) bool {
 	if len(e.Children) == 0 || !allHaveTestMethod(e.Children) {
 		return false
 	}
 	var counts stateCounts
 	var elapsedMs int64
+	var haveTiming bool
 	for _, c := range e.Children {
 		addState(&counts, c.State)
 		if elapsed, ok := elapsedOf(c); ok {
 			elapsedMs += elapsed
+			haveTiming = true
 		}
 	}
 	e.Methods = &counts
-	e.ElapsedMs = &elapsedMs
+	if haveTiming {
+		e.ElapsedMs = &elapsedMs
+	}
 	return true
 }
 
@@ -276,6 +283,32 @@ func failureIDs(leaves []leaf) []string {
 	return out
 }
 
+// runWindow spans every source's run: the earliest RunStartedAt and the
+// latest RunFinishedAt. A source with no timestamp (unknown, or its run
+// hasn't started/finished) is skipped rather than treated as zero.
+func runWindow(sources []sourceRun) (startedAt, finishedAt string) {
+	var earliest, latest time.Time
+	for _, s := range sources {
+		if s.RunStartedAt != "" {
+			if t, err := time.Parse(time.RFC3339Nano, s.RunStartedAt); err == nil {
+				if earliest.IsZero() || t.Before(earliest) {
+					earliest = t
+					startedAt = s.RunStartedAt
+				}
+			}
+		}
+		if s.RunFinishedAt != "" {
+			if t, err := time.Parse(time.RFC3339Nano, s.RunFinishedAt); err == nil {
+				if latest.IsZero() || t.After(latest) {
+					latest = t
+					finishedAt = s.RunFinishedAt
+				}
+			}
+		}
+	}
+	return startedAt, finishedAt
+}
+
 // runDuration is finishedAt - startedAt as Go duration text, only when both
 // timestamps are known and parse.
 func runDuration(startedAt, finishedAt string) string {
@@ -330,14 +363,15 @@ func suiteSummaryFor(bundle string, slowestLimit int) (suiteSummaryOut, *mcp.Cal
 		return suiteSummaryOut{}, nil, err
 	}
 	run := aggregateRun(sources)
+	runStartedAt, runFinishedAt := runWindow(sources)
 
 	classes, methods, leaves := classAndMethodCounts(entries)
 
 	out := suiteSummaryOut{
 		RunState:        run.RunState,
-		RunStartedAt:    run.RunStartedAt,
-		RunFinishedAt:   run.RunFinishedAt,
-		RunDuration:     runDuration(run.RunStartedAt, run.RunFinishedAt),
+		RunStartedAt:    runStartedAt,
+		RunFinishedAt:   runFinishedAt,
+		RunDuration:     runDuration(runStartedAt, runFinishedAt),
 		Classes:         classes,
 		Methods:         methods,
 		Failures:        failureIDs(leaves),
