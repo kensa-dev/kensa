@@ -23,7 +23,7 @@ nothing to read.
 
 | Tool | Args | Returns |
 |------|------|---------|
-| `list_tests` | `bundle_dir` (optional), `state` (string, optional) | `{ tests: TestEntry[], bundleWrittenAt, bundleAge }` — every test class, optionally filtered by state. Each `TestEntry` has `id`, `testClass`, `displayName`, `state`, `tags`, `issues`, `hasErrors`, `source`, and nested `children`. |
+| `list_tests` | `bundle_dir` (optional), `state` (string, optional) | `{ tests: TestEntry[], bundleWrittenAt, bundleAge }` — every test class, optionally filtered by state. Each `TestEntry` has `id`, `testClass`, `testMethod` (child entries only), `displayName`, `state`, `tags`, `issues`, `epics`, `hasErrors`, `source`, `timing` (one `[startMs, elapsedMs]` pair per invocation), `participants` (interaction count per named participant), `assertions`, `expandables`, and nested `children`. |
 | `list_failures` | `bundle_dir` (optional) | `{ failures: TestEntry[], bundleWrittenAt, bundleAge }` — only the test classes whose `state` is `Failed`. |
 | `get_test` | `bundle_dir` (optional), `id` (string), `raw` (bool, optional) | The result for one test class, rendered: `tests[]` → `invocations[]` with `sentences[{line, text}]`, `fixtures`, `interactions` (names) and `exception {message, sourceLocation}` where one failed. `raw: true` returns the result file verbatim, token stream and diagrams included. |
 | `failure_evidence` | `bundle_dir` (optional), `id` (string) | `{ testClass, state, failures[], distinctExceptions }` — one entry per failed invocation with `testMethod`, `failingSentence`, `failingSentenceLine`, `exception` and `sourceLocation` (the deepest stack frame inside the test class, e.g. `PaymentTest.kt:107`). |

@@ -1,6 +1,9 @@
 package mcp
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestReadIndices(t *testing.T) {
 	tests, err := readIndices("testdata/bundle")
@@ -15,6 +18,25 @@ func TestReadIndices(t *testing.T) {
 	}
 	if len(tests[0].Children) != 2 {
 		t.Errorf("got %d children, want 2", len(tests[0].Children))
+	}
+	child := tests[0].Children[0]
+	if child.TestMethod != "canCheckAvailabilityOfRobots" {
+		t.Errorf("testMethod = %q, want %q", child.TestMethod, "canCheckAvailabilityOfRobots")
+	}
+	if !reflect.DeepEqual(child.Timing, [][2]int64{{1000, 250}}) {
+		t.Errorf("timing = %+v", child.Timing)
+	}
+	if !reflect.DeepEqual(child.Participants, map[string]int{"Robot Shelter": 2}) {
+		t.Errorf("participants = %+v", child.Participants)
+	}
+	if child.Assertions != 3 {
+		t.Errorf("assertions = %d, want 3", child.Assertions)
+	}
+	if child.Expandables != 1 {
+		t.Errorf("expandables = %d, want 1", child.Expandables)
+	}
+	if !reflect.DeepEqual(child.Epics, []string{"Adoption"}) {
+		t.Errorf("epics = %+v", child.Epics)
 	}
 }
 

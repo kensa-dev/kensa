@@ -28,18 +28,32 @@ func testEntrySchema(property string) *jsonschema.Schema {
 	// nil Go slices marshal to JSON null, so array-typed properties must also
 	// permit "null" to satisfy output validation.
 	stringArray := &jsonschema.Schema{Types: []string{"array", "null"}, Items: &jsonschema.Schema{Type: "string"}}
+	timing := &jsonschema.Schema{
+		Types: []string{"array", "null"},
+		Items: &jsonschema.Schema{Type: "array", Items: &jsonschema.Schema{Type: "integer"}},
+	}
+	participants := &jsonschema.Schema{
+		Types:                []string{"object", "null"},
+		AdditionalProperties: &jsonschema.Schema{Type: "integer"},
+	}
 	entry := &jsonschema.Schema{
 		Type: "object",
 		Properties: map[string]*jsonschema.Schema{
-			"id":          {Type: "string"},
-			"testClass":   {Type: "string"},
-			"displayName": {Type: "string"},
-			"state":       {Type: "string", Description: "one of Passed, Failed, Disabled, Not Executed"},
-			"tags":        stringArray,
-			"issues":      stringArray,
-			"hasErrors":   {Type: "boolean", Description: "Kensa could not fully parse or render this test; its sentences are incomplete"},
-			"source":      {Type: "string", Description: "site-mode source this test came from; absent for a standalone bundle"},
-			"children":    {Types: []string{"array", "null"}, Items: &jsonschema.Schema{Ref: "#/$defs/TestEntry"}},
+			"id":           {Type: "string"},
+			"testClass":    {Type: "string"},
+			"testMethod":   {Type: "string", Description: "the method name for a child entry; absent on a class entry"},
+			"displayName":  {Type: "string"},
+			"state":        {Type: "string", Description: "one of Passed, Failed, Disabled, Not Executed"},
+			"tags":         stringArray,
+			"issues":       stringArray,
+			"epics":        stringArray,
+			"hasErrors":    {Type: "boolean", Description: "Kensa could not fully parse or render this test; its sentences are incomplete"},
+			"source":       {Type: "string", Description: "site-mode source this test came from; absent for a standalone bundle"},
+			"timing":       timing,
+			"participants": participants,
+			"assertions":   {Type: "integer"},
+			"expandables":  {Type: "integer"},
+			"children":     {Types: []string{"array", "null"}, Items: &jsonschema.Schema{Ref: "#/$defs/TestEntry"}},
 		},
 	}
 	return &jsonschema.Schema{

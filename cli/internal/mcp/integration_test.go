@@ -52,6 +52,9 @@ func TestIntegrationListTests(t *testing.T) {
 	if len(out.Tests) != 2 {
 		t.Fatalf("list_tests returned %d test classes, want 2", len(out.Tests))
 	}
+	if len(out.Tests[0].Children) == 0 || len(out.Tests[0].Children[0].Timing) == 0 {
+		t.Fatalf("list_tests first child timing = %+v", out.Tests[0].Children)
+	}
 }
 
 // Exercises the whole path for the triage tool — handler, output schema

@@ -13,8 +13,8 @@ type TestEntry struct {
 	TestClass   string      `json:"testClass"`
 	DisplayName string      `json:"displayName"`
 	State       string      `json:"state"`
-	Tags        []string    `json:"tags"`
-	Issues      []string    `json:"issues"`
+	Tags        []string    `json:"tags,omitempty"`
+	Issues      []string    `json:"issues,omitempty"`
 	Children    []TestEntry `json:"children"`
 	// HasErrors marks a test Kensa could not fully parse or render. It is
 	// independent of State: a passing test may still carry parse errors, and
@@ -23,6 +23,17 @@ type TestEntry struct {
 	// Source names the site-mode source this test came from, and is absent for
 	// a standalone bundle. Ids are left untouched; this is additive.
 	Source string `json:"source,omitempty"`
+	// TestMethod is the method name for a child entry; absent on a class entry.
+	TestMethod string `json:"testMethod,omitempty"`
+	// Epics is set from the container's @Epic tags, class or method.
+	Epics []string `json:"epics,omitempty"`
+	// Timing has one [startMs, elapsedMs] pair per invocation, so a
+	// parameterised method carries more than one.
+	Timing [][2]int64 `json:"timing,omitempty"`
+	// Participants counts interactions per named participant.
+	Participants map[string]int `json:"participants,omitempty"`
+	Assertions   int            `json:"assertions,omitempty"`
+	Expandables  int            `json:"expandables,omitempty"`
 }
 
 type indicesFile struct {
