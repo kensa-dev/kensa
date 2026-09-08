@@ -128,7 +128,7 @@ func TestResolveEmptySpecWithoutPropertiesErrors(t *testing.T) {
 // Listing a site reports every source, tagging each entry with the source it
 // came from rather than rewriting ids.
 func TestListTestsAcrossSiteSources(t *testing.T) {
-	out, _, err := listTestsHandlerFor("testdata/site", "")
+	out, _, err := listTestsHandlerFor("testdata/site", "", false)
 	if err != nil {
 		t.Fatalf("listTests: %v", err)
 	}

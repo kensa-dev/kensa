@@ -34,7 +34,7 @@ func fixNow(t *testing.T, at time.Time) {
 func TestListTestsReportsBundleFreshness(t *testing.T) {
 	written := time.Date(2026, 8, 27, 9, 0, 0, 0, time.UTC)
 	fixNow(t, written.Add(3*time.Hour+12*time.Minute))
-	out, _, err := listTestsHandlerFor(staleBundle(t, written), "")
+	out, _, err := listTestsHandlerFor(staleBundle(t, written), "", false)
 	if err != nil {
 		t.Fatalf("listTests: %v", err)
 	}

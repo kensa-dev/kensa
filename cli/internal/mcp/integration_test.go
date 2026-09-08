@@ -52,8 +52,11 @@ func TestIntegrationListTests(t *testing.T) {
 	if len(out.Tests) != 2 {
 		t.Fatalf("list_tests returned %d test classes, want 2", len(out.Tests))
 	}
-	if len(out.Tests[0].Children) == 0 || len(out.Tests[0].Children[0].Timing) == 0 {
-		t.Fatalf("list_tests first child timing = %+v", out.Tests[0].Children)
+	if out.Tests[0].Children != nil {
+		t.Fatalf("list_tests compact-by-default children = %+v, want nil", out.Tests[0].Children)
+	}
+	if out.Tests[0].Methods == nil || out.Tests[0].Methods.Total == 0 {
+		t.Fatalf("list_tests first class methods = %+v", out.Tests[0].Methods)
 	}
 }
 

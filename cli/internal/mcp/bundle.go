@@ -34,6 +34,14 @@ type TestEntry struct {
 	Participants map[string]int `json:"participants,omitempty"`
 	Assertions   int            `json:"assertions,omitempty"`
 	Expandables  int            `json:"expandables,omitempty"`
+	// Methods is the state counts of this class entry's method children,
+	// present whenever the children are all methods (list_failures, or
+	// list_tests in its default compact form). Absent on a method entry, and
+	// on a class entry whose children are not all methods.
+	Methods *stateCounts `json:"methods,omitempty"`
+	// ElapsedMs is the class entry's methods' timing summed. Same presence
+	// rules as Methods.
+	ElapsedMs *int64 `json:"elapsedMs,omitempty"`
 }
 
 type indicesFile struct {

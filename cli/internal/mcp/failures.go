@@ -10,6 +10,7 @@ import (
 type listTestsIn struct {
 	BundleDir string `json:"bundle_dir,omitempty" jsonschema:"kensa-output bundle, site-mode root, or a test folder name from .kensa-properties; omit when the project configures exactly one"`
 	State     string `json:"state,omitempty" jsonschema:"optional state filter: Passed, Failed, Disabled or Not Executed"`
+	Children  bool   `json:"children,omitempty" jsonschema:"include the method rows under each class; off by default because the listing is a few tokens per class without them"`
 }
 type listTestsOut struct {
 	Tests []TestEntry `json:"tests"`
@@ -17,26 +18,32 @@ type listTestsOut struct {
 }
 
 // listTestsHandlerFor is the pure core (no MCP types) — directly unit-testable.
-func listTestsHandlerFor(bundle, state string) (listTestsOut, *mcp.CallToolResult, error) {
+func listTestsHandlerFor(bundle, state string, children bool) (listTestsOut, *mcp.CallToolResult, error) {
 	all, fresh, err := readAllIndices(bundle)
 	if err != nil {
 		return listTestsOut{}, nil, err
 	}
-	if state == "" {
-		return listTestsOut{Tests: all, bundleFreshness: fresh}, nil, nil
+	rows := all
+	if state != "" {
+		want := normaliseState(state)
+		var filtered []TestEntry
+		for _, t := range all {
+			if normaliseState(t.State) == want {
+				filtered = append(filtered, t)
+			}
+		}
+		rows = filtered
 	}
-	want := normaliseState(state)
-	var filtered []TestEntry
-	for _, t := range all {
-		if normaliseState(t.State) == want {
-			filtered = append(filtered, t)
+	for i := range rows {
+		if summarise(&rows[i]) && !children {
+			rows[i].Children = nil
 		}
 	}
-	return listTestsOut{Tests: filtered, bundleFreshness: fresh}, nil, nil
+	return listTestsOut{Tests: rows, bundleFreshness: fresh}, nil, nil
 }
 
 func listTests(_ context.Context, _ *mcp.CallToolRequest, in listTestsIn) (*mcp.CallToolResult, listTestsOut, error) {
-	out, res, err := listTestsHandlerFor(in.BundleDir, in.State)
+	out, res, err := listTestsHandlerFor(in.BundleDir, in.State, in.Children)
 	return res, out, err
 }
 
@@ -84,6 +91,7 @@ func listFailuresFor(bundle string) (listFailuresOut, *mcp.CallToolResult, error
 	var failures []TestEntry
 	for _, t := range all {
 		if t.State == "Failed" {
+			summarise(&t)
 			failures = append(failures, t)
 		}
 	}

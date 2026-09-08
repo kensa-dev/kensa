@@ -96,6 +96,26 @@ func classAndMethodCounts(entries []TestEntry) (classes, methods stateCounts, le
 	return classes, methods, leaves
 }
 
+// summarise fills Methods and ElapsedMs on a class entry whose children are
+// all methods, summing their state and timing. A nested container (children
+// present but not all methods) is left alone: no counts, reports false.
+func summarise(e *TestEntry) bool {
+	if len(e.Children) == 0 || !allHaveTestMethod(e.Children) {
+		return false
+	}
+	var counts stateCounts
+	var elapsedMs int64
+	for _, c := range e.Children {
+		addState(&counts, c.State)
+		if elapsed, ok := elapsedOf(c); ok {
+			elapsedMs += elapsed
+		}
+	}
+	e.Methods = &counts
+	e.ElapsedMs = &elapsedMs
+	return true
+}
+
 func union(a, b []string) []string {
 	seen := make(map[string]bool, len(a)+len(b))
 	var out []string

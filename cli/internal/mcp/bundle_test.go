@@ -41,7 +41,7 @@ func TestReadIndices(t *testing.T) {
 }
 
 func TestListTestsFilterByState(t *testing.T) {
-	out, _, err := listTestsHandlerFor("testdata/bundle", "Failed")
+	out, _, err := listTestsHandlerFor("testdata/bundle", "Failed", false)
 	if err != nil {
 		t.Fatalf("listTests: %v", err)
 	}

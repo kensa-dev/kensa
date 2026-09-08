@@ -36,6 +36,17 @@ func testEntrySchema(property string) *jsonschema.Schema {
 		Types:                []string{"object", "null"},
 		AdditionalProperties: &jsonschema.Schema{Type: "integer"},
 	}
+	methods := &jsonschema.Schema{
+		Type: "object",
+		Properties: map[string]*jsonschema.Schema{
+			"passed":      {Type: "integer"},
+			"failed":      {Type: "integer"},
+			"disabled":    {Type: "integer"},
+			"notExecuted": {Type: "integer"},
+			"total":       {Type: "integer"},
+		},
+		Description: "state counts of this class entry's method children, present whenever the children are all methods",
+	}
 	entry := &jsonschema.Schema{
 		Type: "object",
 		Properties: map[string]*jsonschema.Schema{
@@ -53,6 +64,8 @@ func testEntrySchema(property string) *jsonschema.Schema {
 			"participants": participants,
 			"assertions":   {Type: "integer"},
 			"expandables":  {Type: "integer"},
+			"methods":      methods,
+			"elapsedMs":    {Type: "integer", Description: "this class entry's methods' timing, summed"},
 			"children":     {Types: []string{"array", "null"}, Items: &jsonschema.Schema{Ref: "#/$defs/TestEntry"}},
 		},
 	}

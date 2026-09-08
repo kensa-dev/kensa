@@ -73,7 +73,7 @@ func TestListFailures(t *testing.T) {
 }
 
 func TestListTestsSurfacesHasErrors(t *testing.T) {
-	out, _, err := listTestsHandlerFor("testdata/bundle", "")
+	out, _, err := listTestsHandlerFor("testdata/bundle", "", true)
 	if err != nil {
 		t.Fatalf("listTests: %v", err)
 	}
@@ -99,7 +99,7 @@ func TestListTestsSurfacesHasErrors(t *testing.T) {
 // filter has no way to know that, so matching tolerates case and spacing.
 func TestListTestsStateFilterIsLenient(t *testing.T) {
 	for _, filter := range []string{"Failed", "failed", "FAILED"} {
-		out, _, err := listTestsHandlerFor("testdata/bundle", filter)
+		out, _, err := listTestsHandlerFor("testdata/bundle", filter, false)
 		if err != nil {
 			t.Fatalf("listTests %q: %v", filter, err)
 		}
@@ -107,11 +107,97 @@ func TestListTestsStateFilterIsLenient(t *testing.T) {
 			t.Errorf("filter %q returned %d entries, want 1", filter, len(out.Tests))
 		}
 	}
-	out, _, err := listTestsHandlerFor("testdata/bundle", "NotExecuted")
+	out, _, err := listTestsHandlerFor("testdata/bundle", "NotExecuted", false)
 	if err != nil {
 		t.Fatalf("listTests NotExecuted: %v", err)
 	}
 	if len(out.Tests) != 0 {
 		t.Errorf("NotExecuted returned %d entries, want 0", len(out.Tests))
+	}
+}
+
+func TestListTestsCompactByDefault(t *testing.T) {
+	out, _, err := listTestsHandlerFor("testdata/bundle", "", false)
+	if err != nil {
+		t.Fatalf("listTests: %v", err)
+	}
+	var checked bool
+	for _, e := range out.Tests {
+		if e.Children != nil {
+			t.Errorf("%s: children = %+v, want nil", e.TestClass, e.Children)
+		}
+		if e.TestClass != failingClass {
+			continue
+		}
+		checked = true
+		if e.Methods == nil || e.Methods.Total != 2 || e.Methods.Failed != 1 {
+			t.Errorf("methods = %+v", e.Methods)
+		}
+		if e.ElapsedMs == nil || *e.ElapsedMs != 6450 {
+			t.Errorf("elapsedMs = %v", e.ElapsedMs)
+		}
+	}
+	if !checked {
+		t.Fatalf("%s missing from indices", failingClass)
+	}
+}
+
+func TestListTestsChildrenTrueKeepsChildren(t *testing.T) {
+	out, _, err := listTestsHandlerFor("testdata/bundle", "", true)
+	if err != nil {
+		t.Fatalf("listTests: %v", err)
+	}
+	var checked bool
+	for _, e := range out.Tests {
+		if e.TestClass != failingClass {
+			continue
+		}
+		checked = true
+		if len(e.Children) != 2 {
+			t.Errorf("children = %+v, want 2", e.Children)
+		}
+	}
+	if !checked {
+		t.Fatalf("%s missing from indices", failingClass)
+	}
+}
+
+func TestListTestsLeavesNestedContainersAlone(t *testing.T) {
+	out, _, err := listTestsHandlerFor("testdata/multi", "", false)
+	if err != nil {
+		t.Fatalf("listTests: %v", err)
+	}
+	if len(out.Tests) != 1 {
+		t.Fatalf("tests = %+v", out.Tests)
+	}
+	e := out.Tests[0]
+	if len(e.Children) != 3 {
+		t.Errorf("children = %+v, want 3", e.Children)
+	}
+	if e.Methods != nil {
+		t.Errorf("methods = %+v, want nil", e.Methods)
+	}
+	if e.ElapsedMs != nil {
+		t.Errorf("elapsedMs = %v, want nil", e.ElapsedMs)
+	}
+}
+
+func TestListFailuresPopulatesMethodsAndElapsed(t *testing.T) {
+	out, _, err := listFailuresFor("testdata/bundle")
+	if err != nil {
+		t.Fatalf("listFailures: %v", err)
+	}
+	if len(out.Failures) != 1 {
+		t.Fatalf("listFailures = %+v", out.Failures)
+	}
+	f := out.Failures[0]
+	if len(f.Children) != 2 {
+		t.Errorf("children = %+v, want 2", f.Children)
+	}
+	if f.Methods == nil || f.Methods.Total != 2 || f.Methods.Failed != 1 {
+		t.Errorf("methods = %+v", f.Methods)
+	}
+	if f.ElapsedMs == nil || *f.ElapsedMs != 6450 {
+		t.Errorf("elapsedMs = %v", f.ElapsedMs)
 	}
 }

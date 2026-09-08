@@ -115,7 +115,7 @@ func TestListingsRefuseBundleInProgress(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "in progress") || !strings.Contains(err.Error(), "2 classes") || !strings.Contains(err.Error(), "await_results") {
 		t.Errorf("listFailures on running bundle: %v", err)
 	}
-	_, _, err = listTestsHandlerFor(dir, "")
+	_, _, err = listTestsHandlerFor(dir, "", false)
 	if err == nil || !strings.Contains(err.Error(), "in progress") {
 		t.Errorf("listTests on running bundle: %v", err)
 	}
