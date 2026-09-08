@@ -118,17 +118,18 @@ If you wrap the CLI in a script of your own, keep its diagnostics on **stderr**.
 
 ### Tools
 
-Five tools read a completed test run:
+Six tools read a completed test run:
 
 | Tool | Returns |
 |------|---------|
-| `list_tests` | Every test class, optionally filtered by state (`Passed`, `Failed`, `Disabled`, `Not Executed`). |
+| `suite_summary` | The run as a whole in one call: run window and duration, class and method counts by state, duration buckets, the slowest methods, failure ids, counts by tag and package, participants. The numbers match the report's overview page. |
+| `list_tests` | One row per test class with method counts and elapsed time, optionally filtered by state (`Passed`, `Failed`, `Disabled`, `Not Executed`). `children: true` adds the method rows. |
 | `list_failures` | Just the failures. |
 | `failure_evidence` | Every failed method of one class: the failing sentence, the exception message, and the line inside the test that threw (`PaymentTest.kt:107`). One call usually gives the fix location. |
-| `captured_interactions` | Everything Kensa captured between actors for a class or one method: request and response bodies, status, headers. This is the evidence for a payload-shape mismatch. |
-| `get_test` | One class rendered as a person reads it: sentences as text, fixtures, interaction names, any failure. `raw: true` returns the result file verbatim. |
+| `captured_interactions` | Everything Kensa captured between actors for a class or one method: request and response bodies, status, headers. This is the evidence for a payload-shape mismatch. Each value is capped at `max_value_chars` (default 4000) and a cut value says so, with its full length. |
+| `get_test` | One class rendered as a person reads it: sentences as text, fixtures, interaction names, any failure. A `<class>:<method>` id returns that method only. `raw: true` returns the result file verbatim. |
 
-The triage path is `list_failures`, then `failure_evidence` on the class, then `captured_interactions` on the method if the message alone does not explain it. After the fix, re-run, `await_results`, and `list_failures` once more to confirm the whole bundle is clean rather than just the class you re-ran.
+When the question is about the run rather than a failure (how long, how many, what was slow), `suite_summary` answers it in one call. The triage path is `list_failures`, then `failure_evidence` on the class, then `captured_interactions` on the method if the message alone does not explain it. After the fix, re-run, `await_results`, and `list_failures` once more to confirm the whole bundle is clean rather than just the class you re-ran.
 
 One tool reads your sources: `style_profile` catalogues how the project writes Kensa tests — framework, fixture containers, MatcherFields, stub helpers, conventions, and a representative test — so an agent proposing a fix writes it in your idiom rather than generic Kotlin. It scans both Kotlin and Java by pattern-matching, without compiling, so treat it as a strong hint rather than ground truth. It is the only tool that writes anything: a cache at `.kensa/style-profile.json`, which you should gitignore.
 
@@ -154,7 +155,7 @@ The marker appears when the first Kensa test starts, so between launching the te
 
 `running` relies on the test JVM's pid being visible to the server, which holds when both run on the same machine. A bundle produced elsewhere (a CI agent, a container) records a different hostname and is judged on `indices.json` alone.
 
-For `style_profile`, pass the module that holds the tests (`.../acceptance-tests`), not the repository root, when the tests live in a submodule. And for triage, prefer `list_failures` then `get_test` on the one class: `list_tests` with no `state` filter returns every class with its children inlined.
+For `style_profile`, pass the module that holds the tests (`.../acceptance-tests`), not the repository root, when the tests live in a submodule. And for triage, prefer `list_failures` then `get_test` on the one class or method rather than `list_tests` with `children: true`, which returns every method row in the bundle.
 
 ### Which report the tools read
 
