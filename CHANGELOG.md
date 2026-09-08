@@ -1,5 +1,12 @@
 <h2 class="github">Changelog</h2>
 
+### Unreleased
+
+Added:
+  - **`suite_summary` MCP tool.** One call for the run as a whole: state counts, run window and duration, duration buckets, slowest methods, failure ids, counts by tag and package, participants. Reads only `indices.json` (#221).
+
+Changed:
+  - **Compact MCP listings.** `list_tests` returns one row per class with method counts and elapsed time; `children: true` restores the method rows. `get_test` with a `<class>:<method>` id returns that method only. `captured_interactions` caps each captured value at `max_value_chars` (default 4000) and marks the cut (#221).
 
 ### v0.9.3
 
