@@ -79,6 +79,7 @@ func registerTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{Name: "captured_interactions", Description: "Every interaction Kensa captured for a test class or one method: actors, request and response bodies, status and headers"}, capturedInteractions)
 	mcp.AddTool(server, &mcp.Tool{Name: "run_status", Description: "State of the run that produced a kensa-output bundle: complete, running, abandoned or incomplete, with start and finish times"}, runStatus)
 	mcp.AddTool(server, &mcp.Tool{Name: "await_results", Description: "Block until the next test run completes (one in progress now, or one that starts after the call), then report its state; call straight after launching the tests"}, awaitResults)
+	mcp.AddTool(server, &mcp.Tool{Name: "suite_summary", Description: "One-call overview of a completed run: state counts for classes and methods, run window and duration, duration buckets, slowest methods, failure ids, counts by tag and package, participants. Reads only indices.json"}, suiteSummary)
 	mcp.AddTool(server, &mcp.Tool{Name: "style_profile", Description: "Heuristic style profile of a Kensa project: fixtures, MatcherFields, stub helpers, conventions, framework, exemplar"}, styleProfile)
 }
 

@@ -12,7 +12,7 @@ kensa mcp
 
 ## Tool groups
 
-The server registers nine tools in two groups.
+The server registers ten tools in two groups.
 
 ### Group A — bundle inspection
 
@@ -30,6 +30,7 @@ nothing to read.
 | `captured_interactions` | `bundle_dir` (optional), `id` (string) | `{ testClass, methods[] }` — every interaction Kensa captured, per method and invocation: `name`, `from`, `to`, `values[{name, value, language}]` (request and response bodies, URLs) and `attributes` grouped by name (`Status`, `Headers`). A child id `<class>:<method>` narrows to one method. |
 | `run_status` | `bundle_dir` (optional) | `{ runState, runStartedAt, runFinishedAt, runAge, classesWritten, passed, failed, disabled, pid, sources[] }` — the state of the run that produced the bundle. `passed`, `failed` and `disabled` are the method counts so far while a run is unfinished, present only when the marker carries them. `runState` is `complete`, `running`, `abandoned` or `incomplete`. `sources` breaks a site root down per source. |
 | `await_results` | `bundle_dir` (optional), `timeout_seconds` (int, optional, default 600, max 3600) | `{ completed, timedOut, runState, ... }` — blocks until the next run completes, then reports it. |
+| `suite_summary` | `bundle_dir` (optional), `slowest` (int, optional, default 10) | `{ runState, runStartedAt, runFinishedAt, runDuration, classes, methods, totalElapsedMs, durations[], slowest[], failures[], byTag[], byPackage[], participants[], bundleWrittenAt, bundleAge }` — a one-call overview of a completed run: state counts for classes and methods, the run window and duration, duration buckets, the slowest methods, failure ids, counts by tag and package, and participants. Refuses an incomplete run the same way `list_tests` and `list_failures` do. |
 
 **`bundle_dir` accepts four things**, so the agent rarely needs a literal path:
 
@@ -89,7 +90,8 @@ fields are omitted if the write time cannot be read.
 The `state` filter ignores case and spacing, so `not executed` and `NotExecuted`
 both match.
 
-**Triage path.** `list_failures` → `failure_evidence` on the class → fix at
+**Triage path.** `suite_summary` first when the question is about the run as a
+whole (how long, how many, what was slow). `list_failures` → `failure_evidence` on the class → fix at
 `sourceLocation`, or `captured_interactions` on the method when the assertion
 message alone does not explain it → re-run → `await_results` → `list_failures`
 again. `get_test` is for reading a whole class; it renders sentences as text

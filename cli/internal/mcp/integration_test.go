@@ -110,6 +110,31 @@ func TestIntegrationStyleProfileOnProjectWithNoIdioms(t *testing.T) {
 	}
 }
 
+func TestIntegrationSuiteSummary(t *testing.T) {
+	ctx := context.Background()
+	session := newConnectedSession(t, ctx)
+
+	res, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name:      "suite_summary",
+		Arguments: map[string]any{"bundle_dir": "testdata/bundle"},
+	})
+	if err != nil {
+		t.Fatalf("CallTool suite_summary: %v", err)
+	}
+	if res.IsError {
+		t.Fatalf("suite_summary returned error result: %+v", res.Content)
+	}
+
+	var out suiteSummaryOut
+	decodeStructured(t, res, &out)
+	if out.Methods.Total != 3 {
+		t.Fatalf("methods.total = %d, want 3", out.Methods.Total)
+	}
+	if out.Failures == nil {
+		t.Errorf("failures should never be nil")
+	}
+}
+
 func TestIntegrationServerInfo(t *testing.T) {
 	ctx := context.Background()
 	session := newConnectedSession(t, ctx)
@@ -132,7 +157,7 @@ func TestIntegrationServerInfo(t *testing.T) {
 	}
 }
 
-func TestIntegrationListsNineTools(t *testing.T) {
+func TestIntegrationListsTenTools(t *testing.T) {
 	ctx := context.Background()
 	session := newConnectedSession(t, ctx)
 
@@ -140,12 +165,12 @@ func TestIntegrationListsNineTools(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools: %v", err)
 	}
-	if len(res.Tools) != 9 {
+	if len(res.Tools) != 10 {
 		names := make([]string, len(res.Tools))
 		for i, tool := range res.Tools {
 			names[i] = tool.Name
 		}
-		t.Fatalf("ListTools returned %d tools %v, want 9", len(res.Tools), names)
+		t.Fatalf("ListTools returned %d tools %v, want 10", len(res.Tools), names)
 	}
 }
 
