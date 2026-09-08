@@ -182,7 +182,7 @@ func TestGetTestRawReturnsTheFileVerbatim(t *testing.T) {
 }
 
 func TestCapturedInteractionsForOneMethod(t *testing.T) {
-	out, _, err := capturedInteractionsFor("testdata/multi", multiClass+":handlesFiberCop")
+	out, _, err := capturedInteractionsFor("testdata/multi", multiClass+":handlesFiberCop", 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -203,7 +203,7 @@ func TestCapturedInteractionsForOneMethod(t *testing.T) {
 }
 
 func TestCapturedInteractionsForWholeClass(t *testing.T) {
-	out, _, err := capturedInteractionsFor("testdata/multi", multiClass)
+	out, _, err := capturedInteractionsFor("testdata/multi", multiClass, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -213,7 +213,7 @@ func TestCapturedInteractionsForWholeClass(t *testing.T) {
 }
 
 func TestCapturedInteractionsUnknownMethod(t *testing.T) {
-	_, _, err := capturedInteractionsFor("testdata/multi", multiClass+":nope")
+	_, _, err := capturedInteractionsFor("testdata/multi", multiClass+":nope", 0)
 	if err == nil || !strings.Contains(err.Error(), "nope") {
 		t.Errorf("got %v", err)
 	}
