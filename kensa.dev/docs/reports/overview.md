@@ -34,6 +34,14 @@ Timing always reflects the entire run and is not affected by the tree filter. Ev
 
 Clicking a segment or row in a panel appends a term to the filter: `state:`, `tag:`, `pkg:`, `epic:`, or `issue:`, depending on the panel. The Results donut's "Not executed" segment filters with `state:notexecuted`, with the space stripped out, because a filter term cannot contain one.
 
+## Linking to an issue or epic
+
+A URL of the form `index.html#/issue/KEY` (or `#/epic/ID`) opens the first test carrying that key with the first matching method expanded and the filter applied, across every source of a site. When no test carries the key it lands on the filtered Overview with an empty tree. A key containing `/` must be percent-encoded as `%2F`.
+
+```
+index.html#/issue/PROJ-123
+```
+
 ## Wall clock vs total elapsed
 
 Wall clock is the time from the first test starting to the last test finishing. Total elapsed is the sum of every individual test's own running time. The ratio between the two is what parallel execution saved you.

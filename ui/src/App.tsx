@@ -32,6 +32,7 @@ import {loadTreeData, loadSearchIndexes, statusFor, type LoadStatus} from "@/lib
 import {nodeIdForLocation} from "@/util/suiteSearchNav";
 import {overviewPathFor} from "@/util/overviewPath";
 import {resolveFilterSelection} from "@/util/filterSelection";
+import {filterRouteTarget, parseFilterRoute} from "@/util/filterRoute";
 import {AnchorLink} from "@/components/AnchorLink";
 import {collectLeaves, packageDepthFor} from "@/lib/overview";
 import {findCommonPackage} from "@/utils/treeUtils";
@@ -163,6 +164,20 @@ const App = () => {
             navigate(overviewPathFor(location.search, indices[0].sourceId), {replace: true});
         }
     }, [location.pathname, location.search, indices]);
+
+    useEffect(() => {
+        const route = parseFilterRoute(location.pathname);
+        const sourceId = indices[0]?.sourceId;
+        if (!route || !sourceId) return;
+        const target = filterRouteTarget(indices, route);
+        if (target) {
+            const params = new URLSearchParams({q: route.query});
+            if (target.method) params.set('method', target.method);
+            navigate('/test/' + target.testId + '?' + params.toString(), {replace: true});
+        } else {
+            navigate(overviewPathFor('?q=' + encodeURIComponent(route.query), sourceId), {replace: true});
+        }
+    }, [location.pathname, indices]);
 
     const sidebarRef = useRef<ImperativePanelHandle>(null);
     const contentRef = useRef<HTMLDivElement>(null);
