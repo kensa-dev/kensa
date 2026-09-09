@@ -18,6 +18,12 @@ interface SetupStep {
 fun SetupStep.and(other: SetupStep): SetupSteps = SetupSteps(this).apply { add(other) }
 fun SetupSteps.and(step: SetupStep): SetupSteps = apply { add(step) }
 
+fun setupStep(block: SetupScope.() -> Unit): SetupStep = object : SetupStep {
+    override fun setup(scope: SetupScope) = scope.block()
+}
+
+fun setupActions(vararg actions: Action<ActionContext>): SetupStep = setupStep { actions.forEach(::action) }
+
 class GivensHolder {
 
     val list = mutableListOf<Action<GivensContext>>()

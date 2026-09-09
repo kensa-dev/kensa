@@ -86,6 +86,51 @@ override fun setup(scope: SetupScope) {
 
 So the triple is sugar over `setup(scope)`, not a separate mechanism, and overriding one form or the other affects only that step. `thenEventually` from your assertion mixin also works inside `setup`, polling on the same terms it does anywhere else in the test.
 
+## One-line steps
+
+`setupActions(a, b)` builds a `SetupStep` from a vararg of actions, no anonymous object needed. Kensa renders a test method's own source into the report sentence, so a multi-statement builder lambda belongs in a private factory, not inline in the `@Test` body, the same as every other example on this page:
+
+```kotlin
+private fun anAccountIsOpenedAndFundedViaSetupActions() = setupActions(
+    { account = "opened-account" },
+    { reference = "funded-account" }
+)
+```
+
+```kotlin
+given(anAccountIsOpenedAndFundedViaSetupActions())
+```
+
+A single-action, single-line call is short enough that inlining it in the test body is fine too; it's the multi-statement form that pollutes the sentence.
+
+`setupStep { }` takes a block over `SetupScope`, so it covers anything richer than a bare action sequence, the same ground `setup(scope)` covers:
+
+```kotlin
+private fun anAccountIsOpenedViaSetupStep() = setupStep {
+    given { account = "opened-account" }
+    verify { check(account == "opened-account") }
+}
+```
+
+```kotlin
+given(anAccountIsOpenedViaSetupStep())
+```
+
+Each assertion flavour has a matching builder, `kotestSetupStep { }`, `hamkrestSetupStep { }` and `hamcrestSetupStep { }`, whose block runs with that flavour's assertion helpers already in scope:
+
+```kotlin
+private fun anAccountIsOpenedViaKotestSetupStep() = kotestSetupStep {
+    action { account = "opened-account" }
+    then(StateCollector { account }) { this shouldBe "opened-account" }
+}
+```
+
+```kotlin
+given(anAccountIsOpenedViaKotestSetupStep())
+```
+
+From Java, these are `dev.kensa.SetupStepKt.setupActions(...)`; `setupStep`'s receiver lambda isn't practical to call from Java, so Java callers keep building the anonymous `SetupStep` shown above instead.
+
 ## Registering steps
 
 `given` accepts a single step:

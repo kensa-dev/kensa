@@ -7,6 +7,7 @@ Added:
   - **`#/issue/<key>` and `#/epic/<id>` report links.** Open the first test carrying the key with the matching method expanded and the filter applied, across every source. Filter links such as `#/overview?q=issue:KEY` still land on the Overview (#222).
   - **`SetupStep.setup(scope)`.** One step can now act, wait for state, read a value out and act again: override `setup(scope: SetupScope)` and use `given`, `action`, `collect`, `verify` and `verifyEventually` on the scope, each executing immediately. The existing `givens()`/`actions()`/`verify()` triple is unchanged and remains the default body of `setup`, so current steps behave exactly as before. `SetupScope.verifyEventually` polls on the calling thread until the check stops throwing and needs no assertion-flavour dependency. Documented on the new Setup Steps page (#210).
   - **`SetupSteps(list)`.** A `List<SetupStep>` constructor for steps assembled conditionally, instead of `SetupSteps(*list.toTypedArray())` (#213).
+  - **One-line setup steps.** `setupActions(a, b)` and `setupStep { }` build a `SetupStep` without an anonymous object; `kotestSetupStep { }`, `hamkrestSetupStep { }` and `hamcrestSetupStep { }` put the flavour's assertion helpers in scope (#212).
 
 Changed:
   - **Compact MCP listings.** `list_tests` returns one row per class with method counts and elapsed time; `children: true` restores the method rows. `get_test` with a `<class>:<method>` id returns that method only. `captured_interactions` caps each captured value at `max_value_chars` (default 4000) and marks the cut (#221).

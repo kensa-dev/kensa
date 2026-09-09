@@ -2,6 +2,7 @@ package dev.kensa.context
 
 import dev.kensa.Action
 import dev.kensa.ActionBlockBuilder.Companion.buildActions
+import dev.kensa.ActionContext
 import dev.kensa.GivensBlockBuilder.Companion.buildGivens
 import dev.kensa.SetupScope
 import dev.kensa.SetupStep
@@ -10,6 +11,8 @@ import dev.kensa.VerificationBlockBuilder.Companion.verify
 import dev.kensa.and
 import dev.kensa.fixture.Fixtures
 import dev.kensa.outputs.CapturedOutputs
+import dev.kensa.setupActions
+import dev.kensa.setupStep
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.SetupStrategy
 import io.kotest.assertions.throwables.shouldThrow
@@ -234,6 +237,70 @@ class SetupStepExecutionTest {
         }
 
         thrown.message shouldBe "nope"
+    }
+
+    @Test
+    fun `setupStep runs its block against the scope in order`() {
+        val calls = mutableListOf<String>()
+        var collected: Int? = null
+        val context = TestContext(CapturedInteractions(SetupStrategy.Grouped), Fixtures(), CapturedOutputs())
+        val step = setupStep {
+            given { calls.add("given") }
+            action { calls.add("action") }
+            collected = collect { 42 }
+            verify { calls.add("verify") }
+        }
+
+        context.given(SetupSteps(step))
+
+        calls shouldContainExactly listOf("given", "action", "verify")
+        collected shouldBe 42
+    }
+
+    @Test
+    fun `setupActions runs every action in order against the action context and nothing else`() {
+        val calls = mutableListOf<String>()
+        var seenOutputsA: CapturedOutputs? = null
+        var seenOutputsB: CapturedOutputs? = null
+        val context = TestContext(CapturedInteractions(SetupStrategy.Grouped), Fixtures(), CapturedOutputs())
+        val a = Action<ActionContext> {
+            calls.add("a")
+            seenOutputsA = it.outputs
+        }
+        val b = Action<ActionContext> {
+            calls.add("b")
+            seenOutputsB = it.outputs
+        }
+        val step = setupActions(a, b)
+
+        context.given(SetupSteps(step))
+
+        calls shouldContainExactly listOf("a", "b")
+        seenOutputsA shouldBeSameInstanceAs context.outputs
+        seenOutputsB shouldBeSameInstanceAs context.outputs
+    }
+
+    @Test
+    fun `setupActions works through TestContext given`() {
+        val calls = mutableListOf<String>()
+        val context = TestContext(CapturedInteractions(SetupStrategy.Grouped), Fixtures(), CapturedOutputs())
+        val a = Action<ActionContext> { calls.add("a") }
+
+        context.given(SetupSteps(setupActions(a)))
+
+        calls shouldContainExactly listOf("a")
+    }
+
+    @Test
+    fun `setupActions works through SetupStep and chaining`() {
+        val calls = mutableListOf<String>()
+        val context = TestContext(CapturedInteractions(SetupStrategy.Grouped), Fixtures(), CapturedOutputs())
+        val a = Action<ActionContext> { calls.add("a") }
+        val chained = setupActions(a).and(setupStep { action { calls.add("step") } })
+
+        context.given(chained)
+
+        calls shouldContainExactly listOf("a", "step")
     }
 }
 

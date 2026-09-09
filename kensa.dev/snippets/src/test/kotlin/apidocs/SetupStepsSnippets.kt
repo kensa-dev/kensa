@@ -12,6 +12,11 @@ import dev.kensa.and
 import dev.kensa.hamkrest.HamkrestSetupStep
 import dev.kensa.hamkrest.WithHamkrest
 import dev.kensa.junit.KensaTest
+import dev.kensa.kotest.WithKotest
+import dev.kensa.kotest.kotestSetupStep
+import dev.kensa.setupActions
+import dev.kensa.setupStep
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration.Companion.seconds
 
@@ -61,8 +66,33 @@ class SetupStepsSnippets : KensaTest, WithHamkrest {
         then(theAccount(), equalTo("opened-account"))
     }
 
+    @Test
+    fun `setupActions builds a bare action sequence`() {
+        given(anAccountIsOpenedAndFundedViaSetupActions())
+
+        then(theAccount(), equalTo("opened-account"))
+        then(theReference(), equalTo("funded-account"))
+    }
+
+    @Test
+    fun `setupStep builds anything richer than a bare action sequence`() {
+        given(anAccountIsOpenedViaSetupStep())
+
+        then(theAccount(), equalTo("opened-account"))
+    }
+
     private fun theAccount() = StateCollector { account }
     private fun theReference() = StateCollector { reference }
+
+    private fun anAccountIsOpenedAndFundedViaSetupActions() = setupActions(
+        { account = "opened-account" },
+        { reference = "funded-account" }
+    )
+
+    private fun anAccountIsOpenedViaSetupStep() = setupStep {
+        given { account = "opened-account" }
+        verify { check(account == "opened-account") }
+    }
 
     private fun anAccountIsOpened() = object : HamkrestSetupStep {
         override fun givens() = buildGivens { }
@@ -123,5 +153,22 @@ class SetupStepsSnippets : KensaTest, WithHamkrest {
 
             action { account = seen.replace("settled", "settled-account") }
         }
+    }
+}
+
+class SetupStepsKotestSnippets : KensaTest, WithKotest {
+
+    private lateinit var account: String
+
+    @Test
+    fun `kotestSetupStep puts kotest matchers in scope`() {
+        given(anAccountIsOpenedViaKotestSetupStep())
+
+        then(StateCollector { account }) { this shouldBe "opened-account" }
+    }
+
+    private fun anAccountIsOpenedViaKotestSetupStep() = kotestSetupStep {
+        action { account = "opened-account" }
+        then(StateCollector { account }) { this shouldBe "opened-account" }
     }
 }
