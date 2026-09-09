@@ -7,6 +7,12 @@ interface SetupStep {
     fun givens(): GivensBlockBuilder = buildGivens()
     fun actions(): ActionBlockBuilder = buildActions()
     fun verify(): VerificationBlockBuilder = VerificationBlockBuilder.Companion.verify()
+
+    fun setup(scope: SetupScope) {
+        scope.given { givens().buildWith(it).executeWith(it) }
+        scope.action { actions().buildWith(it).executeWith(it) }
+        scope.verify { verify().verifyWith(it) }
+    }
 }
 
 fun SetupStep.and(other: SetupStep): SetupSteps = SetupSteps(this).apply { add(other) }

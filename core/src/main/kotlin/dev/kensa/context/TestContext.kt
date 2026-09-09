@@ -29,11 +29,8 @@ class TestContext(
     }
 
     fun given(steps: SetupSteps) {
-        steps.forEach { step ->
-            step.givens().buildWith(givensContext).executeWith(givensContext)
-            step.actions().buildWith(actionContext).executeWith(actionContext)
-            step.verify().verifyWith(collectorContext)
-        }
+        val scope = TestContextSetupScope(this)
+        steps.forEach { it.setup(scope) }
     }
 
     fun whenever(action: Action<ActionContext>) {

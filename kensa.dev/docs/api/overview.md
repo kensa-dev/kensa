@@ -20,6 +20,7 @@ Kensa's public API is organised around a few core concepts. Start here, then div
 | [Annotations](./annotations) | Control what appears in the HTML report — rendered values, notes, issues, and more |
 | [Async Assertions](./async-assertions) | `thenEventually` / `thenContinually` — polling assertions for asynchronous behaviour |
 | [Attachments](./attachments) | Attach arbitrary typed values to a test invocation for custom tabs |
+| [Setup Steps](./setup-steps) | Reusable, named test setup with the givens/actions/verify triple and the imperative `setup(scope)` API |
 | [Sentence Hints](./sentence-hints) | Comment-based hints that reshape how a statement renders in the report |
 | [Interaction Renderers](./interaction-renderers) | Custom renderers for values exchanged between actors in sequence diagrams |
 | [Log Tabs](./log-tabs) | Pull container/service logs into per-test report tabs |
@@ -30,7 +31,7 @@ Every framework integration exposes the same setup/action DSL via its `KensaTest
 
 | Method | Provided by | Context type | Purpose |
 |--------|-------------|-------------|---------|
-| `given(action)` / `and(action)` | `KensaTest` | `Action<GivensContext>` | Set up test state; chain additional setup steps |
+| `given(action)` / `and(action)` | `KensaTest` | `Action<GivensContext>` | Set up test state; chain additional setup steps. For reusable, named setup see [Setup Steps](./setup-steps) |
 | `whenever(action)` (alias `` `when` ``) | `KensaTest` | `Action<ActionContext>` | Exercise the system under test |
 | `then(collector, matcher)` | assertion mixin | `StateCollector<T>` | Assert on extracted state |
 | `then(collector) { block }` / `and(...)` | assertion mixin | `StateCollector<T>` | Assert using a lambda block; chain further assertions |

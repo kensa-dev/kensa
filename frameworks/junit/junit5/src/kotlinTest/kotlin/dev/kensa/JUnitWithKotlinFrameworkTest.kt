@@ -110,6 +110,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 KotlinWithTypeArgumentsTest::class,
                 KotlinWithCapturedOutputsTest::class,
                 KotlinWithSetupStepsTest::class,
+                KotlinWithSetupScopeTest::class,
                 KotlinWithVariousNamingTest::class,
                 KotlinWithJavaRecordTest::class,
                 KotlinWithHintedFieldsInsideTest::class,
