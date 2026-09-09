@@ -73,6 +73,8 @@ class VerificationBlockBuilder private constructor(private val block: (Collector
 
 class SetupSteps(vararg steps: SetupStep) : Sequence<SetupStep> {
 
+    constructor(steps: List<SetupStep>) : this(*steps.toTypedArray())
+
     private val steps = mutableListOf(*steps)
 
     internal fun add(step: SetupStep) {

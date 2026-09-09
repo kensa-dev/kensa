@@ -52,6 +52,22 @@ class SetupStepExecutionTest {
     }
 
     @Test
+    fun `steps built as a list run in order`() {
+        val calls = mutableListOf<String>()
+        val context = TestContext(CapturedInteractions(SetupStrategy.Grouped), Fixtures(), CapturedOutputs())
+        val first = RecordingSetupStep("first", calls)
+        val second = RecordingSetupStep("second", calls)
+        val steps: List<SetupStep> = listOf(first, second)
+
+        context.given(SetupSteps(steps))
+
+        calls shouldContainExactly listOf(
+            "first.givens", "first.actions", "first.verify",
+            "second.givens", "second.actions", "second.verify"
+        )
+    }
+
+    @Test
     fun `a step overriding setup runs its own scope calls instead of the triple`() {
         val calls = mutableListOf<String>()
         var seen: String? = null

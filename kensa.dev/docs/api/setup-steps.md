@@ -107,7 +107,7 @@ given(anAccountIsOpened())
 and(theAccountIsFunded())
 ```
 
-Both forms run the same two steps in the same order; the chain form groups them as one `given` call, the test-level form as two.
+Both forms run the same two steps in the same order; the chain form groups them as one `given` call, the test-level form as two. For steps assembled conditionally, `SetupSteps(list)` accepts a `List<SetupStep>` instead of a vararg.
 
 Each assertion mixin has a matching `SetupStep` flavour so a step declared with it also gets `then`/`thenEventually`:
 
