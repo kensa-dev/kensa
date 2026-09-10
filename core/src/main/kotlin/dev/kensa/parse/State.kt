@@ -13,7 +13,7 @@ internal sealed interface State {
     data class InMethodInvocation(val parentState: State, val didBegin: Boolean = false) : State
     data class InExpression(val parentState: State) : State
     data class InRenderedValueExpression(val parentState: State) : State
-    data class InLambda(val parentState: State) : State
+    data class InLambda(val parentState: State, val isPollingBlock: Boolean = false) : State
     data class InTypeArguments(val parentState: State) : State
     data class InFixturesExpression(val parentState: State) : State
     data class InOutputsExpression(val parentState: State) : State

@@ -27,6 +27,12 @@ internal class SentenceBuilder(val isNoteBlock: Boolean, private val startingLoc
     private val scanner: TokenScanner = TokenScanner(dictionary)
     private var currentExpandableTemplateToken: TemplateToken? = null
     private var currentExpandableLocation: Location? = null
+    private var pendingPollingStep: Boolean = false
+    private var pollingStepsSeen: Int = 0
+
+    fun beginPollingStep() {
+        pendingPollingStep = true
+    }
 
     fun beginExpandableSentence(location: Location, placeholder: String, sentences: List<TemplateSentence>) {
         if (isIgnored(location)) {
@@ -233,7 +239,13 @@ internal class SentenceBuilder(val isNoteBlock: Boolean, private val startingLoc
 
     fun append(event: Identifier) {
         if (isIgnored(event.location)) return
+        val isPollingStep = pendingPollingStep && event.name in POLLING_STEP_NAMES
         lastLocation = tokens.checkLineAndIndent(event.location, lastLocation)
+
+        if (isPollingStep) {
+            if (pollingStepsSeen++ > 0) tokens.append(valueFor(Index(Keyword, 0, event.name.length), event.name), Keyword)
+            return
+        }
 
         val (scanned, indices) = scanner.scan(event.name, isFirstInSentence())
         indices.forEach { index: Index ->
@@ -264,6 +276,8 @@ internal class SentenceBuilder(val isNoteBlock: Boolean, private val startingLoc
 
     private fun MutableList<TemplateToken>.checkLineAndIndent(thisLocation: Location, lastLocation: Location): Location =
         thisLocation.apply {
+            // Any positioned append clears the flag, so a statement inside a polling block that does not open with then/and cannot leak it onto a later identifier
+            pendingPollingStep = false
             if (lineNumber > lastLocation.lineNumber) {
                 append("", NewLine)
 
@@ -314,5 +328,6 @@ internal class SentenceBuilder(val isNoteBlock: Boolean, private val startingLoc
 
     companion object {
         private val ALPHANUMERIC_UNDERSCORE = "^[A-Z0-9_]+$".toRegex()
+        private val POLLING_STEP_NAMES = setOf("then", "and")
     }
 }

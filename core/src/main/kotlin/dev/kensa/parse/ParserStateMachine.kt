@@ -29,6 +29,7 @@ internal class ParserStateMachine internal constructor(private val createSentenc
     private var skipDepth: Int = 0
     private var statementEntryState: State? = null
     private var currentStatementLocation: Location? = null
+    private var statementCallee: String? = null
 
     private val ignoredLines: MutableSet<Int> = HashSet()
 
@@ -237,6 +238,7 @@ internal class ParserStateMachine internal constructor(private val createSentenc
             on<ExitBlock> { currentState, _ -> currentState.parentState }
             on<ExitLambda> { currentState, _ -> currentState.parentState }
             on<EnterStatement> { currentState, _ ->
+                if (currentState.isPollingBlock) sentenceBuilder.beginPollingStep()
                 InStatement(currentState, didBegin = false)
             }
         }
@@ -261,10 +263,10 @@ internal class ParserStateMachine internal constructor(private val createSentenc
                 currentState
             }
             on<EnterBlock> { currentState, _ ->
-                InLambda(currentState)
+                InLambda(currentState, isPollingBlock = isPollingBlockLambda(currentState))
             }
             on<EnterLambda> { currentState, _ ->
-                InLambda(currentState)
+                InLambda(currentState, isPollingBlock = isPollingBlockLambda(currentState))
             }
             on<EnterStatement> { currentState, _ ->
                 InStatement(currentState)
@@ -500,6 +502,9 @@ internal class ParserStateMachine internal constructor(private val createSentenc
         }
     }
 
+    private fun isPollingBlockLambda(currentState: InExpression): Boolean =
+        statementCallee in POLLING_BLOCK_CALLEES && currentState.parentState.let { it is InStatement && it.didBegin }
+
     private fun <T : WithAppendable> StateMachineBuilder<State, Event>.TransitionsBuilder<T>.registerAppendableEvents() {
         on<NullLiteral> { currentState, event ->
             currentState.apply { append(event) }
@@ -569,7 +574,9 @@ internal class ParserStateMachine internal constructor(private val createSentenc
         if (event is EnterStatement) {
             statementEntryState = stateMachine.state
             currentStatementLocation = event.location
+            if (stateMachine.state is TestBlock || stateMachine.state is ExpressionFn) statementCallee = null
         }
+        if (event is Identifier && statementCallee == null) statementCallee = event.name
         try {
             stateMachine.apply(event)
         } catch (e: Exception) {
@@ -597,5 +604,9 @@ internal class ParserStateMachine internal constructor(private val createSentenc
     private fun errorPlaceholderSentence(location: Location?): TemplateSentence {
         val lineNumber = location?.lineNumber ?: 0
         return TemplateSentence(listOf(ErrorTemplateToken("Could not parse this statement")), lineNumber)
+    }
+
+    companion object {
+        private val POLLING_BLOCK_CALLEES = setOf("thenEventually", "andEventually", "thenContinually", "andContinually")
     }
 }
