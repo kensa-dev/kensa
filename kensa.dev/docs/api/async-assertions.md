@@ -202,12 +202,12 @@ thenEventually(theOrderStatus()) { this shouldBe "CONFIRMED" }
 
 renders as *Then eventually the order status …* — the report reads as the requirement ("the order is eventually confirmed") rather than as polling mechanics.
 
-A multi-assertion block renders as a head sentence for the `thenEventually`/`thenContinually` clause, with each nested `then`/`and` appearing as its own indented line underneath. For example, a block asserting two things within a 2-second window renders as:
+A multi-assertion block renders as a head sentence for the `thenEventually`/`thenContinually` clause, with each nested step appearing as its own indented line underneath. For example, a block asserting two things within a 2-second window renders as:
 
 ```
 Then eventually 2 seconds
-   then the first value equal to "first"
-   and the second value equal to "second"
+   the first value equal to "first"
+   And the second value equal to "second"
 ```
 
-Note that the nested `then`/`and` lines are plain text, not styled report keywords — only the top-level `Then`/`And` that begin a BDD step get keyword styling. The inner `then(...)`/`and(...)` calls inside a block are report content, not top-level steps, so they read as part of the sentence fragment rather than as bolded keywords.
+The wrapper line keeps the polling window visible. The first inner step drops its `then` because the wrapper already said it, and each later step opens with `And` rendered bold as a keyword. A single-collector form such as `thenEventually(theOrderStatus()) { this shouldBe "CONFIRMED" }` is unaffected.

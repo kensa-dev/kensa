@@ -11,6 +11,7 @@ Added:
 
 Changed:
   - **Compact MCP listings.** `list_tests` returns one row per class with method counts and elapsed time; `children: true` restores the method rows. `get_test` with a `<class>:<method>` id returns that method only. `captured_interactions` caps each captured value at `max_value_chars` (default 4000) and marks the cut (#221).
+  - **Polling block rendering.** `thenEventually { then(a); and(b) }` no longer reads "Then eventually then a and b". The wrapper line is unchanged, the first inner step drops its `then`, and each later step renders `And` as a keyword.
 
 ### v0.9.3
 
