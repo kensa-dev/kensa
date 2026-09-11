@@ -20,6 +20,9 @@ that ran, not from a document maintained alongside it.
 That is the whole idea: keep the readable specification, drop the Gherkin file, the step definitions
 and the drift between them.
 
+New to BDD on the JVM, or weighing the options? Start with
+[BDD in Kotlin: the options, and how to choose](https://kensa.dev/blog/bdd-in-kotlin).
+
 ## Features
 
 - **Code-first BDD** — Given-When-Then structure in plain Kotlin/Java; no external DSL files
