@@ -1,6 +1,6 @@
 <h2 class="github">Changelog</h2>
 
-### Unreleased
+### v0.9.4
 
 Added:
   - **`suite_summary` MCP tool.** One call for the run as a whole: state counts, run window and duration, duration buckets, slowest methods, failure ids, counts by tag and package, participants. Reads only `indices.json` (#221).
