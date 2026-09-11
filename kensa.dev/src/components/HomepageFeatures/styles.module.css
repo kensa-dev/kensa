@@ -3,16 +3,10 @@
   width: 100%;
 }
 
-.bentoGrid {
+.grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-}
-
-/* First two features span 2 columns */
-.bentoGrid > :nth-child(1),
-.bentoGrid > :nth-child(2) {
-  grid-column: span 2;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
 .featureCard {
@@ -26,47 +20,30 @@
   border-left-color: var(--kensa-accent, var(--ifm-color-primary));
 }
 
-/* Larger icon + title for the two hero features */
-.bentoGrid > :nth-child(1) .featureSvg,
-.bentoGrid > :nth-child(2) .featureSvg {
-  height: 48px;
-  width: 48px;
-}
-
-.bentoGrid > :nth-child(1) .featureTitle,
-.bentoGrid > :nth-child(2) .featureTitle {
-  font-size: 1.15rem;
-}
-
 .featureSvg {
-  height: 36px;
-  width: 36px;
+  height: 44px;
+  width: 44px;
   color: var(--ifm-color-primary);
   margin-bottom: 0.75rem;
   display: block;
 }
 
 .featureTitle {
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.5rem;
   letter-spacing: -0.01em;
 }
 
 .featureDesc {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.65;
   color: var(--ifm-color-emphasis-700);
   margin: 0;
 }
 
-@media (max-width: 768px) {
-  .bentoGrid {
+@media (max-width: 996px) {
+  .grid {
     grid-template-columns: 1fr;
-  }
-
-  .bentoGrid > :nth-child(1),
-  .bentoGrid > :nth-child(2) {
-    grid-column: span 1;
   }
 }

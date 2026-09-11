@@ -8,47 +8,43 @@ type FeatureItem = {
     description: ReactNode;
 };
 
+// Three cards, one per reader. The framework matrix and the assertion-library
+// list live in the quickstarts; this is the first-screen sell.
 const FeatureList: FeatureItem[] = [
     {
-        title: 'No Gherkin. Just code.',
-        Svg: require('@site/static/img/testing.svg').default,
-        description: (
-            <>Write Given–When–Then tests directly in Kotlin or Java. No feature files, no step definitions to maintain.</>
-        ),
-    },
-    {
-        title: 'Works with your framework',
-        Svg: require('@site/static/img/coding.svg').default,
-        description: (
-            <>Supports <strong>JUnit 5 &amp; 6</strong>, <strong>Kotest</strong>, and <strong>TestNG</strong>. JUnit and TestNG auto-register via ServiceLoader — add the dependency and you're done.</>
-        ),
-    },
-    {
-        title: 'Living HTML reports',
+        title: 'For the people who can’t read the code',
         Svg: require('@site/static/img/html.svg').default,
         description: (
-            <>Every test run produces an interactive HTML report with test sentences, captured values, and fixture state — generated from source code, not annotations.</>
+            <>
+                Testers, analysts and product owners get a report that says what the system did:
+                Given&ndash;When&ndash;Then sentences with this run&rsquo;s real values, every message
+                that crossed between services, and a sequence diagram drawn from them. Open any
+                interaction and read the payload.
+            </>
         ),
     },
     {
-        title: 'Sequence diagrams included',
+        title: 'For the developer writing it',
+        Svg: require('@site/static/img/coding.svg').default,
+        description: (
+            <>
+                Ordinary Kotlin or Java on <strong>JUnit 5 &amp; 6</strong>, <strong>Kotest</strong> or{' '}
+                <strong>TestNG</strong>, with the assertions you already use. No feature files, no step
+                definitions, nothing to keep in sync. Refactor and the report follows, because the
+                report is generated from the test that ran.
+            </>
+        ),
+    },
+    {
+        title: 'For the system you actually ship',
         Svg: require('@site/static/img/work-flow.svg').default,
         description: (
-            <>Capture interactions between components in your tests. Kensa renders them as interactive sequence diagrams — drill down into any interaction to inspect the full payload, headers, and metadata.</>
-        ),
-    },
-    {
-        title: 'Your assertion library',
-        Svg: require('@site/static/img/checked.svg').default,
-        description: (
-            <>Use <strong>AssertJ</strong>, <strong>Hamcrest</strong>, <strong>HamKrest</strong>, or <strong>Kotest</strong> matchers. Mix them freely within a project.</>
-        ),
-    },
-    {
-        title: 'Values in the report',
-        Svg: require('@site/static/img/code.svg').default,
-        description: (
-            <>Annotate fields with <code>@RenderedValue</code> and their values appear in the report automatically — no logging, no boilerplate.</>
+            <>
+                Built for acceptance tests that sit outside a deployed application. Push a message in,
+                watch what comes out, and let the report show the traffic. Link each test to its
+                ticket with <code>@Issue</code> and the specification, the test and the evidence are
+                one thing.
+            </>
         ),
     },
 ];
@@ -67,8 +63,8 @@ export default function HomepageFeatures(): ReactNode {
     return (
         <section className={styles.features}>
             <div className="container">
-                <h2 className="sr-only">Features</h2>
-                <div className={styles.bentoGrid}>
+                <h2 className="sr-only">Who Kensa is for</h2>
+                <div className={styles.grid}>
                     {FeatureList.map((props, idx) => (
                         <Feature key={idx} {...props} />
                     ))}

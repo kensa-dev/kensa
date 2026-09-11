@@ -94,12 +94,43 @@
   color: #ffffff;
 }
 
+.pitch {
+  font-size: 1.35rem;
+  font-weight: 600;
+  max-width: 640px;
+  margin: 0.25rem 0 0;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
 .tagline {
-  font-size: 1.15rem;
-  max-width: 560px;
+  font-size: 1.05rem;
+  max-width: 600px;
   margin: 0;
-  opacity: 0.92;
+  opacity: 0.88;
   line-height: 1.6;
+}
+
+/* One copyable dependency block in the hero. Docusaurus's CodeBlock brings
+   its own copy button; we only size it and stop the hero's white text
+   bleeding into the code theme. */
+.dependency {
+  width: 100%;
+  max-width: 640px;
+  text-align: left;
+  color: var(--ifm-font-color-base);
+  margin-top: 0.25rem;
+}
+
+.dependency :global(.theme-code-block) {
+  margin-bottom: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30);
+}
+
+.dependency pre,
+.dependency code {
+  font-size: 0.85rem;
 }
 
 .badgeRow {
@@ -154,6 +185,15 @@
   }
 
   .tagline {
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .pitch {
+    font-size: 1.1rem;
+  }
+
+  .dependency pre,
+  .dependency code {
+    font-size: 0.75rem;
   }
 }

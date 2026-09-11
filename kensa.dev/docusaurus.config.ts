@@ -36,6 +36,13 @@ const config: Config = {
     locales: ['en'],
   },
 
+  customFields: {
+    kensaVersion,
+    // The live report the homepage embeds. Override for a local check of an unreleased
+    // report UI: KENSA_REPORT_BASE=http://localhost:3001/ npm run start
+    reportBase: process.env.KENSA_REPORT_BASE ?? 'https://kensa-dev.github.io/clearwave-example/',
+  },
+
   themes: [
     '@saucelabs/theme-github-codeblock',
     [
@@ -48,7 +55,6 @@ const config: Config = {
     ],
   ],
 
-  clientModules: [require.resolve('./src/clientModules/githubStars.ts')],
 
   presets: [
     [
@@ -159,7 +165,7 @@ const config: Config = {
         },
         {
           href: 'https://github.com/kensa-dev/kensa',
-          label: '⭐ Star',
+          label: 'GitHub',
           position: 'right',
         },
       ],

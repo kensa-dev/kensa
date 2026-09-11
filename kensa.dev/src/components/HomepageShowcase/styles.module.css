@@ -16,24 +16,13 @@
     line-height: 1.4;
 }
 
-.liveLink {
+.intro {
     text-align: center;
-    font-size: 0.9rem;
-    margin: 0 0 1.75rem;
-}
-
-.columns {
-    display: flex;
-    align-items: flex-start;
-    gap: 2rem;
-}
-
-.column {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    max-width: 640px;
+    margin: 0 auto 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ifm-color-emphasis-800);
 }
 
 .label {
@@ -42,107 +31,80 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--ifm-color-emphasis-800);
-    margin: 0;
+    margin: 0 0 0.6rem;
 }
 
-.screenshotBtn {
-    display: block;
+.code {
+    max-width: 860px;
+    margin: 0 auto 2rem;
+}
+
+.code :global(.theme-code-block) {
+    margin-bottom: 0;
+}
+
+/* The report is a full application, so it gets the full container width and
+   a fixed height that fits its sidebar plus one test with its diagram. */
+.frame {
+    position: relative;
     width: 100%;
-    padding: 0;
-    background: none;
-    border: none;
-    cursor: zoom-in;
-}
-
-.screenshotBtn:hover .screenshot {
-    box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.1),
-        0 16px 40px rgba(0, 0, 0, 0.18),
-        0 32px 64px rgba(0, 0, 0, 0.14);
-    transform: translateY(-2px);
-}
-
-.lightboxOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    cursor: zoom-out;
-    backdrop-filter: blur(4px);
-}
-
-.lightboxImage {
-    max-width: 90vw;
-    max-height: 90vh;
+    height: 960px;
     border-radius: 8px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
-    cursor: default;
-}
-
-.lightboxClose {
-    position: absolute;
-    top: 1.25rem;
-    right: 1.5rem;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 50%;
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-.lightboxClose:hover {
-    background: rgba(255, 255, 255, 0.22);
-}
-
-.screenshot {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-    cursor: zoom-in;
+    overflow: hidden;
+    border: 1px solid var(--ifm-toc-border-color);
+    background: var(--ifm-background-color);
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.06),
         0 8px 24px rgba(0, 0, 0, 0.12),
         0 24px 48px rgba(0, 0, 0, 0.1);
-    display: block;
-    border: 1px solid var(--ifm-toc-border-color);
 }
 
-[data-theme='dark'] .screenshot {
+[data-theme='dark'] .frame {
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.2),
         0 8px 24px rgba(0, 0, 0, 0.35),
         0 24px 48px rgba(0, 0, 0, 0.3);
 }
 
-.arrow {
-    font-size: 1.75rem;
-    color: var(--kensa-accent);
-    flex-shrink: 0;
-    margin-top: 2.5rem;
-    opacity: 0.9;
+.loading {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ifm-color-emphasis-600);
+    transition: opacity 0.3s ease;
+}
+
+.frameLoaded .loading {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.report {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: transparent;
+}
+
+.liveLink {
+    text-align: center;
+    font-size: 0.9rem;
+    margin: 1rem 0 0;
+}
+
+@media screen and (max-width: 996px) {
+    .frame {
+        height: 720px;
+    }
 }
 
 @media screen and (max-width: 768px) {
-    .columns {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .arrow {
-        transform: rotate(90deg);
-        margin-top: 0;
-        align-self: center;
+    .frame {
+        height: 600px;
     }
 }

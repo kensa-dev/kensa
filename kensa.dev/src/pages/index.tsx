@@ -4,6 +4,7 @@ import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import CodeBlock from '@theme/CodeBlock';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageShowcase from '@site/src/components/HomepageShowcase';
 import HomepageEcosystem from '@site/src/components/HomepageEcosystem';
@@ -12,6 +13,11 @@ import styles from './index.module.css';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
+    const version = String(siteConfig.customFields?.kensaVersion ?? '');
+    const dependency =
+        `testImplementation(platform("dev.kensa:kensa-bom:${version}"))\n` +
+        `testImplementation("dev.kensa:kensa-framework-junit5")`;
+
     return (
         <header className={clsx('hero hero--primary', styles.heroBanner)}>
             <div className="container">
@@ -28,9 +34,13 @@ function HomepageHeader() {
                         </span>
                         <h1 className={styles.title}>{siteConfig.title}</h1>
                     </div>
+                    <p className={styles.pitch}>
+                        Most JVM testing tools produce output for the person who wrote the test.
+                        Kensa produces output for everyone else.
+                    </p>
                     <p className={styles.tagline}>
-                        BDD for Kotlin &amp; Java — write tests that read like requirements,
-                        get reports that speak for themselves.
+                        BDD for Kotlin &amp; Java. Given&ndash;When&ndash;Then in plain code, no feature
+                        files, and a report generated from the test that ran.
                     </p>
                     <div className={styles.badgeRow}>
                         <img
@@ -57,6 +67,9 @@ function HomepageHeader() {
                             width={226}
                             height={20}
                         />
+                    </div>
+                    <div className={styles.dependency}>
+                        <CodeBlock language="kotlin" title="build.gradle.kts">{dependency}</CodeBlock>
                     </div>
                     <div className={styles.buttons}>
                         <Link
