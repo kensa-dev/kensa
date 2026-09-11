@@ -126,6 +126,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 KotlinWithFixtureFactoryTest::class,
                 KotlinWithCompanionFixturesTest::class,
                 KotlinWithParallelAssertionsTest::class,
+                KotlinWithPollingBlocksTest::class,
                 KotlinWithQualifiedConstantsTest::class
             ]
         )

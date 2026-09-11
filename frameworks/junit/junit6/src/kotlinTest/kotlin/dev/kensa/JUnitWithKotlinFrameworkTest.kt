@@ -123,6 +123,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 KotlinWithFixtureSuiteTest::class,
                 KotlinWithTaggedTest::class,
                 KotlinWithParallelAssertionsTest::class,
+                KotlinWithPollingBlocksTest::class,
                 KotlinWithQualifiedConstantsTest::class
             ]
         )
