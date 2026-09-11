@@ -1,0 +1,80 @@
+---
+slug: bdd-without-gherkin
+title: "BDD Without Gherkin"
+description: You don't need feature files to do behaviour-driven development. What Gherkin is actually for, what it costs, and how to keep Given-When-Then without it on the JVM.
+authors:
+  - name: Paul Brooks
+    title: Creator of Kensa
+    url: https://github.com/kensa-dev
+tags: [kotlin, java, bdd, testing, acceptance-testing, cucumber, kotest, junit]
+---
+
+I've been writing acceptance tests in Given-When-Then since 2009 and I've never written a feature file by choice. So when someone asks whether you can do BDD without Gherkin, my answer is that I've never done it any other way.
+
+Cucumber has been the default for long enough that the two have merged in people's heads. They shouldn't have. BDD is a way of specifying behaviour. Gherkin is a file format one family of tools uses to do it.
+
+{/* truncate */}
+
+## What Gherkin is for
+
+It does one job. A non-developer can write a scenario in plain text and run it without touching code.
+
+If that is what happens on your project, keep Cucumber. A tester or an analyst who opens the repository, writes `.feature` files and runs them is getting exactly what the format was built for.
+
+I've never seen it. What I've seen, on every team, is that the scenario gets written in the ticket. Someone puts acceptance criteria in Jira as Given/When/Then because that's where the work is described and that's the tool they already use. Then a developer types the same words into a feature file and writes step definitions to bind them. The "analysts write the specs" argument turns out to describe a copy step.
+
+## What it costs
+
+Three things to keep in agreement instead of one: the feature file, the step definitions and the code. The IDE can refactor two of them. The third is text, and it's the one people read.
+
+Binding by regular expression. Rename a method and the `.feature` file doesn't follow. Reword a step and the match silently changes.
+
+Glue. Step definitions are where the logic actually lives, and they're neither specification nor test. They accumulate.
+
+And the report shows you the Gherkin, coloured green or red. Not what the system did. For an acceptance test, what the system did is the whole point: the request that went in, the messages between services, the response that came back. The feature file can't carry any of that.
+
+## Why it looked like a good idea
+
+Cucumber arrived around 2008. Refactoring support in IDEs was patchy and parsing test source at runtime wasn't practical, so a plain-text file bound to code by matchers was a reasonable answer to the constraints of the time. I don't think it was ever a great answer. It was the available one. The constraints are gone and the costs stayed.
+
+## What's left when you drop it
+
+Everything that mattered.
+
+You still write one concrete example per test, with a given, a when and a then. You still use the words from the ticket, so "refund is processed within 24 hours" is the acceptance criterion, the test name and the line in the report. The test still runs in CI and fails when the behaviour changes.
+
+The thing you have to work for is the readable output. Gherkin promised living documentation and delivered a feature file with colours. If a product owner is going to read the result, you need something generated from what actually ran, in language they can follow. That's where the choice of tool matters.
+
+## How to do it on the JVM
+
+If only developers read the output, don't add anything. Kotest's `BehaviorSpec` or JUnit with good method names gives you Given-When-Then in code, refactoring works, and the result is a test result. I use it myself for that.
+
+If someone who can't read Kotlin needs the output, there are two approaches.
+
+JGiven derives the sentences from method names. `given().a_paid_order()` becomes "Given a paid order" and refactoring keeps them in sync. The cost is stage classes for every scenario, and a method name can't carry a runtime value.
+
+Yatspec's approach, and the one [Kensa](https://kensa.dev) takes, is to read the test method itself. The test is ordinary Kotlin:
+
+```kotlin
+@Issue("PROJ-42")
+@Test
+fun `refund is processed within 24 hours`() {
+    given(anOrderPaidBy(card))
+
+    whenever(aRefundIsRequested())
+
+    then(theRefund(), isProcessedWithin(24.hours))
+}
+```
+
+Kensa parses that at runtime and renders the three lines as sentences with this run's values in them. `@Issue` links the report back to the ticket, so the analyst who wrote the Given/When/Then in Jira can open it and see what the system did. One artefact. It can't drift from the code because it is the code.
+
+Because the report is generated, it can also carry what the feature file couldn't: the messages the test saw between services, their payloads, and a sequence diagram drawn from that traffic. The [Clearwave example report](https://kensa-dev.github.io/clearwave-example) is live if you want to see one.
+
+## So
+
+Gherkin is one way to write examples down, and a good one if someone outside the team is holding the pen. If nobody is, you're paying for the format and getting nothing from it. Keep the Given-When-Then. Use the words from the ticket. Generate the report from the test that ran.
+
+---
+
+*Kensa is open source. The [Kotlin quickstart](https://kensa.dev/docs/quickstart/kotlin-quickstart) takes about five minutes. [BDD in Kotlin: the options, and how to choose](https://kensa.dev/blog/bdd-in-kotlin) covers the wider field.*
