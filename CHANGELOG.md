@@ -9,8 +9,11 @@ Added:
   - **`SetupSteps(list)`.** A `List<SetupStep>` constructor for steps assembled conditionally, instead of `SetupSteps(*list.toTypedArray())` (#213).
   - **One-line setup steps.** `setupActions(a, b)` and `setupStep { }` build a `SetupStep` without an anonymous object; `kotestSetupStep { }`, `hamkrestSetupStep { }` and `hamcrestSetupStep { }` put the flavour's assertion helpers in scope (#212).
 
+  - **`?theme=dark|light` on report URLs.** Sets the initial theme for that load so a page embedding the report can match its own colour mode; not written back to the stored preference.
+
 Changed:
   - **Compact MCP listings.** `list_tests` returns one row per class with method counts and elapsed time; `children: true` restores the method rows. `get_test` with a `<class>:<method>` id returns that method only. `captured_interactions` caps each captured value at `max_value_chars` (default 4000) and marks the cut (#221).
+  - **Report scrolling stays inside the report.** Deep links and the sidebar reveal now scroll the report's own content pane rather than calling `scrollIntoView`, which in Firefox also scrolled any page embedding the report in an iframe. Standalone behaviour is unchanged.
   - **Polling block rendering.** `thenEventually { then(a); and(b) }` no longer reads "Then eventually then a and b". The wrapper line is unchanged, the first inner step drops its `then`, and each later step renders `And` as a keyword.
 
 ### v0.9.3
