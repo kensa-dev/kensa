@@ -51,7 +51,11 @@ const App = () => {
     const [matchingMethods, setMatchingMethods] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
-    const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('theme') === 'dark');
+    // `?theme=dark|light` lets a host that embeds the report match its own colour mode.
+    // It wins over the stored preference for this load and is not written back to it.
+    const themeParam = searchParams.get('theme');
+    const themeFromUrl = themeParam === 'dark' || themeParam === 'light';
+    const [darkMode, setDarkMode] = useState<boolean>(themeFromUrl ? themeParam === 'dark' : localStorage.getItem('theme') === 'dark');
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [commandQuery, setCommandQuery] = useState("");
@@ -356,7 +360,7 @@ const App = () => {
     useEffect(() => {
         const root = window.document.documentElement;
         darkMode ? root.classList.add("dark") : root.classList.remove("dark");
-        localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+        if (!themeFromUrl) localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     }, [darkMode]);
 
     const toggleSidebar = () => {

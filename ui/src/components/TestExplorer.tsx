@@ -20,6 +20,7 @@ import {setStateFilter} from "@/util/stateFilterToggle"
 import {useLocation} from "react-router-dom"
 import {TreeExpansionProvider, useTreeExpansion} from "@/hooks/useTreeExpansion"
 import {SidebarTreeToolbar} from "@/components/SidebarTreeToolbar"
+import {scrollWithin} from '@/util/scrollWithin';
 
 const SourceMetaContext = React.createContext<Record<string, { generatedAt?: string }>>({});
 
@@ -108,9 +109,8 @@ function RevealSelectedNode({nodes, selectedId, revealTick}: {nodes: Indices; se
         const ancestors = findAncestorIds(nodesRef.current, selectedId);
         if (ancestors) ancestors.forEach((id) => setCollapsedRef.current(id, false));
         const timer = setTimeout(() => {
-            document
-                .querySelector('[data-sidebar="menu-button"][data-active="true"]')
-                ?.scrollIntoView({block: 'nearest'});
+            const active = document.querySelector('[data-sidebar="menu-button"][data-active="true"]');
+            if (active) scrollWithin(active, {block: 'nearest', behavior: 'auto'});
         }, 80);
         return () => clearTimeout(timer);
         // revealTick (the precise result key) re-runs this when navigating between invocations of

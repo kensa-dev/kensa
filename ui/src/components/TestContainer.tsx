@@ -3,6 +3,7 @@ import { TestCard } from './TestCard';
 import {Invocation, Test} from "@/types/Test";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { scrollWithin } from "@/util/scrollWithin";
 
 interface TestContainerProps {
     tests: Test[];
@@ -90,7 +91,8 @@ export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpa
 
         if (targetScrollIndex !== -1) {
             const timer = setTimeout(() => {
-                cardRefs.current[targetScrollIndex]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const card = cardRefs.current[targetScrollIndex];
+                if (card) scrollWithin(card, { block: 'start' });
             }, 300);
 
             return () => clearTimeout(timer);
