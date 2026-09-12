@@ -78,7 +78,13 @@ def main() -> None:
     req = urllib.request.Request(
         API,
         data=json.dumps({"article": article}).encode(),
-        headers={"api-key": keychain("DEVTO_API_KEY"), "Content-Type": "application/json"},
+        headers={
+            "api-key": keychain("DEVTO_API_KEY"),
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.forem.api-v1+json",
+            # dev.to sits behind Cloudflare, which answers the default urllib agent with 403.
+            "User-Agent": "kensa-devto-draft/1.0 (+https://kensa.dev)",
+        },
         method="POST",
     )
     try:
