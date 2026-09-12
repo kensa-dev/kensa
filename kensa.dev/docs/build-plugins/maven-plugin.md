@@ -13,6 +13,9 @@ The Maven plugin does **not** wire system properties for you; you set them on ea
 
 ## Apply
 
+The plugin resolves from Maven Central as `dev.kensa:kensa-maven-plugin`, **from 0.9.16**. Earlier
+versions listed in the compatibility table below were never published there; use 0.9.16 or later.
+
 ```xml title="pom.xml"
 <plugin>
   <groupId>dev.kensa</groupId>
