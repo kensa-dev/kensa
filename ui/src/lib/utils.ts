@@ -97,7 +97,14 @@ export function getAllTextNodes(root: Node): Text[] {
 }
 
 export function buildHighlightRegex(highlights: string[]): RegExp {
-    const escaped = highlights.map(h => h.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
+    const escaped = highlights
+        .filter(h => h.length > 0)
+        .map(h => h.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
+
+    // An empty highlight matches at every position, so every text node splits into empty fragments and
+    // the tab hangs. `(?!)` can never match, leaving callers to render the text untouched.
+    if (escaped.length === 0) return /(?!)/g;
+
     return new RegExp(`(${escaped.join('|')})`, 'g');
 }
 
