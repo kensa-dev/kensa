@@ -78,6 +78,10 @@ The pages are written only when the report has a [stable address](#a-stable-addr
 
 A parameterised method's card shows the sentences of its first invocation. The card is text only in 1.0; a picture of the sentences comes in 1.0.1 at the same address.
 
+## Reading a long test
+
+In the full report, once a test is expanded and its card header has scrolled off the top, the report header names that test with its state icon in place of the class name. Click the name to scroll back to the card. The header's copy-link copies the deep link for that method while it is showing. Collapsed cards never take the header, so scrolling past tests you have not opened leaves the class name in place. The embed view has no header, so this does not apply inside a frame.
+
 ## What the footer shows
 
 Below the test cards the embed has one line: the Kensa mark, the test class, its state, and **Open full report**, which opens the same test in the full report in a new tab. It is hidden when the embed is printed, so a printed page carries the test alone.

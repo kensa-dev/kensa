@@ -34,6 +34,10 @@ Timing always reflects the entire run and is not affected by the tree filter. Ev
 
 Clicking a segment or row in a panel appends a term to the filter: `state:`, `tag:`, `pkg:`, `epic:`, or `issue:`, depending on the panel. The Results donut's "Not executed" segment filters with `state:notexecuted`, with the space stripped out, because a filter term cannot contain one.
 
+## Filtering from a badge
+
+Right-click an issue or epic badge, on a test card or in the report header, for **Filter by this issue** (or epic), which replaces any `issue:` or `epic:` terms already in the filter, and **Add to filter**, which appends the term and reads **Remove from filter** once it is present. A plain click keeps opening the tracker link where `issueTrackerUrl` is configured.
+
 ## Linking to an issue or epic
 
 A URL of the form `index.html#/issue/KEY` (or `#/epic/ID`) opens the first test carrying that key with the first matching method expanded and the filter applied, across every source of a site. When no test carries the key it lands on the filtered Overview with an empty tree. A key containing `/` must be percent-encoded as `%2F`.
