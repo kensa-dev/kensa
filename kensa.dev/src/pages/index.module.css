@@ -173,39 +173,6 @@
   overflow: hidden;
 }
 
-/* The frame takes the embed's own height (kensa-embed.js). */
-.reportFrame {
-  position: relative;
-}
-
-.loading {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--hero-dim);
-  transition: opacity 0.3s ease;
-}
-
-.reportLoaded .loading {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* The embed view pads its card by 8px on every side; pull the frame out by that on the
-   top and sides so the card's own border sits flush with the rounded container. */
-.report {
-  position: relative;
-  width: calc(100% + 16px);
-  min-height: 600px;
-  margin: -8px -8px 0;
-  border: 0;
-  display: block;
-  background: transparent;
-}
-
 @media screen and (max-width: 1200px) {
   .title {
     font-size: 3.25rem;
@@ -222,9 +189,6 @@
     gap: 2.5rem;
   }
 
-  .report {
-    min-height: 520px;
-  }
 }
 
 @media screen and (max-width: 768px) {
@@ -236,7 +200,4 @@
     font-size: 1rem;
   }
 
-  .report {
-    min-height: 440px;
-  }
 }

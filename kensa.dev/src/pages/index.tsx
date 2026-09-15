@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { useState } from 'react';
 import clsx from 'clsx';
 import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
@@ -11,12 +10,12 @@ import HomepageEmbed from '@site/src/components/HomepageEmbed';
 import HomepageEcosystem from '@site/src/components/HomepageEcosystem';
 import { feasibilityEmbedUrl, feasibilityTestUrl } from '@site/src/util/reportUrl';
 import HomepageInstall from '@site/src/components/HomepageInstall';
+import ReportFrame from '@site/src/components/ReportFrame';
 
 import styles from './index.module.css';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
-    const [loaded, setLoaded] = useState(false);
     // The hero is always dark, whatever the site theme, so the report inside it is too.
     const reportBase = String(siteConfig.customFields?.reportBase);
     const reportEmbed = feasibilityEmbedUrl(reportBase, 'dark');
@@ -60,18 +59,14 @@ function HomepageHeader() {
                     </p>
                 </div>
 
-                <div className={clsx(styles.reportCard, loaded && styles.reportLoaded)}>
-                    <div className={styles.reportFrame}>
-                        <p className={styles.loading} aria-hidden={loaded}>Loading the live report&hellip;</p>
-                        <iframe
-                            className={styles.report}
-                            data-kensa-embed
-                            src={reportEmbed}
-                            title="Live Kensa report for FeasibilityServiceTest, from the Clearwave example"
-                            referrerPolicy="no-referrer"
-                            onLoad={() => setLoaded(true)}
-                        />
-                    </div>
+                <div className={styles.reportCard}>
+                    <ReportFrame
+                        embedSrc={reportEmbed}
+                        fullUrl={reportTest}
+                        picture="/img/report/feasibility-dark.png"
+                        alt="The FeasibilityServiceTest method 'address is serviceable by both suppliers' in the Kensa report: a sequence diagram between Customer, FeasibilityService, OpenNetwork and FibreVision, then the Given, When, Then sentences with their values"
+                        title="Live Kensa report for FeasibilityServiceTest, from the Clearwave example"
+                    />
                 </div>
             </div>
         </header>

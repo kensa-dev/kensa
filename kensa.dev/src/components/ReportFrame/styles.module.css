@@ -1,0 +1,39 @@
+/* The embed view pads its card by 8px on every side, and the pictures are captured
+   with that padding, so both are pulled out by 8px on the top and sides to sit the
+   card's own border flush with the rounded container around them. */
+.frame {
+    position: relative;
+}
+
+.pictureLink {
+    display: block;
+}
+
+.picture {
+    display: block;
+    width: calc(100% + 16px);
+    max-width: none;
+    height: auto;
+    margin: -8px -8px 0;
+}
+
+.embed {
+    display: block;
+    width: calc(100% + 16px);
+    min-height: 420px;
+    margin: -8px -8px 0;
+    border: 0;
+    background: transparent;
+}
+
+/* Mounted behind the picture until the embed has rendered and posted a height. */
+.embedPending {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: calc(100% + 16px);
+    height: calc(100% + 8px);
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}

@@ -5,6 +5,7 @@ import TabItem from '@theme/TabItem';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useColorMode } from '@docusaurus/theme-common';
 import { orderServiceEmbedUrl, orderServiceTestUrl } from '@site/src/util/reportUrl';
+import ReportFrame from '@site/src/components/ReportFrame';
 import styles from './styles.module.css';
 
 // Verbatim from clearwave-example/src/test/kotlin/com/clearwave/OrderServiceTest.kt.
@@ -74,12 +75,12 @@ export default function HomepageShowcase(): ReactNode {
                         </svg>
                     </div>
                     <div className={styles.rendered}>
-                        <iframe
-                            className={styles.embed}
-                            data-kensa-embed
-                            src={reportEmbed}
+                        <ReportFrame
+                            embedSrc={reportEmbed}
+                            fullUrl={reportTest}
+                            picture={colorMode === 'dark' ? '/img/report/order-dark.png' : '/img/report/order-light.png'}
+                            alt="The OrderServiceTest method 'voice and broadband order is successfully completed' in the Kensa report: a sequence diagram between Customer, OrderService, OpenNetwork and FibreVision, then the Given, When, Then sentences with the supplier values"
                             title="The OrderServiceTest method, embedded from the Clearwave example report"
-                            referrerPolicy="no-referrer"
                         />
                     </div>
                 </div>

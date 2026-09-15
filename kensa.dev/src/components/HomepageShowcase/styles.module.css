@@ -69,18 +69,6 @@
     overflow: hidden;
 }
 
-/* The embed view pads its card by 8px on every side; pull the frame out by that on the
-   top and sides so the card's own border sits flush with the rounded container. */
-/* Height comes from kensa-embed.js once the embed reports it. */
-.embed {
-    display: block;
-    width: calc(100% + 16px);
-    min-height: 420px;
-    margin: -8px -8px 0;
-    border: 0;
-    background: transparent;
-}
-
 .constraint {
     max-width: 44rem;
     margin: 2rem 0 0;
