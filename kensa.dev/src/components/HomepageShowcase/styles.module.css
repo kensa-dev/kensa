@@ -81,6 +81,19 @@
     background: transparent;
 }
 
+.constraint {
+    max-width: 44rem;
+    margin: 2rem 0 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    font-weight: 600;
+}
+
+.constraint code {
+    font-size: 0.9em;
+    padding: 0.1rem 0.35rem;
+}
+
 .liveLink {
     margin: 1.5rem 0 0;
     font-size: 0.95rem;

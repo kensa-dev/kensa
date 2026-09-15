@@ -38,9 +38,9 @@ function HomepageHeader() {
                         Output for everyone who <span className={styles.lit}>didn&rsquo;t</span> write the test.
                     </h1>
                     <p className={styles.strap}>
-                        Given, When, Then in plain code, no feature files. The report is generated from
-                        the test that ran, with real values, every message between services, and an
-                        interactive sequence diagram.
+                        Given, When, Then in the test. Nothing else to keep in sync. The report is
+                        generated from the test that ran, with real values, every message between
+                        services, and an interactive sequence diagram.
                     </p>
                     <div className={styles.buttons}>
                         <Link className={styles.ctaPrimary} to="/docs/quickstart/kotlin-quickstart">
@@ -55,6 +55,8 @@ function HomepageHeader() {
                     </div>
                     <p className={styles.meta}>
                         Apache 2.0 · Kotlin 2.x · Java 17+ · JUnit 5 / 6 · Kotest · TestNG
+                        <br />
+                        In production acceptance tests at a large UK telco.
                     </p>
                 </div>
 
