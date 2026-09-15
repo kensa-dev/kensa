@@ -176,6 +176,13 @@ code, kbd, samp, pre {
     padding: 2rem 0 1.5rem;
   }
 
+  /* Infima gives each column the full width below 996px; let them stack rather
+     than sit side by side at twice the viewport. */
+  .footer__links {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
   .footer__col:first-child {
     padding-right: 0;
     margin-bottom: 1.5rem;
