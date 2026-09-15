@@ -129,6 +129,8 @@ internal class ResultWriter(private val configuration: Configuration, private va
         writeRunMarker()
     }
 
+    // Under the marker lock so a flush never snapshots a class's totals half applied.
+    @Synchronized
     private fun count(container: TestContainer) {
         classes.incrementAndGet()
         container.methodContainers.values.forEach {
