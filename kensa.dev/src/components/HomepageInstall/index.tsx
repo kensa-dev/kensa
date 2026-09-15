@@ -5,7 +5,8 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './styles.module.css';
 
 // The whole setup for a Kotlin Gradle project, with the current versions filled in.
-// The plugin applies the Kotlin compiler plugin and puts kensa-core on the test classpath.
+// The compiler plugin is only behind @RenderedValue / @ExpandableSentence; the
+// dependencies alone produce the report.
 export default function HomepageInstall(): ReactNode {
     const { siteConfig } = useDocusaurusContext();
     const kensaVersion = String(siteConfig.customFields?.kensaVersion);
@@ -27,9 +28,10 @@ dependencies {
                     <p className={styles.eyebrow}>// Install</p>
                     <h2 className={styles.heading}>Two blocks in the build file.</h2>
                     <p className={styles.intro}>
-                        The Gradle plugin applies the Kotlin compiler plugin, which captures the values
-                        the report shows, and puts Kensa on the test classpath. There is nothing else to
-                        configure.
+                        The dependencies alone give you the sentences, every captured message and the
+                        sequence diagram. The Gradle plugin adds the Kotlin compiler plugin behind{' '}
+                        <code>@RenderedValue</code> and <code>@ExpandableSentence</code>, and site mode
+                        across sourcesets. A Java project needs only the dependencies.
                     </p>
                     <p className={styles.links}>
                         <Link to="/docs/quickstart/java-quickstart">Java</Link>
