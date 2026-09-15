@@ -9,7 +9,7 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageShowcase from '@site/src/components/HomepageShowcase';
 import HomepageEmbed from '@site/src/components/HomepageEmbed';
 import HomepageEcosystem from '@site/src/components/HomepageEcosystem';
-import { orderServiceTestUrl } from '@site/src/util/reportUrl';
+import { feasibilityEmbedUrl } from '@site/src/util/reportUrl';
 
 import styles from './index.module.css';
 
@@ -17,10 +17,15 @@ function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
     const [loaded, setLoaded] = useState(false);
     // The hero is always dark, whatever the site theme, so the report inside it is too.
-    const reportTest = orderServiceTestUrl(String(siteConfig.customFields?.reportBase), 'dark');
+    const reportBase = String(siteConfig.customFields?.reportBase);
+    const reportEmbed = feasibilityEmbedUrl(reportBase, 'dark');
 
     return (
         <header className={styles.hero}>
+            {/* Sizes every iframe[data-kensa-embed] on the page to the embed's own height. */}
+            <Head>
+                <script src={`${reportBase}kensa-embed.js`} />
+            </Head>
             <div className={clsx(styles.glow, styles.glowGiven)} aria-hidden="true" />
             <div className={clsx(styles.glow, styles.glowWhen)} aria-hidden="true" />
             <div className={clsx(styles.glow, styles.glowThen)} aria-hidden="true" />
@@ -49,16 +54,13 @@ function HomepageHeader() {
                 </div>
 
                 <div className={clsx(styles.reportCard, loaded && styles.reportLoaded)}>
-                    <div className={styles.reportBar}>
-                        <span>OrderServiceTest · report</span>
-                        <span className={styles.reportState}>passed</span>
-                    </div>
                     <div className={styles.reportFrame}>
                         <p className={styles.loading} aria-hidden={loaded}>Loading the live report&hellip;</p>
                         <iframe
                             className={styles.report}
-                            src={reportTest}
-                            title="Live Kensa report for OrderServiceTest, from the Clearwave example"
+                            data-kensa-embed
+                            src={reportEmbed}
+                            title="Live Kensa report for FeasibilityServiceTest, from the Clearwave example"
                             referrerPolicy="no-referrer"
                             onLoad={() => setLoaded(true)}
                         />

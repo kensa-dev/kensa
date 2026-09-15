@@ -33,22 +33,28 @@
     color: var(--ifm-color-emphasis-800);
 }
 
+/* Stacked: the code at full width, an arrow down, then the report at full width so
+   the sequence diagram's participants all fit. */
 .pair {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
-    align-items: stretch;
+}
+
+.code :global(.tabs-container > [role='tabpanel']) {
+    margin-top: 0;
 }
 
 .code :global(.theme-code-block) {
     margin-bottom: 0;
-    height: 100%;
 }
 
 .arrow {
     display: flex;
     align-items: center;
+    justify-content: center;
     color: var(--kensa-accent-strong);
+    transform: rotate(90deg);
 }
 
 [data-theme='dark'] .arrow {
@@ -59,83 +65,20 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    border: 1px solid var(--ifm-toc-border-color);
-    border-radius: 8px;
-    background: var(--ifm-background-color);
+    border-radius: 12px;
     overflow: hidden;
 }
 
-.renderedBar,
-.renderedFoot {
-    font-family: var(--ifm-font-family-monospace);
-    font-size: 0.75rem;
-    color: var(--ifm-color-emphasis-600);
-    padding: 0.625rem 1rem;
-}
-
-.renderedBar {
-    border-bottom: 1px solid var(--ifm-toc-border-color);
-}
-
-.renderedFoot {
-    display: flex;
-    gap: 1.125rem;
-    border-top: 1px solid var(--ifm-toc-border-color);
-    margin-top: auto;
-}
-
-.renderedBody {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem 1.25rem;
-}
-
-.testName {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--ifm-color-primary);
-    margin-bottom: 0.25rem;
-}
-
-.testName svg {
-    flex-shrink: 0;
-}
-
-.sentence {
-    display: flex;
-    gap: 0.5rem;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-
-.sentence > span:first-child {
-    flex-shrink: 0;
-    font-weight: 700;
-}
-
-.given { color: #2f6fdb; }
-.when { color: #c9761d; }
-.then { color: var(--ifm-color-primary); }
-
-[data-theme='dark'] .given { color: #6ea2ff; }
-[data-theme='dark'] .when { color: #f0a24a; }
-
-.values {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-    padding-left: 3rem;
-    font-size: 0.9rem;
-    color: var(--ifm-color-emphasis-700);
-}
-
-.values code {
-    font-size: 0.85em;
-    padding: 0.1rem 0.4rem;
+/* The embed view pads its card by 8px on every side; pull the frame out by that on the
+   top and sides so the card's own border sits flush with the rounded container. */
+/* Height comes from kensa-embed.js once the embed reports it. */
+.embed {
+    display: block;
+    width: calc(100% + 16px);
+    min-height: 420px;
+    margin: -8px -8px 0;
+    border: 0;
+    background: transparent;
 }
 
 .liveLink {
@@ -144,13 +87,3 @@
     font-weight: 600;
 }
 
-@media screen and (max-width: 996px) {
-    .pair {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .arrow {
-        justify-content: center;
-        transform: rotate(90deg);
-    }
-}

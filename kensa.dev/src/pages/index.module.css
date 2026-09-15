@@ -6,7 +6,6 @@
   --hero-muted: #b6bcb8;
   --hero-dim: #8b938e;
   --hero-amber: #f2b544;
-  --hero-line: rgba(255, 255, 255, 0.12);
 
   color-scheme: dark;
   position: relative;
@@ -167,35 +166,16 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-radius: 10px;
-  border: 1px solid var(--hero-line);
-  background: rgba(16, 22, 19, 0.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  border-radius: 12px;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.3),
     0 24px 48px rgba(0, 0, 0, 0.45);
   overflow: hidden;
 }
 
-.reportBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.625rem 1rem;
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.75rem;
-  color: var(--hero-dim);
-  border-bottom: 1px solid var(--hero-line);
-}
-
-.reportState {
-  color: #3cad6e;
-}
-
+/* The frame takes the embed's own height (kensa-embed.js). */
 .reportFrame {
   position: relative;
-  height: 600px;
 }
 
 .loading {
@@ -214,10 +194,13 @@
   pointer-events: none;
 }
 
+/* The embed view pads its card by 8px on every side; pull the frame out by that on the
+   top and sides so the card's own border sits flush with the rounded container. */
 .report {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: calc(100% + 16px);
+  min-height: 600px;
+  margin: -8px -8px 0;
   border: 0;
   display: block;
   background: transparent;
@@ -239,8 +222,8 @@
     gap: 2.5rem;
   }
 
-  .reportFrame {
-    height: 520px;
+  .report {
+    min-height: 520px;
   }
 }
 
@@ -253,7 +236,7 @@
     font-size: 1rem;
   }
 
-  .reportFrame {
-    height: 440px;
+  .report {
+    min-height: 440px;
   }
 }

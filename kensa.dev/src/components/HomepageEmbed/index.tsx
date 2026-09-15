@@ -17,7 +17,7 @@ export default function HomepageEmbed(): ReactNode {
                         story, a design doc or a service catalog. The page shows what the system did,
                         and it stays current with every run.
                     </p>
-                    <Link className={styles.link} to="/docs/intro">
+                    <Link className={styles.link} to="/docs/reports/embedding">
                         Embedding a report →
                     </Link>
                 </div>
