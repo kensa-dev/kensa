@@ -45,6 +45,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.17     | 0.9.5              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.5 (report embed mode and `kensa-embed.js` #224; link unfurl pages; `withLinkBaseUrl` / `KENSA_LINK_BASE_URL` #224; sticky test name #223; badge filter #225). No Maven-side change. |
 | 0.9.16     | 0.9.4              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.4 (`suite_summary` MCP tool and compact listings #221; `#/issue/<key>` and `#/epic/<id>` report links #222; `SetupStep.setup(scope)` #210, `SetupSteps(list)` #213, one-line setup-step builders #212; polling-block wording, in-pane deep-link scrolling, `?theme=` on report URLs). No Maven-side change. |
 | 0.9.15     | 0.9.3              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.3 (user thread locals in polling checks via `withCoroutineContextProviders` #220, report deep-link anchors #219, MCP `captured_interactions` empty-group fix #218). No Maven-side change. |
 | 0.9.14     | 0.9.2              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.2 (`run.json` run marker with live counts, MCP run-state tools #217; CLI wrapper arch detection, pinning and checksums #216; issue-filter deep-link fix #215). No Maven-side change. |
