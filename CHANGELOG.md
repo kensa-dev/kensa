@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v1.0.0
+
+Fixes:
+  - **Embed frames shrink as well as grow.** The embed posted `document.documentElement.scrollHeight`, which inside an iframe never drops below the frame's own height, so a frame sized by `kensa-embed.js` grew to fit the sequence diagram and stayed there when a shorter tab was chosen. The embed now measures its own content root, so the posted height follows the content both ways (#226).
+
 ### v0.9.5
 
 Added:

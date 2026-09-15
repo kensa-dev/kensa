@@ -1,3 +1,4 @@
+import {useRef} from 'react';
 import {ExternalLink} from 'lucide-react';
 import KensaLogo from '@/assets/logo.svg?react';
 import {cn} from '@/lib/utils';
@@ -32,10 +33,11 @@ interface EmbedPageProps {
 // The chromeless view a host page frames: the test container and one slim
 // footer that names the class and links out to the full report.
 export const EmbedPage = ({testId, params, target, selectedIndex, testDetail, isLoading, testToExpand, invocationToExpand, onTestLink, reportUrl}: EmbedPageProps) => {
-    useReportHeight();
+    const root = useRef<HTMLDivElement>(null);
+    useReportHeight(root);
 
     return (
-        <div className="bg-background font-sans p-2">
+        <div ref={root} className="bg-background font-sans p-2">
             {target && !target.found ? (
                 <div className="bg-card border rounded-xl shadow-sm px-5 py-3 text-sm text-muted-foreground">
                     {target.missing === 'test'

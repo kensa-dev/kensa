@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {heightMessage, isHeightMessage, nextHeightPost} from './embedHeight';
+import {HeightMessage, heightMessage, heightReporter, isHeightMessage, nextHeightPost} from './embedHeight';
 
 describe('heightMessage', () => {
     it('builds the kensa:height message', () => {
@@ -48,5 +48,31 @@ describe('nextHeightPost', () => {
     it('rounds up so the frame never clips a fractional pixel', () => {
         expect(nextHeightPost(null, 812.2)).toEqual(heightMessage(813));
         expect(nextHeightPost(813, 812.2)).toBeNull();
+    });
+});
+
+describe('heightReporter', () => {
+    const target = (height: number) => ({getBoundingClientRect: () => ({height})});
+
+    it('posts the content height when the content shrinks as well as when it grows', () => {
+        const posted: HeightMessage[] = [];
+        const content = {height: 900};
+        const reporter = heightReporter({getBoundingClientRect: () => ({height: content.height})}, (m) => posted.push(m));
+
+        reporter();
+        content.height = 400;
+        reporter();
+
+        expect(posted).toEqual([heightMessage(900), heightMessage(400)]);
+    });
+
+    it('posts nothing when the content height has not moved', () => {
+        const posted: HeightMessage[] = [];
+        const reporter = heightReporter(target(812), (m) => posted.push(m));
+
+        reporter();
+        reporter();
+
+        expect(posted).toEqual([heightMessage(812)]);
     });
 });
