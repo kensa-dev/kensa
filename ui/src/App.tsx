@@ -24,7 +24,7 @@ import {SystemViewPage} from './components/SystemViewPage';
 import {OverviewPage} from './components/OverviewPage';
 import {TooltipProvider} from "@/components/ui/tooltip";
 import {hasOpenDialog, shouldClearSearchOnEscape} from "@/util/escapeGuard";
-import {nextQueryAfterTagClick, selectedTagsFromQuery} from "@/util/tagClick";
+import {FilterPrefix, nextQueryAfterFilterClick, nextQueryAfterTagClick, selectedTagsFromQuery} from "@/util/tagClick";
 import {TagFilterProvider} from "@/contexts/TagFilterContext";
 import {SuiteSearchProvider, type SuiteSearchResult} from "@/contexts/SuiteSearchContext";
 import {SuiteSearchResults} from "@/components/SuiteSearchResults";
@@ -115,6 +115,11 @@ const App = () => {
 
     const onTagClick = useCallback(
         (tag: string, additive: boolean) => onSearchChange(nextQueryAfterTagClick(searchQueryRef.current, tag, additive)),
+        [],
+    );
+
+    const onFilterClick = useCallback(
+        (prefix: FilterPrefix, value: string, additive: boolean) => onSearchChange(nextQueryAfterFilterClick(searchQueryRef.current, prefix, value, additive)),
         [],
     );
 
@@ -523,7 +528,7 @@ const App = () => {
             <SuiteSearchProvider mergedIndex={mergedSearchIndex} highlightValue={suiteHighlightValue} onHighlightValue={setSuiteHighlightValue}>
             <TooltipProvider>
             <SidebarProvider>
-            <TagFilterProvider onTagClick={onTagClick} selectedTags={selectedTags}>
+            <TagFilterProvider onTagClick={onTagClick} onFilterClick={onFilterClick} selectedTags={selectedTags} query={searchQuery}>
                 <CommandDialog open={open} onOpenChange={setOpen}>
                     <CommandInput
                         placeholder="Jump to test..."

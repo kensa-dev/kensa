@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { nextQueryAfterTagClick, selectedTagsFromQuery } from './tagClick';
+import { nextQueryAfterFilterClick, nextQueryAfterTagClick, selectedFilterValues, selectedTagsFromQuery } from './tagClick';
 
 describe('nextQueryAfterTagClick', () => {
     describe('replace (no modifier)', () => {
@@ -80,5 +80,40 @@ describe('selectedTagsFromQuery', () => {
 
     it('handles extra whitespace', () => {
         expect(selectedTagsFromQuery('  tag:smoke   tag:slow  ')).toEqual(new Set(['smoke', 'slow']));
+    });
+});
+
+describe('nextQueryAfterFilterClick', () => {
+    it('replaces existing issue tokens and keeps everything else', () => {
+        expect(nextQueryAfterFilterClick('tag:smoke issue:K-1 issue:K-2', 'issue', 'K-3', false))
+            .toBe('tag:smoke issue:K-3');
+    });
+
+    it('replaces existing epic tokens without touching issue tokens', () => {
+        expect(nextQueryAfterFilterClick('epic:E-1 issue:K-1', 'epic', 'E-2', false))
+            .toBe('issue:K-1 epic:E-2');
+    });
+
+    it('appends an issue token additively', () => {
+        expect(nextQueryAfterFilterClick('issue:K-1', 'issue', 'K-2', true)).toBe('issue:K-1 issue:K-2');
+    });
+
+    it('removes an issue token additively when already present', () => {
+        expect(nextQueryAfterFilterClick('tag:smoke issue:K-1', 'issue', 'K-1', true)).toBe('tag:smoke');
+    });
+
+    it('does not treat an issue token as an epic token', () => {
+        expect(nextQueryAfterFilterClick('issue:K-1', 'epic', 'K-1', true)).toBe('issue:K-1 epic:K-1');
+    });
+});
+
+describe('selectedFilterValues', () => {
+    it('extracts values for the given prefix only', () => {
+        expect(selectedFilterValues('issue:K-1 epic:E-1 tag:smoke issue:K-2', 'issue')).toEqual(new Set(['K-1', 'K-2']));
+        expect(selectedFilterValues('issue:K-1 epic:E-1 tag:smoke issue:K-2', 'epic')).toEqual(new Set(['E-1']));
+    });
+
+    it('ignores tokens with no value', () => {
+        expect(selectedFilterValues('epic: epic:E-1', 'epic')).toEqual(new Set(['E-1']));
     });
 });

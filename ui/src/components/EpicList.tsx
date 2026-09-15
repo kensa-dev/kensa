@@ -11,7 +11,7 @@ export const EpicList = ({epics = [], testState}: EpicListProps) => {
     return (
         <div className="flex items-center gap-1 shrink-0">
             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Epic</span>
-            {epics.map(epic => <IssueBadge key={epic} issue={epic} testState={testState}/>)}
+            {epics.map(epic => <IssueBadge key={epic} issue={epic} kind="epic" testState={testState}/>)}
         </div>
     );
 };

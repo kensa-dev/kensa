@@ -3,20 +3,24 @@ import {Badge} from "@/components/ui/badge";
 import {Popover, PopoverAnchor, PopoverContent} from "@/components/ui/popover";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {ConfigContext} from "@/contexts/ConfigContext";
+import {useTagFilter} from "@/contexts/TagFilterContext";
 import {type MouseEvent, useContext, useState} from "react";
 import {Play} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {TestState} from "@/types/Test";
 import {issueHref} from "@/util/issueTrackerLink";
 import {issueBadgeMenu} from "@/util/replayLink";
+import {badgeFilterMenu} from "@/util/badgeFilterMenu";
 
 interface IssueBadgeProps {
     issue: string;
+    kind?: "issue" | "epic";
     testState: TestState;
 }
 
-export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
+export const IssueBadge = ({issue, kind = "issue", testState}: IssueBadgeProps) => {
     const {issueTrackerUrl, replayUrl} = useContext(ConfigContext);
+    const {onFilterClick, query} = useTagFilter();
     const [menuOpen, setMenuOpen] = useState(false);
 
     const baseClasses = "rounded-md border transition-colors bg-clip-padding";
@@ -42,29 +46,7 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
     );
 
     const href = issueHref(issueTrackerUrl, issue);
-
-    if (!replayUrl?.trim()) {
-        if (!href) {
-            return (
-                <Badge className={cn(baseClasses, toneClasses)}>
-                    {issue}
-                </Badge>
-            );
-        }
-
-        return (
-            <Badge asChild className={cn(baseClasses, toneClasses)}>
-                <Link
-                    target="_blank"
-                    to={href}
-                    onClick={(e) => e.stopPropagation()}
-                    onMouseDown={(e) => e.stopPropagation()}
-                >
-                    {issue}
-                </Link>
-            </Badge>
-        );
-    }
+    const hasReplay = !!replayUrl?.trim();
 
     const openMenu = (e: MouseEvent) => {
         e.preventDefault();
@@ -72,7 +54,9 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
         setMenuOpen(true);
     };
 
-    const glyph = <Play className="!size-2.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100"/>;
+    const glyph = hasReplay
+        ? <Play className="!size-2.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100"/>
+        : null;
 
     const badge = href
         ? (
@@ -96,6 +80,10 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
             </Badge>
         );
 
+    const linkEntries = issueBadgeMenu(issueTrackerUrl, replayUrl, issue, kind);
+    const filterEntries = badgeFilterMenu(query, kind, issue);
+    const entryClasses = "rounded-md px-2 py-1.5 text-xs text-foreground hover:bg-muted/60 whitespace-nowrap";
+
     return (
         <Popover open={menuOpen} onOpenChange={setMenuOpen}>
             <Tooltip delayDuration={200}>
@@ -105,7 +93,7 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
                     </PopoverAnchor>
                 </TooltipTrigger>
                 <TooltipContent className="bg-slate-900 text-white border-none shadow-xl text-xs px-3 py-2">
-                    Right-click for Replay
+                    {hasReplay ? "Right-click for Replay" : "Right-click to filter"}
                 </TooltipContent>
             </Tooltip>
 
@@ -117,13 +105,13 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
                 onMouseDown={(e) => e.stopPropagation()}
             >
                 <div className="flex flex-col">
-                    {issueBadgeMenu(issueTrackerUrl, replayUrl, issue).map((entry) => (
+                    {linkEntries.map((entry) => (
                         <a
                             key={entry.key}
                             href={entry.href}
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded-md px-2 py-1.5 text-xs text-foreground hover:bg-muted/60 whitespace-nowrap"
+                            className={entryClasses}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setMenuOpen(false);
@@ -132,6 +120,22 @@ export const IssueBadge = ({issue, testState}: IssueBadgeProps) => {
                         >
                             {entry.label}
                         </a>
+                    ))}
+                    {linkEntries.length > 0 && <div className="my-1 h-px bg-border/40"/>}
+                    {filterEntries.map((entry) => (
+                        <button
+                            key={entry.key}
+                            type="button"
+                            className={cn(entryClasses, "text-left")}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setMenuOpen(false);
+                                onFilterClick(kind, issue, entry.additive);
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                        >
+                            {entry.label}
+                        </button>
                     ))}
                 </div>
             </PopoverContent>

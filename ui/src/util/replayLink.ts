@@ -15,12 +15,12 @@ export const replayIssueHref = (replayUrl: string, issue: string): string => {
     return `${base}/?tags=issue:${encodeURIComponent(issue)}`;
 };
 
-export const issueBadgeMenu = (issueTrackerUrl: string | null | undefined, replayUrl: string | undefined, issue: string): IssueMenuEntry[] => {
+export const issueBadgeMenu = (issueTrackerUrl: string | null | undefined, replayUrl: string | undefined, issue: string, kind: "issue" | "epic" = "issue"): IssueMenuEntry[] => {
     const entries: IssueMenuEntry[] = [];
     const issueLink = issueHref(issueTrackerUrl, issue);
 
     if (issueLink) entries.push({key: "issue", label: "Open issue", href: issueLink});
-    if (replayUrl?.trim()) entries.push({key: "replay", label: "Open in Replay", href: replayIssueHref(replayUrl, issue)});
+    if (kind === "issue" && replayUrl?.trim()) entries.push({key: "replay", label: "Open in Replay", href: replayIssueHref(replayUrl, issue)});
 
     return entries;
 };

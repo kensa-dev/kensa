@@ -122,4 +122,14 @@ describe('issueBadgeMenu', () => {
     it('ignores blank urls', () => {
         expect(issueBadgeMenu('   ', '   ', 'TEAM-1')).toEqual([]);
     });
+
+    it('omits the replay entry for an epic', () => {
+        expect(issueBadgeMenu('https://jira.example.com/browse', 'https://replay.example.com', 'EPIC-1', 'epic')).toEqual([
+            {key: 'issue', label: 'Open issue', href: 'https://jira.example.com/browse/EPIC-1'}
+        ]);
+    });
+
+    it('is empty for an epic when only the replay url is configured', () => {
+        expect(issueBadgeMenu('', 'https://replay.example.com', 'EPIC-1', 'epic')).toEqual([]);
+    });
 });
