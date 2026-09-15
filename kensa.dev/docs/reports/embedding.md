@@ -68,6 +68,16 @@ Set it in code with `withLinkBaseUrl` (see [Configuration](../api/configuration.
 
 Without a base, links keep using the page's own location, as before.
 
+## Pasting a link
+
+Paste a copied embed link into Slack, Microsoft Teams, a GitHub issue or pull request, or a Jira Cloud story and the host shows a card: the test's name, its state and class, and its sentences as text. Jira cannot iframe a page without an app installed, but it unfurls links natively, so a story with the link on it shows whether the behaviour is proven without a click.
+
+The card comes from a static page Kensa writes beside the report. The report itself is one page whose hash route names the test, and a host fetching a link never sees the hash, so every class and method gets a page of its own under `embed/` in the report bundle, carrying [Open Graph](https://ogp.me) tags and a refresh on to the live embed. A person who opens the link lands on the embedded test as before; a host that fetches it reads the card. Beside the site name the card shows the Kensa mark, served as `favicon.png` from the report bundle.
+
+The pages are written only when the report has a [stable address](#a-stable-address-for-the-links). Without a `linkBaseUrl` there is nothing a host could fetch, so **Copy embed link** copies the hash URL as before; with one it copies the page URL, `<base>/embed/<class>/<method>.html`, or `index.html` for the whole class. In a [site](../build-plugins/site-mode.md) each source bundle keeps its own `embed/` directory and the copied link goes through it.
+
+A parameterised method's card shows the sentences of its first invocation. The card is text only in 1.0; a picture of the sentences comes in 1.0.1 at the same address.
+
 ## What the footer shows
 
 Below the test cards the embed has one line: the Kensa mark, the test class, its state, and **Open full report**, which opens the same test in the full report in a new tab. It is hidden when the embed is printed, so a printed page carries the test alone.

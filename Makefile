@@ -68,6 +68,7 @@ copy-shell-resources:
 	cp ui/build/js/kensa.js cli/internal/shell/embed/kensa.js
 	cp ui/build/js/kensa-embed.js cli/internal/shell/embed/kensa-embed.js
 	cp ui/public/logo.svg cli/internal/shell/embed/logo.svg
+	cp core/src/main/resources/favicon.png cli/internal/shell/embed/favicon.png
 
 .PHONY: build-cli
 build-cli: copy-shell-resources

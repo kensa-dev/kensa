@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import {Check, Code, Link as LinkIcon} from 'lucide-react';
-import {anchorHash, copyLink, embedHash} from '@/util/anchorLink';
+import {anchorHash, copyLink} from '@/util/anchorLink';
+import {embedLinkFor} from '@/util/embedLink';
 import {reportBase} from '@/util/linkBase';
 import {useConfig} from '@/contexts/ConfigContext';
+import {useSource} from '@/contexts/SourceContext';
 import {cn} from '@/lib/utils';
 
 interface AnchorLinkProps {
@@ -17,11 +19,13 @@ interface AnchorLinkProps {
 export const AnchorLink = ({testId, method, invocation, embed = false, className}: AnchorLinkProps) => {
     const [copied, setCopied] = useState(false);
     const config = useConfig();
+    const source = useSource();
 
     const onClick = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        const hash = embed ? embedHash(testId, method, invocation) : anchorHash(testId, method, invocation);
-        const url = `${reportBase(config, window.location)}${hash}`;
+        const url = embed
+            ? embedLinkFor(config, window.location, source.baseUrl, testId, method, invocation)
+            : `${reportBase(config, window.location)}${anchorHash(testId, method, invocation)}`;
         if (await copyLink(url)) {
             setCopied(true);
             setTimeout(() => setCopied(false), 1500);

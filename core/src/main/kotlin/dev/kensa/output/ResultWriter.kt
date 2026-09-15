@@ -9,6 +9,7 @@ import dev.kensa.output.json.JsonTransforms.toJsonString
 import dev.kensa.output.json.JsonTransforms.toJsonWith
 import dev.kensa.output.search.SearchIndexBuilder
 import dev.kensa.output.search.SearchIndexWriter
+import dev.kensa.output.unfurl.UnfurlWriter
 import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.sentence.Acronym
 import dev.kensa.state.TestState.Disabled
@@ -67,6 +68,7 @@ internal class ResultWriter(private val configuration: Configuration, private va
     }
 
     private val tabArtifactManager = TabArtifactManager()
+    private val unfurlWriter = UnfurlWriter(configuration)
 
     fun write(containers: List<TestContainer>) {
         val sortedContainers = containers.sortedBy { it.testClass.name }
@@ -78,6 +80,7 @@ internal class ResultWriter(private val configuration: Configuration, private va
             IoUtil.copyResource("/kensa.js", configuration.outputDir)
             IoUtil.copyResource("/kensa-embed.js", configuration.outputDir)
             IoUtil.copyResource("/logo.svg", configuration.outputDir)
+            IoUtil.copyResource("/favicon.png", configuration.outputDir)
         }
         finish()
 
@@ -103,6 +106,7 @@ internal class ResultWriter(private val configuration: Configuration, private va
             resultsPath.createDirectories()
             resultsPath.resolve("${container.testClass.name}.json").writeText(string)
         }
+        unfurlWriter.write(container)
         count(container)
         scheduleMarkerFlush()
     }
@@ -195,6 +199,7 @@ internal class ResultWriter(private val configuration: Configuration, private va
                 .add("titleText", titleText)
                 .add("issueTrackerUrl", issueTrackerUrl?.toString())
                 .add("linkBaseUrl", linkBaseUrl?.toString())
+                .add("unfurl", linkBaseUrl != null)
                 .add("acronyms", acronymsAsJson(dictionary.acronyms))
                 .add("flattenPackages", flattenOutputPackages)
                 .add("packageDisplay", packageDisplay.name)

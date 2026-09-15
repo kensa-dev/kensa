@@ -5,6 +5,7 @@ export interface KensaConfig {
     titleText: string;
     issueTrackerUrl: string | null;
     linkBaseUrl?: string | null;
+    unfurl?: boolean;
     acronyms: Record<string, string>;
     packageDisplay: string;
     packageDisplayRoot?: string;

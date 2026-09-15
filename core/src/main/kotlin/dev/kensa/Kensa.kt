@@ -151,6 +151,9 @@ class Configuration {
     // calling thread's current value. Lets user thread locals survive the Dispatchers.IO dispatch.
     val coroutineContextProviders: MutableList<() -> CoroutineContext> = CopyOnWriteArrayList()
     var dataOnly: Boolean = !System.getProperty(KENSA_SOURCE_ID).isNullOrBlank()
+    // The id the report prefixes to every class id: the source's own in site mode,
+    // "default" for a bundle served without a manifest.
+    internal val sourceId: String = System.getProperty(KENSA_SOURCE_ID)?.takeIf { it.isNotBlank() } ?: "default"
     var outputDir: Path = run {
         val root = Path(System.getProperty(KENSA_OUTPUT_ROOT, System.getProperty("java.io.tmpdir")))
         val sourceId = System.getProperty(KENSA_SOURCE_ID)

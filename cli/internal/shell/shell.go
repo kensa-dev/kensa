@@ -19,6 +19,9 @@ var kensaEmbedJS []byte
 //go:embed embed/logo.svg
 var logoSVG []byte
 
+//go:embed embed/favicon.png
+var faviconPNG []byte
+
 type embeddedAsset struct {
 	bytes       []byte
 	contentType string
@@ -30,6 +33,7 @@ func Handler(serveDir string) http.Handler {
 		"/kensa.js":       {kensaJS, "application/javascript"},
 		"/kensa-embed.js": {kensaEmbedJS, "application/javascript"},
 		"/logo.svg":       {logoSVG, "image/svg+xml"},
+		"/favicon.png":    {faviconPNG, "image/png"},
 	}
 	fileServer := http.FileServer(http.Dir(serveDir))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
