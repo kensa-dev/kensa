@@ -1,110 +1,156 @@
 .showcase {
-    padding: 3rem 0;
+    padding: 4.5rem 0;
     background: var(--ifm-background-surface-color);
     border-bottom: 1px solid var(--ifm-toc-border-color);
 }
 
 .eyebrow {
-    text-align: center;
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    margin: 0 0 0.75rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.75rem;
     letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: var(--kensa-accent-strong);
-    margin: 0 0 0.5rem;
-    font-family: inherit;
-    line-height: 1.4;
+}
+
+[data-theme='dark'] .eyebrow {
+    color: var(--kensa-accent);
+}
+
+.heading {
+    margin: 0 0 0.75rem;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
 }
 
 .intro {
-    text-align: center;
-    max-width: 640px;
-    margin: 0 auto 2rem;
-    font-size: 1rem;
-    line-height: 1.6;
+    max-width: 44rem;
+    margin: 0 0 2rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
     color: var(--ifm-color-emphasis-800);
 }
 
-.label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ifm-color-emphasis-800);
-    margin: 0 0 0.6rem;
-}
-
-.code {
-    max-width: 860px;
-    margin: 0 auto 2rem;
+.pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: stretch;
 }
 
 .code :global(.theme-code-block) {
     margin-bottom: 0;
-}
-
-/* The report is a full application, so it gets the full container width and
-   a fixed height that fits its sidebar plus one test with its diagram. */
-.frame {
-    position: relative;
-    width: 100%;
-    height: 960px;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--ifm-toc-border-color);
-    background: var(--ifm-background-color);
-    box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.06),
-        0 8px 24px rgba(0, 0, 0, 0.12),
-        0 24px 48px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme='dark'] .frame {
-    box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.2),
-        0 8px 24px rgba(0, 0, 0, 0.35),
-        0 24px 48px rgba(0, 0, 0, 0.3);
-}
-
-.loading {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--ifm-color-emphasis-600);
-    transition: opacity 0.3s ease;
-}
-
-.frameLoaded .loading {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.report {
-    position: relative;
-    width: 100%;
     height: 100%;
-    border: 0;
-    display: block;
-    background: transparent;
+}
+
+.arrow {
+    display: flex;
+    align-items: center;
+    color: var(--kensa-accent-strong);
+}
+
+[data-theme='dark'] .arrow {
+    color: var(--kensa-accent);
+}
+
+.rendered {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: 1px solid var(--ifm-toc-border-color);
+    border-radius: 8px;
+    background: var(--ifm-background-color);
+    overflow: hidden;
+}
+
+.renderedBar,
+.renderedFoot {
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.75rem;
+    color: var(--ifm-color-emphasis-600);
+    padding: 0.625rem 1rem;
+}
+
+.renderedBar {
+    border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.renderedFoot {
+    display: flex;
+    gap: 1.125rem;
+    border-top: 1px solid var(--ifm-toc-border-color);
+    margin-top: auto;
+}
+
+.renderedBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.testName {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ifm-color-primary);
+    margin-bottom: 0.25rem;
+}
+
+.testName svg {
+    flex-shrink: 0;
+}
+
+.sentence {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.sentence > span:first-child {
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.given { color: #2f6fdb; }
+.when { color: #c9761d; }
+.then { color: var(--ifm-color-primary); }
+
+[data-theme='dark'] .given { color: #6ea2ff; }
+[data-theme='dark'] .when { color: #f0a24a; }
+
+.values {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding-left: 3rem;
+    font-size: 0.9rem;
+    color: var(--ifm-color-emphasis-700);
+}
+
+.values code {
+    font-size: 0.85em;
+    padding: 0.1rem 0.4rem;
 }
 
 .liveLink {
-    text-align: center;
-    font-size: 0.9rem;
-    margin: 1rem 0 0;
+    margin: 1.5rem 0 0;
+    font-size: 0.95rem;
+    font-weight: 600;
 }
 
 @media screen and (max-width: 996px) {
-    .frame {
-        height: 720px;
+    .pair {
+        grid-template-columns: minmax(0, 1fr);
     }
-}
 
-@media screen and (max-width: 768px) {
-    .frame {
-        height: 600px;
+    .arrow {
+        justify-content: center;
+        transform: rotate(90deg);
     }
 }

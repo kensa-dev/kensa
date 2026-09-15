@@ -29,6 +29,13 @@ const CiIcon = (
     </svg>
 );
 
+const BuildIcon = (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="4" fill="currentColor" opacity="0.15"/>
+        <path d="M7 15l3-3-3-3M12 16h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
 const integrations: IntegrationCard[] = [
     {
         badge: 'IntelliJ Plugin',
@@ -57,6 +64,20 @@ const integrations: IntegrationCard[] = [
         marketplaceLabel: 'View on JetBrains Marketplace',
         docsUrl: '/docs/integrations/teamcity-plugin',
         Icon: CiIcon,
+    },
+    {
+        badge: 'Gradle & Maven',
+        title: 'Reports from your build',
+        description: 'Site mode aggregates every module\u2019s reports into one browsable site, published from CI.',
+        features: [
+            'One site across subprojects',
+            'Run markers and live counts',
+            'Gradle Plugin Portal and Maven Central',
+        ],
+        marketplaceUrl: 'https://plugins.gradle.org/plugin/dev.kensa.gradle-plugin',
+        marketplaceLabel: 'View on Gradle Plugin Portal',
+        docsUrl: '/docs/build-plugins/gradle-plugin',
+        Icon: BuildIcon,
     },
 ];
 

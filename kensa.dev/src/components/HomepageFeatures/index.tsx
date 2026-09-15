@@ -63,7 +63,8 @@ export default function HomepageFeatures(): ReactNode {
     return (
         <section className={styles.features}>
             <div className="container">
-                <h2 className="sr-only">Who Kensa is for</h2>
+                <p className={styles.eyebrow}>// Who it is for</p>
+                <h2 className={styles.heading}>One report, three readers.</h2>
                 <div className={styles.grid}>
                     {FeatureList.map((props, idx) => (
                         <Feature key={idx} {...props} />

@@ -1,199 +1,259 @@
-@keyframes meshDrift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+/* The hero is always dark, whatever the site theme. Its palette is local so the
+   Docusaurus theme variables never leak in. */
+.hero {
+  --hero-bg: #0c1013;
+  --hero-text: #f4f5f3;
+  --hero-muted: #b6bcb8;
+  --hero-dim: #8b938e;
+  --hero-amber: #f2b544;
+  --hero-line: rgba(255, 255, 255, 0.12);
 
-@keyframes ctaGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 133, 85, 0); }
-  50%       { box-shadow: 0 0 28px 6px rgba(46, 133, 85, 0.28); }
-}
-
-.heroBanner {
-  padding: 3rem 0;
-  text-align: center;
+  color-scheme: dark;
   position: relative;
   overflow: hidden;
-  /* Hero background is always the dark-green gradient, so force white text
-     in both light and dark themes (overrides Docusaurus hero--primary). */
-  color: #ffffff;
-  background: linear-gradient(
-    135deg,
-    #1a3d2b 0%,
-    #2e8555 35%,
-    #1f5c3f 55%,
-    #0d2a1c 80%,
-    #245c40 100%
-  );
-  background-size: 400% 400%;
-  animation: meshDrift 18s ease infinite;
+  background: var(--hero-bg);
+  color: var(--hero-text);
+  padding: 4.5rem 0 4rem;
 }
 
-/* Grain overlay */
-.heroBanner::after {
+/* Grain, so the glows read as light rather than flat gradient fills. */
+.hero::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   background-size: 256px 256px;
+  opacity: 0.35;
   pointer-events: none;
-  opacity: 0.6;
 }
 
-.heroInner {
+/* Three glows in the report's own colours: Given blue, When orange, Then green. */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(56px);
+  pointer-events: none;
+}
+
+.glowGiven {
+  left: -8%;
+  top: -20%;
+  width: 57%;
+  height: 76%;
+  background: radial-gradient(closest-side, #4a8cff 0%, rgba(74, 140, 255, 0) 100%);
+  opacity: 0.95;
+}
+
+.glowWhen {
+  left: 29%;
+  top: 37%;
+  width: 53%;
+  height: 68%;
+  background: radial-gradient(closest-side, #f0962e 0%, rgba(240, 150, 46, 0) 100%);
+  filter: blur(60px);
+  opacity: 0.9;
+}
+
+.glowThen {
+  left: 61%;
+  top: -15%;
+  width: 57%;
+  height: 88%;
+  background: radial-gradient(closest-side, #3cad6e 0%, rgba(60, 173, 110, 0) 100%);
+  opacity: 1;
+}
+
+/* Wider than the site's container: the hero is a full-bleed band and the
+   report card should use the room a large screen gives it. */
+.hero .heroInner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+  gap: 3.5rem;
+  align-items: center;
+  max-width: 1640px;
+}
+
+.copy {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-@keyframes discReveal {
-  from { opacity: 0; transform: scale(0.86); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.heroTitle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-}
-
-/* Frosted-glass disc: the scrolling gradient shows through, so the mark
-   becomes part of the hero rather than a sticker on top. White mark always
-   reads, regardless of where the gradient has drifted. */
-.heroLogoDisc {
-  width: 88px;
-  height: 88px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.10);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    0 10px 30px rgba(0, 0, 0, 0.30);
-  animation: discReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.heroLogo {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.20));
+.eyebrow {
+  margin: 0;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hero-amber);
 }
 
 .title {
-  font-size: 3rem;
+  margin: 0;
+  font-size: 4rem;
+  line-height: 1.02;
   font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--hero-text);
+  text-wrap: balance;
+}
+
+.lit {
+  color: var(--hero-amber);
+}
+
+.strap {
   margin: 0;
-  letter-spacing: -0.02em;
-  color: #ffffff;
-}
-
-.pitch {
-  font-size: 1.35rem;
-  font-weight: 600;
-  max-width: 640px;
-  margin: 0.25rem 0 0;
-  line-height: 1.45;
-  letter-spacing: -0.01em;
-  color: #ffffff;
-}
-
-.tagline {
-  font-size: 1.05rem;
-  max-width: 600px;
-  margin: 0;
-  opacity: 0.88;
-  line-height: 1.6;
-}
-
-/* One copyable dependency block in the hero. Docusaurus's CodeBlock brings
-   its own copy button; we only size it and stop the hero's white text
-   bleeding into the code theme. */
-.dependency {
-  width: 100%;
-  max-width: 640px;
-  text-align: left;
-  color: var(--ifm-font-color-base);
-  margin-top: 0.25rem;
-}
-
-.dependency :global(.theme-code-block) {
-  margin-bottom: 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30);
-}
-
-.dependency pre,
-.dependency code {
-  font-size: 0.85rem;
-}
-
-.badgeRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  max-width: 34rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--hero-muted);
+  text-wrap: pretty;
 }
 
 .buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 0.25rem;
+  gap: 0.75rem;
+}
+
+.ctaPrimary,
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  height: 3rem;
+  padding: 0 1.375rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .ctaPrimary {
-  animation: ctaGlow 3s ease-in-out 1s 3;
+  background: var(--hero-amber);
+  color: var(--hero-bg);
+  font-weight: 800;
 }
 
-.githubButton {
-  border-color: rgba(255, 255, 255, 0.5);
-  color: inherit;
+.ctaPrimary:hover {
+  background: #f7c766;
+  color: var(--hero-bg);
+  text-decoration: none;
 }
 
-.githubButton:hover {
-  border-color: rgba(255, 255, 255, 0.85);
-  color: inherit;
-  background: rgba(255, 255, 255, 0.1);
+.ctaSecondary {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: var(--hero-text);
+  font-weight: 600;
+}
+
+.ctaSecondary:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--hero-text);
+  text-decoration: none;
+}
+
+.meta {
+  margin: 0;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8125rem;
+  color: var(--hero-dim);
+}
+
+/* The live report, in a glass card so the glows show through its edges. */
+.reportCard {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 10px;
+  border: 1px solid var(--hero-line);
+  background: rgba(16, 22, 19, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 24px 48px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.reportBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.75rem;
+  color: var(--hero-dim);
+  border-bottom: 1px solid var(--hero-line);
+}
+
+.reportState {
+  color: #3cad6e;
+}
+
+.reportFrame {
+  position: relative;
+  height: 600px;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--hero-dim);
+  transition: opacity 0.3s ease;
+}
+
+.reportLoaded .loading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.report {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: transparent;
+}
+
+@media screen and (max-width: 1200px) {
+  .title {
+    font-size: 3.25rem;
+  }
+}
+
+@media screen and (max-width: 996px) {
+  .hero {
+    padding: 3rem 0;
+  }
+
+  .heroInner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  .reportFrame {
+    height: 520px;
+  }
 }
 
 @media screen and (max-width: 768px) {
-  .heroBanner {
-    padding: 2rem 1rem;
-  }
-
   .title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
   }
 
-  .heroLogoDisc {
-    width: 68px;
-    height: 68px;
+  .strap {
+    font-size: 1rem;
   }
 
-  .heroLogo {
-    width: 44px;
-    height: 44px;
-  }
-
-  .tagline {
-    font-size: 0.95rem;
-  }
-
-  .pitch {
-    font-size: 1.1rem;
-  }
-
-  .dependency pre,
-  .dependency code {
-    font-size: 0.75rem;
+  .reportFrame {
+    height: 440px;
   }
 }

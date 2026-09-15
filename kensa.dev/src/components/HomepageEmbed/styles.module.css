@@ -1,0 +1,156 @@
+.embed {
+    padding: 4.5rem 0;
+    background: var(--ifm-background-surface-color);
+    border-top: 1px solid var(--ifm-toc-border-color);
+    border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.inner {
+    max-width: var(--ifm-container-width);
+    margin: 0 auto;
+    padding: 0 var(--ifm-spacing-horizontal);
+    display: grid;
+    grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+    gap: 3.5rem;
+    align-items: center;
+}
+
+.copy {
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
+}
+
+.eyebrow {
+    margin: 0;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--kensa-accent-strong);
+}
+
+[data-theme='dark'] .eyebrow {
+    color: var(--kensa-accent);
+}
+
+.heading {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    text-wrap: balance;
+}
+
+.intro {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--ifm-color-emphasis-800);
+    text-wrap: pretty;
+}
+
+.link {
+    font-weight: 600;
+}
+
+/* The host page is deliberately light in both themes: it stands for a wiki,
+   not for this site. */
+.page {
+    color-scheme: light;
+    background: #f6f5f0;
+    color: #1a1f1c;
+    border-radius: 12px;
+    padding: 1.375rem 1.625rem;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.06),
+        0 24px 48px rgba(0, 0, 0, 0.18);
+}
+
+.pageHead {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    color: #6b736e;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #dfe3df;
+}
+
+.pageTitle {
+    font-weight: 700;
+    color: #1a1f1c;
+}
+
+.pageText {
+    margin: 0;
+    padding: 0.875rem 0 0.625rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #4a524d;
+}
+
+.card {
+    border: 1px solid #dfe3df;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.cardHead {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    background: #eef7f1;
+    border-bottom: 1px solid #dfe3df;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #1a1f1c;
+}
+
+.cardHead svg {
+    flex-shrink: 0;
+    color: #2e8555;
+}
+
+.cardBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 0.875rem;
+}
+
+.sentence {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.sentence > span:first-child {
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.given { color: #2f6fdb; }
+.when { color: #c9761d; }
+.then { color: #2e8555; }
+
+.cardFoot {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0.875rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.7rem;
+    color: #8a928c;
+    border-top: 1px solid #e6e9e6;
+}
+
+@media screen and (max-width: 996px) {
+    .inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2rem;
+    }
+}

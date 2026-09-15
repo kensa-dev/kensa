@@ -1,19 +1,9 @@
 import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
-import clsx from 'clsx';
 import CodeBlock from '@theme/CodeBlock';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useColorMode } from '@docusaurus/theme-common';
+import { orderServiceTestUrl } from '@site/src/util/reportUrl';
 import styles from './styles.module.css';
-
-// The live Clearwave example report, opened on the test shown in the code
-// block above it. Report routes are hash-based: #/test/<source>::<class>?method=<name>.
-// `theme` matches the report to the site's colour mode (honoured by the report UI from
-// the release after 0.9.3; ignored by earlier builds).
-const reportTestUrl = (base: string, theme: 'light' | 'dark') =>
-    `${base}#/test/test::com.clearwave.OrderServiceTest` +
-    `?method=${encodeURIComponent('voice and broadband order is successfully completed')}` +
-    `&theme=${theme}`;
 
 // Verbatim from clearwave-example/src/test/kotlin/com/clearwave/OrderServiceTest.kt.
 const TEST_SOURCE = `@Test
@@ -32,74 +22,76 @@ fun \`voice and broadband order is successfully completed\`() {
     )
 }`;
 
-// The report focuses an element as it loads, and Firefox scrolls the parent
-// page to bring a focused element into view, frame or not. So the iframe is
-// only mounted once the frame is already on screen: by then any focus scroll
-// lands where the reader is looking. Falls back to mounting immediately where
-// IntersectionObserver is unavailable.
-function useOnScreen<T extends Element>(): [React.RefObject<T | null>, boolean] {
-    const ref = useRef<T>(null);
-    const [onScreen, setOnScreen] = useState(false);
+type Keyword = 'Given' | 'And' | 'When' | 'Then';
 
-    useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
-        if (typeof IntersectionObserver === 'undefined') {
-            setOnScreen(true);
-            return;
-        }
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries.some((e) => e.isIntersecting)) {
-                    setOnScreen(true);
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.25 },
-        );
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, []);
+const keywordClass: Record<Keyword, string> = {
+    Given: styles.given,
+    And: styles.given,
+    When: styles.when,
+    Then: styles.then,
+};
 
-    return [ref, onScreen];
+function Sentence({ keyword, children }: { keyword: Keyword; children: ReactNode }) {
+    return (
+        <div className={styles.sentence}>
+            <span className={keywordClass[keyword]}>{keyword}</span>
+            <span>{children}</span>
+        </div>
+    );
 }
 
 export default function HomepageShowcase(): ReactNode {
-    const [loaded, setLoaded] = useState(false);
-    const [frameRef, frameOnScreen] = useOnScreen<HTMLDivElement>();
     const { siteConfig } = useDocusaurusContext();
     const { colorMode } = useColorMode();
-    const reportTest = reportTestUrl(String(siteConfig.customFields?.reportBase), colorMode);
+    const reportTest = orderServiceTestUrl(String(siteConfig.customFields?.reportBase), colorMode);
 
     return (
         <section className={styles.showcase}>
             <div className="container">
-                <h2 className={styles.eyebrow}>See it in action</h2>
+                <p className={styles.eyebrow}>// See it in action</p>
+                <h2 className={styles.heading}>Write this. Get this.</h2>
                 <p className={styles.intro}>
-                    This is a real test from the Clearwave example, and below it the report it
-                    produced, live. Click around: open an interaction, read a payload, follow a
-                    value back to its fixture.
+                    A real test from the Clearwave example, and the sentences the report produced
+                    from it. The method names become the words; the values come from the run.
                 </p>
 
-                <p className={styles.label}>Write this&hellip;</p>
-                <div className={styles.code}>
-                    <CodeBlock language="kotlin" title="OrderServiceTest.kt">{TEST_SOURCE}</CodeBlock>
+                <div className={styles.pair}>
+                    <div className={styles.code}>
+                        <CodeBlock language="kotlin" title="OrderServiceTest.kt">{TEST_SOURCE}</CodeBlock>
+                    </div>
+                    <div className={styles.arrow} aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                    </div>
+                    <div className={styles.rendered}>
+                        <div className={styles.renderedBar}>report · from the run</div>
+                        <div className={styles.renderedBody}>
+                            <div className={styles.testName}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M8.5 12.5l2.5 2.5 4.5-5" />
+                                </svg>
+                                voice and broadband order is successfully completed
+                            </div>
+                            <Sentence keyword="Given">open network will complete the order</Sentence>
+                            <Sentence keyword="And">fibre vision will complete the order</Sentence>
+                            <Sentence keyword="When">a voice and broadband order is placed</Sentence>
+                            <Sentence keyword="Then">the order confirmation should be pending</Sentence>
+                            <Sentence keyword="Then">
+                                eventually all notifications should show both suppliers completed successfully
+                            </Sentence>
+                            <div className={styles.values}>
+                                <div>voice supplier = <code>OpenNetwork</code></div>
+                                <div>broadband supplier = <code>FibreVision</code></div>
+                            </div>
+                        </div>
+                        <div className={styles.renderedFoot}>
+                            <span>12 interactions captured, 18 fixtures, and a sequence diagram, in the full report</span>
+                        </div>
+                    </div>
                 </div>
 
-                <p className={styles.label}>&hellip;get this</p>
-                <div ref={frameRef} className={clsx(styles.frame, loaded && styles.frameLoaded)}>
-                    <p className={styles.loading} aria-hidden={loaded}>Loading the live report&hellip;</p>
-                    {frameOnScreen && (
-                        <iframe
-                            key={reportTest}
-                            className={styles.report}
-                            src={reportTest}
-                            title="Live Kensa report for OrderServiceTest, from the Clearwave example"
-                            referrerPolicy="no-referrer"
-                            onLoad={() => setLoaded(true)}
-                        />
-                    )}
-                </div>
                 <p className={styles.liveLink}>
                     <a href={reportTest} target="_blank" rel="noopener noreferrer">
                         Open the full report in a new tab →

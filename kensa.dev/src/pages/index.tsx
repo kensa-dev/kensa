@@ -1,87 +1,67 @@
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import CodeBlock from '@theme/CodeBlock';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageShowcase from '@site/src/components/HomepageShowcase';
+import HomepageEmbed from '@site/src/components/HomepageEmbed';
 import HomepageEcosystem from '@site/src/components/HomepageEcosystem';
+import { orderServiceTestUrl } from '@site/src/util/reportUrl';
 
 import styles from './index.module.css';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
-    const version = String(siteConfig.customFields?.kensaVersion ?? '');
-    const dependency =
-        `testImplementation(platform("dev.kensa:kensa-bom:${version}"))\n` +
-        `testImplementation("dev.kensa:kensa-framework-junit5")`;
+    const [loaded, setLoaded] = useState(false);
+    // The hero is always dark, whatever the site theme, so the report inside it is too.
+    const reportTest = orderServiceTestUrl(String(siteConfig.customFields?.reportBase), 'dark');
 
     return (
-        <header className={clsx('hero hero--primary', styles.heroBanner)}>
-            <div className="container">
-                <div className={styles.heroInner}>
-                    <div className={styles.heroTitle}>
-                        <span className={styles.heroLogoDisc}>
-                            <img
-                                src="/img/kensa-mark-white.svg"
-                                alt="Kensa Logo"
-                                className={styles.heroLogo}
-                                width={56}
-                                height={56}
-                            />
-                        </span>
-                        <h1 className={styles.title}>{siteConfig.title}</h1>
-                    </div>
-                    <p className={styles.pitch}>
-                        Most JVM testing tools produce output for the person who wrote the test.
-                        Kensa produces output for everyone else.
+        <header className={styles.hero}>
+            <div className={clsx(styles.glow, styles.glowGiven)} aria-hidden="true" />
+            <div className={clsx(styles.glow, styles.glowWhen)} aria-hidden="true" />
+            <div className={clsx(styles.glow, styles.glowThen)} aria-hidden="true" />
+            <div className={clsx('container', styles.heroInner)}>
+                <div className={styles.copy}>
+                    <p className={styles.eyebrow}>// Acceptance testing for Kotlin and Java</p>
+                    <h1 className={styles.title}>
+                        Output for everyone who <span className={styles.lit}>didn&rsquo;t</span> write the test.
+                    </h1>
+                    <p className={styles.strap}>
+                        Given, When, Then in plain code, no feature files. The report is generated from
+                        the test that ran, with real values, every message between services, and an
+                        interactive sequence diagram.
                     </p>
-                    <p className={styles.tagline}>
-                        BDD for Kotlin &amp; Java. Given&ndash;When&ndash;Then in plain code, no feature
-                        files, and a report generated from the test that ran.
-                    </p>
-                    <div className={styles.badgeRow}>
-                        <img
-                            src="https://img.shields.io/github/v/release/kensa-dev/kensa?style=flat-square&color=3cad6e&labelColor=1a3a2a"
-                            alt="Latest release"
-                            width={94}
-                            height={20}
-                        />
-                        <img
-                            src="https://img.shields.io/badge/Kotlin-2.x-7F52FF?style=flat-square&logo=kotlin&logoColor=white"
-                            alt="Kotlin 2.x"
-                            width={85}
-                            height={20}
-                        />
-                        <img
-                            src="https://img.shields.io/badge/Java-17+-ED8B00?style=flat-square&logo=openjdk&logoColor=white"
-                            alt="Java 17+"
-                            width={85}
-                            height={20}
-                        />
-                        <img
-                            src="https://img.shields.io/badge/JUnit%205%2F6%20%7C%20Kotest%20%7C%20TestNG-supported-2e8555?style=flat-square"
-                            alt="Framework support"
-                            width={226}
-                            height={20}
-                        />
-                    </div>
-                    <div className={styles.dependency}>
-                        <CodeBlock language="kotlin" title="build.gradle.kts">{dependency}</CodeBlock>
-                    </div>
                     <div className={styles.buttons}>
-                        <Link
-                            className={clsx('button button--secondary button--lg', styles.ctaPrimary)}
-                            to="/docs/quickstart/kotlin-quickstart">
-                            Get Started
+                        <Link className={styles.ctaPrimary} to="/docs/quickstart/kotlin-quickstart">
+                            Get started
                         </Link>
-                        <Link
-                            className={clsx('button button--outline button--secondary button--lg', styles.githubButton)}
-                            href="https://github.com/kensa-dev/kensa">
+                        <Link className={styles.ctaSecondary} href="https://github.com/kensa-dev/kensa">
                             View on GitHub
                         </Link>
+                    </div>
+                    <p className={styles.meta}>
+                        Apache 2.0 · Kotlin 2.x · Java 17+ · JUnit 5 / 6 · Kotest · TestNG
+                    </p>
+                </div>
+
+                <div className={clsx(styles.reportCard, loaded && styles.reportLoaded)}>
+                    <div className={styles.reportBar}>
+                        <span>OrderServiceTest · report</span>
+                        <span className={styles.reportState}>passed</span>
+                    </div>
+                    <div className={styles.reportFrame}>
+                        <p className={styles.loading} aria-hidden={loaded}>Loading the live report&hellip;</p>
+                        <iframe
+                            className={styles.report}
+                            src={reportTest}
+                            title="Live Kensa report for OrderServiceTest, from the Clearwave example"
+                            referrerPolicy="no-referrer"
+                            onLoad={() => setLoaded(true)}
+                        />
                     </div>
                 </div>
             </div>
@@ -109,6 +89,7 @@ export default function Home(): ReactNode {
             <main>
                 <HomepageShowcase />
                 <HomepageFeatures />
+                <HomepageEmbed />
                 <HomepageEcosystem />
             </main>
         </Layout>
