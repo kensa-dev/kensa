@@ -33,7 +33,7 @@ jobs:
           go-version-file: cli/go.mod
       - name: Build UI shell and stage CLI embed assets
         run: |
-          ./gradlew :ui:viteBuild
+          ./gradlew :ui:viteEmbedBuild
           make copy-shell-resources
       - name: Build Go binaries
         run: |
