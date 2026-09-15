@@ -53,6 +53,7 @@ interface TestCardProps {
     testClass: string;
     testId: string;
     headerRef?: React.Ref<HTMLDivElement>;
+    onExpandedChange?: (expanded: boolean) => void;
 }
 
 const initialExpandedIdx = (test: Test, initialExpandedInvocation: number): number | null => {
@@ -64,13 +65,17 @@ const initialExpandedIdx = (test: Test, initialExpandedInvocation: number): numb
     return test.invocations.length > 0 ? 0 : null;
 };
 
-export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1, testClass, testId, headerRef }: TestCardProps) => {
+export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1, testClass, testId, headerRef, onExpandedChange }: TestCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
     const [expandedIdx, setExpandedIdx] = React.useState<number | null>(() => initialExpandedIdx(test, initialExpandedInvocation));
 
     React.useEffect(() => {
         setIsExpanded(initialExpanded);
     }, [initialExpanded]);
+
+    React.useEffect(() => {
+        onExpandedChange?.(isExpanded);
+    }, [isExpanded, onExpandedChange]);
 
     React.useEffect(() => {
         if (initialExpandedInvocation >= 0) setExpandedIdx(initialExpandedInvocation);

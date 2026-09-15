@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {activeIndex, applyEntries, entryToCrossing} from './activeTest';
+import {activeIndex, applyEntries, entryToCrossing, withExpanded} from './activeTest';
 
 describe('applyEntries', () => {
     it('adds the indices whose header is above the line', () => {
@@ -22,12 +22,34 @@ describe('applyEntries', () => {
 });
 
 describe('activeIndex', () => {
-    it('is the highest crossed index', () => {
-        expect(activeIndex(new Set([2, 0, 1]))).toBe(2);
+    it('is the highest index that is both crossed and expanded', () => {
+        expect(activeIndex(new Set([2, 0, 1]), new Set([0, 1, 2]))).toBe(2);
+        expect(activeIndex(new Set([0, 1, 2]), new Set([1]))).toBe(1);
+        expect(activeIndex(new Set([0, 2]), new Set([1, 2]))).toBe(2);
     });
 
     it('is -1 when nothing has crossed', () => {
-        expect(activeIndex(new Set())).toBe(-1);
+        expect(activeIndex(new Set(), new Set([3]))).toBe(-1);
+    });
+
+    it('is -1 when no crossed card is expanded', () => {
+        expect(activeIndex(new Set([2]), new Set())).toBe(-1);
+    });
+});
+
+describe('withExpanded', () => {
+    it('adds an index that expanded', () => {
+        expect(withExpanded(new Set([0]), 2, true)).toEqual(new Set([0, 2]));
+    });
+
+    it('removes an index that collapsed', () => {
+        expect(withExpanded(new Set([0, 2]), 0, false)).toEqual(new Set([2]));
+    });
+
+    it('returns the same set when nothing changes', () => {
+        const expanded = new Set([1]);
+        expect(withExpanded(expanded, 1, true)).toBe(expanded);
+        expect(withExpanded(expanded, 3, false)).toBe(expanded);
     });
 });
 

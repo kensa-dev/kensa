@@ -1,7 +1,7 @@
-// The active test is the last card whose header has scrolled under the report
-// header. Observer callbacks report only the cards that crossed the line, so
-// the set of crossed cards is kept and folded forward; the active one is the
-// highest crossed index, or -1 when none has crossed (the page top).
+// The active test is the last expanded card whose header has scrolled under
+// the report header. Observer callbacks report only the cards that crossed the
+// line, so the set of crossed cards is kept and folded forward; the active one
+// is the highest index both crossed and expanded, or -1 when there is none.
 
 export type Crossing = {index: number; above: boolean};
 
@@ -14,9 +14,18 @@ export const applyEntries = (crossed: ReadonlySet<number>, crossings: Crossing[]
     return next;
 };
 
-export const activeIndex = (crossed: ReadonlySet<number>): number => {
+// Same instance back when nothing changes, so a state setter can skip a render.
+export const withExpanded = (expanded: ReadonlySet<number>, index: number, isExpanded: boolean): ReadonlySet<number> => {
+    if (expanded.has(index) === isExpanded) return expanded;
+    const next = new Set(expanded);
+    if (isExpanded) next.add(index);
+    else next.delete(index);
+    return next;
+};
+
+export const activeIndex = (crossed: ReadonlySet<number>, expanded: ReadonlySet<number>): number => {
     let max = -1;
-    for (const index of crossed) if (index > max) max = index;
+    for (const index of crossed) if (index > max && expanded.has(index)) max = index;
     return max;
 };
 

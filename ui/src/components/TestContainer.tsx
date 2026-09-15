@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { scrollWithin } from "@/util/scrollWithin";
 import { useActiveTest } from "@/hooks/useActiveTest";
+import { withExpanded } from "@/util/activeTest";
 
 // The test whose card header has scrolled under the report header, with a
 // way to bring that card back to the top of the pane.
@@ -110,7 +111,8 @@ export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpa
         }
     }, [filteredTests, testToExpand, invocationToExpand]);
 
-    const activeIndex = useActiveTest(headerRefs, scrollRootRef, onActiveTest !== undefined, filteredTests.length);
+    const [expandedIndices, setExpandedIndices] = React.useState<ReadonlySet<number>>(() => new Set());
+    const activeIndex = useActiveTest(headerRefs, scrollRootRef, onActiveTest !== undefined, filteredTests.length, expandedIndices);
     const onActiveTestRef = React.useRef(onActiveTest);
     onActiveTestRef.current = onActiveTest;
 
@@ -160,6 +162,7 @@ export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpa
                         testClass={testClass}
                         testId={testId}
                         headerRef={(el) => { headerRefs.current[i] = el; }}
+                        onExpandedChange={onActiveTest && ((expanded) => setExpandedIndices(prev => withExpanded(prev, i, expanded)))}
                     />
                 </div>
             ))}
