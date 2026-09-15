@@ -30,7 +30,7 @@ const iconColor: Record<TestState, string> = {
     "Not Executed": "text-muted-foreground",
 };
 
-const StateIcon = ({ state, size = 16 }: { state: TestState; size?: number }) => {
+export const StateIcon = ({ state, size = 16 }: { state: TestState; size?: number }) => {
     const cls = iconColor[state];
     if (state === 'Failed')   return <XCircle size={size} className={cls} />;
     if (state === 'Disabled') return <CircleMinus size={size} className={cls} />;
@@ -52,6 +52,7 @@ interface TestCardProps {
     initialExpandedInvocation?: number;
     testClass: string;
     testId: string;
+    headerRef?: React.Ref<HTMLDivElement>;
 }
 
 const initialExpandedIdx = (test: Test, initialExpandedInvocation: number): number | null => {
@@ -63,7 +64,7 @@ const initialExpandedIdx = (test: Test, initialExpandedInvocation: number): numb
     return test.invocations.length > 0 ? 0 : null;
 };
 
-export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1, testClass, testId }: TestCardProps) => {
+export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocation = -1, testClass, testId, headerRef }: TestCardProps) => {
     const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
     const [expandedIdx, setExpandedIdx] = React.useState<number | null>(() => initialExpandedIdx(test, initialExpandedInvocation));
 
@@ -111,6 +112,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
             cardBorder[state]
         )}>
             <div
+                ref={headerRef}
                 className={cn(
                     "group/anchor px-5 py-3 flex items-center justify-between cursor-pointer select-none transition-colors",
                     // The card is rounded but cannot clip with overflow-hidden — that

@@ -4,6 +4,14 @@ import {Invocation, Test} from "@/types/Test";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { scrollWithin } from "@/util/scrollWithin";
+import { useActiveTest } from "@/hooks/useActiveTest";
+
+// The test whose card header has scrolled under the report header, with a
+// way to bring that card back to the top of the pane.
+export interface ActiveTest {
+    test: Test;
+    scrollTo: () => void;
+}
 
 interface TestContainerProps {
     tests: Test[];
@@ -13,10 +21,13 @@ interface TestContainerProps {
     matchingMethods?: string[];
     onClearFilter?: () => void;
     testId: string;
+    scrollRootRef?: React.RefObject<HTMLElement | null>;
+    onActiveTest?: (active: ActiveTest | null) => void;
 }
 
-export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpand = -1, matchingMethods = [], onClearFilter, testId }: TestContainerProps) => {
+export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpand = -1, matchingMethods = [], onClearFilter, testId, scrollRootRef, onActiveTest }: TestContainerProps) => {
     const cardRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+    const headerRefs = React.useRef<(HTMLDivElement | null)[]>([]);
     const [expandedTestIndex, setExpandedTestIndex] = React.useState<number>(-1);
     const [expandedInvocationIndex, setExpandedInvocationIndex] = React.useState<number>(-1);
 
@@ -99,6 +110,23 @@ export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpa
         }
     }, [filteredTests, testToExpand, invocationToExpand]);
 
+    const activeIndex = useActiveTest(headerRefs, scrollRootRef, onActiveTest !== undefined, filteredTests.length);
+    const onActiveTestRef = React.useRef(onActiveTest);
+    onActiveTestRef.current = onActiveTest;
+
+    React.useEffect(() => {
+        const test = filteredTests[activeIndex];
+        onActiveTestRef.current?.(test ? {
+            test,
+            scrollTo: () => {
+                const card = cardRefs.current[activeIndex];
+                if (card) scrollWithin(card, { block: 'start' });
+            },
+        } : null);
+    }, [activeIndex, filteredTests]);
+
+    React.useEffect(() => () => onActiveTestRef.current?.(null), []);
+
     const filteredCount = tests.length - filteredTests.length;
 
     return (
@@ -131,6 +159,7 @@ export const TestContainer = ({ tests, testClass, testToExpand, invocationToExpa
                         initialExpandedInvocation={expandedInvocationIndex}
                         testClass={testClass}
                         testId={testId}
+                        headerRef={(el) => { headerRefs.current[i] = el; }}
                     />
                 </div>
             ))}

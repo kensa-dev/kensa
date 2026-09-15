@@ -17,7 +17,8 @@ import {IssueList} from './components/IssueList';
 import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from "@/components/ui/command"
 import {Badge} from "@/components/ui/badge";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
-import {TestContainer} from './components/TestContainer';
+import {ActiveTest, TestContainer} from './components/TestContainer';
+import {StateIcon} from './components/TestCard';
 import {NotesCard} from './components/NotesCard';
 import {SystemViewPage} from './components/SystemViewPage';
 import {OverviewPage} from './components/OverviewPage';
@@ -81,6 +82,7 @@ const App = () => {
     const pendingSuiteHighlightRef = useRef<{testId: string; value: string} | null>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const [testToExpandInvocation, setTestToExpandInvocation] = useState<number>(-1);
+    const [activeTest, setActiveTest] = useState<ActiveTest | null>(null);
     const pendingTestToExpandRef = useRef<{testId: string, method: string, invocation?: number} | null>(null);
     const searchQueryRef = useRef(searchQuery);
     const commandOpenRef = useRef(open);
@@ -295,6 +297,8 @@ const App = () => {
     useEffect(() => {
         void loadInitialData();
     }, [loadInitialData]);
+
+    useEffect(() => setActiveTest(null), [selectedIndex]);
 
     useEffect(() => {
         if (!selectedIndex) return;
@@ -701,10 +705,35 @@ const App = () => {
                                                     </BreadcrumbList>
                                                 </Breadcrumb>
                                                 <div className="group/anchor flex items-center gap-3">
-                                                    <h1 className="text-[14px] font-black truncate text-neutral-800 dark:text-neutral-100 leading-tight">
-                                                        {selectedIndex.displayName}
-                                                    </h1>
-                                                    <AnchorLink testId={selectedIndex.id} />
+                                                    {/* Two layers stacked in one grid cell: the class name slides up and out as the
+                                                        active test's name slides in from below. A new key per test replays the entry. */}
+                                                    <div className="grid overflow-hidden min-w-0">
+                                                        <h1
+                                                            className={cn(
+                                                                "col-start-1 row-start-1 min-w-0 text-[14px] font-black truncate text-neutral-800 dark:text-neutral-100 leading-tight",
+                                                                "transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
+                                                                activeTest ? "-translate-y-full opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
+                                                            )}
+                                                        >
+                                                            {selectedIndex.displayName}
+                                                        </h1>
+                                                        {activeTest && (
+                                                            <div
+                                                                key={activeTest.test.testMethod}
+                                                                className="col-start-1 row-start-1 min-w-0 flex animate-in fade-in slide-in-from-bottom-full duration-200 ease-out motion-reduce:animate-none"
+                                                            >
+                                                                <button
+                                                                    onClick={activeTest.scrollTo}
+                                                                    title="Scroll to this test"
+                                                                    className="flex items-center gap-2 min-w-0 text-[14px] font-black text-neutral-800 dark:text-neutral-100 leading-tight hover:underline underline-offset-2"
+                                                                >
+                                                                    <StateIcon state={activeTest.test.state} size={14} />
+                                                                    <span className="truncate">{activeTest.test.displayName}</span>
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <AnchorLink testId={selectedIndex.id} method={activeTest?.test.testMethod} />
                                                     <EpicList epics={testDetail?.epics} testState={selectedIndex.state} />
                                                     <IssueList issues={testDetail?.issues} testState={selectedIndex.state} />
                                                 </div>
@@ -764,6 +793,8 @@ const App = () => {
                                                             onClearFilter={() => {
                                                                 setMatchingMethods([]);
                                                             }}
+                                                            scrollRootRef={contentRef}
+                                                            onActiveTest={setActiveTest}
                                                         />
                                                     </div>
                                                 ) : null}
