@@ -13,6 +13,7 @@ import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.state.SetupStrategy
 import dev.kensa.util.SourceCode
 import org.antlr.v4.runtime.atn.PredictionMode
+import java.net.URI
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -28,6 +29,7 @@ private const val KENSA_OUTPUT_DIR = "kensa-output"
 private const val KENSA_SOURCE_ID = "kensa.source.id"
 private const val KENSA_SOURCE_TITLE = "kensa.source.title"
 private const val KENSA_SOURCES_SUBDIR = "sources"
+private const val KENSA_LINK_BASE_URL = "KENSA_LINK_BASE_URL"
 
 fun interface KensaConfigurationProvider {
     operator fun invoke(): Configuration
@@ -50,6 +52,7 @@ object Kensa {
 class KensaConfigurator(private val configuration: Configuration) {
 
     fun withIssueTrackerUrl(url: URL): KensaConfigurator = apply { configuration.issueTrackerUrl = url }
+    fun withLinkBaseUrl(url: URL): KensaConfigurator = apply { configuration.linkBaseUrl = url }
 
     fun withOutputDir(dir: String): KensaConfigurator = withOutputDir(Paths.get(dir))
     fun withOutputDir(dir: Path): KensaConfigurator = apply {
@@ -183,6 +186,12 @@ class Configuration {
             sequenceDiagram.replaceDirectives(value)
         }
     var issueTrackerUrl: URL? = null
+
+    // The report's stable address, e.g. a CI artifact URL such as TeamCity's .lastSuccessful,
+    // so links copied from the report point at the latest run rather than a local file.
+    // The env var lets a CI job set it without touching test code, so it wins.
+    var linkBaseUrl: URL? = null
+        get() = System.getenv(KENSA_LINK_BASE_URL)?.takeIf { it.isNotBlank() }?.let { URI(it).toURL() } ?: field
     var tabSize: Int = 4
     var autoOpenTab: Tab = Tab.None
     var autoExpandNotes: Boolean = false

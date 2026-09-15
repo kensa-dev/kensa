@@ -4,6 +4,7 @@ import {Section} from '@/constants';
 export interface KensaConfig {
     titleText: string;
     issueTrackerUrl: string | null;
+    linkBaseUrl?: string | null;
     acronyms: Record<string, string>;
     packageDisplay: string;
     packageDisplayRoot?: string;

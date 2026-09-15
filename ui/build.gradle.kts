@@ -44,6 +44,17 @@ tasks {
         dependsOn("npmInstall", "typeCheck", "viteTest")
     }
 
+    register<NodeTask>("viteEmbedBuild") {
+        script.set(project.file("node_modules/.bin/vite"))
+        args = listOf("build", "--config", "vite.embed.config.ts")
+
+        inputs.file("vite.embed.config.ts")
+        inputs.dir("src/embed")
+        inputs.dir("src/util")
+        outputs.file("${layout.buildDirectory.get()}/js/kensa-embed.js")
+        dependsOn("viteBuild")
+    }
+
     register<NodeTask>("viteDev") {
         script.set(project.file("node_modules/.bin/vite"))
         args = listOf("dev")

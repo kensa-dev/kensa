@@ -34,6 +34,11 @@ import {overviewPathFor} from "@/util/overviewPath";
 import {resolveFilterSelection} from "@/util/filterSelection";
 import {filterRouteTarget, parseFilterRoute} from "@/util/filterRoute";
 import {AnchorLink} from "@/components/AnchorLink";
+import {EmbedPage} from "@/components/EmbedPage";
+import {embedParams, embedTarget, parseEmbedRoute} from "@/util/embedRoute";
+import {prefersDarkScheme, resolveTheme} from "@/util/embedTheme";
+import {anchorHash} from "@/util/anchorLink";
+import {reportBase} from "@/util/linkBase";
 import {collectLeaves, packageDepthFor} from "@/lib/overview";
 import {findCommonPackage} from "@/utils/treeUtils";
 
@@ -46,6 +51,7 @@ const App = () => {
     const [selectedIndex, setSelectedIndex] = useState<SelectedIndex | null>(null);
     const [testDetail, setTestDetail] = useState<TestDetail | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
     const searchQuery = searchParams.get("q") || "";
     const [testToExpand, setTestToExpand] = useState<string>("");
     const [matchingMethods, setMatchingMethods] = useState<string[]>([]);
@@ -55,7 +61,14 @@ const App = () => {
     // It wins over the stored preference for this load and is not written back to it.
     const themeParam = searchParams.get('theme');
     const themeFromUrl = themeParam === 'dark' || themeParam === 'light';
-    const [darkMode, setDarkMode] = useState<boolean>(themeFromUrl ? themeParam === 'dark' : localStorage.getItem('theme') === 'dark');
+    // `#/embed/<id>` is the chromeless view for a host page. Its theme defaults to the
+    // OS setting and, like `?theme=`, is never written back to the stored preference.
+    const embedRoute = parseEmbedRoute(location.pathname);
+    const embed = embedRoute ? {testId: embedRoute.testId, params: embedParams(searchParams)} : null;
+    const [darkMode, setDarkMode] = useState<boolean>(() => {
+        if (embed) return resolveTheme(embed.params.theme, prefersDarkScheme());
+        return themeFromUrl ? themeParam === 'dark' : localStorage.getItem('theme') === 'dark';
+    });
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [commandQuery, setCommandQuery] = useState("");
@@ -77,7 +90,6 @@ const App = () => {
     suiteHighlightRef.current = suiteHighlightValue;
 
     const navigate = useNavigateWithSearch();
-    const location = useLocation();
 
     const isOverview = location.pathname === '/overview';
     const isSystemView = location.pathname === '/system-view';
@@ -134,9 +146,8 @@ const App = () => {
     }, [environment]);
 
     useEffect(() => {
-        const match = location.pathname.match(/^\/test\/(.+)$/);
-        if (match && indices.length > 0) {
-            const id = match[1];
+        const id = location.pathname.match(/^\/test\/(.+)$/)?.[1] ?? parseEmbedRoute(location.pathname)?.testId;
+        if (id && indices.length > 0) {
             if (id.startsWith('src:')) {
                 setSelectedIndex(null);
                 setTestDetail(null);
@@ -360,8 +371,17 @@ const App = () => {
     useEffect(() => {
         const root = window.document.documentElement;
         darkMode ? root.classList.add("dark") : root.classList.remove("dark");
-        if (!themeFromUrl) localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+        if (!themeFromUrl && !embed) localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     }, [darkMode]);
+
+    const embedTheme = embed?.params.theme ?? null;
+    useEffect(() => {
+        if (embedTheme !== 'auto' || typeof window.matchMedia !== 'function') return;
+        const query = window.matchMedia('(prefers-color-scheme: dark)');
+        const onChange = (e: MediaQueryListEvent) => setDarkMode(e.matches);
+        query.addEventListener('change', onChange);
+        return () => query.removeEventListener('change', onChange);
+    }, [embedTheme]);
 
     const toggleSidebar = () => {
         const sidebar = sidebarRef.current;
@@ -463,6 +483,35 @@ const App = () => {
         }
         return out;
     }, [sourceConfigs]);
+
+    if (embed) {
+        const {method, invocation} = embed.params;
+        const target = indices.length > 0 ? embedTarget(indices, embed.testId, method) : null;
+        const base = reportBase(config, window.location);
+        const reportUrl = target && !target.found && target.missing === 'test'
+            ? base
+            : `${base}${anchorHash(embed.testId, method ?? undefined, invocation >= 0 ? invocation : undefined)}`;
+        return (
+            <ConfigContext.Provider value={config}>
+                <SourceContext.Provider value={{baseUrl: activeSourceBaseUrl}}>
+                    <TooltipProvider>
+                        <EmbedPage
+                            testId={embed.testId}
+                            params={embed.params}
+                            target={target}
+                            selectedIndex={selectedIndex}
+                            testDetail={testDetail}
+                            isLoading={isLoading}
+                            testToExpand={testToExpand}
+                            invocationToExpand={testToExpandInvocation}
+                            onTestLink={setTestToExpand}
+                            reportUrl={reportUrl}
+                        />
+                    </TooltipProvider>
+                </SourceContext.Provider>
+            </ConfigContext.Provider>
+        );
+    }
 
     return (
         <ConfigContext.Provider value={config}>

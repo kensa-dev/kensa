@@ -29,6 +29,7 @@ class ResultWriterDataOnlyTest {
 
         sourceDir.resolve("index.html").shouldNotExist()
         sourceDir.resolve("kensa.js").shouldNotExist()
+        sourceDir.resolve("kensa-embed.js").shouldNotExist()
         sourceDir.resolve("logo.svg").shouldNotExist()
         sourceDir.resolve("configuration.json").shouldExist()
         sourceDir.resolve("indices.json").shouldExist()
@@ -46,6 +47,7 @@ class ResultWriterDataOnlyTest {
 
         tempDir.resolve("index.html").shouldExist()
         tempDir.resolve("kensa.js").shouldExist()
+        tempDir.resolve("kensa-embed.js").shouldExist()
         tempDir.resolve("logo.svg").shouldExist()
     }
 
@@ -121,5 +123,32 @@ class ResultWriterDataOnlyTest {
 
         val json = Json.parse(tempDir.resolve("configuration.json").readText()).asObject()
         json.getString("issueTrackerUrl", null) shouldBe "https://jira.example.com/browse"
+    }
+
+    @Test
+    fun `configuration json contains linkBaseUrl when set`(@TempDir tempDir: Path) {
+        val configuration = Configuration().apply {
+            outputDir = tempDir
+            dataOnly = true
+            linkBaseUrl = URI("https://reports.example.com/index.html").toURL()
+        }
+
+        ResultWriter(configuration, ComponentDiagramFactory()).write(emptyList())
+
+        val json = Json.parse(tempDir.resolve("configuration.json").readText()).asObject()
+        json.get("linkBaseUrl").asString() shouldBe "https://reports.example.com/index.html"
+    }
+
+    @Test
+    fun `configuration json has a null linkBaseUrl when unset`(@TempDir tempDir: Path) {
+        val configuration = Configuration().apply {
+            outputDir = tempDir
+            dataOnly = true
+        }
+
+        ResultWriter(configuration, ComponentDiagramFactory()).write(emptyList())
+
+        val json = Json.parse(tempDir.resolve("configuration.json").readText()).asObject()
+        json.get("linkBaseUrl").isNull shouldBe true
     }
 }

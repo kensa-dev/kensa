@@ -13,6 +13,9 @@ var indexHTML []byte
 //go:embed embed/kensa.js
 var kensaJS []byte
 
+//go:embed embed/kensa-embed.js
+var kensaEmbedJS []byte
+
 //go:embed embed/logo.svg
 var logoSVG []byte
 
@@ -23,9 +26,10 @@ type embeddedAsset struct {
 
 func Handler(serveDir string) http.Handler {
 	embedded := map[string]embeddedAsset{
-		"/index.html": {indexHTML, "text/html; charset=utf-8"},
-		"/kensa.js":   {kensaJS, "application/javascript"},
-		"/logo.svg":   {logoSVG, "image/svg+xml"},
+		"/index.html":     {indexHTML, "text/html; charset=utf-8"},
+		"/kensa.js":       {kensaJS, "application/javascript"},
+		"/kensa-embed.js": {kensaEmbedJS, "application/javascript"},
+		"/logo.svg":       {logoSVG, "image/svg+xml"},
 	}
 	fileServer := http.FileServer(http.Dir(serveDir))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

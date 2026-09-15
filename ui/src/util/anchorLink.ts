@@ -1,9 +1,19 @@
-export function anchorHash(testId: string, method?: string, invocation?: number): string {
+function hashFor(route: 'test' | 'embed', testId: string, method?: string, invocation?: number): string {
     const params = new URLSearchParams();
     if (method) params.set('method', method);
     if (method && invocation !== undefined) params.set('invocation', String(invocation));
     const query = params.toString();
-    return `#/test/${testId}${query ? `?${query}` : ''}`;
+    return `#/${route}/${testId}${query ? `?${query}` : ''}`;
+}
+
+export function anchorHash(testId: string, method?: string, invocation?: number): string {
+    return hashFor('test', testId, method, invocation);
+}
+
+// Theme is left to the host page (`?theme=` on the embed URL), so the same
+// link works in a light and a dark host.
+export function embedHash(testId: string, method?: string, invocation?: number): string {
+    return hashFor('embed', testId, method, invocation);
 }
 
 interface ClipboardLike {

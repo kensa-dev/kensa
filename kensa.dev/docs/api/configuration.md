@@ -115,6 +115,36 @@ With the above URL, `@Issue("42")` links to `https://github.com/my-org/my-repo/i
 
 ---
 
+## Link Base URL
+
+Links copied from the report (deep links and [embed links](../reports/embedding.md)) point at the page they were copied from. When the report is published at a stable address, such as a CI artifact URL like TeamCity's `.lastSuccessful` or a site-mode report, give Kensa that address and every copied link uses it instead:
+
+| Builder method | DSL property | Type | Description |
+|----------------|--------------|------|-------------|
+| `withLinkBaseUrl(url)` | `linkBaseUrl` | `URL?` | The report's published address. Unset by default, in which case links use the page's own location. The `KENSA_LINK_BASE_URL` environment variable overrides both, so a CI job can set it without touching test code |
+
+<Tabs groupId="lang">
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+Kensa.konfigure {
+    linkBaseUrl = URI("https://ci.example.com/repository/download/Build/.lastSuccessful/kensa-output/index.html").toURL()
+}
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+Kensa.configure()
+    .withLinkBaseUrl(URI.create("https://ci.example.com/repository/download/Build/.lastSuccessful/kensa-output/index.html").toURL());
+```
+
+</TabItem>
+</Tabs>
+
+---
+
 ## Report Layout
 
 | Builder method | DSL property | Type | Default | Description |

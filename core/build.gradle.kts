@@ -136,7 +136,7 @@ tasks {
         relocate("net.sourceforge.plantuml", "dev.kensa.internal.plantuml")
         relocate("net.atmp", "dev.kensa.internal.atmp")
         relocate("com.plantuml", "dev.kensa.internal.com.plantuml")
-        dependsOn(":ui:viteBuild")
+        dependsOn(":ui:viteEmbedBuild")
         from(project(":antlr").sourceSets["main"].output)
         from(project(":ui").layout.buildDirectory.dir("js").get()) {
             into("/")

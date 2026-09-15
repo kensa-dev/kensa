@@ -126,6 +126,7 @@ export const TestCard = ({ test, initialExpanded = false, initialExpandedInvocat
                     <StateIcon state={state} />
                     {test.displayName}
                     <AnchorLink testId={testId} method={test.testMethod} />
+                    <AnchorLink testId={testId} method={test.testMethod} embed />
                 </h3>
 
                 <div className="flex items-center gap-1.5 ml-4">

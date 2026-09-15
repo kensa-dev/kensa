@@ -1,5 +1,11 @@
 <h2 class="github">Changelog</h2>
 
+### v1.0.0
+
+Added:
+  - **Report embed mode.** `#/embed/<testId>?method=&invocation=&theme=light|dark|auto&notes=1` renders one test class or method with no sidebar, header or search, for framing in a Confluence page, a design doc or a service catalog. `theme=auto` follows the reader's OS setting and is never written to the stored preference. The embed posts its height to the host page; the new `kensa-embed.js`, shipped beside `kensa.js`, sizes every `<iframe data-kensa-embed>` on a page. A **Copy embed link** control sits beside **Copy link** on each test header. Documented on the new Embedding page (#224).
+  - **`withLinkBaseUrl` / `KENSA_LINK_BASE_URL`.** The report's published address, such as a CI artifact URL like TeamCity's `.lastSuccessful`. Copied links (deep links and embed links) use it as their base instead of the page's own location. The environment variable wins, so a CI job sets it without touching test code (#224).
+
 ### v0.9.4
 
 Added:

@@ -63,9 +63,10 @@ create-release-note:
 .PHONY: copy-shell-resources
 copy-shell-resources:
 	@if [ ! -f ui/build/js/kensa.js ]; then \
-		echo "ui/build/js/kensa.js missing — run './gradlew :ui:viteBuild' first."; exit 1; \
+		echo "ui/build/js/kensa.js missing — run './gradlew :ui:viteEmbedBuild' first."; exit 1; \
 	fi
 	cp ui/build/js/kensa.js cli/internal/shell/embed/kensa.js
+	cp ui/build/js/kensa-embed.js cli/internal/shell/embed/kensa-embed.js
 	cp ui/public/logo.svg cli/internal/shell/embed/logo.svg
 
 .PHONY: build-cli

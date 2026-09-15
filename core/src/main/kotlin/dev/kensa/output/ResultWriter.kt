@@ -76,6 +76,7 @@ internal class ResultWriter(private val configuration: Configuration, private va
         if (!configuration.dataOnly) {
             writeHtml()
             IoUtil.copyResource("/kensa.js", configuration.outputDir)
+            IoUtil.copyResource("/kensa-embed.js", configuration.outputDir)
             IoUtil.copyResource("/logo.svg", configuration.outputDir)
         }
         finish()
@@ -191,6 +192,7 @@ internal class ResultWriter(private val configuration: Configuration, private va
                 .add("autoExpandNotes", autoExpandNotes)
                 .add("titleText", titleText)
                 .add("issueTrackerUrl", issueTrackerUrl?.toString())
+                .add("linkBaseUrl", linkBaseUrl?.toString())
                 .add("acronyms", acronymsAsJson(dictionary.acronyms))
                 .add("flattenPackages", flattenOutputPackages)
                 .add("packageDisplay", packageDisplay.name)

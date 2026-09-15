@@ -1,5 +1,5 @@
 import {describe, expect, it, vi} from 'vitest';
-import {anchorHash, copyLink} from './anchorLink';
+import {anchorHash, copyLink, embedHash} from './anchorLink';
 
 describe('anchorHash', () => {
     it('links a test class', () => {
@@ -16,6 +16,25 @@ describe('anchorHash', () => {
 
     it('encodes the method name', () => {
         expect(anchorHash('a::x.FooTest', 'my test')).toBe('#/test/a::x.FooTest?method=my+test');
+    });
+});
+
+describe('embedHash', () => {
+    it('links a class embed', () => {
+        expect(embedHash('a::x.FooTest')).toBe('#/embed/a::x.FooTest');
+    });
+
+    it('links a method embed', () => {
+        expect(embedHash('a::x.FooTest', 'myTest')).toBe('#/embed/a::x.FooTest?method=myTest');
+    });
+
+    it('links an invocation embed, including the first', () => {
+        expect(embedHash('a::x.FooTest', 'myTest', 0)).toBe('#/embed/a::x.FooTest?method=myTest&invocation=0');
+    });
+
+    it('does not bake in a theme', () => {
+        expect(embedHash('a::x.FooTest', 'my test')).not.toContain('theme');
+        expect(embedHash('a::x.FooTest', 'my test')).toBe('#/embed/a::x.FooTest?method=my+test');
     });
 });
 
