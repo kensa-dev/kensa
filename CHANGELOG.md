@@ -1,6 +1,6 @@
 <h2 class="github">Changelog</h2>
 
-### v1.0.0
+### v0.9.5
 
 Added:
   - **Report embed mode.** `#/embed/<testId>?method=&invocation=&theme=light|dark|auto&notes=1` renders one test class or method with no sidebar, header or search, for framing in a Confluence page, a design doc or a service catalog. `theme=auto` follows the reader's OS setting and is never written to the stored preference. The embed posts its height to the host page; the new `kensa-embed.js`, shipped beside `kensa.js`, sizes every `<iframe data-kensa-embed>` on a page. A **Copy embed link** control sits beside **Copy link** on each test header. Documented on the new Embedding page (#224).

@@ -6,7 +6,7 @@ description: Where Kensa is heading - the road to 1.0, and the stub server, outp
 
 # Roadmap
 
-Kensa is currently at **0.9.4** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes. The next release is **1.0.0**.
+Kensa is currently at **0.9.5** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes. The next release is **1.0.0**.
 
 ## Next: v1.0
 
@@ -16,13 +16,7 @@ The 1.0 release is primarily about stability:
 - **Documentation** - a completeness and accuracy pass across the whole site, plus versioned docs from 1.0 onwards.
 - **Quality** - broader test coverage across the framework integrations.
 
-It also carries a small set of report features. They are there because the report is what 1.0 is about: a test should be readable in the page where the decision is made, not only in the build that produced it.
-
-- **Embed mode** - one test class or method rendered with no sidebar, header or search, for framing in a wiki page, a design doc or a service catalogue. See [Embedding](./reports/embedding.md).
-- **`withLinkBaseUrl` / `KENSA_LINK_BASE_URL`** - the report's published address, so copied links point at where the report lives rather than where it was opened.
-- **Link unfurl pages** - a static page per class and method with Open Graph tags, so a pasted link shows a card in Slack, Teams and Jira.
-- **Sticky test name** - the report header names the test you have expanded once its own header has scrolled off screen.
-- **Filter by issue or epic** from the badge right-click menu.
+The report features that 1.0 is about, embed mode, link unfurl pages, `withLinkBaseUrl`, the sticky test name and badge filtering, shipped in 0.9.5 and are listed below.
 
 Feature work beyond the report resumes after 1.0.
 
@@ -97,6 +91,13 @@ Smaller than the three above, and nearer. These are accepted and next in line on
 - **Wiki export** - copy a test or a sequence diagram in a form that pastes cleanly into a wiki page or a ticket, for the places an embed cannot go.
 
 ## Recently shipped
+
+### v0.9.5
+- Embed mode - one test class or method rendered with no sidebar, header or search, for framing in a wiki page, a design doc or a service catalogue. See [Embedding](./reports/embedding.md)
+- `withLinkBaseUrl` / `KENSA_LINK_BASE_URL` - the report's published address, so copied links point at where the report lives rather than where it was opened
+- Link unfurl pages - a static page per class and method with Open Graph tags, so a pasted link shows a card in Slack, Teams and Jira
+- Sticky test name - the report header names the test you have expanded once its own header has scrolled off screen
+- Filter by issue or epic from the badge right-click menu
 
 ### v0.9.4
 - `SetupStep.setup(scope)` - one step can act, wait for state, read a value out and act again; `SetupSteps(list)`, `setupActions(...)` and `setupStep { }` for one-line steps
