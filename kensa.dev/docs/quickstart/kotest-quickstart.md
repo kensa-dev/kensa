@@ -166,4 +166,4 @@ kensa --dir build/kensa-output
 
 ## Other Frameworks
 
-If you're using JUnit, see the [Kotlin Quickstart](kotlin-quickstart) or [Java Quickstart](java-quickstart); for TestNG, see the [TestNG Quickstart](testng-quickstart) — the DSL and assertions are the same.
+If you're using JUnit, see the [Kotlin Quickstart](kotlin-quickstart) or [Java Quickstart](java-quickstart); for TestNG, see the [TestNG Quickstart](testng-quickstart) — the DSL and assertions are the same. For Maven builds, see the [Maven Quickstart](maven-quickstart).

@@ -1,0 +1,57 @@
+<h2>How should the video replace the two screenshots?</h2>
+<p class="subtitle">Today the "See it in action" section is: <strong>Write this</strong> (code screenshot) → <strong>get this</strong> (report screenshot), both click-to-zoom. Three directions for bringing in a screen video. Click the one that feels right.</p>
+
+<div class="options" style="margin-top:1.5rem">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content" style="flex:1">
+      <h3>Single full-width video (replaces both)</h3>
+      <p>The whole block becomes one large player. The code→report story is told <em>by the video itself</em> (scroll the test, then the generated report).</p>
+      <div class="mockup" style="margin-top:0.75rem">
+        <div class="mockup-header">See it in action</div>
+        <div class="mockup-body" style="padding:1rem">
+          <div class="placeholder" style="height:150px;display:flex;align-items:center;justify-content:center;font-size:2rem">▶</div>
+          <div style="text-align:center;margin-top:0.5rem;font-size:0.75rem;opacity:0.7">one bordered video · ~full content width</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content" style="flex:1">
+      <h3>Keep "Write this → get this", animate the right side</h3>
+      <p>Left stays a static <strong>code</strong> screenshot. Right "…get this" panel becomes the video — the report being explored (tabs, sequence diagram). Preserves the cause→effect narrative.</p>
+      <div class="mockup" style="margin-top:0.75rem">
+        <div class="mockup-header">See it in action</div>
+        <div class="mockup-body" style="padding:1rem;display:flex;align-items:center;gap:0.75rem">
+          <div class="placeholder" style="flex:1;height:120px;display:flex;align-items:center;justify-content:center;font-size:0.7rem">code.png<br>(static)</div>
+          <div style="font-size:1.5rem;color:var(--accent,#3cad6e)">→</div>
+          <div class="placeholder" style="flex:1;height:120px;display:flex;align-items:center;justify-content:center;font-size:1.5rem">▶</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content" style="flex:1">
+      <h3>Video leads, screenshots stay below as detail</h3>
+      <p>A video sits up top (or behind the hero); the existing two zoomable screenshots remain underneath for people who want a static, linkable look. Most content, heaviest page.</p>
+      <div class="mockup" style="margin-top:0.75rem">
+        <div class="mockup-header">See it in action</div>
+        <div class="mockup-body" style="padding:1rem">
+          <div class="placeholder" style="height:90px;display:flex;align-items:center;justify-content:center;font-size:1.5rem">▶</div>
+          <div style="display:flex;gap:0.75rem;margin-top:0.75rem">
+            <div class="placeholder" style="flex:1;height:55px;font-size:0.65rem;display:flex;align-items:center;justify-content:center">code.png</div>
+            <div class="placeholder" style="flex:1;height:55px;font-size:0.65rem;display:flex;align-items:center;justify-content:center">report.png</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:1.25rem">My lean: <strong>A</strong> — a single screen recording is the most honest "in action" and the cleanest to maintain, as long as the video genuinely walks code → report so we don't lose the story. But B keeps the punchy contrast that's working today.</p>

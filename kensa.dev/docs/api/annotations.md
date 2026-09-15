@@ -641,8 +641,10 @@ void orderIsFulfilledViaWarehouse() { ... }
 
 ## Flow Tagging
 
-:::warning[Experimental]
-Org-flow tagging supports cross-repo flow grouping in the (in-development) Kensa hub server. The API may change before it stabilises.
+:::experimental
+Org-flow tagging marks the test that is the canonical slice of a named business flow, so that Kensa Hub can group flows across repositories. Everything in this section is still being designed. We would like to know whether the category, name and attributes split fits how your organisation names its flows, and whether the typed `@OrgFlowMarker` form is worth its ceremony over plain strings.
+
+Marked `@KensaExperimental`: it may change or be removed in any 1.x release. See [Stability and Compatibility](/docs/stability-and-compatibility#kensaexperimental-new-still-being-designed).
 :::
 
 ### `@OrgFlow`
@@ -680,6 +682,31 @@ fun canCheckOutWithACard() { ... }
 ```
 
 **Targets:** `ANNOTATION_CLASS`
+
+### `OrgFlowSpec`, `SimpleOrgFlowSpec` and `orgFlowOf`
+
+`dev.kensa.context.OrgFlowSpec` is what Kensa keeps for a flow: `category`, `flowName` and `attributes`. The property is `flowName` rather than `name` so that an enum can implement the interface without clashing with `Enum.name`; it is written to the results JSON as `name`. `attributes` are free-form facets such as `product` or `channel`, written as a JSON object with sorted keys.
+
+`orgFlowOf(element)` resolves a test's flow from its annotations. An `@OrgFlowMarker` annotation's `OrgFlowSpec` member wins; otherwise a plain `@OrgFlow` is wrapped in a `SimpleOrgFlowSpec`, with a non-blank `product` becoming the `product` attribute. Kensa calls it when it builds the test container, so you only need it if you are resolving flows yourself.
+
+### Seams: `SeamDefinition`
+
+Not an annotation, but part of the same experimental surface. A seam names the boundary an interaction crosses and which party owns it. Attach one to a captured interaction with `seam(...)` on the interaction builder:
+
+```kotlin
+import dev.kensa.state.CapturedInteractionBuilder.Companion.from
+import dev.kensa.state.Inbound
+
+ctx.interactions.capture(
+    from(Parties.Gateway)
+        .seam(Inbound("orders:place", "Place order", Parties.OrderService, listOf("orderId")))
+        .with(request, "Place Order")
+)
+```
+
+`dev.kensa.state.SeamDefinition` is a sealed interface with two implementations, `Inbound` and `Outbound`. Both carry an `id`, a display `name`, the `owner` party and an optional list of `correlationFixtures`, the names of the fixtures whose values identify this exchange. An `Inbound` seam arrives at its owner: it supplies the interaction's `to` party if none was given and rejects a different one. An `Outbound` seam leaves its owner, so the interaction's `from` party must be the owner.
+
+The seam is written to the results JSON on the interaction as `id`, `name`, `owner`, `direction` and `correlationFixtures`. The report does not render it today; it is there for consumers such as Kensa Hub.
 
 ---
 

@@ -6,17 +6,25 @@ description: Where Kensa is heading - the road to 1.0, and the stub server, outp
 
 # Roadmap
 
-Kensa is currently at **0.9.0** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes.
+Kensa is currently at **0.9.4** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes. The next release is **1.0.0**.
 
 ## Next: v1.0
 
-The 1.0 release is about stability, not features:
+The 1.0 release is primarily about stability:
 
-- **API freeze** - shipped in 0.9.0. The supported surface is now sealed by the compiler rather than by convention: implementation packages are `internal`, and the integration SPI requires an explicit opt-in. See [`COMPATIBILITY.md`](https://github.com/kensa-dev/kensa/blob/master/COMPATIBILITY.md) for what semantic versioning will and will not cover.
+- **API freeze** - shipped in 0.9.0. The supported surface is now sealed by the compiler rather than by convention: implementation packages are `internal`, and the integration SPI requires an explicit opt-in. [Stability and Compatibility](./stability-and-compatibility.md) says what semantic versioning will and will not cover, and the [support matrix](./support-matrix.md) lists the Kotlin, JDK and framework versions each release is built for.
 - **Documentation** - a completeness and accuracy pass across the whole site, plus versioned docs from 1.0 onwards.
 - **Quality** - broader test coverage across the framework integrations.
 
-No new features land in 1.0. Feature work resumes afterwards.
+It also carries a small set of report features. They are there because the report is what 1.0 is about: a test should be readable in the page where the decision is made, not only in the build that produced it.
+
+- **Embed mode** - one test class or method rendered with no sidebar, header or search, for framing in a wiki page, a design doc or a service catalogue. See [Embedding](./reports/embedding.md).
+- **`withLinkBaseUrl` / `KENSA_LINK_BASE_URL`** - the report's published address, so copied links point at where the report lives rather than where it was opened.
+- **Link unfurl pages** - a static page per class and method with Open Graph tags, so a pasted link shows a card in Slack, Teams and Jira.
+- **Sticky test name** - the report header names the test you have expanded once its own header has scrolled off screen.
+- **Filter by issue or epic** from the badge right-click menu.
+
+Feature work beyond the report resumes after 1.0.
 
 ## After 1.0: past the test run
 
@@ -80,7 +88,36 @@ turned out to be the wrong shape - the test stays a test, and Replay is its own 
 Replay is in active development in its own right; the shape above is what exists today, not a
 commitment to a released feature set.
 
+### The report beyond the test run
+
+Smaller than the three above, and nearer. These are accepted and next in line once 1.0 is out; the same caveat applies - described so you can see the direction, not because they are ready.
+
+- **A picture on unfurl cards** (1.0.1) - the link unfurl pages gain an Open Graph image of the test's sentences, so a card pasted into a chat or a ticket shows the behaviour rather than only its title.
+- **Parallel and block polling** (1.1) - block forms of `thenEventually` and `thenContinually` that take several assertions and poll them in parallel within one window, on the Kotest and Hamkrest bridges, which are the ones that take lambdas. See [assertion bridges](./api/assertion-bridges.md) for what each bridge supports today.
+- **Wiki export** - copy a test or a sequence diagram in a form that pastes cleanly into a wiki page or a ticket, for the places an embed cannot go.
+
 ## Recently shipped
+
+### v0.9.4
+- `SetupStep.setup(scope)` - one step can act, wait for state, read a value out and act again; `SetupSteps(list)`, `setupActions(...)` and `setupStep { }` for one-line steps
+- `#/issue/<key>` and `#/epic/<id>` report links open the first matching test with the filter applied
+- `suite_summary` MCP tool and compact `list_tests` / `get_test` listings
+- `?theme=dark|light` on report URLs; report scrolling stays inside the report when embedded
+- Polling block rendering no longer reads "Then eventually then a and b"
+
+### v0.9.3
+- Deep links copied from the class, test and invocation headers
+- `withCoroutineContextProviders` - user thread locals visible inside `thenEventually` / `thenContinually` checks
+- MCP `captured_interactions` no longer fails on empty attribute groups
+
+### v0.9.2
+- `run.json` run marker with live counts, so a finished bundle can be told from one in flight or abandoned
+- MCP `run_status` and `await_results`; `captured_interactions` and per-method `failure_evidence`
+- CLI wrapper detects the architecture, pins with `KENSA_VERSION` and verifies downloads against `checksums.txt`
+- A link naming both a test and an `issue:` filter keeps the linked test
+
+### v0.9.1
+- `TestContextUtil.withTestContext` is public again, gated behind `@KensaInternalApi` and deprecated in favour of `SetupStep`
 
 ### v0.9.0
 - API freeze ahead of 1.0; `COMPATIBILITY.md` and the support matrix

@@ -40,7 +40,7 @@ const config: Config = {
     kensaVersion,
     // The live report the homepage embeds. Override for a local check of an unreleased
     // report UI: KENSA_REPORT_BASE=http://localhost:3001/ npm run start
-    reportBase: process.env.KENSA_REPORT_BASE ?? 'https://kensa-dev.github.io/clearwave-example/',
+    reportBase: process.env.KENSA_REPORT_BASE ?? 'https://clearwave.kensa.dev/',
   },
 
   themes: [
@@ -62,6 +62,12 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          // Custom `:::experimental` admonition, rendered by src/theme/Admonition/Types.tsx.
+          // extendDefaults keeps note/tip/info/warning/danger.
+          admonitions: {
+            keywords: ['experimental'],
+            extendDefaults: true,
+          },
           // Docs versioning is deliberately OFF until the 1.0 release (avoids
           // dual-maintaining docs/ and versioned_docs/ while pre-1.0 docs churn).
           // To turn it on at release (rehearsed on the `versioning-scaffold` branch):

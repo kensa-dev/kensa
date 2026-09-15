@@ -161,3 +161,4 @@ kensa --dir build/kensa-output
 
 - [Kotlin Quickstart](kotlin-quickstart) — same structure, Kotlin-idiomatic patterns and `@RenderedValue` capture via the compiler plugin.
 - [TestNG Quickstart](testng-quickstart) — using `kensa-framework-testng` with TestNG as the runner (works for both Kotlin and Java).
+- [Maven Quickstart](maven-quickstart) — the same Java test with a `pom.xml` and the Kensa Maven plugin.

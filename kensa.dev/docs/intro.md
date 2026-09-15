@@ -64,4 +64,8 @@ Kensa simplifies this process by:
 
 This approach reduces overhead while still providing the benefits of BDD, making it easier to adopt and maintain over time.
 
+From 1.0 the authoring API is frozen under semantic versioning; [Stability and Compatibility](./stability-and-compatibility.md) sets out exactly what that covers.
+
+The [example projects](./examples.md) are complete suites you can run and read, and the Clearwave report is published live.
+
 In the following sections, we'll show you how to get started with Kensa and demonstrate its capabilities through practical examples.

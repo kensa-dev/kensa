@@ -5,6 +5,7 @@ dependencies {
     testImplementation(project(":framework-testng"))
     testImplementation(project(":framework-kotest"))
     testImplementation(project(":assertions-assertj"))
+    testImplementation(project(":assertions-hamcrest"))
     testImplementation(project(":assertions-kotest"))
     testImplementation(project(":assertions-hamkrest"))
     testImplementation(project(":docker-logs"))

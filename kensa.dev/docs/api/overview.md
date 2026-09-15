@@ -56,3 +56,5 @@ Mix one or more interfaces alongside `KensaTest` to gain assertion methods:
 | `WithAssertJ` | AssertJ |
 | `WithHamcrest` | Hamcrest (Java) |
 | `WithHamkrest` | HamKrest (Kotlin) |
+
+Artifacts, what each mixin's `then` / `thenEventually` / `thenContinually` accepts, and what each brings onto the classpath are on the [Assertion Bridges](./assertion-bridges) page.

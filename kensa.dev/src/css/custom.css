@@ -57,6 +57,24 @@ code, kbd, samp, pre {
   border: 0;
 }
 
+/* ─── Experimental admonition ────────────────────────────────────────────── */
+/* `:::experimental` (src/theme/Admonition/Types.tsx). Uses the site's amber accent
+   rather than Infima's warning yellow so it reads as a tier marker, not a warning. */
+
+.alert--experimental {
+  --ifm-alert-background-color: #fdf4e1;
+  --ifm-alert-background-color-highlight: rgba(232, 164, 48, 0.18);
+  --ifm-alert-foreground-color: #5c3d00;
+  --ifm-alert-border-color: var(--kensa-accent-strong);
+}
+
+[data-theme='dark'] .alert--experimental {
+  --ifm-alert-background-color: #3a2a0b;
+  --ifm-alert-background-color-highlight: rgba(232, 164, 48, 0.22);
+  --ifm-alert-foreground-color: #fbe8c3;
+  --ifm-alert-border-color: var(--kensa-accent);
+}
+
 /* ─── Footer ─────────────────────────────────────────────────────────────── */
 
 .footer {
