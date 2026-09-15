@@ -1,0 +1,63 @@
+.install {
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 3rem;
+    align-items: center;
+}
+
+.eyebrow {
+    margin: 0 0 0.75rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--kensa-accent-strong);
+}
+
+[data-theme='dark'] .eyebrow {
+    color: var(--kensa-accent);
+}
+
+.heading {
+    margin: 0 0 0.75rem;
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+}
+
+.intro {
+    margin: 0 0 1.25rem;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ifm-color-emphasis-800);
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.links a::before {
+    content: '→ ';
+}
+
+.code :global(.theme-code-block) {
+    margin-bottom: 0;
+}
+
+@media screen and (max-width: 996px) {
+    .inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+}

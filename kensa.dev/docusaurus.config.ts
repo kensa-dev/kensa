@@ -5,6 +5,10 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const kensaVersion = readFileSync(resolve(__dirname, '../version.txt'), 'utf8').trim();
+// The current build-plugin release is the first row of the Gradle plugin's compatibility
+// matrix, which every plugin release adds to.
+const kensaPluginVersion = readFileSync(resolve(__dirname, 'docs/build-plugins/gradle-plugin.md'), 'utf8')
+    .match(/^\| (\d+\.\d+\.\d+)\s+\|/m)?.[1] ?? '<plugin-version>';
 
 const config: Config = {
   title: 'Kensa',
@@ -38,6 +42,7 @@ const config: Config = {
 
   customFields: {
     kensaVersion,
+    kensaPluginVersion,
     // The live report the homepage embeds. Override for a local check of an unreleased
     // report UI: KENSA_REPORT_BASE=http://localhost:3001/ npm run start
     reportBase: process.env.KENSA_REPORT_BASE ?? 'https://clearwave.kensa.dev/',
@@ -206,10 +211,10 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} Kensa — BDD Testing for Kotlin &amp; Java`,
+      copyright: `Kensa is Apache 2.0, built by Paul Brooks. Questions and ideas go to <a href="https://github.com/kensa-dev/kensa/discussions">GitHub Discussions</a>.<br/>© ${new Date().getFullYear()} Kensa — BDD Testing for Kotlin &amp; Java`,
     },
     prism: {
-      theme: prismThemes.github,
+      theme: prismThemes.oneLight,
       darkTheme: prismThemes.dracula,
         additionalLanguages: ['java'],
       },

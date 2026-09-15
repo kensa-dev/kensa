@@ -9,7 +9,8 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageShowcase from '@site/src/components/HomepageShowcase';
 import HomepageEmbed from '@site/src/components/HomepageEmbed';
 import HomepageEcosystem from '@site/src/components/HomepageEcosystem';
-import { feasibilityEmbedUrl } from '@site/src/util/reportUrl';
+import { feasibilityEmbedUrl, feasibilityTestUrl } from '@site/src/util/reportUrl';
+import HomepageInstall from '@site/src/components/HomepageInstall';
 
 import styles from './index.module.css';
 
@@ -19,6 +20,7 @@ function HomepageHeader() {
     // The hero is always dark, whatever the site theme, so the report inside it is too.
     const reportBase = String(siteConfig.customFields?.reportBase);
     const reportEmbed = feasibilityEmbedUrl(reportBase, 'dark');
+    const reportTest = feasibilityTestUrl(reportBase, 'dark');
 
     return (
         <header className={styles.hero}>
@@ -44,6 +46,9 @@ function HomepageHeader() {
                         <Link className={styles.ctaPrimary} to="/docs/quickstart/kotlin-quickstart">
                             Get started
                         </Link>
+                        <a className={styles.ctaSecondary} href={reportTest} target="_blank" rel="noopener noreferrer">
+                            Browse a real report
+                        </a>
                         <Link className={styles.ctaSecondary} href="https://github.com/kensa-dev/kensa">
                             View on GitHub
                         </Link>
@@ -89,6 +94,7 @@ export default function Home(): ReactNode {
             </Head>
             <HomepageHeader />
             <main>
+                <HomepageInstall />
                 <HomepageShowcase />
                 <HomepageFeatures />
                 <HomepageEmbed />
