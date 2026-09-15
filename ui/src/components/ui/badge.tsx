@@ -23,15 +23,16 @@ const badgeVariants = cva(
     }
 )
 
-function Badge({
-                   className,
-                   variant,
-                   asChild = false,
-                   ...props
-               }: React.ComponentProps<'span'> & VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+// Forwards its ref so a Radix anchor or trigger wrapping it with asChild
+// gets the element: on React 18 a ref is not a prop and would be dropped.
+const Badge = React.forwardRef<
+    HTMLSpanElement,
+    React.ComponentProps<'span'> & VariantProps<typeof badgeVariants> & { asChild?: boolean }
+>(({ className, variant, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'span'
 
-    return <Comp data-slot='badge' className={cn(badgeVariants({ variant }), className)} {...props} />
-}
+    return <Comp ref={ref} data-slot='badge' className={cn(badgeVariants({ variant }), className)} {...props} />
+})
+Badge.displayName = 'Badge'
 
 export { Badge, badgeVariants }
