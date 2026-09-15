@@ -734,6 +734,7 @@ const App = () => {
                                                         )}
                                                     </div>
                                                     <AnchorLink testId={selectedIndex.id} method={activeTest?.test.testMethod} />
+                                                    <AnchorLink testId={selectedIndex.id} method={activeTest?.test.testMethod} embed />
                                                     <EpicList epics={testDetail?.epics} testState={selectedIndex.state} />
                                                     <IssueList issues={testDetail?.issues} testState={selectedIndex.state} />
                                                 </div>

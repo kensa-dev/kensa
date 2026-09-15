@@ -15,11 +15,11 @@ A Kensa report can render one test class, or one method of it, with no sidebar, 
 index.html#/embed/<testId>?method=<name>&invocation=<n>&theme=light|dark|auto&notes=1
 ```
 
-The quickest way to get one is the **Copy embed link** control that appears beside **Copy link** when you hover a test's header in the report. It copies the URL for that method, ready to paste.
+The quickest way to get one is the **Copy embed link** control that appears beside **Copy link** when you hover a test's header in the report, or the class name in the report header. The first copies the URL for that method, the second for the whole class, ready to paste.
 
 | Parameter | Effect |
 |-----------|--------|
-| `method` | Expand this method. Without it the class renders with every method collapsed, or the single method expanded when there is only one. |
+| `method` | Show only this method, expanded. Without it the whole class renders, every method collapsed, or the single method expanded when there is only one. |
 | `invocation` | For a parameterised method, expand this invocation (zero based). |
 | `theme` | `light`, `dark`, or `auto` (the default), which follows the reader's OS setting. The embed never writes the choice back to the reader's stored preference. |
 | `notes` | `1` shows the class notes card above the tests. Off by default. |

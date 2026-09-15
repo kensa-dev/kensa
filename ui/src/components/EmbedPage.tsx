@@ -7,6 +7,7 @@ import {TestDetail, TestState} from '@/types/Test';
 import {NotesCard} from './NotesCard';
 import {TestContainer} from './TestContainer';
 import {useReportHeight} from '@/hooks/useReportHeight';
+import {embedTests} from '@/util/embedTests';
 
 const stateDot: Record<TestState, string> = {
     Passed: 'bg-success',
@@ -53,7 +54,7 @@ export const EmbedPage = ({testId, params, target, selectedIndex, testDetail, is
                     )}
                     <TestContainer
                         key={`${testId}-${testToExpand}`}
-                        tests={testDetail.tests}
+                        tests={embedTests(testDetail.tests, params.method)}
                         testClass={testDetail.testClass}
                         testId={testId}
                         testToExpand={testToExpand}
