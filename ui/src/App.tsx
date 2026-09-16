@@ -101,8 +101,15 @@ const App = () => {
         [indices],
     );
 
+    // Badge and tag clicks hold onSearchChange from the render they were memoised in.
+    // setSearchParams navigates relative to the pathname of the render it came from, so a
+    // stale copy would apply the query at wherever the report was first opened. Always
+    // go through the latest one.
+    const setSearchParamsRef = useRef(setSearchParams);
+    setSearchParamsRef.current = setSearchParams;
+
     const onSearchChange = (query: string) => {
-        setSearchParams(prev => {
+        setSearchParamsRef.current(prev => {
             if (query) prev.set("q", query);
             else prev.delete("q");
             return prev;
