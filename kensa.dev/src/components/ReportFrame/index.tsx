@@ -10,6 +10,9 @@ import styles from './styles.module.css';
 // behind the picture and replaces it once it has rendered and posted its height.
 const LIVE_FROM = '(min-width: 768px)';
 const HEIGHT_MESSAGE = 'kensa:height';
+// The embed posts once for its loading skeleton before the test has rendered; a real
+// card is several hundred pixels, so anything shorter keeps the picture in place.
+const RENDERED_FROM_PX = 200;
 
 interface ReportFrameProps {
     embedSrc: string;
@@ -39,9 +42,10 @@ export default function ReportFrame({ embedSrc, fullUrl, picture, alt, title }: 
     useEffect(() => {
         if (!live) return;
         const onMessage = (event: MessageEvent) => {
-            const data: unknown = event.data;
-            const isHeight = typeof data === 'object' && data !== null && (data as { type?: unknown }).type === HEIGHT_MESSAGE;
-            if (isHeight && frame.current && event.source === frame.current.contentWindow) setRendered(true);
+            const data = event.data as { type?: unknown; height?: unknown } | null;
+            const isHeight = typeof data === 'object' && data !== null && data.type === HEIGHT_MESSAGE;
+            const tall = isHeight && typeof data.height === 'number' && data.height >= RENDERED_FROM_PX;
+            if (tall && frame.current && event.source === frame.current.contentWindow) setRendered(true);
         };
         window.addEventListener('message', onMessage);
         return () => window.removeEventListener('message', onMessage);

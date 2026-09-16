@@ -26,13 +26,15 @@
     background: transparent;
 }
 
-/* Mounted behind the picture until the embed has rendered and posted a height. */
+/* Mounted behind the picture until the embed has rendered and posted a height. It is
+   1px tall on purpose: a report measures itself against its own viewport, so a frame
+   already as tall as the picture would report the picture's height, not the content's. */
 .embedPending {
     position: absolute;
     top: -8px;
     left: -8px;
     width: calc(100% + 16px);
-    height: calc(100% + 8px);
+    height: 1px;
     border: 0;
     opacity: 0;
     pointer-events: none;
