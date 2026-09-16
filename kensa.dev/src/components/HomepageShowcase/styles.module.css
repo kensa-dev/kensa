@@ -27,7 +27,7 @@
 
 .intro {
     max-width: 44rem;
-    margin: 0 0 2rem;
+    margin: 0 0 0.75rem;
     font-size: 1.0625rem;
     line-height: 1.55;
     color: var(--ifm-color-emphasis-800);
@@ -71,7 +71,7 @@
 
 .constraint {
     max-width: 44rem;
-    margin: 2rem 0 0;
+    margin: 0 0 2rem;
     font-size: 1.0625rem;
     line-height: 1.55;
     font-weight: 600;

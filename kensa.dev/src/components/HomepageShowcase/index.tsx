@@ -57,6 +57,10 @@ export default function HomepageShowcase(): ReactNode {
                     embedded live from the latest run. The method names become the words; the values come
                     from the run.
                 </p>
+                <p className={styles.constraint}>
+                    No <code>.feature</code> files. No step definitions. No glue to keep in sync.
+                    The test is the spec. The report is the evidence.
+                </p>
 
                 <div className={styles.pair}>
                     <div className={styles.code}>
@@ -85,10 +89,6 @@ export default function HomepageShowcase(): ReactNode {
                     </div>
                 </div>
 
-                <p className={styles.constraint}>
-                    No <code>.feature</code> files. No step definitions. No glue to keep in sync.
-                    The test is the spec. The report is the evidence.
-                </p>
                 <p className={styles.liveLink}>
                     <a href={reportTest} target="_blank" rel="noopener noreferrer">
                         Open the full report in a new tab →
