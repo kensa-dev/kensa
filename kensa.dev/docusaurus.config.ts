@@ -141,33 +141,14 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          type: 'doc',
-          docId: 'quickstart/kotlin-quickstart',
+          to: '/docs/category/quickstart-guide',
           position: 'left',
           label: 'Quickstart',
-        },
-        {
-          type: 'doc',
-          docId: 'api/overview',
-          position: 'left',
-          label: 'API',
         },
         {
           to: '/blog',
           label: 'Blog',
           position: 'left',
-        },
-        {
-          type: 'doc',
-          docId: 'agent-skills',
-          position: 'left',
-          label: 'AI Skills',
-        },
-        {
-          type: 'doc',
-          docId: 'roadmap',
-          position: 'left',
-          label: 'Roadmap',
         },
         {
           href: `https://github.com/kensa-dev/kensa/releases/tag/${kensaVersion}`,
@@ -197,6 +178,7 @@ const config: Config = {
             { label: 'Documentation', to: '/docs/intro' },
             { label: 'API Reference', to: '/docs/api/overview' },
             { label: 'AI Agent Skills', to: '/docs/agent-skills' },
+            { label: 'Roadmap', to: '/docs/roadmap' },
           ],
         },
         {
