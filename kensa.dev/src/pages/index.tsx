@@ -42,15 +42,12 @@ function HomepageHeader() {
                         services, and an interactive sequence diagram.
                     </p>
                     <div className={styles.buttons}>
-                        <Link className={styles.ctaPrimary} to="/docs/quickstart/kotlin-quickstart">
+                        <Link className={styles.ctaPrimary} to="/docs/category/quickstart-guide">
                             Get started
                         </Link>
                         <a className={styles.ctaSecondary} href={reportTest} target="_blank" rel="noopener noreferrer">
                             Browse a real report
                         </a>
-                        <Link className={styles.ctaSecondary} href="https://github.com/kensa-dev/kensa">
-                            View on GitHub
-                        </Link>
                     </div>
                     <p className={styles.meta}>
                         Apache 2.0 · Kotlin 2.x · Java 17+ · JUnit 5 / 6 · Kotest · TestNG
@@ -91,8 +88,8 @@ export default function Home(): ReactNode {
             </Head>
             <HomepageHeader />
             <main>
-                <HomepageInstall />
                 <HomepageShowcase />
+                <HomepageInstall />
                 <HomepageFeatures />
                 <HomepageEmbed />
                 <HomepageEcosystem />

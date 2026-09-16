@@ -114,7 +114,8 @@ export default function HomepageEcosystem(): ReactNode {
                 <div className={styles.header}>
                     <h2 className={styles.heading}>Plugins &amp; Integrations</h2>
                     <p className={styles.subheading}>
-                        Surface Kensa output where your team already works.
+                        Surface Kensa output where your team already works. The report is static HTML,
+                        so any CI can publish it; these go further.
                     </p>
                 </div>
                 <div className={styles.grid}>

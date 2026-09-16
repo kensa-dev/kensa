@@ -13,7 +13,7 @@ export default function HomepageEmbed(): ReactNode {
                     <p className={styles.eyebrow}>// Embed</p>
                     <h2 className={styles.heading}>Put the report where the decision is made.</h2>
                     <p className={styles.intro}>
-                        Any test, chromeless, at a stable URL. Drop it into a Confluence page, a Jira
+                        Any test, at a stable URL. Drop it into a Confluence page, a Jira
                         story, a design doc or a service catalog. The page shows what the system did,
                         and it stays current with every run.
                     </p>
