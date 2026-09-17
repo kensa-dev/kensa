@@ -104,6 +104,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [
             {
@@ -219,6 +220,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [
             {
@@ -311,6 +313,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [
             {
@@ -426,6 +429,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [
             {
@@ -541,6 +545,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [
             {

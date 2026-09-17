@@ -104,6 +104,7 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
             classes = [
                 KotlinWithSinglePassingTest::class,
                 KotlinWithGenericParameterizedTest::class,
+                KotlinWithPrimitiveParametersTest::class,
                 KotlinWithExpandableSentenceTest::class,
                 KotlinWithExpandableMatchersTest::class,
                 KotlinWithLiteralsTest::class,

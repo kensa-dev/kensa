@@ -229,6 +229,48 @@ class JsonTransformsTest {
         }
 
         @Test
+        fun `serialises parameter kinds from the real value types`() {
+            val invocation = fakeTestInvocation(
+                parameters = listOf(
+                    NamedValue("n", 42),
+                    NamedValue("d", 3.5),
+                    NamedValue("b", true),
+                    NamedValue("s", "null"),
+                    NamedValue("c", 'x'),
+                    NamedValue("z", null),
+                    NamedValue("o", listOf(1, 2)),
+                )
+            )
+            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val kinds = render(container)
+                .get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("parameterKinds").asObject()
+
+            kinds.getString("n", null) shouldBe "number"
+            kinds.getString("d", null) shouldBe "number"
+            kinds.getString("b", null) shouldBe "boolean"
+            kinds.getString("s", null) shouldBe "string"
+            kinds.getString("c", null) shouldBe "string"
+            kinds.getString("z", null) shouldBe "null"
+            kinds.getString("o", null) shouldBe "other"
+        }
+
+        @Test
+        fun `serialises an empty parameterKinds object when there are no parameters`() {
+            val invocation = fakeTestInvocation(parameters = emptyList())
+            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            render(container)
+                .get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("parameterKinds").asObject().size() shouldBe 0
+        }
+
+        @Test
         fun `serialises sequence diagram via toString`() {
             val invocation = fakeTestInvocation(sequenceDiagram = SequenceDiagram("<svg/>"))
             val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))

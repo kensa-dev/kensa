@@ -108,4 +108,69 @@ describe('classifyParamValue', () => {
             expect(result.displayValue).toBe('"already quoted"');
         });
     });
+
+    describe('with a kind from the report', () => {
+        it('classifies "null" with kind null as null', () => {
+            const result = classifyParamValue('null', 'null');
+            expect(result.kind).toBe('null');
+            expect(result.displayValue).toBe('null');
+        });
+
+        it('classifies "42" with kind number as number', () => {
+            const result = classifyParamValue('42', 'number');
+            expect(result.kind).toBe('number');
+            expect(result.displayValue).toBe('42');
+        });
+
+        it('classifies "true" with kind boolean as boolean', () => {
+            const result = classifyParamValue('true', 'boolean');
+            expect(result.kind).toBe('boolean');
+            expect(result.displayValue).toBe('true');
+        });
+
+        it('classifies "null" with kind string as string', () => {
+            const result = classifyParamValue('null', 'string');
+            expect(result.kind).toBe('string');
+            expect(result.displayValue).toBe('"null"');
+        });
+
+        it('classifies "42" with kind string as string', () => {
+            const result = classifyParamValue('42', 'string');
+            expect(result.kind).toBe('string');
+            expect(result.displayValue).toBe('"42"');
+        });
+
+        it('classifies "true" with kind string as string', () => {
+            const result = classifyParamValue('true', 'string');
+            expect(result.kind).toBe('string');
+            expect(result.displayValue).toBe('"true"');
+        });
+
+        it('classifies "" with kind string as string', () => {
+            const result = classifyParamValue('', 'string');
+            expect(result.kind).toBe('string');
+            expect(result.displayValue).toBe('""');
+        });
+
+        it('classifies a JSON object with kind string as json', () => {
+            const result = classifyParamValue('{"a":1}', 'string');
+            expect(result.kind).toBe('json');
+            expect(result.displayValue).toBe(JSON.stringify({a: 1}, null, 2));
+        });
+
+        it('classifies a JSON object with kind other as json via the heuristic', () => {
+            const result = classifyParamValue('{"a":1}', 'other');
+            expect(result.kind).toBe('json');
+        });
+
+        it('classifies "42" with kind other as number via the heuristic', () => {
+            const result = classifyParamValue('42', 'other');
+            expect(result.kind).toBe('number');
+        });
+
+        it('classifies "42" with no kind as number, unchanged behaviour', () => {
+            const result = classifyParamValue('42');
+            expect(result.kind).toBe('number');
+        });
+    });
 });

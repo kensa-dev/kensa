@@ -57,6 +57,9 @@
               "param": "[{a=b}]"
             }
           ],
+          "parameterKinds": {
+            "param": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -100,6 +103,9 @@
               "param": "null"
             }
           ],
+          "parameterKinds": {
+            "param": "null"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -143,6 +149,9 @@
               "param": "null"
             }
           ],
+          "parameterKinds": {
+            "param": "null"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -192,6 +201,9 @@
               "param": "[(a, b)]"
             }
           ],
+          "parameterKinds": {
+            "param": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

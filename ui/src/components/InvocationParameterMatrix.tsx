@@ -96,7 +96,7 @@ export const InvocationParameterMatrix = React.forwardRef<HTMLDivElement, Invoca
                                                 <TableCell key={name} className="px-4 py-2 text-muted-foreground/40">—</TableCell>
                                             );
                                         }
-                                        const classified = classifyParamValue(raw);
+                                        const classified = classifyParamValue(raw, inv.parameterKinds?.[name]);
                                         return (
                                             <TableCell key={name} className={cn("px-4 py-2 whitespace-pre-wrap break-words max-w-xs align-top", classified.className)}>
                                                 {classified.displayValue}

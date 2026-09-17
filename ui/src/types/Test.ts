@@ -5,6 +5,8 @@ export type NameAndValues = NameAndValue[]
 
 export type TestState = "Passed" | "Failed" | "Disabled" | "Not Executed"
 
+export type ReportedParameterKind = 'null' | 'number' | 'boolean' | 'string' | 'other'
+
 export interface TableData {
     type: 'table'
     headers?: string[]
@@ -95,6 +97,7 @@ export interface Invocation {
     highlights: string[]
     sentences: Sentence[]
     parameters: NameAndValues
+    parameterKinds?: Record<string, ReportedParameterKind>
     givens: NameAndValues
     capturedInteractions: Interaction[]
     capturedOutputs: NameAndValues

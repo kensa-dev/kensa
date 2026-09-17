@@ -57,6 +57,9 @@
               "param": "[{a=b}]"
             }
           ],
+          "parameterKinds": {
+            "param": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -130,6 +133,9 @@
               "param": "[a, b]"
             }
           ],
+          "parameterKinds": {
+            "param": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

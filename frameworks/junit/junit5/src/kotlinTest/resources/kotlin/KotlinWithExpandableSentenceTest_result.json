@@ -151,6 +151,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -637,6 +638,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -787,6 +789,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1089,6 +1092,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [
@@ -1226,6 +1230,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1370,6 +1375,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1544,6 +1550,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1610,6 +1617,9 @@
               "value": "one"
             }
           ],
+          "parameterKinds": {
+            "value": "string"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1664,6 +1674,9 @@
               "value": "two"
             }
           ],
+          "parameterKinds": {
+            "value": "string"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -1721,6 +1734,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

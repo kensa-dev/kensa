@@ -83,6 +83,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -177,6 +178,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -277,6 +279,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -330,6 +333,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -383,6 +387,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -436,6 +441,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -493,6 +499,9 @@
               "value": "MyThing"
             }
           ],
+          "parameterKinds": {
+            "value": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -538,6 +547,9 @@
               "value": "MyThing"
             }
           ],
+          "parameterKinds": {
+            "value": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -591,6 +603,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -648,6 +661,9 @@
               "shouldNotBeRendered": "meh"
             }
           ],
+          "parameterKinds": {
+            "shouldNotBeRendered": "string"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -713,6 +729,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

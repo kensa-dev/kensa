@@ -116,6 +116,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -254,6 +255,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -398,6 +400,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

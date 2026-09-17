@@ -23,6 +23,7 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -50,6 +51,7 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -77,6 +79,7 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -104,6 +107,7 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -131,6 +135,7 @@
           "highlights": [],
           "sentences": [],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -162,6 +167,9 @@
               "value": "one"
             }
           ],
+          "parameterKinds": {
+            "value": "string"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -181,6 +189,9 @@
               "value": "two"
             }
           ],
+          "parameterKinds": {
+            "value": "string"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -200,6 +211,9 @@
               "value": "three 3\ufe0f\u20e3"
             }
           ],
+          "parameterKinds": {
+            "value": "string"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

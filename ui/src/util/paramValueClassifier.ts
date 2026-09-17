@@ -1,3 +1,5 @@
+import type {ReportedParameterKind} from '@/types/Test';
+
 export type ParamValueKind = 'number' | 'boolean' | 'null' | 'string' | 'json' | 'other';
 
 export interface ClassifiedValue {
@@ -14,16 +16,7 @@ const STRING_CLASS = 'text-emerald-600';
 
 const NUMBER_RE = /^-?\d+(\.\d+)?$/;
 
-export function classifyParamValue(raw: string): ClassifiedValue {
-    if (raw === 'null' || raw === 'undefined') {
-        return { kind: 'null', displayValue: 'null', className: NULL_CLASS };
-    }
-    if (NUMBER_RE.test(raw)) {
-        return { kind: 'number', displayValue: raw, className: NUMBER_CLASS };
-    }
-    if (raw === 'true' || raw === 'false') {
-        return { kind: 'boolean', displayValue: raw, className: BOOLEAN_CLASS };
-    }
+function classifyAsString(raw: string): ClassifiedValue {
     if (raw.startsWith('{') || raw.startsWith('[')) {
         try {
             const parsed = JSON.parse(raw);
@@ -35,4 +28,30 @@ export function classifyParamValue(raw: string): ClassifiedValue {
     const alreadyQuoted = raw.startsWith('"') && raw.endsWith('"');
     const displayValue = alreadyQuoted ? raw : `"${raw}"`;
     return { kind: 'string', displayValue, className: STRING_CLASS };
+}
+
+export function classifyParamValue(raw: string, kind?: ReportedParameterKind): ClassifiedValue {
+    if (kind === 'null') {
+        return { kind: 'null', displayValue: 'null', className: NULL_CLASS };
+    }
+    if (kind === 'number') {
+        return { kind: 'number', displayValue: raw, className: NUMBER_CLASS };
+    }
+    if (kind === 'boolean') {
+        return { kind: 'boolean', displayValue: raw, className: BOOLEAN_CLASS };
+    }
+    if (kind === 'string') {
+        return classifyAsString(raw);
+    }
+
+    if (raw === 'null' || raw === 'undefined') {
+        return { kind: 'null', displayValue: 'null', className: NULL_CLASS };
+    }
+    if (NUMBER_RE.test(raw)) {
+        return { kind: 'number', displayValue: raw, className: NUMBER_CLASS };
+    }
+    if (raw === 'true' || raw === 'false') {
+        return { kind: 'boolean', displayValue: raw, className: BOOLEAN_CLASS };
+    }
+    return classifyAsString(raw);
 }

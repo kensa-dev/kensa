@@ -47,6 +47,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

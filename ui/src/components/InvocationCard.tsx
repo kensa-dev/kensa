@@ -86,7 +86,7 @@ export const InvocationCard = React.forwardRef<HTMLDivElement, InvocationCardPro
                         isPassed ? "bg-success/[0.04] dark:bg-success/[0.08]" : "bg-failure/[0.04] dark:bg-failure/[0.08]",
                         "p-4 pt-2 border-t border-border/40")}>
                         {invocation.parameters.length > 0 && summary.kind !== 'inline' && (
-                            <InvocationParameters parameters={invocation.parameters}/>
+                            <InvocationParameters parameters={invocation.parameters} parameterKinds={invocation.parameterKinds}/>
                         )}
                         <SectionRenderer
                             invocation={invocation}

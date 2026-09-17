@@ -39,6 +39,9 @@
               "parameter": "myParameter"
             }
           ],
+          "parameterKinds": {
+            "parameter": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],

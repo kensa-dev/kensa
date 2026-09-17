@@ -68,6 +68,9 @@
               "useCase": "WholesalerUseCase(stub=WholesalerStub, market=EMEA)"
             }
           ],
+          "parameterKinds": {
+            "useCase": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -128,6 +131,9 @@
               "useCase": "WholesalerUseCase(stub=WholesalerStub, market=APAC)"
             }
           ],
+          "parameterKinds": {
+            "useCase": "other"
+          },
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [],
@@ -202,6 +208,7 @@
             }
           ],
           "parameters": [],
+          "parameterKinds": {},
           "capturedInteractions": [],
           "capturedOutputs": [],
           "fixtures": [

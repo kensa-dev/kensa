@@ -61,6 +61,7 @@ internal object JsonTransforms {
                             .add("highlights", asJsonArray(i.highlightedValues, nvValueAsJson(renderers)))
                             .add("sentences", asJsonArray(i.sentences, sentenceAsJson()))
                             .add("parameters", asJsonArray(i.parameters, nvAsJson(renderers)))
+                            .add("parameterKinds", parameterKindsAsJson(i.parameters))
                             .add("capturedInteractions", asJsonArray(i.interactions.filter { it.isRenderedInteraction() }, interactionEntryAsJson(renderers)))
                             .add("capturedOutputs", asJsonArray(i.outputNamesAndValues, nvAsJson(renderers)))
                             .add("fixtures", asJsonArray(i.fixturesNamesAndValues, nvAsJson(renderers)))
@@ -307,6 +308,17 @@ internal object JsonTransforms {
                     })
             )
         }
+
+    private fun parameterKindsAsJson(parameters: Collection<NamedValue>) =
+        parameters.fold(jsonObject()) { obj, nv -> obj.add(nv.name, nv.value.kind()) }
+
+    private fun Any?.kind(): String = when (this) {
+        null -> "null"
+        is Number -> "number"
+        is Boolean -> "boolean"
+        is CharSequence, is Char -> "string"
+        else -> "other"
+    }
 
     private fun nvValueAsJson(renderers: Renderers) = { nv: NamedValue -> Json.value(renderers.renderValue(nv.value)) }
 

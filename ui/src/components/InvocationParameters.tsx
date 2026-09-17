@@ -1,13 +1,14 @@
-import {NameAndValue, NameAndValues} from "@/types/Test";
+import {NameAndValue, NameAndValues, ReportedParameterKind} from "@/types/Test";
 import {classifyParamValue} from "@/util/paramValueClassifier";
 import {cn} from "@/lib/utils";
 import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table";
 
 interface InvocationParametersProps {
     parameters: NameAndValues;
+    parameterKinds?: Record<string, ReportedParameterKind>;
 }
 
-export const InvocationParameters = ({parameters}: InvocationParametersProps) => {
+export const InvocationParameters = ({parameters, parameterKinds}: InvocationParametersProps) => {
     if (parameters.length === 0) return null;
 
     return (
@@ -21,7 +22,7 @@ export const InvocationParameters = ({parameters}: InvocationParametersProps) =>
                     {parameters.map((row: NameAndValue, i: number) => {
                         const entries = Object.entries(row);
                         return entries.map(([name, value], j) => {
-                            const classified = classifyParamValue(value);
+                            const classified = classifyParamValue(value, parameterKinds?.[name]);
                             return (
                                 <TableRow key={`${i}-${j}`} className="border-0 hover:bg-muted/30 transition-colors">
                                     <TableCell className="py-2 px-4 align-top font-mono text-muted-foreground truncate" title={name}>

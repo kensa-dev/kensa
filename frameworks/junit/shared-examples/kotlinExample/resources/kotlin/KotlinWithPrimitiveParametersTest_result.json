@@ -1,6 +1,6 @@
 {
-  "testClass": "dev.kensa.example.KotlinWithParameterFixtureTest",
-  "displayName": "Kotlin With Parameter Fixture Test",
+  "testClass": "dev.kensa.example.KotlinWithPrimitiveParametersTest",
+  "displayName": "Kotlin With Primitive Parameters Test",
   "state": "Passed",
   "notes": null,
   "packageName": "dev.kensa.example",
@@ -10,8 +10,8 @@
   "tests": [
     {
       "elapsedTime": "",
-      "testMethod": "greetsTheUser",
-      "displayName": "Greets The User",
+      "testMethod": "echoesTheNumber",
+      "displayName": "Echoes The Number",
       "issues": [],
       "epics": [],
       "tags": [],
@@ -23,7 +23,7 @@
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 22,
+              "lineNumber": 15,
               "tokens": [
                 {
                   "types": [
@@ -35,50 +35,43 @@
                   "types": [
                     "tk-wd"
                   ],
-                  "value": "the greeting equal to"
-                },
-                {
-                  "types": [
-                    "tk-fx"
-                  ],
-                  "value": "Hello, alice"
+                  "value": "the count count equal to expected"
                 }
               ]
             }
           ],
           "parameters": [
             {
-              "userName": "alice"
+              "count": "42"
+            },
+            {
+              "enabled": "true"
+            },
+            {
+              "expected": "42"
             }
           ],
           "parameterKinds": {
-            "userName": "string"
+            "count": "number",
+            "enabled": "boolean",
+            "expected": "string"
           },
           "capturedInteractions": [],
           "capturedOutputs": [],
-          "fixtures": [
-            {
-              "greeting": "Hello, alice"
-            }
-          ],
-          "fixtureSpecs": [
-            {
-              "key": "greeting",
-              "parents": []
-            }
-          ],
+          "fixtures": [],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "[1] alice"
+          "displayName": "[1] 42, true"
         },
         {
           "elapsedTime": "",
           "highlights": [],
           "sentences": [
             {
-              "lineNumber": 22,
+              "lineNumber": 15,
               "tokens": [
                 {
                   "types": [
@@ -90,43 +83,36 @@
                   "types": [
                     "tk-wd"
                   ],
-                  "value": "the greeting equal to"
-                },
-                {
-                  "types": [
-                    "tk-fx"
-                  ],
-                  "value": "Hello, bob"
+                  "value": "the count count equal to expected"
                 }
               ]
             }
           ],
           "parameters": [
             {
-              "userName": "bob"
+              "count": "7"
+            },
+            {
+              "enabled": "false"
+            },
+            {
+              "expected": "7"
             }
           ],
           "parameterKinds": {
-            "userName": "string"
+            "count": "number",
+            "enabled": "boolean",
+            "expected": "string"
           },
           "capturedInteractions": [],
           "capturedOutputs": [],
-          "fixtures": [
-            {
-              "greeting": "Hello, bob"
-            }
-          ],
-          "fixtureSpecs": [
-            {
-              "key": "greeting",
-              "parents": []
-            }
-          ],
+          "fixtures": [],
+          "fixtureSpecs": [],
           "sequenceDiagram": null,
           "componentDiagram": null,
           "state": "Passed",
           "executionException": {},
-          "displayName": "[2] bob"
+          "displayName": "[2] 7, false"
         }
       ]
     }
