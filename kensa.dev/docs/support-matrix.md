@@ -57,7 +57,7 @@ Each framework module is built against the version below and its own test suite 
 | --- | --- | --- |
 | JUnit 5 | `kensa-framework-junit5` | 5.14.3 |
 | JUnit 6 | `kensa-framework-junit6` | 6.0.3 |
-| Kotest | `kensa-framework-kotest` | 6.2.1 |
+| Kotest | `kensa-framework-kotest` | 6.2.4 |
 | TestNG | `kensa-framework-testng` | 7.12.0 |
 
 JUnit 5 and JUnit 6 are separate modules; pick the one matching your project's JUnit major. The UI-testing modules (`kensa-framework-uitesting-*`, `kensa-framework-playwright-*`, `kensa-framework-selenium-*`) follow the same split and ship a `junit5` and a `junit6` variant each.
@@ -66,7 +66,7 @@ JUnit 5 and JUnit 6 are separate modules; pick the one matching your project's J
 
 | Kensa | Kotlin | Min JDK | Coroutines floor | Frameworks verified |
 | --- | --- | --- | --- | --- |
-| 0.9.x | 2.4.10 | 17 | 1.11.0 | JUnit 5 (5.14.3), JUnit 6 (6.0.3), Kotest (6.2.1), TestNG (7.12.0) |
+| 0.9.x | 2.4.10 | 17 | 1.11.0 | JUnit 5 (5.14.3), JUnit 6 (6.0.3), Kotest (6.2.4), TestNG (7.12.0) |
 | 0.8.x | 2.4.10 | 17 | none documented | JUnit 5 (5.14.x), JUnit 6 (6.0.x), Kotest (6.1.x), TestNG (7.12.x) |
 
 If a version listed here breaks in a way this page does not describe, please [open an issue](https://github.com/kensa-dev/kensa/issues).

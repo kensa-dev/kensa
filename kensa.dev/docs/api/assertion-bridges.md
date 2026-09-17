@@ -374,7 +374,7 @@ Classpath: `org.assertj:assertj-core` and `org.awaitility:awaitility-kotlin`, bo
 
 Every bridge also provides `and` for the single-shot forms and, except AssertJ, a `SetupStep` flavour (`KotestSetupStep`, `HamkrestSetupStep`, `HamcrestSetupStep`) with a matching `xxxSetupStep { }` builder. `andEventually` exists on Kotest, Hamkrest and Hamcrest; there is no `andContinually` anywhere.
 
-The library versions each bridge is built against come from `gradle/libs.versions.toml` in the Kensa repository: Kotest 6.2.1, Hamkrest 1.8.0.1, Hamcrest 3.0, AssertJ 3.27.7, Awaitility 4.3.0 and kotlinx-coroutines 1.11.0. Older minors of the same major usually work but are not verified.
+The library versions each bridge is built against come from `gradle/libs.versions.toml` in the Kensa repository: Kotest 6.2.4, Hamkrest 1.8.0.1, Hamcrest 3.0, AssertJ 3.27.7, Awaitility 4.3.0 and kotlinx-coroutines 1.11.0. Older minors of the same major usually work but are not verified.
 
 ## Stability
 
