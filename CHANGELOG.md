@@ -3,6 +3,7 @@
 ### v1.0.0
 
 Fixes:
+  - **An empty `@Highlight` value no longer hangs the report.** A field or parameter annotated `@Highlight` whose value was `""` built a highlight pattern that matched at every position of every text node, so expanding an interaction never returned and the browser tab hung. Empty highlights are now ignored (#186, thanks to Michael Orr).
   - **Badge filters and tag clicks stay where you are.** Choosing **Filter by this issue** from a badge, or clicking a tag, applied the query at whichever page the report was first opened on, usually the Overview, instead of on the test in view. The handlers held the first render's `setSearchParams`, which navigates relative to the location it was created in (#227).
   - **Embed frames shrink as well as grow.** The embed posted `document.documentElement.scrollHeight`, which inside an iframe never drops below the frame's own height, so a frame sized by `kensa-embed.js` grew to fit the sequence diagram and stayed there when a shorter tab was chosen. The embed now measures its own content root, so the posted height follows the content both ways (#226).
 
