@@ -9,6 +9,9 @@ Fixes:
   - **Badge filters and tag clicks stay where you are.** Choosing **Filter by this issue** from a badge, or clicking a tag, applied the query at whichever page the report was first opened on, usually the Overview, instead of on the test in view. The handlers held the first render's `setSearchParams`, which navigates relative to the location it was created in (#227).
   - **Embed frames shrink as well as grow.** The embed posted `document.documentElement.scrollHeight`, which inside an iframe never drops below the frame's own height, so a frame sized by `kensa-embed.js` grew to fit the sequence diagram and stayed there when a shorter tab was chosen. The embed now measures its own content root, so the posted height follows the content both ways (#226).
 
+Breaking:
+  - **`TableRenderer` removed.** The interface was public and documented but nothing could register one, so the default table shapes always applied. Removed rather than frozen at 1.0; the docs now describe the supported row shapes (#231).
+
 Changed:
   - **Kotest 6.2.4, Gradle 9.7.1.** Dependency bumps; no API changes. Also PlantUML 1.2026.6, Jackson 2.22.2, Byte Buddy 1.18.12, Selenium 4.47.0.
 

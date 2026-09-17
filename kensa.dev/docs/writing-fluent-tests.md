@@ -252,8 +252,6 @@ then(courier.hasDispatched(aShipmentWith(theShipmentFields())));
 
 The report shows a two-column table headed "Field / Expected". The test body is one line. The BA can scan all 30 fields without touching the code.
 
-For custom table shapes beyond `Pair`, register a `TableRenderer<T>` for your type — see the [annotations reference](./api/annotations#expandablerenderedvalue).
-
 ## Decision table
 
 | Situation | Use |

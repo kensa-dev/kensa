@@ -13,7 +13,6 @@ class Renderers {
     private val defaultListRenderer = HeterogeneousListRenderer()
     private val defaultTableRenderer = DefaultTableRenderer()
     private val valueRenderers: SortedMap<KClass<*>, ValueRenderer<Any>> = TreeMap(SubclassFirstComparator())
-    private val tableRenderers: SortedMap<KClass<*>, TableRenderer<Any>> = TreeMap(SubclassFirstComparator())
     private val interactionRenderers: SortedMap<KClass<*>, InteractionRenderer<Any>> = TreeMap(SubclassFirstComparator())
     private var listRenderer: ValueRenderer<List<*>> = defaultListRenderer
     private var listRendererFormat = ListRendererFormat()
@@ -72,14 +71,7 @@ class Renderers {
             .map { entry -> entry.value }
             .firstOrNull()
 
-    fun renderTable(value: Any): List<List<Any?>> =
-        tableRendererFor(value::class)?.render(value) ?: defaultTableRenderer.render(value)
-
-    private fun tableRendererFor(kClass: KClass<*>): TableRenderer<Any>? =
-        tableRenderers.entries
-            .filter { entry -> entry.key.isSuperclassOf(kClass) }
-            .map { entry -> entry.value }
-            .firstOrNull()
+    fun renderTable(value: Any): List<List<Any?>> = defaultTableRenderer.render(value)
 
     fun renderInteraction(value: Any, attributes: Attributes): List<RenderedInteraction> = interactionRendererFor(value::class)?.render(value, attributes) ?: listOf(RenderedInteraction("Value", value.toString(), attributes.getOrDefault("language", PlainText)))
 
@@ -95,8 +87,8 @@ class Renderers {
         override fun render(value: List<*>): String = value.joinToString(separator = listRendererFormat.separator, prefix = listRendererFormat.prefix, postfix = listRendererFormat.postfix) { renderValue(it) }
     }
 
-    private class DefaultTableRenderer : TableRenderer<Any> {
-        override fun render(value: Any): List<List<Any?>> =
+    private class DefaultTableRenderer {
+        fun render(value: Any): List<List<Any?>> =
             when (value) {
                 is Iterable<*> -> value.map { item ->
                     when (item) {

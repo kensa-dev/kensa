@@ -116,7 +116,7 @@ The report expands to show each `DispatchStatus` value; the test body shows one 
 
 #### Tabular style
 
-Renders the return value as a labelled table. The default table-renderer behaviour: an `Iterable<Pair<*, *>>` becomes two-column rows (the renderer special-cases `kotlin.Pair` and `Triple` — from Java, construct `new kotlin.Pair<>(a, b)`). Provide explicit `headers` to label the columns. For richer table shapes, register a custom `TableRenderer<T>` for your type.
+Renders the return value as a labelled table. Each element of the returned `Iterable` or array becomes one row: a `kotlin.Pair` gives two columns, a `Triple` three, a nested `Iterable` or array one column per item, and anything else a single column (from Java, construct `new kotlin.Pair<>(a, b)`). Provide explicit `headers` to label the columns.
 
 Use this when you need to verify a full set of named fields and want the BA to see field name alongside expected value:
 

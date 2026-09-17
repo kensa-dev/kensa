@@ -23,7 +23,7 @@ stable public API only**:
   `@ParameterizedTestDescription`.
 - Configuration: `Kensa`, `KensaConfigurator`, `Configuration`, and the documented
   `kensa.*` system properties (including the `kensa.source.id` site-mode behaviour).
-- Renderers: `ValueRenderer`, `InteractionRenderer`, `TableRenderer`.
+- Renderers: `ValueRenderer`, `InteractionRenderer`.
 - The fixtures API (`dev.kensa.fixture`).
 - The custom-tab SPI: `KensaTabRenderer`, `KensaTabContext`, `@KensaTab`.
 - The tab-service registry: `Configuration.registerTabService` and `KensaTabServices`,
