@@ -88,7 +88,7 @@ private fun theDispatchedLifecycle(): List<DispatchStatus> {
 
 // In the test:
 then(theShipment(), shouldHaveCompletedDispatch())
-and(theDispatchedLifecycle())
+and(courier.hasObserved(theDispatchedLifecycle()))
 ```
 
 </TabItem>
@@ -104,7 +104,7 @@ private List<DispatchStatus> theDispatchedLifecycle() {
 
 // In the test:
 then(theShipment(), shouldHaveCompletedDispatch());
-and(theDispatchedLifecycle());
+and(courier.hasObserved(theDispatchedLifecycle()));
 ```
 
 </TabItem>
