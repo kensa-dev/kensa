@@ -1,0 +1,207 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithExpandableRenderedValueTest",
+  "displayName": "Kotlin With Expandable Rendered Value Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "epics": [],
+  "tags": [],
+  "tests": [
+    {
+      "testMethod": "rendersAnExpandableValueWithNoArguments",
+      "displayName": "Renders An Expandable Value With No Arguments",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 13,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a dispatched shipment"
+                }
+              ]
+            },
+            {
+              "lineNumber": 15,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the courier reports"
+                },
+                {
+                  "types": [
+                    "tk-ex"
+                  ],
+                  "value": "theObservedLifecycle",
+                  "parameterTokens": [],
+                  "tokens": [
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Acknowledged"
+                      }
+                    ],
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Committed"
+                      }
+                    ],
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Dispatched"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersAnExpandableValueWithNoArguments()"
+        }
+      ]
+    },
+    {
+      "testMethod": "rendersAnExpandableValueWithArguments",
+      "displayName": "Renders An Expandable Value With Arguments",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 20,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a dispatched shipment"
+                }
+              ]
+            },
+            {
+              "lineNumber": 22,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the courier reports"
+                },
+                {
+                  "types": [
+                    "tk-ex"
+                  ],
+                  "value": "theObservedLifecycleFor",
+                  "parameterTokens": [
+                    {
+                      "types": [
+                        "tk-sl"
+                      ],
+                      "value": "TRK-99"
+                    }
+                  ],
+                  "tokens": [
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Acknowledged TRK-99"
+                      }
+                    ],
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Committed TRK-99"
+                      }
+                    ],
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Dispatched TRK-99"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersAnExpandableValueWithArguments()"
+        }
+      ]
+    }
+  ]
+}

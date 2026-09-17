@@ -4,6 +4,7 @@ import dev.kensa.render.diagram.directive.UmlBox
 import dev.kensa.render.diagram.directive.UmlHideUnlinked
 import dev.kensa.render.diagram.directive.UmlParticipant
 import dev.kensa.render.diagram.directive.UmlTitle
+import dev.kensa.state.Party
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -278,6 +279,159 @@ internal class SequenceDiagramConfigurationTest {
         configuration.sequenceDiagram.directives.none {
             it.asUml().any { line -> line.contains("Alpha") || line.contains("Bravo") }
         } shouldBe true
+    }
+
+    @Test
+    fun `box block emits the shape keyword of every nested participant`() {
+        val sd = SequenceDiagramConfiguration()
+        sd.box("Systems") {
+            participant("Alpha")
+            actor("User")
+            boundary("Edge")
+            control("Controller")
+            entity("Order")
+            database("DB")
+            collections("Items")
+            queue("Topic")
+        }
+
+        sd.directives[0].asUml() shouldBe listOf(
+            "box \"Systems\"",
+            "participant Alpha",
+            "actor User",
+            "boundary Edge",
+            "control Controller",
+            "entity Order",
+            "database DB",
+            "collections Items",
+            "queue Topic",
+            "end box"
+        )
+    }
+
+    @Test
+    fun `sequenceDiagram DSL emits the shape keyword of every top level participant`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram {
+            participant("Alpha")
+            actor("User")
+            boundary("Edge")
+            control("Controller")
+            entity("Order")
+            database("DB")
+            collections("Items")
+            queue("Topic")
+        }
+
+        configuration.sequenceDiagram.directives.flatMap { it.asUml() } shouldBe listOf(
+            "participant Alpha",
+            "actor User",
+            "boundary Edge",
+            "control Controller",
+            "entity Order",
+            "database DB",
+            "collections Items",
+            "queue Topic"
+        )
+    }
+
+    @Test
+    fun `sequenceDiagram DSL emits the shape keyword of every participant nested in a box`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram {
+            box("Systems", "#LightBlue") {
+                actor("User")
+                boundary("Edge")
+                control("Controller")
+                entity("Order")
+                database("DB")
+                collections("Items")
+                queue("Topic")
+            }
+        }
+
+        configuration.sequenceDiagram.directives[0].asUml() shouldBe listOf(
+            "box \"Systems\" #LightBlue",
+            "actor User",
+            "boundary Edge",
+            "control Controller",
+            "entity Order",
+            "database DB",
+            "collections Items",
+            "queue Topic",
+            "end box"
+        )
+    }
+
+    @Test
+    fun `primary boundary keeps the boundary keyword`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram { primary.boundary("Edge") }
+
+        configuration.sequenceDiagram.primary.participant?.asUml() shouldBe listOf("boundary Edge")
+    }
+
+    @Test
+    fun `primary control keeps the control keyword`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram { primary.control("Controller") }
+
+        configuration.sequenceDiagram.primary.participant?.asUml() shouldBe listOf("control Controller")
+    }
+
+    @Test
+    fun `primary entity keeps the entity keyword`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram { primary.entity("Order") }
+
+        configuration.sequenceDiagram.primary.participant?.asUml() shouldBe listOf("entity Order")
+    }
+
+    @Test
+    fun `primary collections keeps the collections keyword`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram { primary.collections("Items") }
+
+        configuration.sequenceDiagram.primary.participant?.asUml() shouldBe listOf("collections Items")
+    }
+
+    @Test
+    fun `primary queue keeps the queue keyword`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram { primary.queue("Topic") }
+
+        configuration.sequenceDiagram.primary.participant?.asUml() shouldBe listOf("queue Topic")
+    }
+
+    @Test
+    fun `primary database keeps its keyword when given an alias and a colour`() {
+        val configuration = Configuration()
+        configuration.sequenceDiagram { primary.database("Store").withAlias("Event Store").withColour("#Gold") }
+
+        configuration.sequenceDiagram.primary.participant?.asUml() shouldBe listOf("database Store as \"Event Store\" #Gold")
+    }
+
+    @Test
+    fun `nested shape keeps its keyword when given an alias and a colour`() {
+        val sd = SequenceDiagramConfiguration()
+        sd.box("Systems") {
+            queue("Topic").withAlias("Order Events").withColour("#Gold")
+        }
+
+        sd.directives[0].asUml() shouldBe listOf(
+            "box \"Systems\"",
+            "queue Topic as \"Order Events\" #Gold",
+            "end box"
+        )
+    }
+
+    @Test
+    fun `shapes declared with a Party keep their keyword`() {
+        val sd = SequenceDiagramConfiguration()
+        sd.boundary(object : Party { override fun asString() = "Edge" })
+        sd.queue(object : Party { override fun asString() = "Topic" })
+
+        sd.directives.flatMap { it.asUml() } shouldBe listOf("boundary Edge", "queue Topic")
     }
 
     @Test

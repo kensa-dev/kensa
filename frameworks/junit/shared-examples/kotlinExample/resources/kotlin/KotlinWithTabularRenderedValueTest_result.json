@@ -1,0 +1,574 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithTabularRenderedValueTest",
+  "displayName": "Kotlin With Tabular Rendered Value Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "epics": [],
+  "tags": [],
+  "tests": [
+    {
+      "testMethod": "rendersATableFromPairs",
+      "displayName": "Renders A Table From Pairs",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 14,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 16,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the broker publishes"
+                },
+                {
+                  "types": [
+                    "tk-ex",
+                    "tk-tab"
+                  ],
+                  "value": "theQuotedRates",
+                  "parameterTokens": [],
+                  "tokens": [
+                    {
+                      "type": "table",
+                      "headers": [
+                        "Currency",
+                        "Rate"
+                      ],
+                      "rows": [
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "GBPUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.2710"
+                          }
+                        ],
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "EURUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.0885"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersATableFromPairs()"
+        }
+      ]
+    },
+    {
+      "testMethod": "rendersATableFromTriples",
+      "displayName": "Renders A Table From Triples",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 21,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 23,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the broker publishes"
+                },
+                {
+                  "types": [
+                    "tk-ex",
+                    "tk-tab"
+                  ],
+                  "value": "theSettlementWindows",
+                  "parameterTokens": [],
+                  "tokens": [
+                    {
+                      "type": "table",
+                      "headers": [
+                        "Currency",
+                        "Cutoff",
+                        "Days"
+                      ],
+                      "rows": [
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "GBPUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "16:00"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "2"
+                          }
+                        ],
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "EURUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "17:00"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "2"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersATableFromTriples()"
+        }
+      ]
+    },
+    {
+      "testMethod": "rendersATableFromIterables",
+      "displayName": "Renders A Table From Iterables",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 28,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 30,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the broker publishes"
+                },
+                {
+                  "types": [
+                    "tk-ex",
+                    "tk-tab"
+                  ],
+                  "value": "theAuditTrail",
+                  "parameterTokens": [],
+                  "tokens": [
+                    {
+                      "type": "table",
+                      "headers": [
+                        "Event",
+                        "Actor",
+                        "At"
+                      ],
+                      "rows": [
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "Quoted"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "Broker"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "09:00"
+                          }
+                        ],
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "Accepted"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "Client"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "09:01"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersATableFromIterables()"
+        }
+      ]
+    },
+    {
+      "testMethod": "rendersATableFromAnArray",
+      "displayName": "Renders A Table From An Array",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 35,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 37,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the broker publishes"
+                },
+                {
+                  "types": [
+                    "tk-ex",
+                    "tk-tab"
+                  ],
+                  "value": "theClearedTrades",
+                  "parameterTokens": [],
+                  "tokens": [
+                    {
+                      "type": "table",
+                      "headers": [
+                        "Trade",
+                        "Notional"
+                      ],
+                      "rows": [
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "TRD-1"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1000000"
+                          }
+                        ],
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "TRD-2"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "250000"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersATableFromAnArray()"
+        }
+      ]
+    },
+    {
+      "testMethod": "rendersATableWithNoHeaders",
+      "displayName": "Renders A Table With No Headers",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 42,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 44,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the broker publishes"
+                },
+                {
+                  "types": [
+                    "tk-ex",
+                    "tk-tab"
+                  ],
+                  "value": "theUnlabelledRates",
+                  "parameterTokens": [],
+                  "tokens": [
+                    {
+                      "type": "table",
+                      "rows": [
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "GBPUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.2710"
+                          }
+                        ],
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "EURUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.0885"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersATableWithNoHeaders()"
+        }
+      ]
+    }
+  ]
+}

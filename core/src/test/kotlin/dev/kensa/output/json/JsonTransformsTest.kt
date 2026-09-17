@@ -10,6 +10,10 @@ import dev.kensa.context.SimpleOrgFlowSpec
 import dev.kensa.fixture.FixtureSpec
 import dev.kensa.parse.ParseError
 import dev.kensa.parse.RenderError
+import dev.kensa.render.InteractionRenderer
+import dev.kensa.render.Language
+import dev.kensa.render.RenderedAttributes
+import dev.kensa.render.RenderedInteraction
 import dev.kensa.render.Renderers
 import dev.kensa.render.diagram.SequenceDiagram
 import dev.kensa.sentence.RenderedSentence
@@ -44,12 +48,14 @@ class JsonTransformsTest {
         @Suppress("unused") fun beta() = Unit
     }
 
+    private data class RateQuote(val currency: String, val rate: String, val statusCode: Int, val headers: List<Pair<String, String>>)
+
     private val renderers = Renderers()
     private val sampleClass = SampleTest::class.java
     private val alpha: java.lang.reflect.Method = sampleClass.getDeclaredMethod("alpha")
     private val beta: java.lang.reflect.Method = sampleClass.getDeclaredMethod("beta")
 
-    private fun render(container: dev.kensa.context.TestContainer) =
+    private fun render(container: dev.kensa.context.TestContainer, renderers: Renderers = this.renderers) =
         JsonTransforms.toJsonWith(renderers)(container).asObject()
 
     @Nested
@@ -420,6 +426,97 @@ class JsonTransformsTest {
             seamJson.getString("owner", null) shouldBe "Topolino"
             seamJson.getString("direction", null) shouldBe "inbound"
             seamJson.get("correlationFixtures").asArray()[0].asString() shouldBe "orderId"
+        }
+
+        @Test
+        fun `writes the rendered values and attribute groups of a registered interaction renderer`() {
+            val quoteRenderers = Renderers().apply {
+                addInteractionRenderer(RateQuote::class, object : InteractionRenderer<RateQuote> {
+                    override fun render(value: RateQuote, attributes: Attributes) = listOf(
+                        RenderedInteraction("Quote Body", """{"currency": "${value.currency}"}""", Language.Json),
+                        RenderedInteraction("Summary", "${value.currency} quoted at ${value.rate} for ${attributes.get<String>("Correlation Id")}")
+                    )
+
+                    override fun renderAttributes(value: RateQuote) = listOf(
+                        RenderedAttributes("Status", setOf(NamedValue("Code", value.statusCode))),
+                        RenderedAttributes("Headers", value.headers.map { NamedValue(it.first, it.second) }.toSet())
+                    )
+                })
+            }
+            val quote = RateQuote("GBPUSD", "1.2710", 200, listOf("Content-Type" to "application/json", "X-Quote-Id" to "Q-17"))
+
+            val container = fakeTestContainer(
+                testClass = sampleClass,
+                methodContainers = listOf(
+                    fakeTestMethodContainer(
+                        method = alpha,
+                        invocations = listOf(
+                            fakeTestInvocation(
+                                interactions = setOf(
+                                    interactionEntry(
+                                        key = "Rate Quote Response",
+                                        value = quote,
+                                        attributes = Attributes.of("Correlation Id", "C-99"),
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+            )
+
+            val rendered = render(container, quoteRenderers)
+                .get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("capturedInteractions").asArray()[0].asObject()
+                .get("rendered").asObject()
+
+            val values = rendered.get("values").asArray()
+            values.size() shouldBe 2
+            values[0].asObject().getString("name", null) shouldBe "Quote Body"
+            values[0].asObject().getString("value", null) shouldBe """{"currency": "GBPUSD"}"""
+            values[0].asObject().getString("language", null) shouldBe "json"
+            values[1].asObject().getString("name", null) shouldBe "Summary"
+            values[1].asObject().getString("value", null) shouldBe "GBPUSD quoted at 1.2710 for C-99"
+            values[1].asObject().getString("language", null) shouldBe "plainText"
+
+            val attributes = rendered.get("attributes").asArray()
+            attributes.size() shouldBe 2
+            attributes[0].asObject().getString("name", null) shouldBe "Status"
+            attributes[0].asObject().get("attributes").asArray()[0].asObject().getString("Code", null) shouldBe "200"
+            attributes[1].asObject().getString("name", null) shouldBe "Headers"
+            with(attributes[1].asObject().get("attributes").asArray()) {
+                size() shouldBe 2
+                get(0).asObject().getString("Content-Type", null) shouldBe "application/json"
+                get(1).asObject().getString("X-Quote-Id", null) shouldBe "Q-17"
+            }
+        }
+
+        @Test
+        fun `falls back to a single Value entry with no attributes when no interaction renderer is registered`() {
+            val container = fakeTestContainer(
+                testClass = sampleClass,
+                methodContainers = listOf(
+                    fakeTestMethodContainer(
+                        method = alpha,
+                        invocations = listOf(fakeTestInvocation(interactions = setOf(interactionEntry(key = "Rate Quote Response", value = "a plain body"))))
+                    )
+                ),
+            )
+
+            val rendered = render(container)
+                .get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("capturedInteractions").asArray()[0].asObject()
+                .get("rendered").asObject()
+
+            with(rendered.get("values").asArray()) {
+                size() shouldBe 1
+                get(0).asObject().getString("name", null) shouldBe "Value"
+                get(0).asObject().getString("value", null) shouldBe "a plain body"
+                get(0).asObject().getString("language", null) shouldBe "plainText"
+            }
+            rendered.get("attributes").asArray().size() shouldBe 0
         }
     }
 

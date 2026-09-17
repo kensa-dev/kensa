@@ -2,11 +2,20 @@ package dev.kensa.render.diagram
 
 import dev.kensa.Configuration
 import dev.kensa.render.diagram.directive.UmlBox.Companion.surroundingBox
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.actor
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.boundary
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.collections
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.control
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.database
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.entity
 import dev.kensa.render.diagram.directive.UmlParticipant.Companion.participant
+import dev.kensa.render.diagram.directive.UmlParticipant.Companion.queue
 import dev.kensa.state.CapturedInteractionBuilder.Companion.from
 import dev.kensa.state.CapturedInteractions
 import dev.kensa.state.Party
 import dev.kensa.state.SetupStrategy
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldBeNull
@@ -166,6 +175,130 @@ internal class SequenceDiagramFactoryTest {
         idxBravo shouldBeGreaterThan idxAlpha
         idxCharlie shouldBeGreaterThan idxBravo
         idxDelta shouldBeGreaterThan idxCharlie
+    }
+
+    @Test
+    fun `buildMarkup emits the shape keyword line of every declared participant`() {
+        val directives = listOf(
+            participant("Alpha"),
+            actor("User"),
+            boundary("Edge"),
+            control("Controller"),
+            entity("Order"),
+            database("DB"),
+            collections("Items"),
+            queue("Topic")
+        )
+        val interactions = interactions()
+        capture(interactions, "Alpha", "Edge")
+
+        val markup = buildMarkup(directives.flatMap { it.asUml() }, null, interactions)
+
+        markup.shouldNotBeNull()
+        val lines = markup.lines()
+        lines shouldContainAll listOf(
+            "participant Alpha",
+            "actor User",
+            "boundary Edge",
+            "control Controller",
+            "entity Order",
+            "database DB",
+            "collections Items",
+            "queue Topic"
+        )
+    }
+
+    @Test
+    fun `buildMarkup emits the shape keyword line of every participant declared inside a box`() {
+        val directives = listOf(
+            surroundingBox(
+                "Systems",
+                actor("User"),
+                boundary("Edge"),
+                control("Controller"),
+                entity("Order"),
+                database("DB"),
+                collections("Items"),
+                queue("Topic")
+            )
+        )
+        val interactions = interactions()
+        capture(interactions, "User", "Edge")
+
+        val markup = buildMarkup(directives.flatMap { it.asUml() }, null, interactions)
+
+        markup.shouldNotBeNull()
+        val lines = markup.lines()
+        lines shouldContainAll listOf(
+            "box \"Systems\"",
+            "actor User",
+            "boundary Edge",
+            "control Controller",
+            "entity Order",
+            "database DB",
+            "collections Items",
+            "queue Topic",
+            "end box"
+        )
+    }
+
+    @Test
+    fun `buildMarkup keeps the shape of a primary declared as a database`() {
+        val interactions = interactions()
+        interactions.divider("Something")
+
+        val markup = buildMarkup(emptyList(), database("Store"), interactions)
+
+        markup.shouldNotBeNull()
+        markup.lines() shouldContain "database Store"
+        markup shouldNotContain "participant Store"
+    }
+
+    @Test
+    fun `buildMarkup prepends a primary declared with a non-default shape ahead of declared participants`() {
+        val interactions = interactions()
+        capture(interactions, "User", "Edge")
+
+        val markup = buildMarkup(boundary("Edge").asUml(), actor("User"), interactions)
+
+        markup.shouldNotBeNull()
+        markup.lines() shouldContainAll listOf("actor User", "boundary Edge")
+        markup.indexOf("actor User") shouldBeLessThan markup.indexOf("boundary Edge")
+    }
+
+    @Test
+    fun `buildMarkup does not double-emit a primary declared with a non-default shape at top level`() {
+        val interactions = interactions()
+        interactions.divider("Something")
+
+        val markup = buildMarkup(queue("Topic").asUml(), queue("Topic"), interactions)
+
+        markup.shouldNotBeNull()
+        (markup.split("queue Topic").size - 1) shouldBe 1
+    }
+
+    @Test
+    fun `buildMarkup does not double-emit a primary declared with a non-default shape inside a box`() {
+        val interactions = interactions()
+        interactions.divider("Something")
+
+        val directives = listOf(surroundingBox("Systems", database("Store")))
+        val markup = buildMarkup(directives.flatMap { it.asUml() }, database("Store"), interactions)
+
+        markup.shouldNotBeNull()
+        (markup.split("database Store").size - 1) shouldBe 1
+    }
+
+    @Test
+    fun `buildMarkup keeps a top-level declaration of the primary name and drops the primary shape`() {
+        val interactions = interactions()
+        interactions.divider("Something")
+
+        val markup = buildMarkup(participant("Store").asUml(), database("Store"), interactions)
+
+        markup.shouldNotBeNull()
+        (markup.lines().count { it == "participant Store" }) shouldBe 1
+        markup shouldNotContain "database Store"
     }
 
     @Test

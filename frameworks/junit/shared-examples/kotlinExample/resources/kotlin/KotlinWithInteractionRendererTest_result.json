@@ -1,0 +1,116 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithInteractionRendererTest",
+  "displayName": "Kotlin With Interaction Renderer Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "epics": [],
+  "tags": [],
+  "tests": [
+    {
+      "testMethod": "rendersACapturedInteractionWithTheRegisteredRenderer",
+      "displayName": "Renders A Captured Interaction With The Registered Renderer",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 18,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 20,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the rate service quotes"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [
+            {
+              "id": "1117509829",
+              "name": "Rate Quote Response",
+              "from": null,
+              "to": null,
+              "rendered": {
+                "values": [
+                  {
+                    "name": "Quote Body",
+                    "value": "{\"currency\": \"GBPUSD\", \"rate\": \"1.2710\"}",
+                    "language": "json"
+                  },
+                  {
+                    "name": "Summary",
+                    "value": "GBPUSD quoted at 1.2710",
+                    "language": "plainText"
+                  }
+                ],
+                "attributes": [
+                  {
+                    "name": "Status",
+                    "attributes": [
+                      {
+                        "Code": "200"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Headers",
+                    "attributes": [
+                      {
+                        "Content-Type": "application/json"
+                      },
+                      {
+                        "X-Quote-Id": "Q-17"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "attributes": []
+            }
+          ],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersACapturedInteractionWithTheRegisteredRenderer()"
+        }
+      ]
+    }
+  ]
+}

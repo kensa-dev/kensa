@@ -107,6 +107,8 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 KotlinWithPrimitiveParametersTest::class,
                 KotlinWithExpandableSentenceTest::class,
                 KotlinWithExpandableMatchersTest::class,
+                KotlinWithExpandableRenderedValueTest::class,
+                KotlinWithTabularRenderedValueTest::class,
                 KotlinWithLiteralsTest::class,
                 KotlinWithTypeArgumentsTest::class,
                 KotlinWithCapturedOutputsTest::class,
@@ -154,6 +156,15 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
                 }
             }
             executeTestAndVerifyJson(KotlinWithAnnotationFeatureTest::class.java)
+        }
+
+        @Test
+        fun embeddedJsonIsCorrectForTestWithInteractionRenderer() {
+            testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
+                renderers.addInteractionRenderer(RateQuote::class.java, RateQuoteRenderer)
+            }
+            executeTestAndVerifyJson(KotlinWithInteractionRendererTest::class.java)
         }
 
         @Test
