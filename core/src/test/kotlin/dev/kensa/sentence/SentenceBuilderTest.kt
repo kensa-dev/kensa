@@ -1,7 +1,10 @@
 package dev.kensa.sentence
 
 import dev.kensa.parse.Location
+import dev.kensa.RenderedValueStyle
 import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
+import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
+import dev.kensa.sentence.TemplateToken.TabularTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.Expandable
 import dev.kensa.sentence.TemplateToken.Type.Keyword
 import io.kotest.matchers.collections.shouldContain
@@ -12,6 +15,29 @@ import org.junit.jupiter.api.Test
 internal class SentenceBuilderTest {
 
     private fun builderAt(line: Int = 1) = SentenceBuilder(false, Location(line, 0), Dictionary(), 4)
+
+    @Test
+    internal fun `scans expandable value name into words`() {
+        val builder = builderAt()
+        builder.beginExpandableValue(Location(1, 6), "theObservedLifecycle", RenderedValueStyle.Default, emptyList())
+        builder.finishExpandable()
+
+        val token = builder.build().tokens.filterIsInstance<ExpandableValueTemplateToken>().single()
+        token.template shouldBe "the Observed Lifecycle"
+        token.name shouldBe "theObservedLifecycle"
+    }
+
+    @Test
+    internal fun `scans tabular value name into words`() {
+        val builder = builderAt()
+        builder.beginExpandableValue(Location(1, 6), "theQuotedRates", RenderedValueStyle.Tabular, listOf("Pair", "Rate"))
+        builder.finishExpandable()
+
+        val token = builder.build().tokens.filterIsInstance<TabularTemplateToken>().single()
+        token.template shouldBe "the Quoted Rates"
+        token.name shouldBe "theQuotedRates"
+        token.headers shouldBe listOf("Pair", "Rate")
+    }
 
     @Test
     internal fun `emits keyword token before expandable header when placeholder starts with a keyword`() {

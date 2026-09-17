@@ -56,7 +56,7 @@
                   "types": [
                     "tk-ex"
                   ],
-                  "value": "theObservedLifecycle",
+                  "value": "the Observed Lifecycle",
                   "parameterTokens": [],
                   "tokens": [
                     [
@@ -150,7 +150,7 @@
                   "types": [
                     "tk-ex"
                   ],
-                  "value": "theObservedLifecycleFor",
+                  "value": "the Observed Lifecycle For",
                   "parameterTokens": [
                     {
                       "types": [

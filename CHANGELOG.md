@@ -3,6 +3,7 @@
 ### v1.0.0
 
 Fixes:
+  - **`@ExpandableRenderedValue` names render as prose.** The sentence showed the raw method name, `theObservedLifecycle`, where `@ExpandableSentence` showed `the Observed Lifecycle`. The name is now scanned like any other identifier, for the default and tabular styles (#229).
   - **Parameter values are typed in the report.** A string parameter whose value was literally `null`, `true` or `42` was styled as null, boolean or number in the parameter table and matrix, because the kind was inferred from the rendered text. Each invocation now carries `parameterKinds` beside `parameters`, written from the real type, and the views use it. Reports without the field keep the old inference. A parameter whose Kotlin type is a `Number` now renders as a number even when a registered `ValueRenderer` formats it, for example `£1,234.00`. (#147).
   - **An empty `@Highlight` value no longer hangs the report.** A field or parameter annotated `@Highlight` whose value was `""` built a highlight pattern that matched at every position of every text node, so expanding an interaction never returned and the browser tab hung. Empty highlights are now ignored (#186, thanks to Michael Orr).
   - **Badge filters and tag clicks stay where you are.** Choosing **Filter by this issue** from a badge, or clicking a tag, applied the query at whichever page the report was first opened on, usually the Overview, instead of on the test in view. The handlers held the first render's `setSearchParams`, which navigates relative to the location it was created in (#227).
