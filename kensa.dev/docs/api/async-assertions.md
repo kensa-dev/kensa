@@ -17,7 +17,7 @@ When the action under test completes asynchronously — a message lands on a que
 | `thenEventually(...)` / `andEventually(...)` | Re-runs the collector + assertion until it **passes**, or the timeout expires (fails with the last assertion error) |
 | `thenContinually(...)` | Re-runs the collector + assertion for the whole duration and fails the moment it **stops passing** — "this must keep being true" |
 
-Both render in the report as first-class sentence keywords (*Then eventually …*), and every assertion mixin (`WithKotest`, `WithAssertJ`, `WithHamcrest`, `WithHamkrest`) provides them.
+Both render in the report as first-class sentence keywords (*Then eventually …*). `WithKotest`, `WithHamcrest` and `WithHamkrest` provide both; `WithAssertJ` provides `thenEventually` only. See [assertion bridges](./assertion-bridges.md) for the full per-bridge list.
 
 **Defaults:** 10-second timeout, 25 ms poll interval, no initial delay.
 

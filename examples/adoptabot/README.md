@@ -53,7 +53,7 @@ To run the tests, execute:
 ```bash
 ./gradlew :adoptabot:test
 ```
-The test output will be available in the project [build folder](build/kensa-output/index.html)`build/kensa-output/index.html`
+The report is written to `build/kensa-output`. Open it with `kensa --dir build/kensa-output`, or open `build/kensa-output/index.html` directly.
 
 
 ## Learning from this Example

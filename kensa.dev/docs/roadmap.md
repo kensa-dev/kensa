@@ -22,11 +22,11 @@ Feature work beyond the report resumes after 1.0.
 
 ## After 1.0: past the test run
 
-Kensa exists so that testers, analysts and product owners can see an honest account of what an application actually does - generated from the tests that ran, not from a document somebody maintained alongside them. The work now in progress extends that in three directions: to the **stubs the test drives**, to **where the reports land** for the people who read them, and to **watching the behaviour happen** rather than reading about it afterwards.
+Kensa exists so that testers, analysts and product owners can see an honest account of what an application actually does - generated from the tests that ran, not from a document somebody maintained alongside them. The work now in progress extends that in three directions: to the **stubs the test drives**, to **where the reports land** for the people who read them, and to **watching the behaviour happen** rather than reading about it afterwards. A shorter list of report improvements sits behind those three.
 
 None of these has been released, and they are at different stages. They are described here so you can see where Kensa is going, not because they are ready to use.
 
-**All three are open source, under the same licence as the framework.** There is no paid tier, no
+**All of it is open source, under the same licence as the framework.** There is no paid tier, no
 hosted edition and no feature held back - if it ships, you can run it yourself.
 
 ### Kage - an out-of-process stub server
