@@ -118,6 +118,9 @@ Notes:
   lower. Spring Boot's BOM does exactly that (1.8.x as of Boot 3.5) — override the
   managed version: `extra["kotlin-coroutines.version"] = "1.11.0"` in Gradle, or the
   `kotlin-coroutines.version` property in Maven.
+- **Nested test classes are not yet supported**: Kensa parses the test source by locating
+  the top-level class that declares the test method. JUnit `@Nested` and other inner test
+  classes are untested and may fail to parse. Tracked for a post-1.0 release.
 
 ## Why a Kotlin bump is a compatibility note, not an API-major
 

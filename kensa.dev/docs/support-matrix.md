@@ -62,6 +62,8 @@ Each framework module is built against the version below and its own test suite 
 
 JUnit 5 and JUnit 6 are separate modules; pick the one matching your project's JUnit major. The UI-testing modules (`kensa-framework-uitesting-*`, `kensa-framework-playwright-*`, `kensa-framework-selenium-*`) follow the same split and ship a `junit5` and a `junit6` variant each.
 
+**Known limitation.** Nested test classes (JUnit `@Nested` and other inner classes) are not yet supported: Kensa locates the top-level class that declares the test method when it parses the source, so nested classes are untested and may fail to parse. Planned for a post-1.0 release.
+
 ## Release history
 
 | Kensa | Kotlin | Min JDK | Coroutines floor | Frameworks verified |
