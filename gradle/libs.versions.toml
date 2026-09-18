@@ -19,7 +19,7 @@ jreleaser = "1.25.0"
 byteBuddy = "1.18.12"
 shadow = "9.6.1"
 
-playwright = "1.62.0"
+playwright = "1.63.0"
 selenium = "4.47.0"
 
 http4k = "6.23.1.0"
