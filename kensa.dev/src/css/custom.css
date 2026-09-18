@@ -4,18 +4,18 @@
 @import '@fontsource/jetbrains-mono/500.css';
 
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: hsl(36 100% 33%);
+  --ifm-color-primary-dark: hsl(36 100% 30%);
+  --ifm-color-primary-darker: hsl(36 100% 28%);
+  --ifm-color-primary-darkest: hsl(36 100% 23%);
+  --ifm-color-primary-light: hsl(36 100% 36%);
+  --ifm-color-primary-lighter: hsl(36 100% 38%);
+  --ifm-color-primary-lightest: hsl(36 100% 43%);
   --ifm-code-font-size: 93%;
   --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
-  --kensa-accent: #e8a430;
-  --kensa-accent-strong: #a86c00;
+  --kensa-accent: #E39E35;
+  --kensa-accent-strong: #A86500;
   --kensa-font-display: 'Plus Jakarta Sans', sans-serif;
 }
 
@@ -24,13 +24,13 @@ h1, h2, h3 {
 }
 
 [data-theme='dark'] {
-  --ifm-color-primary: #3cad6e;
-  --ifm-color-primary-dark: #35a064;
-  --ifm-color-primary-darker: #309660;
-  --ifm-color-primary-darkest: #277a4f;
-  --ifm-color-primary-light: #43ba78;
-  --ifm-color-primary-lighter: #4dc07e;
-  --ifm-color-primary-lightest: #66ca91;
+  --ifm-color-primary: hsl(36 76% 60%);
+  --ifm-color-primary-dark: hsl(36 76% 54%);
+  --ifm-color-primary-darker: hsl(36 76% 51%);
+  --ifm-color-primary-darkest: hsl(36 76% 42%);
+  --ifm-color-primary-light: hsl(36 76% 66%);
+  --ifm-color-primary-lighter: hsl(36 76% 69%);
+  --ifm-color-primary-lightest: hsl(36 76% 77%);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
@@ -78,12 +78,12 @@ code, kbd, samp, pre {
 /* ─── Footer ─────────────────────────────────────────────────────────────── */
 
 .footer {
-  --footer-bg: #0d1f16;
-  --footer-border: rgba(62, 173, 110, 0.18);
+  --footer-bg: hsl(36 20% 8%);
+  --footer-border: hsl(36 76% 55% / 0.18);
   --footer-text: rgba(255, 255, 255, 0.7);
   --footer-heading: rgba(255, 255, 255, 0.72);
   --footer-link: rgba(255, 255, 255, 0.82);
-  --footer-link-hover: #3cad6e;
+  --footer-link-hover: hsl(36 76% 64%);
 
   background: var(--footer-bg);
   border-top: 1px solid var(--footer-border);

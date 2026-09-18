@@ -332,7 +332,7 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
                     {isNative && (
                         <Select value={environment} onValueChange={onEnvChange}>
                             <SelectTrigger className="h-8 text-[13px] font-medium bg-muted/50 border-transparent hover:bg-muted transition-colors group-data-[collapsible=icon]:hidden mb-2">
-                                <Globe className="mr-2 h-3.5 w-3.5 text-blue-500"/>
+                                <Globe className="mr-2 h-3.5 w-3.5 text-primary"/>
                                 <SelectValue/>
                             </SelectTrigger>
                             <SelectContent>
@@ -346,12 +346,12 @@ export const TestExplorer = React.memo(function TestExplorer({indices, sourceMet
                     <div className="flex flex-col gap-2 group-data-[collapsible=icon]:hidden">
                         <Popover open={showPicker} onOpenChange={(open) => !open && setShowPicker(false)}>
                             <PopoverTrigger asChild>
-                                <div className="relative flex flex-wrap items-center gap-1.5 p-1.5 bg-muted/30 hover:bg-muted/50 border rounded-md transition-all focus-within:ring-1 focus-within:ring-blue-500/50">
+                                <div className="relative flex flex-wrap items-center gap-1.5 p-1.5 bg-muted/30 hover:bg-muted/50 border rounded-md transition-all focus-within:ring-1 focus-within:ring-ring/50">
                                     <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none"/>
 
                                     <div className="flex flex-wrap items-center gap-1 pl-7 w-full">
                                         {queryMeta.packages.map(p => (
-                                            <Badge key={p} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 max-w-[160px]">
+                                            <Badge key={p} variant="secondary" className="h-5 text-[9px] gap-1 px-1 bg-primary/10 text-accent-foreground border-primary/40 max-w-[160px]">
                                                 <span className="truncate">pkg:{p}</span>
                                                 <span className="cursor-pointer shrink-0" onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); handleRemoveBadge(`pkg:${p}`); }}>
                                                     <X size={10} className="pointer-events-none" />

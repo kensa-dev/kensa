@@ -17,6 +17,9 @@ tasks {
         inputs.file("vitest.config.ts")
         inputs.file("package-lock.json")
         inputs.dir("src")
+        inputs.file("index.html")
+        inputs.file("../core/src/main/kotlin/dev/kensa/output/ResultWriter.kt")
+        inputs.file("../cli/internal/shell/embed/index.html")
         dependsOn("npmInstall")
     }
 

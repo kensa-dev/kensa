@@ -65,7 +65,7 @@ export const EmbedPage = ({testId, params, target, selectedIndex, testDetail, is
                 </div>
             )}
             <footer className="mt-2 px-1 flex items-center gap-2 text-[11px] text-muted-foreground print:hidden">
-                <KensaLogo className="w-4 h-4 text-success shrink-0"/>
+                <KensaLogo className="w-4 h-4 text-primary shrink-0"/>
                 {selectedIndex && (
                     <>
                         <span className="font-mono truncate">{selectedIndex.testClass}</span>

@@ -37,7 +37,8 @@ import {filterRouteTarget, parseFilterRoute} from "@/util/filterRoute";
 import {AnchorLink} from "@/components/AnchorLink";
 import {EmbedPage} from "@/components/EmbedPage";
 import {embedParams, embedTarget, parseEmbedRoute} from "@/util/embedRoute";
-import {prefersDarkScheme, resolveTheme} from "@/util/embedTheme";
+import {prefersDarkScheme} from "@/util/embedTheme";
+import {applyTheme, initialTheme, next, readTheme, switchLabel} from "@/lib/theme";
 import {anchorHash} from "@/util/anchorLink";
 import {reportBase} from "@/util/linkBase";
 import {collectLeaves, packageDepthFor} from "@/lib/overview";
@@ -66,10 +67,13 @@ const App = () => {
     // OS setting and, like `?theme=`, is never written back to the stored preference.
     const embedRoute = parseEmbedRoute(location.pathname);
     const embed = embedRoute ? {testId: embedRoute.testId, params: embedParams(searchParams)} : null;
-    const [darkMode, setDarkMode] = useState<boolean>(() => {
-        if (embed) return resolveTheme(embed.params.theme, prefersDarkScheme());
-        return themeFromUrl ? themeParam === 'dark' : localStorage.getItem('theme') === 'dark';
-    });
+    const [darkMode, setDarkMode] = useState<boolean>(() => initialTheme({
+        embed: !!embed,
+        embedTheme: embed?.params.theme ?? null,
+        themeParam,
+        stored: readTheme(),
+        osDark: prefersDarkScheme(),
+    }) === 'dark');
     const [isNativeMode, setIsNativeMode] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [commandQuery, setCommandQuery] = useState("");
@@ -385,19 +389,23 @@ const App = () => {
     }, [suiteHighlightValue, testDetail, testToExpand, isLoading]);
 
     useEffect(() => {
-        const root = window.document.documentElement;
-        darkMode ? root.classList.add("dark") : root.classList.remove("dark");
-        if (!themeFromUrl && !embed) localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+        window.document.documentElement.classList.toggle("dark", darkMode);
     }, [darkMode]);
 
+    // Follow the OS while nothing decides otherwise: an embed on `auto`, or a plain page with
+    // no stored choice. A `?theme=` or a stored choice is the answer and this has nothing to say.
+    // readTheme() is read on every render on purpose: the re-read after a press is what turns
+    // followsOs off and detaches the OS listener; memoising it would leave the page tracking the
+    // OS after the reader chose.
     const embedTheme = embed?.params.theme ?? null;
+    const followsOs = embed ? embedTheme === 'auto' : !themeFromUrl && readTheme() === null;
     useEffect(() => {
-        if (embedTheme !== 'auto' || typeof window.matchMedia !== 'function') return;
+        if (!followsOs || typeof window.matchMedia !== 'function') return;
         const query = window.matchMedia('(prefers-color-scheme: dark)');
         const onChange = (e: MediaQueryListEvent) => setDarkMode(e.matches);
         query.addEventListener('change', onChange);
         return () => query.removeEventListener('change', onChange);
-    }, [embedTheme]);
+    }, [followsOs]);
 
     const toggleSidebar = () => {
         const sidebar = sidebarRef.current;
@@ -571,7 +579,7 @@ const App = () => {
                                             )}
                                         </div>
                                         <div className="flex items-center gap-1.5 text-[10px] opacity-50 font-mono truncate">
-                                            <span className="text-blue-500 font-bold uppercase">{test.envName}</span>
+                                            <span className="text-primary font-bold uppercase">{test.envName}</span>
                                             <span>/</span>
                                             <span className="font-bold text-foreground/70">{test.projectName}</span>
                                             <span>/</span>
@@ -699,8 +707,8 @@ const App = () => {
                                                                             className={cn(
                                                                                 "transition-colors underline-offset-2",
                                                                                 isActive
-                                                                                    ? "text-indigo-500 dark:text-indigo-400 underline"
-                                                                                    : "text-neutral-600 dark:text-neutral-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:underline"
+                                                                                    ? "text-accent-foreground underline"
+                                                                                    : "text-neutral-600 dark:text-neutral-400 hover:text-accent-foreground hover:underline"
                                                                             )}
                                                                         >
                                                                             {segment}
@@ -755,7 +763,13 @@ const App = () => {
                                     </div>
 
                                     <button
-                                        onClick={() => setDarkMode(!darkMode)}
+                                        onClick={() => {
+                                            const chosen = next(darkMode ? 'dark' : 'light');
+                                            if (!themeFromUrl && !embed) applyTheme(chosen);
+                                            setDarkMode(chosen === 'dark');
+                                        }}
+                                        aria-label={switchLabel(darkMode ? 'dark' : 'light')}
+                                        title={switchLabel(darkMode ? 'dark' : 'light')}
                                         className="p-2 hover:bg-accent/50 rounded-md text-muted-foreground transition-colors"
                                     >
                                         {darkMode ? <Sun size={16}/> : <Moon size={16}/>}

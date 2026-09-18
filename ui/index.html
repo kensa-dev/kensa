@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <title>Kensa UI2</title>
+    <script>
+      // Stamp the theme before anything is drawn so the page never shows the other one first.
+      // Same answer App.tsx reaches: ?theme= wins, an embed follows the OS unless told, otherwise
+      // the stored choice, otherwise the OS.
+      (function () {
+        try {
+          var m = /[?&]theme=(light|dark)(?![A-Za-z])/.exec(location.hash + location.search);
+          var os = matchMedia('(prefers-color-scheme: dark)').matches;
+          var stored = /#\/embed\//.test(location.hash) ? null : localStorage.getItem('theme');
+          var dark = m ? m[1] === 'dark' : stored === 'dark' || (stored !== 'light' && os);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (ignored) { /* storage off: the page follows the machine */ }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">

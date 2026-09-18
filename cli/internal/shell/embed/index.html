@@ -5,6 +5,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <script>
+      // Stamp the theme before anything is drawn so the page never shows the other one first.
+      // Same answer App.tsx reaches: ?theme= wins, an embed follows the OS unless told, otherwise
+      // the stored choice, otherwise the OS.
+      (function () {
+        try {
+          var m = /[?&]theme=(light|dark)(?![A-Za-z])/.exec(location.hash + location.search);
+          var os = matchMedia('(prefers-color-scheme: dark)').matches;
+          var stored = /#\/embed\//.test(location.hash) ? null : localStorage.getItem('theme');
+          var dark = m ? m[1] === 'dark' : stored === 'dark' || (stored !== 'light' && os);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (ignored) { /* storage off: the page follows the machine */ }
+      })();
+    </script>
 </head>
 <body>
     <div id="root"></div>

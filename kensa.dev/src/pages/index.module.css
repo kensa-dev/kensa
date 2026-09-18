@@ -58,7 +58,7 @@
   top: -15%;
   width: 57%;
   height: 88%;
-  background: radial-gradient(closest-side, #3cad6e 0%, rgba(60, 173, 110, 0) 100%);
+  background: radial-gradient(closest-side, hsl(36 76% 55%) 0%, hsl(36 76% 55% / 0) 100%);
   opacity: 1;
 }
 

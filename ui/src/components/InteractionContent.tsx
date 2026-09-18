@@ -302,7 +302,7 @@ export const InteractionContent = ({
                                 <WrapText size={14}/>
                             </button>
                             <button onClick={onCopy} className="p-1.5 text-muted-foreground hover:text-foreground" title="Copy"><Copy size={14}/></button>
-                            <span className="text-[9px] font-bold text-primary uppercase bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 ml-1">
+                            <span className="text-[9px] font-bold text-accent-foreground uppercase bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 ml-1">
                                 {payloads[0].language}
                             </span>
                         </div>

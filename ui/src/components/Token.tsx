@@ -112,7 +112,7 @@ const Expandable = ({token}: ExpandableProps) => {
                             "cursor-pointer font-black transition-all select-none",
                             "underline underline-offset-2 decoration-2",
                             isExpanded
-                                ? "text-primary decoration-primary/60 bg-primary/5 px-1 rounded-t-sm"
+                                ? "text-accent-foreground decoration-primary/60 bg-primary/5 px-1 rounded-t-sm"
                                 : "text-foreground/80 decoration-border hover:decoration-primary/60 hover:text-foreground"
                         )}
                     >

@@ -30,7 +30,7 @@ export function AppSidebar(props: AppSidebarProps) {
             <SidebarHeader className="p-3 pb-2 gap-3">
                 <div className="flex items-center justify-between px-1">
                     <div className="flex items-center gap-2">
-                        <KensaLogo className="w-6 h-6 text-success drop-shadow-sm"/>
+                        <KensaLogo className="w-6 h-6 text-primary drop-shadow-sm"/>
                         <span className="group-data-[collapsible=icon]:hidden font-black tracking-tighter text-base text-foreground/90">KENSA</span>
                     </div>
                     <a

@@ -14,6 +14,8 @@ Breaking:
 
 Changed:
   - **Kotest 6.2.4, Gradle 9.7.1.** Dependency bumps; no API changes. Also PlantUML 1.2026.6, Jackson 2.22.2, Byte Buddy 1.18.12, Selenium 4.47.0.
+  - **Amber accent.** The report, its mark and kensa.dev now use the Kensa family colour, amber, wherever an accent appears: the logo, focus rings, the selected tag, the active package crumb, the environment picker. Pass, fail and disabled keep green, rose and orange. The report looks the same in every host, including Kensa Hub.
+  - **Dark mode follows the OS until you choose.** A report with no stored preference matches the system appearance and tracks changes to it. Pressing the switch stores a choice, which then wins. `?theme=` and embeds are unchanged and never write the preference.
 
 ### v0.9.5
 
