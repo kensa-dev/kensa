@@ -131,7 +131,7 @@ const config: Config = {
       logo: {
         alt: 'Kensa Logo',
         src: 'img/kensa-mark.svg',
-        srcDark: 'img/kensa-mark-white.svg',
+        srcDark: 'img/kensa-mark.svg',
       },
       items: [
         {
@@ -166,7 +166,7 @@ const config: Config = {
       style: 'dark',
       logo: {
         alt: 'Kensa',
-        src: 'img/kensa-mark-white.svg',
+        src: 'img/kensa-mark.svg',
         width: 36,
         height: 36,
       },
