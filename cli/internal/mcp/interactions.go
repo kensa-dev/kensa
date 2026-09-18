@@ -35,17 +35,8 @@ func newCapturedValue(v RenderedValue, maxChars int) capturedValue {
 	if limit == 0 {
 		limit = defaultMaxValueChars
 	}
-	cv := capturedValue{Name: v.Name, Value: v.Value, Language: v.Language}
-	if limit < 0 {
-		return cv
-	}
-	runes := []rune(v.Value)
-	if len(runes) > limit {
-		cv.FullLength = len(runes)
-		cv.Value = string(runes[:limit])
-		cv.Truncated = true
-	}
-	return cv
+	value, truncated, fullLength := capRunes(v.Value, limit)
+	return capturedValue{Name: v.Name, Value: value, Language: v.Language, Truncated: truncated, FullLength: fullLength}
 }
 
 // capturedInteraction is one message between two actors with everything

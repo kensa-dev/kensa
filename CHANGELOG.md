@@ -2,6 +2,11 @@
 
 ### v1.0.0
 
+Added:
+  - **Log source manifest and richer log tab entries.** `run.json` gains `logSources`, one entry per registered `LogQueryService` source with its `id`, `file` and whether that file was `present` when the run finished. A log tab's entry in `customTabContents` now carries `sourceId`, `identifier` and `entries`, plus a `.jsonl` `records` sidecar beside its `.txt` file, one `{"identifier","text"}` record per line. A source that produced no records is recorded with `entries: 0` and no file, and a tab `@KensaTab.visibility` skips on a pass is recorded with `visibility` and no file; both additive to older bundles (#228).
+  - **Three MCP log tools.** `list_log_sources` lists the sources a run registered and whether each file was present. `invocation_logs` lists one invocation's log tabs with entry and error counts, plus skipped tabs and registered sources with no tab. `read_log` reads one tab's records filtered by pattern or level, capped and truncated (#228).
+  - **The report shows file-less log tabs instead of hiding them.** A tab recorded with `entries: 0` and no file now renders "No entries for this invocation" rather than vanishing from the invocation. A tab an `@KensaTab(visibility = OnlyOnFailure)` skips on a pass still carries no file and stays hidden, unchanged from before (#228).
+
 Fixes:
   - **`@ExpandableRenderedValue` names render as prose.** The sentence showed the raw method name, `theObservedLifecycle`, where `@ExpandableSentence` showed `the Observed Lifecycle`. The name is now scanned like any other identifier, for the default and tabular styles (#229).
   - **Parameter values are typed in the report.** A string parameter whose value was literally `null`, `true` or `42` was styled as null, boolean or number in the parameter table and matrix, because the kind was inferred from the rendered text. Each invocation now carries `parameterKinds` beside `parameters`, written from the real type, and the views use it. Reports without the field keep the old inference. A parameter whose Kotlin type is a `Number` now renders as a number even when a registered `ValueRenderer` formats it, for example `£1,234.00`. (#147).

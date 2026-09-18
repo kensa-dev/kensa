@@ -159,7 +159,9 @@ When a test in `MyTest` runs, the tab generator:
 2. Calls `LogQueryService.query(sourceId = "appLog", identifier = <tracking-id>)`.
 3. Renders the joined `text` of each returned `LogRecord` into the tab.
 
-If no identifier is available, or no records match, the renderer falls back to `LogQueryService.queryAll(sourceId)`. If both come back empty, the tab is omitted for that invocation.
+If no identifier is available, or no records match, the renderer falls back to `LogQueryService.queryAll(sourceId)`. If both come back empty, the tab is still recorded, with `entries: 0` and no file: the report shows "No entries for this invocation" rather than hiding the tab, and the [MCP](../cli.md#mcp-server) `invocation_logs` tool lists it alongside the tabs that did get records.
+
+Each log tab with entries also writes a `.jsonl` sidecar next to its `.txt` file, one record per line as `{"identifier", "text"}`. The MCP `read_log` tool reads that sidecar to answer filtered queries without re-parsing the rendered text. `run.json` lists every source the suite registered, under `logSources`, as `id`, `file` (the file's name, not its path) and `present` (whether that file existed when the run finished); the MCP `list_log_sources` tool reads it directly. For a `dockerCli` source there is no file on disk: `file` holds the container name and `present` is always `true`.
 
 ---
 
@@ -214,7 +216,7 @@ Both identifier and delimiter regexes must match against a **whole line** (group
 | `renderer` | Use `LogsTabRenderer::class` for log tabs. |
 | `identifierProvider` | Class returning the correlation id for the current invocation. |
 | `sourceId` | Selects which registered `LogQueryService` source to query. Must match the `id` passed to `dockerCli` / `rawFile` / `indexedFile`. |
-| `visibility` | `Always` (default) or `OnlyOnFailure` — useful for keeping passing-test reports lean. |
+| `visibility` | `Always` (default) or `OnlyOnFailure` — useful for keeping passing-test reports lean. A tab `OnlyOnFailure` skips on a passing invocation is still recorded, carrying its `visibility` and no file, so the tab list stays complete even though the report has nothing to show. |
 | `scope` | `PerInvocation` (default) — the only meaningful scope for log tabs. |
 
 `@KensaTab` is `@Repeatable`. Apply multiple annotations to surface one tab per source. A marker interface per source is the recommended pattern — test classes opt in by implementing the interfaces they need.

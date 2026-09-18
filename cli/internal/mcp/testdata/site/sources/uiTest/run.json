@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-09-17T09:11:00Z",
+  "finishedAt": "2026-09-17T09:11:30Z",
+  "pid": 4002,
+  "hostname": "ci-runner",
+  "classes": 1,
+  "passed": 1,
+  "failed": 0,
+  "disabled": 0,
+  "logSources": [
+    {"id": "appLog", "file": "ui-app.log", "present": true},
+    {"id": "browserLog", "file": "browser.log", "present": false}
+  ]
+}

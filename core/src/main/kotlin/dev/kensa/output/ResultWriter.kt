@@ -12,6 +12,8 @@ import dev.kensa.output.search.SearchIndexWriter
 import dev.kensa.output.unfurl.UnfurlWriter
 import dev.kensa.render.diagram.ComponentDiagramFactory
 import dev.kensa.sentence.Acronym
+import dev.kensa.service.logs.LogQueryService
+import dev.kensa.service.logs.LogSource
 import dev.kensa.state.TestState.Disabled
 import dev.kensa.state.TestState.Failed
 import dev.kensa.state.TestState.NotExecuted
@@ -57,6 +59,9 @@ internal class ResultWriter(private val configuration: Configuration, private va
 
     @Volatile
     private var finishedAt: Instant? = null
+
+    @Volatile
+    private var logSources: List<LogSource>? = null
 
     // Creating the writer is the start of a run: the previous bundle goes and
     // run.json marks the new one as in progress until write() finishes it.
@@ -127,11 +132,21 @@ internal class ResultWriter(private val configuration: Configuration, private va
     // the run. A class written after this point is counted but not flushed:
     // the marker must never go back to unfinished.
     private fun finish() {
+        logSources = resolveLogSources()
         finishedAt = Instant.now()
         flusher.shutdown()
         flusher.awaitTermination(10, TimeUnit.SECONDS)
         writeRunMarker()
     }
+
+    // The user's factory or sources() can throw; the run must still finish
+    // and the marker must still be written, just without logSources.
+    private fun resolveLogSources(): List<LogSource>? =
+        configuration.tabServiceFactories[LogQueryService::class]?.let { factory ->
+            runCatching { (factory() as LogQueryService).sources() }
+                .onFailure { System.err.println("Kensa: failed to resolve log sources for run.json: $it") }
+                .getOrNull()
+        }
 
     // Under the marker lock so a flush never snapshots a class's totals half applied.
     @Synchronized
@@ -160,6 +175,21 @@ internal class ResultWriter(private val configuration: Configuration, private va
             .add("passed", passed.get())
             .add("failed", failed.get())
             .add("disabled", disabled.get())
+        logSources?.let { sources ->
+            json.add(
+                "logSources",
+                Json.array().apply {
+                    sources.forEach {
+                        add(
+                            jsonObject()
+                                .add("id", it.id)
+                                .add("file", it.file)
+                                .add("present", it.present)
+                        )
+                    }
+                }
+            )
+        }
         // Readers poll this file while it is being rewritten, so it is replaced
         // in one step rather than truncated and refilled in place.
         val marker = configuration.outputDir.resolve("run.json")

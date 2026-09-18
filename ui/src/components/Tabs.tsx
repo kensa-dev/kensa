@@ -12,6 +12,7 @@ import {CustomTabPanel} from "@/components/CustomTabPanel";
 import {DataTable} from "@/components/DataTable";
 import {FixturesTable} from "@/components/FixturesTable";
 import {Tabs as ShadcnTabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {customTabsOf} from "@/util/customTabs";
 
 type TabValue = typeof Tab[keyof typeof Tab];
 
@@ -34,13 +35,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
         {id: Tab.ComponentDiagram, label: 'Component Diagram', exists: !!invocation[Tab.ComponentDiagram]},
     ].filter(t => (t.count && t.count > 0) || t.exists);
 
-    const customTabs = (invocation.customTabContents ?? []).map((t) => ({
-        id: t.tabId,
-        label: t.label,
-        file: t.file,
-        mediaType: t.mediaType ?? 'text/plain',
-        kind: 'custom' as const,
-    }));
+    const customTabs = customTabsOf(invocation);
 
     const tabs = [
         ...builtinTabs.map(t => ({...t, kind: 'builtin' as const})),
@@ -93,7 +88,7 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
     const inFlightRef = useRef<Map<string, AbortController>>(new Map());
 
     const activeCustomTab = tabs.find(t => t.kind === 'custom' && t.id === activeTab) as
-        | { kind: 'custom', id: string, label: string, file: string, mediaType: string }
+        | { kind: 'custom', id: string, label: string, file?: string, mediaType: string, empty: boolean }
         | undefined;
 
     const activeCustomFile = activeCustomTab?.file;
@@ -231,15 +226,18 @@ export const Tabs = ({invocation, testState, autoOpenTab}: TabProps) => {
                     {customTabs.map((tab) => (
                         <TabsContent key={tab.id} value={tab.id} className="mt-0">
                             <div className="space-y-1">
-                                {customTabCache[tab.file]?.status === 'loading' && (
+                                {tab.empty && (
+                                    <div className="text-xs text-muted-foreground">No entries for this invocation</div>
+                                )}
+                                {!tab.empty && tab.file && customTabCache[tab.file]?.status === 'loading' && (
                                     <div className="text-xs text-muted-foreground">Loading…</div>
                                 )}
-                                {customTabCache[tab.file]?.status === 'error' && (
+                                {!tab.empty && tab.file && customTabCache[tab.file]?.status === 'error' && (
                                     <div className="text-xs text-failure">
                                         Failed to load tab content.
                                     </div>
                                 )}
-                                {customTabCache[tab.file]?.status === 'ready' && (
+                                {!tab.empty && tab.file && customTabCache[tab.file]?.status === 'ready' && (
                                     <div className="-m-4">
                                         <CustomTabPanel
                                             title={tab.label}

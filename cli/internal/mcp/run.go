@@ -21,19 +21,29 @@ const (
 	runIncomplete = "incomplete" // results/ without indices.json and no way to tell: no run.json (Kensa before 0.9.2), or a marker from another host
 )
 
+// LogSource is one entry of run.json's "logSources": a log source Kensa
+// registered for the run, and whether its file was present at run end.
+type LogSource struct {
+	ID      string `json:"id"`
+	File    string `json:"file"`
+	Present bool   `json:"present"`
+}
+
 // runMarker is run.json as Kensa core writes it: startedAt, pid and hostname
 // when the first test starts, finishedAt once the whole report is on disk.
 // The counts are rewritten as each class finishes; markers from early 0.9.2
-// builds lack them, so they are pointers to tell absent from zero.
+// builds lack them, so they are pointers to tell absent from zero. LogSources
+// is written once, at run end, alongside finishedAt.
 type runMarker struct {
-	StartedAt  string `json:"startedAt"`
-	FinishedAt string `json:"finishedAt"`
-	Pid        int    `json:"pid"`
-	Hostname   string `json:"hostname"`
-	Classes    *int   `json:"classes"`
-	Passed     *int   `json:"passed"`
-	Failed     *int   `json:"failed"`
-	Disabled   *int   `json:"disabled"`
+	StartedAt  string      `json:"startedAt"`
+	FinishedAt string      `json:"finishedAt"`
+	Pid        int         `json:"pid"`
+	Hostname   string      `json:"hostname"`
+	Classes    *int        `json:"classes"`
+	Passed     *int        `json:"passed"`
+	Failed     *int        `json:"failed"`
+	Disabled   *int        `json:"disabled"`
+	LogSources []LogSource `json:"logSources,omitempty"`
 }
 
 // runInfo describes the state of the run that produced a bundle.

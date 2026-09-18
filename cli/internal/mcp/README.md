@@ -12,7 +12,7 @@ kensa mcp
 
 ## Tool groups
 
-The server registers ten tools in two groups.
+The server registers thirteen tools in two groups.
 
 ### Group A — bundle inspection
 
@@ -31,6 +31,9 @@ nothing to read.
 | `run_status` | `bundle_dir` (optional) | `{ runState, runStartedAt, runFinishedAt, runAge, classesWritten, passed, failed, disabled, pid, sources[] }` — the state of the run that produced the bundle. `passed`, `failed` and `disabled` are the method counts so far while a run is unfinished, present only when the marker carries them. `runState` is `complete`, `running`, `abandoned` or `incomplete`. `sources` breaks a site root down per source. |
 | `await_results` | `bundle_dir` (optional), `timeout_seconds` (int, optional, default 600, max 3600) | `{ completed, timedOut, runState, ... }` — blocks until the next run completes, then reports it. |
 | `suite_summary` | `bundle_dir` (optional), `slowest` (int, optional, default 10) | `{ runState, runStartedAt, runFinishedAt, runDuration, classes, methods, totalElapsedMs, durations[], slowest[], failures[], byTag[], byPackage[], participants[], bundleWrittenAt, bundleAge }` — a one-call overview of a completed run: state counts for classes and methods, the run window and duration, duration buckets, the slowest methods, failure ids, counts by tag and package, and participants. Refuses an incomplete run the same way `list_tests` and `list_failures` do. |
+| `list_log_sources` | `bundle_dir` (optional) | `{ sources: LogSource[], bundleWrittenAt, bundleAge, notice }` — every log source the suite registered, as recorded in `run.json`: `id`, `file` and whether it was `present` when the run finished. For a site root each row also carries the `source` it came from, since two sources register ids independently and the same id can appear in both. `notice` explains an empty list written by a bundle from before Kensa 1.0.0. |
+| `invocation_logs` | `bundle_dir` (optional), `id` (string), `invocation` (int, optional, default 0) | `{ id, invocation, state, identifier, logs[], notice }` — one row per log source seen by this invocation: a rendered tab (`source`, `label`, `entries`, `errors`, `path`), a tab the run skipped (`skipped` carries the `@OnlyOnFailure` visibility), or a source the run registered with no tab here (`declared: false`). `errors` counts the tab's records whose first line reads as an error. |
+| `read_log` | `bundle_dir` (optional), `id` (string), `source` (string), `invocation` (int, optional, default 0), `pattern` (regex, optional), `level` (string, optional), `max_entries` (int, optional, default 50, `-1` for unlimited), `max_entry_chars` (int, optional, default 4000, `-1` for unlimited) | `{ source, matched, total, entries: [{n, text, truncated, fullLength}], notice }` — the records of one log tab, filtered by `pattern` (matched against the whole record) or `level` (matched against the record's first line only). `matched` counts every record the filters kept, including any past `max_entries`, so a capped answer still says there is more. |
 
 `captured_interactions` truncates each captured value to `max_value_chars`
 characters (runes, not bytes), 4000 by default; a truncated value carries
@@ -101,7 +104,11 @@ whole (how long, how many, what was slow). `list_failures` → `failure_evidence
 message alone does not explain it → re-run → `await_results` → `list_failures`
 again. `get_test` is for reading a whole class; it renders sentences as text
 because the raw token stream is several thousand tokens per method and none of
-it helps a diagnosis.
+it helps a diagnosis. When `failure_evidence` still does not explain the
+failure, `invocation_logs` on the method shows which log sources carry
+errors, then `read_log` with `level: "ERROR"` on the source that has them
+reads the actual records, falling back to `captured_interactions` when the
+logs are clean too.
 
 **Which sentence failed.** Kensa parses sentences from source and does not
 record which one threw, so `failure_evidence` derives it: the last sentence
@@ -142,7 +149,7 @@ documented combination and does not make a project a Kotest project.
 
 The `exemplar` snippet is capped at 6 KB, since it is handed to a model whole.
 
-A seventh entry, `server_info`, reports the server's `name` (`kensa`) and
+A thirteenth entry, `server_info`, reports the server's `name` (`kensa`) and
 `version` — useful as a connectivity check.
 
 ## Install (Claude Code)

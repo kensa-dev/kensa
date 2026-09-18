@@ -1,6 +1,7 @@
 
 package dev.kensa.tabs
 
+import com.eclipsesource.json.WriterConfig.MINIMAL
 import dev.kensa.Configuration
 import dev.kensa.KensaTab
 import dev.kensa.KensaTabScope.PerInvocation
@@ -8,6 +9,7 @@ import dev.kensa.KensaTabScope.PerSuite
 import dev.kensa.KensaTabVisibility.OnlyOnFailure
 import dev.kensa.context.TestContainer
 import dev.kensa.output.json.JsonTransforms
+import dev.kensa.service.logs.LogRecord
 import dev.kensa.state.TestInvocation
 import dev.kensa.state.TestMethodContainer
 import dev.kensa.state.TestState.Passed
@@ -17,6 +19,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+import com.eclipsesource.json.Json.`object` as jsonObject
 
 internal class TabArtifactManager {
 
@@ -111,7 +114,12 @@ internal class TabArtifactManager {
             val tabIdForPath = prepared.tabIdForPath
 
             if (tab.visibility == OnlyOnFailure && invocation.state == Passed) {
-                return@mapNotNull null
+                return@mapNotNull JsonTransforms.CustomTabContent(
+                    tabId = stableTabId,
+                    label = tab.name,
+                    sourceId = tab.sourceId.takeIf { it.isNotBlank() },
+                    visibility = "OnlyOnFailure"
+                )
             }
 
             when (tab.scope) {
@@ -162,9 +170,6 @@ internal class TabArtifactManager {
         outputDir: Path,
         relativeFile: String
     ): JsonTransforms.CustomTabContent? {
-        val outputFile = outputDir.resolve(relativeFile)
-        outputFile.parent.createDirectories()
-
         val baseCtx = KensaTabContext(
             tabId = stableTabId,
             tabName = tab.name,
@@ -191,19 +196,45 @@ internal class TabArtifactManager {
         val renderer: KensaTabRenderer =
             tab.renderer.objectInstance ?: tab.renderer.createInstance()
 
-        val content = renderer.render(ctx)
-            ?.takeIf { it.isNotBlank() }
-            ?: return null
+        val content = renderer.renderTab(ctx) ?: return null
 
-        outputFile.writeText(content)
+        val text = content.text?.takeIf { it.isNotBlank() }
+        if (text == null && content.entries == null) return null
+
+        text?.let { writeFile(outputDir.resolve(relativeFile), it) }
+
+        val relativeRecords = content.records
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { records ->
+                relativeSidecarOf(relativeFile).also { writeFile(outputDir.resolve(it), asJsonLines(records)) }
+            }
 
         return JsonTransforms.CustomTabContent(
             tabId = stableTabId,
             label = tab.name,
-            file = relativeFile,
-            mediaType = renderer.mediaType()
+            file = relativeFile.takeIf { text != null },
+            mediaType = renderer.mediaType().takeIf { text != null },
+            sourceId = tab.sourceId.takeIf { it.isNotBlank() },
+            identifier = invocationIdentifier,
+            entries = content.entries,
+            records = relativeRecords
         )
     }
+
+    private fun writeFile(path: Path, content: String) {
+        path.parent.createDirectories()
+        path.writeText(content)
+    }
+
+    private fun relativeSidecarOf(relativeFile: String): String = "${relativeFile.removeSuffix(".txt")}.jsonl"
+
+    private fun asJsonLines(records: List<LogRecord>): String =
+        records.joinToString(separator = "\n", postfix = "\n") { record ->
+            jsonObject()
+                .add("identifier", record.identifier)
+                .add("text", record.text)
+                .toString(MINIMAL)
+        }
 
     private fun baseTabId(tab: KensaTab): String {
         tab.id.takeIf { it.isNotBlank() }?.let { return it }

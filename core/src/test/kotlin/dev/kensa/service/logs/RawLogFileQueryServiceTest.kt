@@ -132,6 +132,29 @@ class RawLogFileQueryServiceTest {
     }
 
     @Test
+    fun `sources reports file name and presence for existing file`() {
+        val log = tempDir.resolve("app.log")
+        log.writeText("started", UTF_8)
+
+        val service = RawLogFileQueryService(
+            source = FileSource(id = "appLog", path = log)
+        )
+
+        service.sources() shouldBe listOf(LogSource(id = "appLog", file = "app.log", present = true))
+    }
+
+    @Test
+    fun `sources reports present false for missing file`() {
+        val missing = tempDir.resolve("missing.log")
+
+        val service = RawLogFileQueryService(
+            source = FileSource(id = "appLog", path = missing)
+        )
+
+        service.sources() shouldBe listOf(LogSource(id = "appLog", file = "missing.log", present = false))
+    }
+
+    @Test
     fun `query filtering is applied after tailing`() {
         val log = tempDir.resolve("tail-filter.log")
         log.writeText(

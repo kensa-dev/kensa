@@ -2,6 +2,8 @@ package dev.kensa.service.logs
 
 import java.nio.charset.StandardCharsets.UTF_8
 import kotlin.io.path.bufferedReader
+import kotlin.io.path.exists
+import kotlin.io.path.name
 import kotlin.io.path.notExists
 
 internal class RawLogFileQueryService(
@@ -27,6 +29,9 @@ internal class RawLogFileQueryService(
         val text = cachedText ?: return emptyList()
         return listOf(LogRecord(sourceId = sourceId, identifier = "", text = text))
     }
+
+    override fun sources(): List<LogSource> =
+        listOf(LogSource(id = source.id, file = source.path.name, present = source.path.exists()))
 
     private fun readTextInternal(): String? {
         if (source.path.notExists()) return null

@@ -2,6 +2,7 @@ package dev.kensa.service.logs.docker
 
 import dev.kensa.service.logs.LogPatterns
 import dev.kensa.service.logs.LogRecord
+import dev.kensa.service.logs.LogSource
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should
@@ -268,6 +269,26 @@ class DockerCliLogQueryServiceTest {
 
         service.query("app", "AAA").shouldHaveSize(1).first().text.shouldContain("Payload: one")
         service.query("app", "BBB").shouldHaveSize(1).first().text.shouldContain("Payload: two")
+    }
+
+    @Test
+    fun `sources maps each docker source to a LogSource marked present`() {
+        val fakeRunner = DockerLogsRunner { _ -> emptySequence() }
+
+        val service = DockerCliLogQueryService(
+            sources = listOf(
+                DockerCliLogQueryService.DockerSource(id = "app", container = "app-container"),
+                DockerCliLogQueryService.DockerSource(id = "worker", container = "worker-container")
+            ),
+            delimiterLine = DELIMITER,
+            idPattern = ID_PATTERN,
+            runner = fakeRunner
+        )
+
+        service.sources() shouldBe listOf(
+            LogSource(id = "app", file = "app-container", present = true),
+            LogSource(id = "worker", file = "worker-container", present = true)
+        )
     }
 
     private companion object {

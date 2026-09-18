@@ -3,6 +3,7 @@ package dev.kensa.service.logs.docker
 import dev.kensa.service.logs.LogPatterns
 import dev.kensa.service.logs.LogQueryService
 import dev.kensa.service.logs.LogRecord
+import dev.kensa.service.logs.LogSource
 
 class DockerCliLogQueryService(
     private val sources: List<DockerSource>,
@@ -25,6 +26,9 @@ class DockerCliLogQueryService(
             ?.values
             ?.flatten()
             .orEmpty()
+
+    override fun sources(): List<LogSource> =
+        sources.map { LogSource(id = it.id, file = it.container, present = true) }
 
     private fun buildIndex(): Map<String, Map<String, List<LogRecord>>> =
         buildMap<String, Map<String, MutableList<LogRecord>>> {

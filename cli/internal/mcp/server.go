@@ -94,6 +94,9 @@ func registerTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{Name: "await_results", Description: "Block until the next test run completes (one in progress now, or one that starts after the call), then report its state; call straight after launching the tests"}, awaitResults)
 	mcp.AddTool(server, &mcp.Tool{Name: "suite_summary", Description: "One-call overview of a completed run: state counts for classes and methods, run window and duration, duration buckets, slowest methods, failure ids, counts by tag and package, participants. Reads only indices.json"}, suiteSummary)
 	mcp.AddTool(server, &mcp.Tool{Name: "style_profile", Description: "Heuristic style profile of a Kensa project: fixtures, MatcherFields, stub helpers, conventions, framework, exemplar"}, styleProfile)
+	mcp.AddTool(server, &mcp.Tool{Name: "list_log_sources", Description: "List the log sources the suite registered and whether each log file existed when the run finished"}, listLogSources)
+	mcp.AddTool(server, &mcp.Tool{Name: "invocation_logs", Description: "List the log tabs of one test invocation with entry and error counts, plus registered sources with no tab"}, invocationLogs)
+	mcp.AddTool(server, &mcp.Tool{Name: "read_log", Description: "Read the records of one log tab of one test invocation, filtered by pattern or level, capped and truncated"}, readLog)
 }
 
 // Run builds the MCP server, registers tools, and serves over stdio.

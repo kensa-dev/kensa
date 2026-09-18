@@ -2,6 +2,8 @@ package dev.kensa.service.logs
 
 import java.nio.charset.StandardCharsets.UTF_8
 import kotlin.io.path.bufferedReader
+import kotlin.io.path.exists
+import kotlin.io.path.name
 import kotlin.io.path.notExists
 
 internal class IndexedLogFileQueryService(
@@ -24,6 +26,9 @@ internal class IndexedLogFileQueryService(
         if (sourceId != source.id) return emptyList()
         return index.values.flatten()
     }
+
+    override fun sources(): List<LogSource> =
+        listOf(LogSource(id = source.id, file = source.path.name, present = source.path.exists()))
 
     private fun buildIndex(): Map<String, List<LogRecord>> {
         if (source.path.notExists()) return emptyMap()

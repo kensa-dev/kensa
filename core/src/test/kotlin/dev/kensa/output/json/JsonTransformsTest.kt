@@ -562,7 +562,7 @@ class JsonTransformsTest {
             val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))
             val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
 
-            val tab = JsonTransforms.CustomTabContent(tabId = "t1", label = "Tab 1", file = "t1.txt")
+            val tab = JsonTransforms.CustomTabContent(tabId = "t1", label = "Tab 1", file = "t1.txt", mediaType = "text/plain")
             val json = JsonTransforms.toJsonWith(renderers) { _, _, _ -> listOf(tab) }(container).asObject()
 
             val tabJson = json.get("tests").asArray()[0].asObject()
@@ -573,6 +573,22 @@ class JsonTransformsTest {
             tabJson.getString("label", null) shouldBe "Tab 1"
             tabJson.getString("file", null) shouldBe "t1.txt"
             tabJson.getString("mediaType", null) shouldBe "text/plain"
+        }
+
+        @Test
+        fun `serialises a custom tab entry as exactly tabId label file and mediaType`() {
+            val invocation = fakeTestInvocation()
+            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val tab = JsonTransforms.CustomTabContent(tabId = "t1", label = "Tab 1", file = "t1.txt", mediaType = "text/plain")
+            val json = JsonTransforms.toJsonWith(renderers) { _, _, _ -> listOf(tab) }(container).asObject()
+
+            val tabJson = json.get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("customTabContents").asArray()[0].asObject()
+
+            tabJson.names().toSet() shouldBe setOf("tabId", "label", "file", "mediaType")
         }
 
         @Test
@@ -588,6 +604,54 @@ class JsonTransformsTest {
                 .get("invocations").asArray()[0].asObject()
                 .get("customTabContents").asArray()[0].asObject()
                 .getString("mediaType", null) shouldBe "text/html"
+        }
+
+        @Test
+        fun `serialises the optional log tab keys when they are set`() {
+            val invocation = fakeTestInvocation()
+            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val tab = JsonTransforms.CustomTabContent(
+                tabId = "t1",
+                label = "Logs",
+                file = "t1.txt",
+                mediaType = "text/plain",
+                sourceId = "app",
+                identifier = "inv-1",
+                entries = 3,
+                records = "t1.jsonl",
+                visibility = "OnlyOnFailure"
+            )
+            val json = JsonTransforms.toJsonWith(renderers) { _, _, _ -> listOf(tab) }(container).asObject()
+
+            val tabJson = json.get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("customTabContents").asArray()[0].asObject()
+
+            tabJson.names().toSet() shouldBe setOf("tabId", "label", "file", "mediaType", "sourceId", "identifier", "entries", "records", "visibility")
+            tabJson.getString("sourceId", null) shouldBe "app"
+            tabJson.getString("identifier", null) shouldBe "inv-1"
+            tabJson.getInt("entries", -1) shouldBe 3
+            tabJson.getString("records", null) shouldBe "t1.jsonl"
+            tabJson.getString("visibility", null) shouldBe "OnlyOnFailure"
+        }
+
+        @Test
+        fun `omits file mediaType and records for a zero entry tab`() {
+            val invocation = fakeTestInvocation()
+            val method = fakeTestMethodContainer(method = alpha, invocations = listOf(invocation))
+            val container = fakeTestContainer(testClass = sampleClass, methodContainers = listOf(method))
+
+            val tab = JsonTransforms.CustomTabContent(tabId = "t1", label = "Logs", sourceId = "app", identifier = "inv-1", entries = 0)
+            val json = JsonTransforms.toJsonWith(renderers) { _, _, _ -> listOf(tab) }(container).asObject()
+
+            val tabJson = json.get("tests").asArray()[0].asObject()
+                .get("invocations").asArray()[0].asObject()
+                .get("customTabContents").asArray()[0].asObject()
+
+            tabJson.names().toSet() shouldBe setOf("tabId", "label", "sourceId", "identifier", "entries")
+            tabJson.getInt("entries", -1) shouldBe 0
         }
 
         @Test

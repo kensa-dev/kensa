@@ -233,6 +233,33 @@ class IndexedLogFileQueryServiceTest {
     }
 
     @Test
+    fun `sources reports file name and presence for existing file`() {
+        val log = tempDir.resolve("app.log")
+        log.writeText("id: abc", UTF_8)
+
+        val service = IndexedLogFileQueryService(
+            source = FileSource(id = "appLog", path = log),
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
+        )
+
+        service.sources() shouldBe listOf(LogSource(id = "appLog", file = "app.log", present = true))
+    }
+
+    @Test
+    fun `sources reports present false for missing file`() {
+        val missing = tempDir.resolve("missing.log")
+
+        val service = IndexedLogFileQueryService(
+            source = FileSource(id = "appLog", path = missing),
+            idPattern = ID_PATTERN,
+            delimiterLine = DELIMITER
+        )
+
+        service.sources() shouldBe listOf(LogSource(id = "appLog", file = "missing.log", present = false))
+    }
+
+    @Test
     fun `timestamp-prefixed lines can be used as delimiters via regex`() {
         val log = tempDir.resolve("ts.log")
         log.writeText(

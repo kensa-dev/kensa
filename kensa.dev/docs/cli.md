@@ -118,7 +118,7 @@ If you wrap the CLI in a script of your own, keep its diagnostics on **stderr**.
 
 ### Tools
 
-Six tools read a completed test run:
+Nine tools read a completed test run:
 
 | Tool | Returns |
 |------|---------|
@@ -128,6 +128,9 @@ Six tools read a completed test run:
 | `failure_evidence` | Every failed method of one class: the failing sentence, the exception message, and the line inside the test that threw (`PaymentTest.kt:107`). One call usually gives the fix location. |
 | `captured_interactions` | Everything Kensa captured between actors for a class or one method: request and response bodies, status, headers. This is the evidence for a payload-shape mismatch. Each value is capped at `max_value_chars` (default 4000) and a cut value says so, with its full length. |
 | `get_test` | One class rendered as a person reads it: sentences as text, fixtures, interaction names, any failure. A `<class>:<method>` id returns that method only. `raw: true` returns the result file verbatim. |
+| `list_log_sources` | Every log source the suite registered for the run, read from `run.json`: its id, file name (the name only, not a path), and whether that file was present when the run finished. For a `dockerCli` source the file is the container name and `present` is always `true`. In site mode each row also carries the `source` it came from, so two sources that registered the same id stay apart. Reports a notice when the bundle predates log source recording (before Kensa 1.0.0). |
+| `invocation_logs` | Every log source as one test invocation saw it: entry and error counts for a rendered tab, which tabs `@OnlyOnFailure` skipped, and any source the run registered with no tab at all. |
+| `read_log` | The records of one log tab, filtered by a regular expression or by a level word such as `ERROR`, capped and truncated so a noisy log does not blow the context budget. |
 
 When the question is about the run rather than a failure (how long, how many, what was slow), `suite_summary` answers it in one call. The triage path is `list_failures`, then `failure_evidence` on the class, then `captured_interactions` on the method if the message alone does not explain it. After the fix, re-run, `await_results`, and `list_failures` once more to confirm the whole bundle is clean rather than just the class you re-ran.
 

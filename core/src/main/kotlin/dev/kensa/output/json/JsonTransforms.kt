@@ -31,8 +31,13 @@ internal object JsonTransforms {
     data class CustomTabContent(
         val tabId: String,
         val label: String,
-        val file: String,
-        val mediaType: String = "text/plain"
+        val file: String? = null,
+        val mediaType: String? = null,
+        val sourceId: String? = null,
+        val identifier: String? = null,
+        val entries: Int? = null,
+        val records: String? = null,
+        val visibility: String? = null
     )
 
     fun toJsonWith(
@@ -114,8 +119,15 @@ internal object JsonTransforms {
         jsonObject()
             .add("tabId", t.tabId)
             .add("label", t.label)
-            .add("file", t.file)
-            .add("mediaType", t.mediaType)
+            .apply {
+                t.file?.let { add("file", it) }
+                t.mediaType?.let { add("mediaType", it) }
+                t.sourceId?.let { add("sourceId", it) }
+                t.identifier?.let { add("identifier", it) }
+                t.entries?.let { add("entries", it) }
+                t.records?.let { add("records", it) }
+                t.visibility?.let { add("visibility", it) }
+            }
     }
 
     private fun fixtureSpecAsJson(): (FixtureSpec) -> JsonValue = { spec ->

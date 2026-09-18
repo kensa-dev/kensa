@@ -160,7 +160,7 @@ func TestIntegrationServerInfo(t *testing.T) {
 	}
 }
 
-func TestIntegrationListsTenTools(t *testing.T) {
+func TestIntegrationListsThirteenTools(t *testing.T) {
 	ctx := context.Background()
 	session := newConnectedSession(t, ctx)
 
@@ -168,12 +168,12 @@ func TestIntegrationListsTenTools(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools: %v", err)
 	}
-	if len(res.Tools) != 10 {
+	if len(res.Tools) != 13 {
 		names := make([]string, len(res.Tools))
 		for i, tool := range res.Tools {
 			names[i] = tool.Name
 		}
-		t.Fatalf("ListTools returned %d tools %v, want 10", len(res.Tools), names)
+		t.Fatalf("ListTools returned %d tools %v, want 13", len(res.Tools), names)
 	}
 }
 

@@ -66,30 +66,40 @@ func readIndices(bundle string) ([]TestEntry, error) {
 // bundle whose run has not completed is refused with an error saying so,
 // since a partial listing would read as a clean one.
 func readAllIndices(spec string) ([]TestEntry, bundleFreshness, error) {
-	refs, err := resolveBundles(spec)
+	refs, shapes, err := resolveComplete(spec)
 	if err != nil {
 		return nil, bundleFreshness{}, err
-	}
-	shapes, err := probeAll(refs)
-	if err != nil {
-		return nil, bundleFreshness{}, err
-	}
-	sources := states(refs, shapes)
-	if !allComplete(sources) {
-		return nil, bundleFreshness{}, runInProgressError(sources)
 	}
 	var all []TestEntry
-	for _, s := range sources {
-		entries, err := readIndices(s.Dir)
+	for _, ref := range refs {
+		entries, err := readIndices(ref.Dir)
 		if err != nil {
 			return nil, bundleFreshness{}, err
 		}
 		for _, e := range entries {
-			e.Source = s.Source
+			e.Source = ref.Source
 			all = append(all, e)
 		}
 	}
 	return all, freshnessOf(shapes), nil
+}
+
+// resolveComplete resolves a spec to its bundles and probes them, refusing a
+// run that has not completed: every reader that would otherwise hand out a
+// partial answer as a clean one goes through here.
+func resolveComplete(spec string) ([]bundleRef, []bundleShape, error) {
+	refs, err := resolveBundles(spec)
+	if err != nil {
+		return nil, nil, err
+	}
+	shapes, err := probeAll(refs)
+	if err != nil {
+		return nil, nil, err
+	}
+	if sources := states(refs, shapes); !allComplete(sources) {
+		return nil, nil, runInProgressError(sources)
+	}
+	return refs, shapes, nil
 }
 
 type Token struct {
@@ -133,19 +143,38 @@ type Interaction struct {
 	} `json:"rendered"`
 }
 
+// CustomTabContent mirrors one entry of an invocation's "customTabContents".
+// A log tab (SourceID set) additionally carries Identifier, Entries and
+// Records; Entries is a pointer so an absent count (a skipped tab) reads
+// differently from a present-but-zero one (the source produced no records
+// this run). A tab skipped by @OnlyOnFailure carries Visibility and neither
+// File nor Entries.
+type CustomTabContent struct {
+	TabID      string `json:"tabId"`
+	Label      string `json:"label"`
+	File       string `json:"file,omitempty"`
+	MediaType  string `json:"mediaType,omitempty"`
+	SourceID   string `json:"sourceId,omitempty"`
+	Identifier string `json:"identifier,omitempty"`
+	Entries    *int   `json:"entries,omitempty"`
+	Records    string `json:"records,omitempty"`
+	Visibility string `json:"visibility,omitempty"`
+}
+
 // Invocation mirrors one entry of a test method's "invocations" array.
 //
 // The writer always emits the executionException key, using an empty object
 // for a passing invocation, so a non-nil pointer says nothing about failure —
 // only a message does. See JsonTransforms.executionExceptionFrom in core.
 type Invocation struct {
-	DisplayName          string           `json:"displayName"`
-	ElapsedTime          string           `json:"elapsedTime"`
-	State                string           `json:"state"`
-	Sentences            []Sentence       `json:"sentences"`
-	Fixtures             []map[string]any `json:"fixtures"`
-	CapturedInteractions []Interaction    `json:"capturedInteractions"`
-	ExecutionException   *Exception       `json:"executionException"`
+	DisplayName          string             `json:"displayName"`
+	ElapsedTime          string             `json:"elapsedTime"`
+	State                string             `json:"state"`
+	Sentences            []Sentence         `json:"sentences"`
+	Fixtures             []map[string]any   `json:"fixtures"`
+	CapturedInteractions []Interaction      `json:"capturedInteractions"`
+	ExecutionException   *Exception         `json:"executionException"`
+	CustomTabContents    []CustomTabContent `json:"customTabContents,omitempty"`
 }
 
 // flattenPairs turns the writer's list of single-key objects into one map.
@@ -195,12 +224,20 @@ func findRawResult(spec, id string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	b, _, err := findRawResultIn(refs, id)
+	return b, err
+}
+
+// findRawResultIn searches already-resolved bundles for a test class's result
+// file, also returning the bundle it came from: the tab files an invocation
+// names are relative to that directory.
+func findRawResultIn(refs []bundleRef, id string) ([]byte, string, error) {
 	for _, ref := range refs {
 		if b, err := readRawResult(ref.Dir, id); err == nil {
-			return b, nil
+			return b, ref.Dir, nil
 		}
 	}
-	return nil, fmt.Errorf("no result for %q in %s", classOf(id), sourceLabels(refs))
+	return nil, "", fmt.Errorf("no result for %q in %s", classOf(id), sourceLabels(refs))
 }
 
 func findResult(spec, id string) (Result, error) {

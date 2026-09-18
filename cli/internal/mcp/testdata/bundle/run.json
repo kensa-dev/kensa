@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-09-17T09:15:00Z",
+  "finishedAt": "2026-09-17T09:15:05Z",
+  "pid": 51234,
+  "hostname": "ci-runner",
+  "classes": 2,
+  "passed": 2,
+  "failed": 1,
+  "disabled": 0,
+  "logSources": [
+    {"id": "appLog", "file": "app.log", "present": true},
+    {"id": "auditLog", "file": "audit.log", "present": true},
+    {"id": "gatewayLog", "file": "gateway.log", "present": false}
+  ]
+}

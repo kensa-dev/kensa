@@ -7,6 +7,16 @@ interface KensaTabRenderer {
     fun render(ctx: KensaTabContext): String?
 
     /**
+     * Rendered content for this invocation, including optional entry counts and raw records.
+     *
+     * Defaults to the result of [render], so a renderer that implements only [render] is unaffected.
+     * A renderer that instead writes [render] in terms of this method must override it as well, or the
+     * two default to each other and recurse.
+     * Return null to omit the tab for this invocation.
+     */
+    fun renderTab(ctx: KensaTabContext): TabContent? = render(ctx)?.let { TabContent(it) }
+
+    /**
      * MIME type of the rendered content. Defaults to "text/plain".
      * Override to return "text/html" when render() produces HTML markup.
      */

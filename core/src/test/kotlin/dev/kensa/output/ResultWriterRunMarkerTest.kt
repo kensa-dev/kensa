@@ -7,6 +7,11 @@ import dev.kensa.context.TestContainer
 import dev.kensa.output.json.fakeTestContainer
 import dev.kensa.output.json.fakeTestMethodContainer
 import dev.kensa.render.diagram.ComponentDiagramFactory
+import dev.kensa.service.logs.LogQueryService
+import dev.kensa.service.logs.LogQueryServiceRegistry.Companion.compositeLogQueryService
+import dev.kensa.service.logs.LogRecord
+import dev.kensa.service.logs.LogSource
+import dev.kensa.service.logs.indexedFile
 import dev.kensa.state.TestState
 import dev.kensa.state.TestState.Disabled
 import dev.kensa.state.TestState.Failed
@@ -23,7 +28,9 @@ import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
+import kotlin.io.path.createDirectories
 import kotlin.io.path.readText
+import kotlin.io.path.writeText
 
 class ResultWriterRunMarkerTest {
 
@@ -145,6 +152,60 @@ class ResultWriterRunMarkerTest {
         writer.writeTest(container(Passed))
 
         marker(tempDir).getString("finishedAt", null) shouldBe finishedAt
+    }
+
+    @Test
+    fun `finishing the run lists the sources of a registered log query service`(@TempDir tempDir: Path) {
+        val logsDir = tempDir.resolve("logs").createDirectories()
+        val appLog = logsDir.resolve("app.log")
+        appLog.writeText("---\nid=abc\nsome line\n")
+        val outputDir = tempDir.resolve("output")
+        val configuration = configuration(outputDir).apply {
+            registerTabService(LogQueryService::class) {
+                compositeLogQueryService {
+                    indexedFile("appLog", appLog, Regex("id=(\\S+)"), delimiterLine = "---")
+                }
+            }
+        }
+        val writer = ResultWriter(configuration, ComponentDiagramFactory())
+
+        writer.write(emptyList())
+
+        val logSources = marker(outputDir).get("logSources").asArray()
+        logSources.size() shouldBe 1
+        val source = logSources[0].asObject()
+        source.getString("id", "") shouldBe "appLog"
+        source.getString("file", "") shouldBe "app.log"
+        source.getBoolean("present", false) shouldBe true
+    }
+
+    @Test
+    fun `finishing the run without a registered log query service omits logSources`(@TempDir tempDir: Path) {
+        val writer = ResultWriter(configuration(tempDir), ComponentDiagramFactory())
+
+        writer.write(emptyList())
+
+        marker(tempDir).get("logSources") shouldBe null
+    }
+
+    @Test
+    fun `the marker still finishes when the registered log query service throws`(@TempDir tempDir: Path) {
+        val configuration = configuration(tempDir).apply {
+            registerTabService(LogQueryService::class) {
+                object : LogQueryService {
+                    override fun query(sourceId: String, identifier: String) = emptyList<LogRecord>()
+                    override fun queryAll(sourceId: String) = emptyList<LogRecord>()
+                    override fun sources(): List<LogSource> = throw RuntimeException("boom")
+                }
+            }
+        }
+        val writer = ResultWriter(configuration, ComponentDiagramFactory())
+
+        writer.write(emptyList())
+
+        val marker = marker(tempDir)
+        marker.get("finishedAt").isNull shouldBe false
+        marker.get("logSources") shouldBe null
     }
 
     private fun marker(dir: Path): JsonObject = Json.parse(dir.resolve("run.json").readText()).asObject()

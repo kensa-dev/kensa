@@ -1,0 +1,5 @@
+2026-09-17T09:15:03.104Z ERROR dev.kensa.example.adoptabot.AdoptionService - failed to reject adoption for already-adopted robot Bolt
+java.lang.IllegalStateException: robot Bolt is already adopted
+	at dev.kensa.example.adoptabot.AdoptionService.adopt(AdoptionService.java:42)
+	at dev.kensa.example.adoptabot.AdoptionServiceTest.canAdoptAnAvailableRobot(AdoptionServiceTest.java:143)
+2026-09-17T09:15:03.150Z INFO dev.kensa.example.adoptabot.AdoptionService - adoption request completed with status 200

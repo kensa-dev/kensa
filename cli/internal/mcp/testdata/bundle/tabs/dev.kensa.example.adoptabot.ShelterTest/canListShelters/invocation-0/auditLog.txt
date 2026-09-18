@@ -1,0 +1,2 @@
+shelter listing requested by operator 7
+shelter listing returned 4 shelters for region north

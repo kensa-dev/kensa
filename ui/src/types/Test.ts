@@ -76,8 +76,13 @@ export interface Interaction {
 export interface CustomTabContent {
     tabId: string
     label: string
-    file: string
+    file?: string
     mediaType?: string
+    sourceId?: string
+    identifier?: string
+    entries?: number
+    records?: string
+    visibility?: string
 }
 
 export interface Sentence {

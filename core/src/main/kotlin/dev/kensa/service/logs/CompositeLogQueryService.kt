@@ -13,6 +13,13 @@ internal class CompositeLogQueryService(
     override fun queryAll(sourceId: String): List<LogRecord> =
         delegateFor(sourceId).queryAll(sourceId)
 
+    /**
+     * A delegate serving several sources is registered under each of their ids, so it reports the
+     * same sources once per registration. The first mention of an id wins, keeping registration order.
+     */
+    override fun sources(): List<LogSource> =
+        delegatesBySourceId.values.flatMap { it.sources() }.distinctBy { it.id }
+
     private fun delegateFor(sourceId: String): LogQueryService =
         delegatesBySourceId[sourceId]
             ?: error("No LogQueryService registered for sourceId [$sourceId]")
