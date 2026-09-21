@@ -45,6 +45,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 0.9.19     | 0.9.6              | 0.9.6          | Built with Kotlin 2.4.20 — minimum consumer Kotlin is now 2.4.20; default `kensaCoreVersion` bumped to 0.9.6 (MCP log tools #228, amber accent, #242 fix); min kensa-core raised to 0.9.6. |
 | 0.9.18     | 0.9.5              | 0.8.0          | Site shell now copies `kensa-embed.js` and `favicon.png` from the core jar (build-plugins #8); cores older than 0.9.5 still assemble. |
 | 0.9.17     | 0.9.5              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.5 (report embed mode and `kensa-embed.js` #224; link unfurl pages; `withLinkBaseUrl` / `KENSA_LINK_BASE_URL` #224; sticky test name #223; badge filter #225). No Maven-side change. |
 | 0.9.16     | 0.9.4              | 0.8.0          | Default `kensaCoreVersion` bumped to 0.9.4 (`suite_summary` MCP tool and compact listings #221; `#/issue/<key>` and `#/epic/<id>` report links #222; `SetupStep.setup(scope)` #210, `SetupSteps(list)` #213, one-line setup-step builders #212; polling-block wording, in-pane deep-link scrolling, `?theme=` on report URLs). No Maven-side change. |
