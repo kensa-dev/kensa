@@ -67,7 +67,7 @@ func TestListLogSourcesNoticeWhenBundlePredatesLogSources(t *testing.T) {
 	if len(out.Sources) != 0 {
 		t.Errorf("sources = %+v, want empty", out.Sources)
 	}
-	if out.Notice != "this bundle was written before log sources were recorded; needs kensa 1.0.0 or later" {
+	if out.Notice != "this bundle was written before log sources were recorded; needs kensa 0.9.6 or later" {
 		t.Errorf("notice = %q", out.Notice)
 	}
 	if b, err := json.Marshal(out.Sources); err != nil || string(b) != "[]" {

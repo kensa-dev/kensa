@@ -101,14 +101,14 @@ API-semver promise. A Kotlin bump is published as a **documented compatibility n
 
 | Kensa | Required Kotlin (consumer) | Min JDK | Min kotlinx-coroutines (runtime) | Test frameworks verified |
 |-------|----------------------------|---------|----------------------------------|--------------------------|
-| 0.9.x | 2.4.10                     | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.2.4) |
+| 0.9.x | 2.4.20 (0.9.6+), 2.4.10 (0.9.0 to 0.9.5) | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.2.4) |
 | 0.8.x | 2.4.10                     | 17      | none documented                  | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.1.x) |
 
 Notes:
 - **Min JDK 17** for the published modules (`core`, `frameworks/*`, `assertions/*`,
   integrations). JVM bytecode target is 17. (The `adoptabot` example targets JDK 21, but
   it is not a published artifact.)
-- **Required Kotlin 2.4.10**: consumers must compile with Kotlin 2.4.10. This is driven by
+- **Required Kotlin 2.4.20** (2.4.10 up to 0.9.5): consumers must compile with exactly that version. This is driven by
   the compiler plugin (below), not merely by stdlib usage.
 - **Min kotlinx-coroutines 1.11 (0.9.x)**: Kensa is built against kotlinx-coroutines
   1.11, whose `runBlocking` has a new JVM binary signature, so an older coroutines on the

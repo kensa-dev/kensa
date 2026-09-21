@@ -6,7 +6,7 @@ description: Where Kensa is heading - the road to 1.0, and the stub server, outp
 
 # Roadmap
 
-Kensa is currently at **0.9.5** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes. The next release is **1.0.0**.
+Kensa is currently at **0.9.5** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes. The next release is **0.9.6**.
 
 ## Next: v1.0
 

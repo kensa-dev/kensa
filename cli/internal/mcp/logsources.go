@@ -26,8 +26,8 @@ type listLogSourcesOut struct {
 }
 
 // noticeNoLogSources is returned when a bundle's run.json predates log source
-// recording (before kensa 1.0.0), or has no run.json at all.
-const noticeNoLogSources = "this bundle was written before log sources were recorded; needs kensa 1.0.0 or later"
+// recording (before kensa 0.9.6), or has no run.json at all.
+const noticeNoLogSources = "this bundle was written before log sources were recorded; needs kensa 0.9.6 or later"
 
 func listLogSourcesFor(spec string, in listLogSourcesIn) (listLogSourcesOut, error) {
 	refs, shapes, err := resolveComplete(spec)

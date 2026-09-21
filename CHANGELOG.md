@@ -1,6 +1,6 @@
 <h2 class="github">Changelog</h2>
 
-### v1.0.0
+### v0.9.6
 
 Added:
   - **Log source manifest and richer log tab entries.** `run.json` gains `logSources`, one entry per registered `LogQueryService` source with its `id`, `file` and whether that file was `present` when the run finished. A log tab's entry in `customTabContents` now carries `sourceId`, `identifier` and `entries`, plus a `.jsonl` `records` sidecar beside its `.txt` file, one `{"identifier","text"}` record per line. A source that produced no records is recorded with `entries: 0` and no file, and a tab `@KensaTab.visibility` skips on a pass is recorded with `visibility` and no file; both additive to older bundles (#228).
