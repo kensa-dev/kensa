@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v1.0.0
+
+Changed:
+  - **Kotest 6.2.5.** Dependency bumps; no API changes. Also PlantUML 1.2026.8, Byte Buddy 1.18.14, Playwright 1.63.0, Selenium 4.49.0.
+
 ### v0.9.6
 
 Added:
