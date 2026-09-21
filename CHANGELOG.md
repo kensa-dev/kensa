@@ -19,6 +19,7 @@ Breaking:
   - **`TableRenderer` removed.** The interface was public and documented but nothing could register one, so the default table shapes always applied. Removed rather than frozen at 1.0; the docs now describe the supported row shapes (#231).
 
 Changed:
+  - **Kotlin 2.4.20.** Toolchain bump from Kotlin 2.4.10; no API changes. The compiler plugin loads only in the Kotlin version it was built against, so consumers must now compile with Kotlin 2.4.20. Build-plugin users get the matching compiler plugin in the next build-plugins release.
   - **Kotest 6.2.4, Gradle 9.7.1.** Dependency bumps; no API changes. Also PlantUML 1.2026.6, Jackson 2.22.2, Byte Buddy 1.18.12, Selenium 4.47.0.
   - **Amber accent.** The report, its mark and kensa.dev now use the Kensa family colour, amber, wherever an accent appears: the logo, focus rings, the selected tag, the active package crumb, the environment picker. Pass, fail and disabled keep green, rose and orange. The report looks the same in every host, including Kensa Hub.
   - **Dark mode follows the OS until you choose.** A report with no stored preference matches the system appearance and tracks changes to it. Pressing the switch stores a choice, which then wins. `?theme=` and embeds are unchanged and never write the preference.

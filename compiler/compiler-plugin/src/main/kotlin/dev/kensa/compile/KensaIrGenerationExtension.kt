@@ -4,9 +4,9 @@ import org.jetbrains.kotlin.backend.common.extensions.DeclarationFinder
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.INFO
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.cli.reportInfo
+import org.jetbrains.kotlin.cli.reportLog
+import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
 @OptIn(UnsafeDuringIrConstructionAPI::class)
-class KensaIrGenerationExtension(private val messageCollector: MessageCollector, private val debugEnabled: Boolean) : IrGenerationExtension {
+class KensaIrGenerationExtension(private val configuration: CompilerConfiguration, private val debugEnabled: Boolean) : IrGenerationExtension {
 
     private val expandableSentenceFqName = FqName("dev.kensa.ExpandableSentence")
     private val renderedValueFqName = FqName("dev.kensa.RenderedValue")
@@ -272,12 +272,12 @@ class KensaIrGenerationExtension(private val messageCollector: MessageCollector,
     }
 
     private fun logInfo(message: String) {
-        messageCollector.report(INFO, "[Kensa] $message")
+        configuration.reportInfo("[Kensa] $message")
     }
 
     private fun logDebug(message: String) {
         if (debugEnabled) {
-            messageCollector.report(LOGGING, "[Kensa] DEBUG: $message")
+            configuration.reportLog("[Kensa] DEBUG: $message")
         }
     }
 }

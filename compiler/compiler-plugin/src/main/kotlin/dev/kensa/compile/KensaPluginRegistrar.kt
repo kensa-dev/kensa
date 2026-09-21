@@ -3,10 +3,8 @@ package dev.kensa.compile
 import dev.kensa.compile.KensaCommandLineProcessor.Companion.DEBUG_KEY
 import dev.kensa.compile.KensaCommandLineProcessor.Companion.ENABLED_KEY
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.INFO
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.cli.reportInfo
 import org.jetbrains.kotlin.compiler.plugin.*
-import org.jetbrains.kotlin.config.CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 
@@ -20,14 +18,13 @@ class KensaPluginRegistrar : CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         val enabled = configuration.get(ENABLED_KEY, true)
         val debug = configuration.get(DEBUG_KEY, false)
-        val messageCollector = configuration.get(MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
 
         if (enabled) {
-            messageCollector.report(INFO, "Kensa compiler plugin enabled (debug: $debug)")
+            configuration.reportInfo("Kensa compiler plugin enabled (debug: $debug)")
 
-            IrGenerationExtension.registerExtension(KensaIrGenerationExtension(messageCollector, debug))
+            IrGenerationExtension.registerExtension(KensaIrGenerationExtension(configuration, debug))
         } else {
-            messageCollector.report(INFO, "Kensa compiler plugin disabled")
+            configuration.reportInfo("Kensa compiler plugin disabled")
         }
     }
 }
