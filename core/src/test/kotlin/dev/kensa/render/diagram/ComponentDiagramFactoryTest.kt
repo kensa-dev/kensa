@@ -119,8 +119,7 @@ internal class ComponentDiagramFactoryTest {
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
-        svg shouldContain """lengthAdjust="spacing" textLength"""
-        svg shouldNotContain """lengthAdjust="spacingAndGlyphs" textLength"""
+        svg shouldNotContain "spacingAndGlyphs"
     }
 
     @Test

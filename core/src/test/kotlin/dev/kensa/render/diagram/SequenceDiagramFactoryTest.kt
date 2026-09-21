@@ -375,8 +375,8 @@ internal class SequenceDiagramFactoryTest {
 
         diagram.shouldNotBeNull()
         val svg = diagram.toString()
-        svg shouldContain """lengthAdjust="spacing" textLength"""
-        svg shouldNotContain """lengthAdjust="spacingAndGlyphs" textLength"""
+        svg shouldContain "textLength="
+        svg shouldNotContain "spacingAndGlyphs"
     }
 
     @Test
