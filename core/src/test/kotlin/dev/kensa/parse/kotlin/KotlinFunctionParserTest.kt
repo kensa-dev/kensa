@@ -26,6 +26,9 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.maps.shouldBeEmpty
+import io.kotest.matchers.collections.shouldBeEmpty
+import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
+import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -1341,6 +1344,62 @@ internal class KotlinFunctionParserTest {
 
             val tokens = parsedMethod.expandableMethods["aCombinationOfCalls"].shouldNotBeNull().sentences[0].tokens
             tokens.map { it.template }.shouldContainAll("an", "a", "b")
+        }
+
+        @Test
+        fun `chained call after argument-less expandable stays in the sentence`() {
+            val parser = createParserFor(aFunctionNamed("chainedAfterArgumentlessExpandable"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("chainedAfterArgumentlessExpandable")
+            val tokens = parser.parse(method).sentences.single().tokens
+
+            val expandable = tokens.filterIsInstance<ExpandableTemplateToken>().single()
+            expandable.parameterTokens.shouldBeEmpty()
+            tokens.dropWhile { it !is ExpandableTemplateToken }.drop(1).map { it.template } shouldBe
+                listOf("and", "aFirstName:", "of", "John", "and", "aLastName:", "of", "Smith")
+        }
+
+        @Test
+        fun `chained call after expandable with arguments stays in the sentence`() {
+            val parser = createParserFor(aFunctionNamed("chainedAfterExpandableWithArguments"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("chainedAfterExpandableWithArguments")
+            val tokens = parser.parse(method).sentences.single().tokens
+
+            tokens.filterIsInstance<ExpandableTemplateToken>().single().parameterTokens.map { it.template } shouldBe listOf("Mr")
+            tokens.dropWhile { it !is ExpandableTemplateToken }.drop(1).map { it.template } shouldBe
+                listOf("and", "aFirstName:", "of", "John")
+        }
+
+        @Test
+        fun `chained call after argument-less expandable value stays in the sentence`() {
+            val parser = createParserFor(aFunctionNamed("chainedAfterArgumentlessExpandableValue"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("chainedAfterArgumentlessExpandableValue")
+            val tokens = parser.parse(method).sentences.single().tokens
+
+            tokens.filterIsInstance<ExpandableValueTemplateToken>().single().parameterTokens.shouldBeEmpty()
+            tokens.dropWhile { it !is ExpandableValueTemplateToken }.drop(1).map { it.template } shouldBe
+                listOf("and", "aFirstName:", "of", "John")
+        }
+
+        @Test
+        fun `chained call after argument-less navigated expandable stays in the sentence`() {
+            val parser = createParserFor(aFunctionNamed("chainedAfterArgumentlessNavigatedExpandable"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("chainedAfterArgumentlessNavigatedExpandable")
+            val tokens = parser.parse(method).sentences.single().tokens
+
+            tokens.filterIsInstance<ExpandableTemplateToken>().single().parameterTokens.shouldBeEmpty()
+            tokens.dropWhile { it !is ExpandableTemplateToken }.drop(1).map { it.template } shouldBe
+                listOf("and", "aFirstName:", "of", "John")
+        }
+
+        @Test
+        fun `navigated expandable with arguments keeps its arguments`() {
+            val parser = createParserFor(aFunctionNamed("chainedAfterNavigatedExpandableWithArguments"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("chainedAfterNavigatedExpandableWithArguments")
+            val tokens = parser.parse(method).sentences.single().tokens
+
+            tokens.filterIsInstance<ExpandableTemplateToken>().single().parameterTokens.map { it.template } shouldBe listOf("Mr")
+            tokens.dropWhile { it !is ExpandableTemplateToken }.drop(1).map { it.template } shouldBe
+                listOf("and", "aFirstName:", "of", "John")
         }
 
         @Test

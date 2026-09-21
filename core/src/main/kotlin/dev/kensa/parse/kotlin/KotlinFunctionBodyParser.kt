@@ -307,16 +307,17 @@ internal class KotlinFunctionBodyParser(
     private fun KotlinParser.PostfixUnaryExpressionContext.firstValueArgument(): ValueArgumentContext? =
         postfixUnarySuffix().singleOrNull()?.callSuffix()?.valueArguments()?.valueArgument()?.firstOrNull()
 
-    private fun ParserRuleContext.hasArguments(): Boolean {
-        fun ParserRuleContext.findValueArguments(): Boolean {
-            return children?.any { child ->
-                when (child) {
-                    is ValueArgumentContext -> true
-                    is ParserRuleContext -> child.findValueArguments()
-                    else -> false
-                }
-            } ?: false
+    private fun KotlinParser.SimpleIdentifierContext.hasArguments(): Boolean {
+        val callSuffix = when (val owner = parent) {
+            is KotlinParser.PrimaryExpressionContext ->
+                (owner.parent as? KotlinParser.PostfixUnaryExpressionContext)?.postfixUnarySuffix()?.firstOrNull()
+            is KotlinParser.NavigationSuffixContext -> {
+                val suffix = owner.parent as? KotlinParser.PostfixUnarySuffixContext
+                val suffixes = (suffix?.parent as? KotlinParser.PostfixUnaryExpressionContext)?.postfixUnarySuffix()
+                suffixes?.getOrNull(suffixes.indexOf(suffix) + 1)
+            }
+            else -> null
         }
-        return (parent?.parent as? ParserRuleContext)?.findValueArguments() ?: false
+        return callSuffix?.callSuffix()?.valueArguments()?.valueArgument()?.isNotEmpty() ?: false
     }
 }

@@ -8,12 +8,14 @@ import dev.kensa.context.ExpandableInvocationContextHolder
 import dev.kensa.example.*
 import dev.kensa.parse.*
 import dev.kensa.sentence.TemplateSentence
+import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
 import dev.kensa.sentence.TemplateToken.SimpleTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
 import dev.kensa.util.allProperties
 import dev.kensa.util.findMethod
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContain
@@ -412,6 +414,29 @@ internal class JavaMethodParserTest {
                 sentences.map { it.tokens }.shouldBe(expectedSentences.map { it.tokens })
             }
         }
+    }
+
+    @Nested
+    inner class ChainedExpandable {
+
+        @Test
+        fun `chained call after argument-less expandable stays in the sentence`() {
+            val tokens = parseTokens("chainedAfterArgumentlessExpandable")
+
+            tokens.filterIsInstance<ExpandableTemplateToken>().single().parameterTokens.shouldBeEmpty()
+            tokens.dropWhile { it !is ExpandableTemplateToken }.drop(1).map { it.template } shouldBe listOf("and", "aFirstName:")
+        }
+
+        @Test
+        fun `chained call after expandable with arguments stays in the sentence`() {
+            val tokens = parseTokens("chainedAfterExpandableWithArguments")
+
+            tokens.filterIsInstance<ExpandableTemplateToken>().single().parameterTokens.map { it.template } shouldBe listOf("Mr")
+            tokens.dropWhile { it !is ExpandableTemplateToken }.drop(1).map { it.template } shouldBe listOf("and", "aFirstName:")
+        }
+
+        private fun parseTokens(methodName: String) =
+            createParserFor(classMethodNamed(methodName)).parse(JavaWithChainedExpandable::class.java.findMethod(methodName)).sentences.single().tokens
     }
 
     @Nested
