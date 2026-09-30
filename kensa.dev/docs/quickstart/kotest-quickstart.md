@@ -15,14 +15,14 @@ The Kensa Gradle plugin wires the Kotlin compiler plugin (so `@RenderedValue` an
 
 ```kotlin title="build.gradle.kts"
 plugins {
-    kotlin("jvm") version "2.4.0"            // the plugin enforces a minimum Kotlin version — see the compatibility matrix
+    kotlin("jvm") version "2.4.0"
     id("dev.kensa.gradle-plugin") version "<plugin-version>"
 }
 
 repositories { mavenCentral() }
 ```
 
-The plugin and `kensa-core` version independently — see the [compatibility matrix](../build-plugins/gradle-plugin.md#kensa-core-compatibility) for the supported pairings.
+The plugin and `kensa-core` version independently, and the plugin enforces a minimum Kotlin version. The [compatibility matrix](../build-plugins/gradle-plugin.md#kensa-core-compatibility) lists the supported pairings.
 
 ## 2. Add Test Dependencies
 

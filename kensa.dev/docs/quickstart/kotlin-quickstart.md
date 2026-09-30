@@ -1,13 +1,13 @@
 ---
-title: BDD Testing in Kotlin with JUnit 5 — Quickstart
-sidebar_label: Quickstart — Kotlin & JUnit 5
+title: BDD Testing in Kotlin with JUnit 5 & 6 — Quickstart
+sidebar_label: Quickstart — Kotlin & JUnit
 sidebar_position: 1
-description: Step-by-step guide to adding Kensa to a Kotlin project with JUnit 5, writing your first Given-When-Then test, and viewing the generated HTML report.
+description: Step-by-step guide to adding Kensa to a Kotlin project with JUnit 5 or 6, writing your first Given-When-Then test, and viewing the generated HTML report.
 ---
 
-# Quickstart — Kotlin & JUnit 5
+# Quickstart — Kotlin & JUnit
 
-This guide walks through setting up Kensa in a Kotlin project with JUnit 5 and writing your first test.
+This guide walks through setting up Kensa in a Kotlin project with JUnit 6 (or 5) and writing your first test.
 
 ## 1. Apply the Kensa Gradle Plugin
 
@@ -15,14 +15,14 @@ The Kensa Gradle plugin wires the Kotlin compiler plugin (so `@RenderedValue` an
 
 ```kotlin title="build.gradle.kts"
 plugins {
-    kotlin("jvm") version "2.4.0"            // the plugin enforces a minimum Kotlin version — see the compatibility matrix
+    kotlin("jvm") version "2.4.0"
     id("dev.kensa.gradle-plugin") version "<plugin-version>"
 }
 
 repositories { mavenCentral() }
 ```
 
-The plugin and `kensa-core` version independently — see the [compatibility matrix](../build-plugins/gradle-plugin.md#kensa-core-compatibility) for the supported pairings.
+The plugin and `kensa-core` version independently, and the plugin enforces a minimum Kotlin version. The [compatibility matrix](../build-plugins/gradle-plugin.md#kensa-core-compatibility) lists the supported pairings.
 
 ## 2. Add Test Dependencies
 
@@ -31,7 +31,7 @@ Pick a JUnit variant and one or more assertions bridges. The `kensa-bom` lines u
 ```kotlin title="build.gradle.kts"
 dependencies {
     testImplementation(platform("dev.kensa:kensa-bom:<kensa-core-version>"))
-    testImplementation("dev.kensa:kensa-framework-junit5")    // for JUnit 5; use kensa-framework-junit6 for JUnit 6
+    testImplementation("dev.kensa:kensa-framework-junit6")    // or kensa-framework-junit5 for JUnit 5
 
     // Pick one assertions bridge (or use multiple)
     testImplementation("dev.kensa:kensa-assertions-kotest")     // Kotest matchers

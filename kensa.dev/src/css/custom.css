@@ -57,6 +57,108 @@ code, kbd, samp, pre {
   border: 0;
 }
 
+/* ─── Docs and blog ─────────────────────────────────────────────────────── */
+
+.navbar {
+  box-shadow: none;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  text-wrap: balance;
+}
+
+.markdown h1 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.markdown h2,
+.markdown h3 {
+  letter-spacing: -0.02em;
+}
+
+.markdown a:not(.card) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--ifm-color-primary) 40%, transparent);
+  text-underline-offset: 3px;
+}
+
+.markdown a:not(.card):hover {
+  text-decoration-color: var(--ifm-color-primary);
+}
+
+.breadcrumbs__link {
+  padding: 0;
+  background: none;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  background: none;
+  color: var(--kensa-accent-strong);
+}
+
+[data-theme='dark'] .breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--kensa-accent);
+}
+
+.breadcrumbs__item:not(:last-child)::after {
+  margin: 0 0.6rem;
+}
+
+.theme-doc-sidebar-menu .menu__link {
+  border-radius: 0 4px 4px 0;
+  border-left: 2px solid transparent;
+}
+
+.theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist) {
+  border-left-color: var(--ifm-color-primary);
+  background: color-mix(in srgb, var(--ifm-color-primary) 8%, transparent);
+  font-weight: 600;
+}
+
+.theme-doc-toc-desktop::before {
+  content: '// On this page';
+  display: block;
+  margin: 0 0 0.5rem 0.75rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.table-of-contents__link--active {
+  font-weight: 600;
+}
+
+.pagination-nav__link {
+  border-left: 3px solid var(--ifm-color-primary-lightest);
+  border-radius: 0 6px 6px 0;
+  transition: border-color 0.15s ease;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--ifm-color-emphasis-300);
+  border-left-color: var(--ifm-color-primary);
+}
+
+.pagination-nav__sublabel {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 /* ─── Experimental admonition ────────────────────────────────────────────── */
 /* `:::experimental` (src/theme/Admonition/Types.tsx). Uses the site's amber accent
    rather than Infima's warning yellow so it reads as a tier marker, not a warning. */

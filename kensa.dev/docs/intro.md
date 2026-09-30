@@ -1,71 +1,61 @@
 ---
 title: Introduction to BDD for Kotlin & Java
-sidebar_label: Introduction to BDD with Kensa
+sidebar_label: Introduction
 sidebar_position: 1
-description: An introduction to Behaviour-Driven Development and how Kensa simplifies BDD for Kotlin and Java by letting you write Given-When-Then tests directly in code.
+description: Kensa is an acceptance-testing framework for Kotlin and Java. Write Given-When-Then tests in code, with no feature files, and get an HTML report with real values, captured messages and sequence diagrams.
 ---
 
-# Introduction to BDD with Kensa
+# Introduction
 
-## What is Behavior-Driven Development (BDD)?
+Kensa is an acceptance-testing framework for Kotlin and Java. You write Given-When-Then tests in ordinary code on JUnit 5 or 6, Kotest or TestNG. Every run produces an HTML report that reads as sentences, with the values from that run, every message that crossed between services, and a sequence diagram drawn from those messages.
 
-Behavior-Driven Development (BDD) is an agile software development methodology that encourages collaboration between developers, QA, and non-technical or business participants in a software project. It extends Test-Driven Development (TDD) by writing test cases in a natural language that non-programmers can read.
+There are no feature files and no step definitions. Kensa reads the source of the test that ran, so the method names become the words and nothing sits between the specification and the code.
 
-BDD focuses on:
+## A test and its report
 
-- **Defining behavior in a shared language** - Creating a ubiquitous language that all team members can understand
-- **Documenting examples** - Using concrete examples to illustrate the expected behavior
-- **Automating validation** - Converting examples into automated tests
+This is a real test from the Clearwave example:
 
-The core of BDD is the ability to express tests in a language that both technical and non-technical stakeholders can understand, while still being executable as automated tests.
+```kotlin title="OrderServiceTest.kt"
+@Test
+fun `voice and broadband order is successfully completed`() {
+    given(openNetworkWillCompleteTheOrder())
+    and(fibreVisionWillCompleteTheOrder())
 
-## Why BDD is Beneficial
+    whenever(aVoiceAndBroadbandOrderIsPlaced())
 
-BDD offers numerous advantages for software development teams:
+    then(theOrderConfirmation(), shouldBePending())
+    thenEventuallyAllNotifications(
+        shouldShowBothSuppliersCompletedSuccessfully(
+            voiceSupplier = fixtures[voiceSupplier],
+            broadbandSupplier = fixtures[broadbandSupplier],
+        )
+    )
+}
+```
 
-1. **Improved Communication** - BDD bridges the gap between technical and non-technical team members by using a common language to describe system behavior.
+The report for it opens with the sentence *Given open network will complete the order*, shows each order notification as it arrived from the two suppliers, and draws the exchange between the customer, the order service and both suppliers. [Open the live report](https://clearwave.kensa.dev/#/test/test::com.clearwave.OrderServiceTest?method=voice%20and%20broadband%20order%20is%20successfully%20completed) to see it.
 
-2. **Living Documentation** - Tests serve as documentation that is always up-to-date because it's executable and verified with each build.
+## What goes in the report
 
-3. **Focus on User Value** - By describing behavior from the user's perspective, teams stay focused on delivering features that provide real value.
+- **Sentences** built from the test method, with `@RenderedValue` fields and parameters replaced by the values the run used.
+- **Interactions**: each message your test captured, with its payload one click away.
+- **Sequence diagrams** per test, and [component diagrams](./component-diagrams.md) for the system-level view from the same interactions.
+- **Fixtures and outputs**: the test data the run set up and anything the test recorded along the way.
+- **Links to tickets** through `@Issue`, so a story, its test and the evidence from the last run sit together.
 
-4. **Reduced Rework** - Clear specifications from the beginning help avoid misunderstandings that lead to rework.
+The report is static HTML. Any CI can publish it, and any test can be [embedded](./reports/embedding.md) in a wiki page or a ticket at a stable URL.
 
-5. **Higher Quality Code** - Writing tests before implementation leads to better design and more maintainable code.
+## How it differs from Cucumber
 
-6. **Faster Feedback** - Automated tests provide immediate feedback on whether the system behaves as expected.
+Cucumber keeps the specification in `.feature` files and maps each line onto code through step definitions. The mapping is a second thing to keep in sync, and nothing stops the words and the code drifting apart.
 
-## Introducing Kensa
+Kensa has one thing: the test. Rename a method and the report changes with it. [BDD Without Gherkin](/blog/bdd-without-gherkin) goes into what Gherkin is for and what it costs.
 
-Kensa is a modern BDD testing framework for Kotlin and Java that simplifies behavior-driven development. Unlike traditional BDD frameworks that require separate text files for specifications, Kensa allows you to write your tests directly in your code using a natural, fluent syntax.
+Kensa is built for acceptance tests that sit outside a deployed application. Push a message in, watch what comes out, and let the report show the traffic.
 
-### Key Features of Kensa
+## Where to go next
 
-- **Native Language Support** - Write tests in Kotlin or Java without the need for external DSL files
-- **Expressive Syntax** - Use a fluent, readable syntax that follows the Given-When-Then pattern
-- **Rich HTML Reports** - Generate comprehensive reports directly from your test code
-- **Sequence Diagrams** - Automatically generate sequence diagrams to visualize interactions. See [Component Diagrams](./component-diagrams.md) for the system-level view derived from the same captured interactions.
-- **Framework Integration** - Seamlessly integrate with JUnit 5 & 6, Kotest, and TestNG
-- **Flexible Assertions** - Use your preferred assertion library (Hamcrest, HamKrest, Kotest, AssertJ)
-- **Variable Tracking** - Capture and display relevant variables in your reports
-- **UI Testing** - Drive a real browser via Playwright or Selenium with the same Given-When-Then DSL
-
-### How Kensa Differs from Traditional BDD Frameworks
-
-Traditional BDD frameworks like Cucumber require you to:
-1. Write feature files in Gherkin syntax
-2. Implement step definitions that map to the Gherkin statements
-3. Maintain the mapping between the two
-
-Kensa simplifies this process by:
-1. Writing tests directly in your code using a natural, fluent syntax
-2. Automatically generating documentation from your code
-3. Eliminating the need to maintain separate feature files
-
-This approach reduces overhead while still providing the benefits of BDD, making it easier to adopt and maintain over time.
-
-From 1.0 the authoring API is frozen under semantic versioning; [Stability and Compatibility](./stability-and-compatibility.md) sets out exactly what that covers.
-
-The [example projects](./examples.md) are complete suites you can run and read, and the Clearwave report is published live.
-
-In the following sections, we'll show you how to get started with Kensa and demonstrate its capabilities through practical examples.
+- **Set up a project:** the quickstart for [Kotlin](./quickstart/kotlin-quickstart.md), [Java](./quickstart/java-quickstart.md), [Kotest](./quickstart/kotest-quickstart.md), [TestNG](./quickstart/testng-quickstart.md) or [Maven](./quickstart/maven-quickstart.md).
+- **Read a full suite:** the [example projects](./examples.md) are complete suites you can run, with their reports published live.
+- **Write tests that read well:** [Writing Fluent Tests](./writing-fluent-tests.md).
+- **Plan an upgrade:** from 1.0 the authoring API is frozen under semantic versioning. [Stability and Compatibility](./stability-and-compatibility.md) sets out what that covers.

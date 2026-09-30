@@ -118,12 +118,16 @@ const config: Config = {
           // Bare top-level paths external links/search engines have indexed
           // without the /docs prefix — point them at the real doc routes.
           {from: '/build-plugins', to: '/docs/category/build-plugins'},
+          {from: '/docs', to: '/docs/intro'},
         ],
       },
     ],
   ],
 
   themeConfig: {
+    colorMode: {
+      respectPrefersColorScheme: true,
+    },
     // Replace with your project's social card
     image: 'img/report-example.png',
     navbar: {

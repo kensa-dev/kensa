@@ -112,10 +112,10 @@ export default function HomepageEcosystem(): ReactNode {
         <section className={styles.ecosystem}>
             <div className="container">
                 <div className={styles.header}>
-                    <h2 className={styles.heading}>Plugins &amp; Integrations</h2>
+                    <p className={styles.eyebrow}>// Integrations</p>
+                    <h2 className={styles.heading}>Reports where your team already works.</h2>
                     <p className={styles.subheading}>
-                        Surface Kensa output where your team already works. The report is static HTML,
-                        so any CI can publish it; these go further.
+                        The report is static HTML, so any CI can publish it. These go further.
                     </p>
                 </div>
                 <div className={styles.grid}>

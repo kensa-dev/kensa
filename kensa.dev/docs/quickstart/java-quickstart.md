@@ -1,13 +1,13 @@
 ---
-title: BDD Testing in Java with JUnit 5 — Quickstart
-sidebar_label: Quickstart — Java & JUnit 5
+title: BDD Testing in Java with JUnit 5 & 6 — Quickstart
+sidebar_label: Quickstart — Java & JUnit
 sidebar_position: 2
-description: Step-by-step guide to adding Kensa to a Java project with JUnit 5, writing your first Given-When-Then test, and viewing the generated HTML report.
+description: Step-by-step guide to adding Kensa to a Java project with JUnit 5 or 6, writing your first Given-When-Then test, and viewing the generated HTML report.
 ---
 
-# Quickstart — Java & JUnit 5
+# Quickstart — Java & JUnit
 
-This guide walks through setting up Kensa in a Java project with JUnit 5 and writing your first test.
+This guide walks through setting up Kensa in a Java project with JUnit 6 (or 5) and writing your first test.
 
 ## 1. Add Dependencies
 
@@ -16,7 +16,7 @@ The `kensa-bom` lines up versions across the framework and assertions artifacts 
 ```groovy title="build.gradle"
 dependencies {
     testImplementation platform('dev.kensa:kensa-bom:<version>')
-    testImplementation 'dev.kensa:kensa-framework-junit5'    // for JUnit 5; use kensa-framework-junit6 for JUnit 6
+    testImplementation 'dev.kensa:kensa-framework-junit6'    // or kensa-framework-junit5 for JUnit 5
 
     // Pick one assertions bridge (or use multiple)
     testImplementation 'dev.kensa:kensa-assertions-assertj'    // AssertJ

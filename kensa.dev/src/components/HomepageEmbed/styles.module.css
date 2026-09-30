@@ -6,9 +6,6 @@
 }
 
 .inner {
-    max-width: var(--ifm-container-width);
-    margin: 0 auto;
-    padding: 0 var(--ifm-spacing-horizontal);
     display: grid;
     grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
     gap: 3.5rem;

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import styles from './styles.module.css';
 
@@ -8,7 +9,7 @@ import styles from './styles.module.css';
 export default function HomepageEmbed(): ReactNode {
     return (
         <section className={styles.embed}>
-            <div className={styles.inner}>
+            <div className={clsx('container', styles.inner)}>
                 <div className={styles.copy}>
                     <p className={styles.eyebrow}>// Embed</p>
                     <h2 className={styles.heading}>Put the report where the decision is made.</h2>

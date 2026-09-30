@@ -1,24 +1,40 @@
 .ecosystem {
-  padding: 3rem 0 3.5rem;
+  padding: 4.5rem 0;
   background: var(--ifm-background-surface-color);
   border-top: 1px solid var(--ifm-color-emphasis-200);
 }
 
 .header {
-  margin-bottom: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--kensa-accent-strong);
+}
+
+[data-theme='dark'] .eyebrow {
+  color: var(--kensa-accent);
 }
 
 .heading {
-  font-size: 1.6rem;
+  font-size: 2.25rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.35rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0 0 0.75rem;
   color: var(--ifm-heading-color);
 }
 
 .subheading {
-  font-size: 0.95rem;
-  color: var(--ifm-color-emphasis-700);
+  max-width: 44rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--ifm-color-emphasis-800);
   margin: 0;
 }
 
@@ -149,10 +165,6 @@
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr;
-  }
-
-  .heading {
-    font-size: 1.4rem;
   }
 }
 
