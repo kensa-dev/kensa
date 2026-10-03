@@ -170,7 +170,7 @@ func TestGetTestReportsWhereItLooked(t *testing.T) {
 }
 
 func TestListFailuresAcrossSite(t *testing.T) {
-	out, _, err := listFailuresFor("testdata/site")
+	out, _, err := listFailuresFor("testdata/site", false)
 	if err != nil {
 		t.Fatalf("listFailures: %v", err)
 	}

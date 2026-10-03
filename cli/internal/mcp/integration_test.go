@@ -203,3 +203,24 @@ func decodeStructured(t *testing.T, res *mcp.CallToolResult, dst any) {
 	}
 	t.Fatalf("no structured or text content in result: %+v", res)
 }
+
+func TestIntegrationListFailuresPartial(t *testing.T) {
+	ctx := context.Background()
+	session := newConnectedSession(t, ctx)
+
+	res, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name:      "list_failures",
+		Arguments: map[string]any{"bundle_dir": liveBundle(t, deadPid), "partial": true},
+	})
+	if err != nil {
+		t.Fatalf("CallTool list_failures: %v", err)
+	}
+	if res.IsError {
+		t.Fatalf("list_failures partial returned error result: %+v", res.Content)
+	}
+	var out listFailuresOut
+	decodeStructured(t, res, &out)
+	if !out.Partial || out.RunState != runAbandoned || len(out.Failures) != 1 {
+		t.Fatalf("list_failures partial = %+v", out)
+	}
+}

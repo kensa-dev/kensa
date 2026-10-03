@@ -49,7 +49,7 @@ func TestListTestsReportsBundleFreshness(t *testing.T) {
 func TestListFailuresReportsBundleFreshness(t *testing.T) {
 	written := time.Date(2026, 8, 25, 9, 0, 0, 0, time.UTC)
 	fixNow(t, written.Add(49*time.Hour))
-	out, _, err := listFailuresFor(staleBundle(t, written))
+	out, _, err := listFailuresFor(staleBundle(t, written), false)
 	if err != nil {
 		t.Fatalf("listFailures: %v", err)
 	}

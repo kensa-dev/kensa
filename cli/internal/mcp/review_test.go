@@ -80,7 +80,7 @@ func TestMissingSiteSourceIsNamedNotMistakenForARun(t *testing.T) {
 	site := t.TempDir()
 	writeFile(t, filepath.Join(site, "manifest.json"), `{"sources":[{"id":"api","url":"sources/api"},{"id":"ui","url":"sources/ui"}]}`)
 	writeFile(t, filepath.Join(site, "sources", "api", "indices.json"), indicesJSON(t))
-	_, _, err := listFailuresFor(site)
+	_, _, err := listFailuresFor(site, false)
 	if err == nil || !strings.Contains(err.Error(), "ui") || !strings.Contains(err.Error(), "sources/ui") || strings.Contains(err.Error(), "await_results") {
 		t.Errorf("listFailures: %v", err)
 	}
@@ -101,7 +101,7 @@ func TestSiteListingErrorNamesEachIncompleteSource(t *testing.T) {
 	writeFile(t, filepath.Join(site, "sources", "api", "run.json"), markerJSON("2026-08-27T08:00:00Z", "", deadPid))
 	writeFile(t, filepath.Join(site, "sources", "ui", "run.json"), markerJSON("2026-08-27T09:04:00Z", "", os.Getpid()))
 	writeFile(t, filepath.Join(site, "sources", "db", "indices.json"), indicesJSON(t))
-	_, _, err := listFailuresFor(site)
+	_, _, err := listFailuresFor(site, false)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -139,7 +139,7 @@ func TestAwaitResultsCompletesDespiteAbandonedSibling(t *testing.T) {
 }
 
 func TestListingsNoLongerCarryAConstantRunState(t *testing.T) {
-	out, _, err := listFailuresFor(completeBundle(t))
+	out, _, err := listFailuresFor(completeBundle(t), false)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -24,7 +24,7 @@ nothing to read.
 | Tool | Args | Returns |
 |------|------|---------|
 | `list_tests` | `bundle_dir` (optional), `state` (string, optional), `children` (bool, optional) | `{ tests: TestEntry[], bundleWrittenAt, bundleAge }` — every test class, optionally filtered by state. Compact by default: each class row carries `methods` (state counts — `passed`, `failed`, `disabled`, `notExecuted`, `total`) and `elapsedMs` (its methods' `timing` summed, absent when none of them carry timing — a pre-0.9.2 bundle), with `children` left out. Pass `children: true` to include the method rows under each class. A class whose immediate children are not all methods (a nested container, such as a suite-level container holding other classes) is left as-is regardless of `children`: children kept, no counts. Each `TestEntry` has `id`, `testClass`, `testMethod` (child entries only), `displayName`, `state`, `tags`, `issues`, `epics`, `hasErrors`, `source`, `timing` (one `[startMs, elapsedMs]` pair per invocation), `participants` (interaction count per named participant), `assertions`, `expandables`, `methods`, `elapsedMs`, and nested `children`. |
-| `list_failures` | `bundle_dir` (optional) | `{ failures: TestEntry[], bundleWrittenAt, bundleAge }` — only the test classes whose `state` is `Failed`, with `children`; `methods`/`elapsedMs` are populated whenever the class's children are all methods. |
+| `list_failures` | `bundle_dir` (optional), `partial` (bool, optional) | `{ failures: TestEntry[], bundleWrittenAt, bundleAge }` — only the test classes whose `state` is `Failed`, with `children`; `methods`/`elapsedMs` are populated whenever the class's children are all methods. `partial: true` also reads a run that has not completed, from the class results written so far; the answer then carries `partial: true` and `runState` in place of the freshness fields. |
 | `get_test` | `bundle_dir` (optional), `id` (string), `raw` (bool, optional) | The result for one test class, rendered: `tests[]` → `{testMethod, displayName, state, elapsedTime, invocations[]}` with `sentences[{line, text}]`, `fixtures`, `interactions` (names) and `exception {message, sourceLocation}` where one failed. A child id `<class>:<method>` narrows `tests[]` to that one method. `raw: true` returns the result file verbatim, token stream and diagrams included, always for the whole class regardless of a child id. |
 | `failure_evidence` | `bundle_dir` (optional), `id` (string) | `{ testClass, state, failures[], distinctExceptions }` — one entry per failed invocation with `testMethod`, `failingSentence`, `failingSentenceLine`, `exception` and `sourceLocation` (the deepest stack frame inside the test class, e.g. `PaymentTest.kt:107`). |
 | `captured_interactions` | `bundle_dir` (optional), `id` (string), `max_value_chars` (int, optional, default 4000) | `{ testClass, methods[] }` — every interaction Kensa captured, per method and invocation: `name`, `from`, `to`, `values[{name, value, language, truncated, fullLength}]` (request and response bodies, URLs) and `attributes` grouped by name (`Status`, `Headers`). A child id `<class>:<method>` narrows to one method. |
@@ -70,8 +70,10 @@ classifies a bundle as:
 `list_tests` and `list_failures` refuse anything but `complete` with an error
 that says which state it is, how many classes are written so far, and what to
 do next; for a site root it names each source that is not complete. A partial
-listing would read as a clean one. `get_test` and `failure_evidence` still
-work mid-run for classes already written.
+listing would read as a clean one, so it is given only on request:
+`list_failures` with `partial: true` reads the classes written so far and says
+so. `get_test` and `failure_evidence` still work mid-run for classes already
+written.
 
 The marker is written when the first Kensa test *starts*, so between launching
 the tests and that moment the previous bundle is still on disk and still reads

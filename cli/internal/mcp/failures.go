@@ -93,13 +93,19 @@ func getTest(_ context.Context, _ *mcp.CallToolRequest, in getTestIn) (*mcp.Call
 
 type listFailuresIn struct {
 	BundleDir string `json:"bundle_dir,omitempty" jsonschema:"kensa-output bundle, site-mode root, or a test folder name from .kensa-properties; omit when the project configures exactly one"`
+	Partial   bool   `json:"partial,omitempty" jsonschema:"also read a run that has not completed, from the class results written so far; the answer then carries partial: true and the runState"`
 }
 type listFailuresOut struct {
 	Failures []TestEntry `json:"failures"`
+	Partial  bool        `json:"partial,omitempty"`
+	RunState string      `json:"runState,omitempty"`
 	bundleFreshness
 }
 
-func listFailuresFor(bundle string) (listFailuresOut, *mcp.CallToolResult, error) {
+func listFailuresFor(bundle string, partial bool) (listFailuresOut, *mcp.CallToolResult, error) {
+	if partial {
+		return partialFailuresFor(bundle)
+	}
 	all, fresh, err := readAllIndices(bundle)
 	if err != nil {
 		return listFailuresOut{}, nil, err
@@ -115,7 +121,7 @@ func listFailuresFor(bundle string) (listFailuresOut, *mcp.CallToolResult, error
 }
 
 func listFailures(_ context.Context, _ *mcp.CallToolRequest, in listFailuresIn) (*mcp.CallToolResult, listFailuresOut, error) {
-	out, res, err := listFailuresFor(in.BundleDir)
+	out, res, err := listFailuresFor(in.BundleDir, in.Partial)
 	return res, out, err
 }
 

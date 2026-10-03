@@ -111,7 +111,7 @@ func TestExpandAcceptsBundleInProgress(t *testing.T) {
 func TestListingsRefuseBundleInProgress(t *testing.T) {
 	fixNow(t, time.Date(2026, 8, 27, 9, 2, 0, 0, time.UTC))
 	dir := runningBundle(t, os.Getpid())
-	_, _, err := listFailuresFor(dir)
+	_, _, err := listFailuresFor(dir, false)
 	if err == nil || !strings.Contains(err.Error(), "in progress") || !strings.Contains(err.Error(), "2 classes") || !strings.Contains(err.Error(), "await_results") {
 		t.Errorf("listFailures on running bundle: %v", err)
 	}
@@ -119,11 +119,11 @@ func TestListingsRefuseBundleInProgress(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "in progress") {
 		t.Errorf("listTests on running bundle: %v", err)
 	}
-	_, _, err = listFailuresFor(runningBundle(t, deadPid))
+	_, _, err = listFailuresFor(runningBundle(t, deadPid), false)
 	if err == nil || !strings.Contains(err.Error(), "never completed") {
 		t.Errorf("listFailures on abandoned bundle: %v", err)
 	}
-	_, _, err = listFailuresFor(legacyBundle(t, false))
+	_, _, err = listFailuresFor(legacyBundle(t, false), false)
 	if err == nil || !strings.Contains(err.Error(), "incomplete") {
 		t.Errorf("listFailures on legacy incomplete bundle: %v", err)
 	}
@@ -131,7 +131,7 @@ func TestListingsRefuseBundleInProgress(t *testing.T) {
 
 func TestListingsUseMarkerFinishTime(t *testing.T) {
 	fixNow(t, time.Date(2026, 8, 27, 10, 3, 0, 0, time.UTC))
-	out, _, err := listFailuresFor(completeBundle(t))
+	out, _, err := listFailuresFor(completeBundle(t), false)
 	if err != nil {
 		t.Fatal(err)
 	}

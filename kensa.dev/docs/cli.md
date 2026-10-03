@@ -149,7 +149,7 @@ Two tools deal with the run itself:
 
 The tools read whatever the last test run wrote. An empty `list_failures` can mean nothing is broken, or that nobody has run the tests since the change, or that the tests are running right now. Kensa 0.9.2 and later write a `run.json` marker into the bundle when the first test starts and finalise it when the report is complete, and the server uses it two ways:
 
-- `list_tests` and `list_failures` refuse a bundle whose run is `running`, `abandoned` or `incomplete`, with an error saying which and what to do. A partial listing would look like a clean one.
+- `list_tests` and `list_failures` refuse a bundle whose run is `running`, `abandoned` or `incomplete`, with an error saying which and what to do. A partial listing would look like a clean one. To watch failures arrive during a run, call `list_failures` with `partial: true`: it reads the classes written so far and marks the answer `partial` with the `runState`.
 - Every listing carries `bundleWrittenAt` (RFC 3339 UTC) and `bundleAge` (`3h12m`, `2d1h`). An agent triaging a red build should check the age before trusting the result, and re-run the tests if it predates the change under investigation.
 
 The marker also carries live counts. Each time a class finishes, Kensa adds it to `classes` and its methods to `passed`, `failed` and `disabled`, so `run_status` can report progress mid-run and an agent can react to the first failure without waiting for the whole run. Counts cover completed classes only; a class still executing contributes nothing until it finishes. A burst of completions is written once, and the file is replaced atomically, so a reader never sees a torn marker.

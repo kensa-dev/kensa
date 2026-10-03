@@ -2,6 +2,9 @@
 
 ### v1.0.0
 
+Added:
+  - **Live failures from a run in progress.** `list_failures` takes `partial: true` to read the failed classes written so far while a run is going, from the per-class result files; the answer carries `partial: true` and the `runState`, so it never reads as a clean listing. Without the argument an unfinished run is refused as before.
+
 Changed:
   - **Kotest 6.2.5.** Dependency bumps; no API changes. Also PlantUML 1.2026.8, Byte Buddy 1.18.14, Playwright 1.63.0, Selenium 4.49.0.
 

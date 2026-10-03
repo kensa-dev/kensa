@@ -63,7 +63,7 @@ func TestFailureEvidenceIgnoresEmptyExecutionException(t *testing.T) {
 }
 
 func TestListFailures(t *testing.T) {
-	out, _, err := listFailuresFor("testdata/bundle")
+	out, _, err := listFailuresFor("testdata/bundle", false)
 	if err != nil {
 		t.Fatalf("listFailures: %v", err)
 	}
@@ -198,7 +198,7 @@ func TestListTestsLeavesNestedContainersAlone(t *testing.T) {
 }
 
 func TestListFailuresPopulatesMethodsAndElapsed(t *testing.T) {
-	out, _, err := listFailuresFor("testdata/bundle")
+	out, _, err := listFailuresFor("testdata/bundle", false)
 	if err != nil {
 		t.Fatalf("listFailures: %v", err)
 	}
