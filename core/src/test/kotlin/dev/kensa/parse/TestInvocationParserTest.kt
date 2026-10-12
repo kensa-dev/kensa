@@ -97,6 +97,20 @@ class TestInvocationParserTest {
     }
 
     @Test
+    fun `uses the display name label when another argument's text contains a comma`() {
+        val builder = { m: String -> m }
+        val configuration = Configuration()
+
+        val invocation = parse(
+            configuration,
+            arguments = arrayOf(builder, "name=a, value=b", "descval"),
+            displayName = "[1] My Nice Builder, \"name=a, value=b\", \"descval\"",
+        )
+
+        invocation.namedParameterValues shouldContain NamedValue("p1", "My Nice Builder")
+    }
+
+    @Test
     fun `does not substitute the display name label for values with a meaningful toString`() {
         val configuration = Configuration()
 

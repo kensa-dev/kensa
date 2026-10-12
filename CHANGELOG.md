@@ -8,6 +8,9 @@ Added:
 Changed:
   - **Kotest 6.2.5.** Dependency bumps; no API changes. Also PlantUML 1.2026.8, Byte Buddy 1.18.14, Playwright 1.63.0, Selenium 4.49.0.
 
+Fixes:
+  - **`Named` labels survive commas in other arguments.** The parameter table showed a `Named` argument's raw `Type@hash` instead of its label whenever another argument in the same invocation rendered with `", "` in it, such as a data class with two fields. The display name was split on every `", "`, so the labels no longer lined up with the parameters and were all dropped (#250).
+
 ### v0.9.6
 
 Added:

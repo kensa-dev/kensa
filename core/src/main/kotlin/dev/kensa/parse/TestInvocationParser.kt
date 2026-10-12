@@ -29,7 +29,7 @@ internal class TestInvocationParser(private val configuration: Configuration) {
     private fun render(parsedMethod: ParsedMethod, testInvocationContext: TestInvocationContext): Pair<ParsedInvocation, List<RenderError>> {
         val errors = mutableListOf<RenderError>()
 
-        val argumentLabels = argumentLabels(testInvocationContext.displayName, parsedMethod.parameters.descriptors.size)
+        val argumentLabels = argumentLabels(testInvocationContext.displayName, testInvocationContext.arguments.take(parsedMethod.parameters.descriptors.size))
 
         val namedParameterValues = runCatching {
             parsedMethod.parameters.descriptors
@@ -129,10 +129,20 @@ internal class TestInvocationParser(private val configuration: Configuration) {
     // label for each argument, but the invocation arguments are already unwrapped to the raw payload. For opaque
     // payloads (lambdas/builders with a default `Object.toString()`) the raw value renders as noise, so fall back to
     // the label parsed positionally from the display name when one is available.
-    private fun argumentLabels(displayName: String, parameterCount: Int): List<String>? =
+    private fun argumentLabels(displayName: String, arguments: List<Any?>): List<String>? =
         DISPLAY_NAME_ARGUMENTS.matchEntire(displayName)?.groupValues?.get(1)
-            ?.split(", ")
-            ?.takeIf { it.size == parameterCount }
+            ?.takeIf { arguments.isNotEmpty() }
+            ?.let { splitArguments(it, arguments) }
+
+    private fun splitArguments(text: String, arguments: List<Any?>): List<String>? {
+        if (arguments.size == 1) return listOf(text)
+        val value = arguments.first()
+        val knownEnds = listOf("\"$value\"", "'$value'", "$value").filter { text.startsWith("$it, ") }.map { it.length }
+        val separatorEnds = generateSequence(text.indexOf(", ")) { text.indexOf(", ", it + 1) }.takeWhile { it >= 0 }
+        return (knownEnds.asSequence() + separatorEnds).distinct().firstNotNullOfOrNull { end ->
+            splitArguments(text.substring(end + 2), arguments.drop(1))?.let { listOf(text.substring(0, end)) + it }
+        }
+    }
 
     private fun labelledValue(value: Any?, descriptor: ElementDescriptor, labels: List<String>?): Any? {
         if (value == null || labels == null || descriptor !is ElementDescriptor.ParameterElementDescriptor) return value
