@@ -6,11 +6,11 @@ description: Where Kensa is heading - the road to 1.0, and the stub server, outp
 
 # Roadmap
 
-Kensa is currently at **0.9.5** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes. The next release is **0.9.6**.
+Kensa is at **1.0.0** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes.
 
-## Next: v1.0
+## v1.0
 
-The 1.0 release is primarily about stability:
+The 1.0 release is about stability:
 
 - **API freeze** - shipped in 0.9.0. The supported surface is now sealed by the compiler rather than by convention: implementation packages are `internal`, and the integration SPI requires an explicit opt-in. [Stability and Compatibility](./stability-and-compatibility.md) says what semantic versioning will and will not cover, and the [support matrix](./support-matrix.md) lists the Kotlin, JDK and framework versions each release is built for.
 - **Documentation** - a completeness and accuracy pass across the whole site, plus versioned docs from 1.0 onwards.
@@ -18,7 +18,7 @@ The 1.0 release is primarily about stability:
 
 The report features that 1.0 is about, embed mode, link unfurl pages, `withLinkBaseUrl`, the sticky test name and badge filtering, shipped in 0.9.5 and are listed below.
 
-Feature work beyond the report resumes after 1.0.
+Feature work beyond the report resumes from here.
 
 ## After 1.0: past the test run
 
@@ -91,6 +91,20 @@ Smaller than the three above, and nearer. These are accepted and next in line on
 - **Wiki export** - copy a test or a sequence diagram in a form that pastes cleanly into a wiki page or a ticket, for the places an embed cannot go.
 
 ## Recently shipped
+
+### v1.0.0
+- Java lambdas may throw checked exceptions - `Action.of`, `StateCollector.of` and `SetupStep.of` take throwing lambdas and pass the exception to the report unchanged
+- `CapturedOutputs.highlight(label, value)` - highlight a one-off value without declaring a key
+- MCP `list_failures` with `partial: true` reads the failures of a run still in progress
+- `Named` parameter labels survive commas in other arguments
+- Kotlin 2.4.21
+
+### v0.9.6
+- Three MCP log tools, `list_log_sources`, `invocation_logs` and `read_log`, backed by a log source manifest in `run.json`
+- Parameter values are typed in the report, and log tabs with no entries show instead of hiding
+- Embed frames shrink as well as grow
+- Amber accent, and dark mode follows the OS until you choose
+- Kotlin 2.4.20; `TableRenderer` removed
 
 ### v0.9.5
 - Embed mode - one test class or method rendered with no sidebar, header or search, for framing in a wiki page, a design doc or a service catalogue. See [Embedding](./reports/embedding.md)
