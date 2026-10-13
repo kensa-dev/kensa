@@ -6,7 +6,7 @@ description: Where Kensa is heading - the road to 1.0, and the stub server, outp
 
 # Roadmap
 
-Kensa is at **1.0.0** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes.
+Kensa is at **1.0.1** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes.
 
 ## v1.0
 
@@ -91,6 +91,9 @@ Smaller than the three above, and nearer. These are accepted and next in line on
 - **Wiki export** - copy a test or a sequence diagram in a form that pastes cleanly into a wiki page or a ticket, for the places an embed cannot go.
 
 ## Recently shipped
+
+### v1.0.1
+- Sequence diagrams keep their styling and interaction highlighting again; PlantUML is back on 1.2026.6
 
 ### v1.0.0
 - Java lambdas may throw checked exceptions - `Action.of`, `StateCollector.of` and `SetupStep.of` take throwing lambdas and pass the exception to the report unchanged
