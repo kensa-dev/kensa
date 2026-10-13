@@ -13,6 +13,16 @@ interface SetupStep {
         scope.action { actions().buildWith(it).executeWith(it) }
         scope.verify { verify().verifyWith(it) }
     }
+
+    companion object {
+        /**
+         * Builds a [SetupStep] that runs [actions] in order, for Java callers whose actions throw checked exceptions.
+         * The Java equivalent of [setupActions].
+         */
+        @JvmStatic
+        @SafeVarargs
+        fun of(vararg actions: ThrowingAction<ActionContext>): SetupStep = setupStep { actions.forEach { action(Action.of(it)) } }
+    }
 }
 
 fun SetupStep.and(other: SetupStep): SetupSteps = SetupSteps(this).apply { add(other) }

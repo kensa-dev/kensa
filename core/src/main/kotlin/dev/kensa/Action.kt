@@ -57,4 +57,24 @@ fun interface Action<C> {
      * @param context The context containing the relevant data for the action.
      */
     fun execute(context: C)
+
+    companion object {
+        /**
+         * Adapts a [ThrowingAction] to an [Action], so a Java lambda can throw checked exceptions.
+         * The exception propagates unchanged.
+         */
+        @JvmStatic
+        fun <C> of(action: ThrowingAction<C>): Action<C> = Action { action.execute(it) }
+    }
+}
+
+/**
+ * An [Action] body that may throw checked exceptions, for Java callers. Adapt it with [Action.of].
+ *
+ * @param C The type of context required for the action.
+ */
+@FunctionalInterface
+fun interface ThrowingAction<C> {
+    @Throws(Exception::class)
+    fun execute(context: C)
 }

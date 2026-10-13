@@ -156,3 +156,9 @@ ctx.getOutputs().set(TRANSACTION_ID, result.getTransactionId());
 
 </TabItem>
 </Tabs>
+
+For a one-off value there is no need to declare a key. `highlight(label, value)` records the value as highlighted and returns it, and skips a null value. It is a method on `CapturedOutputs`:
+
+```java
+Account account = getOutputs().highlight("account", accounts.open());
+```

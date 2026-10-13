@@ -36,6 +36,16 @@ class CapturedOutputs {
         }
     }
 
+    /**
+     * Records [value] as a highlighted output under [label] and returns it. A null [value] is skipped.
+     */
+    fun <T> highlight(label: String, value: T): T = value.also {
+        if (it != null) synchronized(lock) {
+            values[label] = it
+            highlightedKeys.add(label)
+        }
+    }
+
     operator fun <T : Any> set(key: CapturedOutput<T>, value: T) {
         put(key, value)
     }

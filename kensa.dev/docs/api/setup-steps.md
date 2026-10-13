@@ -129,7 +129,13 @@ private fun anAccountIsOpenedViaKotestSetupStep() = kotestSetupStep {
 given(anAccountIsOpenedViaKotestSetupStep())
 ```
 
-From Java, these are `dev.kensa.SetupStepKt.setupActions(...)`; `setupStep`'s receiver lambda isn't practical to call from Java, so Java callers keep building the anonymous `SetupStep` shown above instead.
+From Java, use `SetupStep.of(...)`. It takes one or more `ActionContext` lambdas, runs them in order, and lets them throw checked exceptions, which reach the report unchanged. `setupStep`'s receiver lambda isn't practical to call from Java, so anything beyond a list of actions still needs the anonymous `SetupStep` shown above.
+
+```java
+private SetupStep anAccountIsOpened() {
+    return SetupStep.of(ctx -> accounts.open(ctx.getFixtures().get(CUSTOMER)));
+}
+```
 
 ## Registering steps
 

@@ -105,6 +105,14 @@ class LoanDecisionTest implements KensaTest, WithAssertJ {
 | `Action<ActionContext>` | Lambda that runs during `whenever()` — exercises the system |
 | `StateCollector<T>` | Lambda that receives a `CollectorContext` and returns a value for `then()` to assert against |
 
+`Action` and `StateCollector` lambdas cannot throw checked exceptions. When the code under a lambda does, wrap it with `Action.of(...)` or `StateCollector.of(...)`, which accept throwing lambdas and let the exception reach the report unchanged:
+
+```java
+private StateCollector<LoanResult> theLoanResult() {
+    return StateCollector.of(ctx -> service.fetchResult(applicant));
+}
+```
+
 For shared, lazily-created test data — reusable across tests and rendered in the report's Fixtures tab — see [Fixtures](../api/fixtures.md).
 
 ## 3. Chain Multiple Steps

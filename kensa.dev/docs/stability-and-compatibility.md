@@ -21,7 +21,7 @@ The promise applies to the stable surface only. Anything marked `internal`, `@Ke
 
 These are frozen and governed by the rules above.
 
-- **The authoring DSL** on `KensaTest`: `given` / `and` / `whenever` / `then`, plus `Action`, [`SetupStep`](./api/setup-steps.md), `StateCollector` and `RefinedSugar`.
+- **The authoring DSL** on `KensaTest`: `given` / `and` / `whenever` / `then`, plus `Action`, [`SetupStep`](./api/setup-steps.md), `StateCollector`, their Java adapters `ThrowingAction` and `ThrowingCollector`, and `RefinedSugar`.
 - **Authoring [annotations](./api/annotations.md)** and their enums: `@RenderedValue`, `@ExpandableRenderedValue`, `@RenderedValueWithHint`, `@ExpandableSentence`, `@Highlight`, `@Issue`, `@Notes`, `@Sources`, `@KensaTab`, `@AutoOpenTab`, `@UseSetupStrategy` and `@ParameterizedTestDescription`.
 - **[Configuration](./api/configuration.md)**: `Kensa`, `KensaConfigurator`, `Configuration`, and the documented `kensa.*` system properties, including the `kensa.source.id` site-mode behaviour.
 - **Renderers**: `ValueRenderer` and [`InteractionRenderer`](./api/interaction-renderers.md).
