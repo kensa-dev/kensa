@@ -8,7 +8,8 @@ Added:
   - **`CapturedOutputs.highlight(label, value)`.** Records a highlighted output without declaring a key, returns the value, and skips a null value (#253).
 
 Changed:
-  - **Kotest 6.2.5.** Dependency bumps; no API changes. Also PlantUML 1.2026.8, Byte Buddy 1.18.14, Playwright 1.63.0, Selenium 4.49.0.
+  - **Kotlin 2.4.21.** The compiler plugin is built against Kotlin 2.4.21 and loads only in that compiler, so consumers must compile with 2.4.21. Pair with the build-plugins release that raises its Kotlin floor to 2.4.21.
+  - **Kotest 6.2.5.** Dependency bumps; no API changes. Also Jackson 2.22.3, PlantUML 1.2026.8, Byte Buddy 1.18.14, Playwright 1.63.0, Selenium 4.50.0.
 
 Fixes:
   - **`Named` labels survive commas in other arguments.** The parameter table showed a `Named` argument's raw `Type@hash` instead of its label whenever another argument in the same invocation rendered with `", "` in it, such as a data class with two fields. The display name was split on every `", "`, so the labels no longer lined up with the parameters and were all dropped (#250).
