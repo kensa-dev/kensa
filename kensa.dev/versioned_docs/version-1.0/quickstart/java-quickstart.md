@@ -1,0 +1,172 @@
+---
+title: BDD Testing in Java with JUnit 5 & 6 — Quickstart
+sidebar_label: Quickstart — Java & JUnit
+sidebar_position: 2
+description: Step-by-step guide to adding Kensa to a Java project with JUnit 5 or 6, writing your first Given-When-Then test, and viewing the generated HTML report.
+---
+
+# Quickstart — Java & JUnit
+
+This guide walks through setting up Kensa in a Java project with JUnit 6 (or 5) and writing your first test.
+
+## 1. Add Dependencies
+
+The `kensa-bom` lines up versions across the framework and assertions artifacts so you don't have to repeat them. `kensa-core` flows in transitively from the framework artifact — you don't need to declare it.
+
+```groovy title="build.gradle"
+dependencies {
+    testImplementation platform('dev.kensa:kensa-bom:<version>')
+    testImplementation 'dev.kensa:kensa-framework-junit6'    // or kensa-framework-junit5 for JUnit 5
+
+    // Pick one assertions bridge (or use multiple)
+    testImplementation 'dev.kensa:kensa-assertions-assertj'    // AssertJ
+    testImplementation 'dev.kensa:kensa-assertions-hamcrest'   // Hamcrest
+}
+```
+
+Find the latest version on [GitHub releases](https://github.com/kensa-dev/kensa/releases).
+
+> Site-mode reporting (multi-sourceset aggregated reports) is wired up by the [Kensa Gradle plugin](../build-plugins/gradle-plugin.md). Pure-Java projects don't otherwise need the plugin — value capture for Java goes through the runtime, not a compiler plugin.
+
+## 2. Write a Test
+
+Implement `KensaTest` and mix in an assertions bridge. No `@ExtendWith` is needed — the `KensaExtension` is pulled in automatically via the interface, and the lifecycle listener is registered via the JUnit Platform `ServiceLoader`. Test methods follow the Given–When–Then structure using the `given()`, `whenever()`, and `then()` DSL.
+
+```java
+import dev.kensa.Action;
+import dev.kensa.ActionContext;
+import dev.kensa.GivensContext;
+import dev.kensa.RenderedValue;
+import dev.kensa.StateCollector;
+import dev.kensa.junit.KensaTest;
+import dev.kensa.assertj.WithAssertJ;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class LoanDecisionTest implements KensaTest, WithAssertJ {
+
+    @RenderedValue
+    private final String applicantName = "Alice";
+
+    @RenderedValue
+    private final int requestedAmount = 10_000;
+
+    private final LoanService service = new LoanService();
+    private Applicant applicant;
+    private LoanResult result;
+
+    @Test
+    void canApproveLoanForApplicantWithGoodCredit() {
+        given(anApplicantWithGoodCredit());
+        whenever(theLoanServiceProcessesTheApplication());
+        then(theLoanResult(), r -> assertThat(r.getStatus()).isEqualTo(LoanStatus.Approved));
+    }
+
+    @Test
+    void canDeclineLoanForApplicantWithPoorCredit() {
+        given(anApplicantWithPoorCredit());
+        whenever(theLoanServiceProcessesTheApplication());
+        then(theLoanResult(), r -> assertThat(r.getStatus()).isEqualTo(LoanStatus.Declined));
+    }
+
+    // --- Givens ---
+
+    private Action<GivensContext> anApplicantWithGoodCredit() {
+        return ctx -> applicant = new Applicant(applicantName, 750, requestedAmount);
+    }
+
+    private Action<GivensContext> anApplicantWithPoorCredit() {
+        return ctx -> applicant = new Applicant(applicantName, 300, requestedAmount);
+    }
+
+    // --- Action ---
+
+    private Action<ActionContext> theLoanServiceProcessesTheApplication() {
+        return ctx -> result = service.process(applicant);
+    }
+
+    // --- State ---
+
+    private StateCollector<LoanResult> theLoanResult() {
+        return ctx -> result;
+    }
+}
+```
+
+### What's happening here
+
+| Element | Purpose |
+|---|---|
+| `KensaTest` | Provides the Given–When–Then DSL; registers the JUnit extension |
+| `WithAssertJ` | Adds `then()` / `and()` overloads that accept AssertJ assertions |
+| `@RenderedValue` | Field value is captured and shown in the HTML report |
+| `Action<GivensContext>` | Lambda that runs during `given()` — sets up test state |
+| `Action<ActionContext>` | Lambda that runs during `whenever()` — exercises the system |
+| `StateCollector<T>` | Lambda that receives a `CollectorContext` and returns a value for `then()` to assert against |
+
+`Action` and `StateCollector` lambdas cannot throw checked exceptions. When the code under a lambda does, wrap it with `Action.of(...)` or `StateCollector.of(...)`, which accept throwing lambdas and let the exception reach the report unchanged:
+
+```java
+private StateCollector<LoanResult> theLoanResult() {
+    return StateCollector.of(ctx -> service.fetchResult(applicant));
+}
+```
+
+For shared, lazily-created test data — reusable across tests and rendered in the report's Fixtures tab — see [Fixtures](../api/fixtures.md).
+
+## 3. Chain Multiple Steps
+
+Use `and()` to chain additional setup or assertions:
+
+```java
+@Test
+void canApproveLoanWithUnderwritingApproval() {
+    given(anApplicantWithGoodCredit());
+    and(anApprovalFromUnderwriting());
+
+    whenever(theLoanServiceProcessesTheApplication());
+
+    then(theLoanResult(), r -> assertThat(r.getStatus()).isEqualTo(LoanStatus.Approved));
+    and(theLoanReference()).startsWith("LN-");
+}
+```
+
+The single-argument `then()` / `and()` overloads return a fluent AssertJ assertion directly. Declare the collector with one of the typed collector interfaces from `dev.kensa.assertj` (here `StringStateCollector`) to get the right assertion type:
+
+```java
+import dev.kensa.assertj.StringStateCollector;
+
+private StringStateCollector theLoanReference() {
+    return ctx -> result.getReference();
+}
+```
+
+## 4. Run & View the Report
+
+Run your tests normally with Gradle:
+
+```bash
+./gradlew test
+```
+
+By default, reports are written to a `kensa-output` directory in the system temp folder. Configure a fixed location in your test setup — `withOutputDir` requires an **absolute** path:
+
+```java
+Kensa.configure()
+    .withOutputDir(Paths.get("build/kensa-output").toAbsolutePath());
+```
+
+Then open `index.html` in a browser, or use the Kensa CLI to serve them:
+
+```bash
+kensa --dir build/kensa-output
+```
+
+---
+
+## Other Setups
+
+- [Kotlin Quickstart](kotlin-quickstart) — same structure, Kotlin-idiomatic patterns and `@RenderedValue` capture via the compiler plugin.
+- [TestNG Quickstart](testng-quickstart) — using `kensa-framework-testng` with TestNG as the runner (works for both Kotlin and Java).
+- [Maven Quickstart](maven-quickstart) — the same Java test with a `pom.xml` and the Kensa Maven plugin.

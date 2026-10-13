@@ -73,18 +73,14 @@ const config: Config = {
             keywords: ['experimental'],
             extendDefaults: true,
           },
-          // Docs versioning is deliberately OFF until the 1.0 release (avoids
-          // dual-maintaining docs/ and versioned_docs/ while pre-1.0 docs churn).
-          // To turn it on at release (rehearsed on the `versioning-scaffold` branch):
-          //   1. npm run docusaurus docs:version 1.0
-          //   2. add here:  lastVersion: '1.0',
-          //                 versions: {
-          //                   current: { label: 'Next', path: 'next', banner: 'unreleased' },
-          //                   '1.0': { label: '1.0' },
-          //                 }
-          //   3. add { type: 'docsVersionDropdown', position: 'right' } to navbar.items
-          // Released docs then serve at /docs/; work-in-progress at /docs/next/.
-          // Note: the local search plugin indexes only the latest released version.
+          // Released docs serve at /docs/; work in progress at /docs/next/. A fix to
+          // released docs goes into versioned_docs/version-1.0 as well as docs/.
+          // The local search plugin indexes only the latest released version.
+          lastVersion: '1.0',
+          versions: {
+            current: { label: 'Next', path: 'next', banner: 'unreleased' },
+            '1.0': { label: '1.0' },
+          },
         },
         blog: {
           // Drives the /blog listing <title>; the default is a bare "Blog".
@@ -159,6 +155,7 @@ const config: Config = {
           label: `v${kensaVersion}`,
           position: 'right',
         },
+        { type: 'docsVersionDropdown', position: 'right' },
         {
           href: 'https://github.com/kensa-dev/kensa',
           label: 'GitHub',

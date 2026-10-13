@@ -1,0 +1,213 @@
+---
+title: "Async Assertions: Testing Eventual Consistency"
+sidebar_label: Async Assertions
+sidebar_position: 5.5
+description: Reference for thenEventually and thenContinually — polling assertions for asynchronous behaviour, with timeout, interval and initial-delay tuning.
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Async Assertions
+
+When the action under test completes asynchronously — a message lands on a queue, a status flips after a callback — a plain `then()` races the system. The assertion mixins provide two polling variants:
+
+| Method | Semantics |
+|---|---|
+| `thenEventually(...)` / `andEventually(...)` | Re-runs the collector + assertion until it **passes**, or the timeout expires (fails with the last assertion error) |
+| `thenContinually(...)` | Re-runs the collector + assertion for the whole duration and fails the moment it **stops passing** — "this must keep being true" |
+
+Both render in the report as first-class sentence keywords (*Then eventually …*). `WithKotest`, `WithHamcrest` and `WithHamkrest` provide both; `WithAssertJ` provides `thenEventually` only. See [assertion bridges](./assertion-bridges.md) for the full per-bridge list.
+
+**Defaults:** 10-second timeout, 25 ms poll interval, no initial delay.
+
+## Kotest
+
+```kotlin
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+
+@Test
+fun `order is eventually confirmed`() {
+    whenever { orderService.placeOrder() }
+
+    // polls the collector until the block passes (default: 10s timeout, 25ms interval)
+    thenEventually(theOrderStatus()) { this shouldBe "CONFIRMED" }
+}
+
+@Test
+fun `order is eventually confirmed with custom timeout`() {
+    whenever { orderService.placeOrder() }
+
+    thenEventually(30.seconds, theOrderStatus()) { this shouldBe "CONFIRMED" }
+    andEventually(theOrderReference(), startWith("ORD-"))
+}
+```
+
+Timing is fully tunable via named parameters:
+
+```kotlin
+thenEventually(
+    initialDelay = 500.milliseconds,
+    duration = 30.seconds,
+    interval = 100.milliseconds,
+    collector = theOrderStatus(),
+    match = startWith("CONF")
+)
+```
+
+And the inverse — assert a condition *keeps holding*:
+
+```kotlin
+@Test
+fun `order is never cancelled`() {
+    whenever { orderService.placeOrder() }
+
+    // asserts the condition holds for the whole duration
+    thenContinually(5.seconds, theOrderStatus()) { this shouldBe "CONFIRMED" }
+}
+```
+
+Both accept either a matcher (`Matcher<T>`) or an assertion block (`T.() -> Unit`), just like `then()`.
+
+## AssertJ (Java)
+
+`WithAssertJ` provides `thenEventually` with the same collector-plus-assertion shape as its `then`:
+
+```java
+import java.time.temporal.ChronoUnit;
+
+@Test
+void orderIsEventuallyConfirmed() {
+    whenever(ctx -> orderService.placeOrder());
+
+    // polls the collector until the assertion passes (default: 10 seconds)
+    thenEventually(theOrderStatus(), status -> assertThat(status).isEqualTo("CONFIRMED"));
+}
+
+@Test
+void orderIsEventuallyConfirmedWithCustomTimeout() {
+    whenever(ctx -> orderService.placeOrder());
+
+    thenEventually(30L, ChronoUnit.SECONDS, theOrderStatus(),
+            status -> assertThat(status).isEqualTo("CONFIRMED"));
+}
+```
+
+## Hamcrest / HamKrest
+
+`WithHamcrest` and `WithHamkrest` provide `thenEventually` and `thenContinually` taking their respective `Matcher<T>` types, with the same optional leading `Duration`:
+
+```kotlin
+thenEventually(theOrderStatus(), equalTo("CONFIRMED"))
+thenContinually(5.seconds, theOrderStatus(), equalTo("CONFIRMED"))
+```
+
+## Multiple assertions in one window
+
+Chaining `andEventually` waits for each assertion in turn — the timeouts add up, and each assertion samples the system at a different moment. When several things should all become true within the *same* window, pass a block instead:
+
+```kotlin
+// all assertions poll in parallel inside one shared 10s window
+thenEventually(10.seconds) {
+    then(theOrderStatus(), be("CONFIRMED"))
+    and(theOrderReference()) { this should startWith("ORD-") }
+}
+```
+
+- All assertions poll **in parallel** — the total wait is the slowest assertion, never the sum.
+- Each assertion must pass at some point inside the window. Once it passes it stops polling ("locks in"), so a later regression of an already-passed assertion is not detected.
+- Collectors inside one block run concurrently: if they touch shared mutable state, it must be thread-safe.
+- If exactly one assertion never passes, its failure is thrown directly. If several never pass, they are aggregated — first failure as the cause, the rest attached as suppressed exceptions so no stack trace is lost. For example, a block with three assertions where two never pass:
+
+```
+2 of 3 assertions did not pass within 10s:
+  [2] expected: a value that is equal to "CONFIRMED" ...
+  [3] expected: a value that is equal to "ORD-1" ...
+```
+
+The per-assertion lines above come from the hamkrest bridge — each carries that assertion's own last failure message, so kotest users see kotest-style messages instead.
+
+The `thenContinually` block is the inverse: every assertion must hold on **every** tick for the whole duration, polled in parallel, and the block fails immediately when any assertion stops passing:
+
+```kotlin
+// every assertion must hold on every tick for the whole duration
+thenContinually(5.seconds) {
+    then(theOrderStatus(), be("CONFIRMED"))
+    and(theOrderReference()) { this should startWith("ORD-") }
+}
+```
+
+Matcher, assertion-block and `ThenSpec` forms are all usable inside the braces, and timing is configured at block level only: the full `initialDelay` / `duration` / `interval` triple on `thenEventually`, `duration` alone on `thenContinually`. The duration argument is optional on both block forms — omit it and the page's defaults apply (10-second timeout, 25 ms interval, no initial delay). The block forms are available on `WithKotest` and `WithHamkrest` (the lambda-friendly mixins) — not on `WithAssertJ` or `WithHamcrest`.
+
+`thenContinually` also accepts a `ThenSpec` directly, mirroring `then(spec)` and `thenEventually(spec)`:
+
+```kotlin
+thenContinually(spec)             // default 10s window
+thenContinually(2.seconds, spec)  // explicit window
+```
+
+It delegates to the block form, so the spec's matcher must hold on every poll and its `onMatch` fires once, on the first successful poll.
+
+## Negative assertions
+
+Asserting that something *does not* happen — "no cancellation event is ever received" — needs care with verb choice. `thenEventually` succeeds as soon as its assertion passes, so a negative assertion passes trivially on the very first poll, before a late event could possibly arrive. Pair negatives with:
+
+- **`then`** — a point-in-time check, right when a later positive assertion already anchors that the system has finished, or
+- **`thenContinually`** — the honest verb when the system could still emit: the assertion must keep holding for the whole window.
+
+For "no element matching" over a collection, the kotest and hamkrest test-support cores provide `noneMatching`:
+
+```kotlin
+import dev.kensa.kotest.testsupport.collections.noneMatching   // hamkrest: dev.kensa.hamkrest.testsupport.collections
+
+// passes while no element matches; fails listing the offending elements
+thenContinually(2.seconds, theCapturedEvents(), noneMatching(aCancelledOrderEvent()))
+```
+
+`noneMatching(matcher)` builds a `Matcher<Collection<T>>` that passes when no element matches — other elements are ignored, so unrelated traffic doesn't fail the assertion — and fails with the matching elements listed.
+
+## Thread locals and polling threads
+
+Checks inside the polling forms run on background threads, not the thread running the test. Kensa carries its own thread-bound state across automatically — `by fixtures(...)` delegates, `WithFixturesAndOutputs`, and `@RenderedValue`/`@ExpandableSentence` capture all work inside a check with no setup.
+
+A thread local your *own* code binds to the test thread does not come along by default. If a check reads one — a tracking-id holder, MDC, a tenant context — register a coroutine context provider once at configuration time:
+
+```kotlin
+object TrackingContext {
+    private val threadLocal = ThreadLocal<TrackingId>()
+
+    fun asContextElement(): CoroutineContext = threadLocal.asContextElement()
+
+    // ...
+}
+
+Kensa.configure()
+    .withCoroutineContextProviders(TrackingContext::asContextElement)
+```
+
+Each time a polling block starts, Kensa invokes every provider on the test thread and adds the resulting elements to the polling context — so `ThreadLocal.asContextElement()` captures the value the current test bound, and each check sees it on the polling thread, correctly per test even when tests run in parallel.
+
+A provider is any `() -> CoroutineContext`, so anything producing a context element works the same way — for example SLF4J's `MDCContext()` to keep MDC entries visible in checks.
+
+*Available from 0.9.3.*
+
+## In the report
+
+The keywords are recognised by the sentence renderer, so
+
+```kotlin
+thenEventually(theOrderStatus()) { this shouldBe "CONFIRMED" }
+```
+
+renders as *Then eventually the order status …* — the report reads as the requirement ("the order is eventually confirmed") rather than as polling mechanics.
+
+A multi-assertion block renders as a head sentence for the `thenEventually`/`thenContinually` clause, with each nested step appearing as its own indented line underneath. For example, a block asserting two things within a 2-second window renders as:
+
+```
+Then eventually 2 seconds
+   the first value equal to "first"
+   And the second value equal to "second"
+```
+
+The wrapper line keeps the polling window visible. The first inner step drops its `then` because the wrapper already said it, and each later step opens with `And` rendered bold as a keyword. A single-collector form such as `thenEventually(theOrderStatus()) { this shouldBe "CONFIRMED" }` is unaffected.

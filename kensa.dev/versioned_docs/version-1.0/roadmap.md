@@ -1,0 +1,155 @@
+---
+sidebar_position: 99
+title: Roadmap - 1.0, Kage, Hub and Replay
+description: Where Kensa is heading - the road to 1.0, and the stub server, output server and replay work that follows it.
+---
+
+# Roadmap
+
+Kensa is at **1.0.0** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes.
+
+## v1.0
+
+The 1.0 release is about stability:
+
+- **API freeze** - shipped in 0.9.0. The supported surface is now sealed by the compiler rather than by convention: implementation packages are `internal`, and the integration SPI requires an explicit opt-in. [Stability and Compatibility](./stability-and-compatibility.md) says what semantic versioning will and will not cover, and the [support matrix](./support-matrix.md) lists the Kotlin, JDK and framework versions each release is built for.
+- **Documentation** - a completeness and accuracy pass across the whole site, plus versioned docs from 1.0 onwards.
+- **Quality** - broader test coverage across the framework integrations.
+
+The report features that 1.0 is about, embed mode, link unfurl pages, `withLinkBaseUrl`, the sticky test name and badge filtering, shipped in 0.9.5 and are listed below.
+
+Feature work beyond the report resumes from here.
+
+## After 1.0: past the test run
+
+Kensa exists so that testers, analysts and product owners can see an honest account of what an application actually does - generated from the tests that ran, not from a document somebody maintained alongside them. The work now in progress extends that in three directions: to the **stubs the test drives**, to **where the reports land** for the people who read them, and to **watching the behaviour happen** rather than reading about it afterwards. A shorter list of report improvements sits behind those three.
+
+None of these has been released, and they are at different stages. They are described here so you can see where Kensa is going, not because they are ready to use.
+
+**All of it is open source, under the same licence as the framework.** There is no paid tier, no
+hosted edition and no feature held back - if it ships, you can run it yourself.
+
+### Kage - an out-of-process stub server
+
+**Kage** (影, "shadow" - a stub is a shadow of the real service it stands in for) makes the stub a deployable service rather than something assembled inside the test JVM.
+
+In-process stubs are quick to start with and get expensive later: they cannot be shared across teams, they cannot be deployed alongside the system under test, and nothing outside the test can observe what passed through them. Kage moves the stub out of the test process and gives it an event stream the test subscribes to.
+
+- **An event protocol** - a defined websocket stream of inbound endpoint hits and outbound sends, so any conforming server can be driven by a Kensa test.
+- **A reference server** - plugin-based, with applications contributing routes for their own third-party dependencies. Functional and composable in the http4k mould; no annotations and no DI container.
+- **A test-side SDK** - subscribe to the stream, extract values from captured messages, and assert over them through the same `ThenSpec` surface you already use, so stub interactions land in the report alongside everything else.
+- **Correlation by tracking id** - every event carries an identifier for the test run it belongs to. Parallel tests can share one server without interfering, and a system that already threads a correlation header for tracing works with Kage without test-specific code.
+- **Fault injection** - errors, delays and malformed responses introduced mid-flight, including across a real mutual-TLS hop between live services, so failure paths can be tested against the real transport rather than a mock of it.
+
+### Hub - a front door for the people who read the reports
+
+Today a Kensa report usually reaches a product owner through the CI server that built it. CI servers
+are built for developers: they are organised around builds and agents, they assume you know which
+project produced what, and nothing about them is designed for someone who just wants to read what an
+application does.
+
+**Kensa Hub** is a self-hostable server that is the document store for Kensa. Reports stop being
+build artefacts you go and fetch and become documents that live somewhere permanent, with an address
+you can put in a ticket, a wiki page or a release note.
+
+- **A browser view of every team's reports** - zero install, no build server to navigate.
+- **A curated catalogue** for readers who are not developers, separate from the raw aggregate
+  engineers want.
+- **Cross-bundle search** - find a behaviour across every team's tests at once, rather than knowing
+  in advance which repository implemented it.
+- **Grouping by delivery programme** - reports organised by the unit analysts and product owners
+  actually recognise, which typically spans many teams and many services.
+- **A durable address** - link to a scenario from a ticket or a wiki page and it stays there, still
+  interactive, rather than expiring with the build that produced it.
+
+### Replay - scenarios you can run and watch
+
+A passing acceptance test proves the behaviour. It does not let a product owner or a tester *see* it,
+or poke at it. **Replay** is a separate application that runs scenarios against a deployed
+environment, with Kensa reports linking out to the matching scenario.
+
+It deliberately does **not** run inside your test. Driving a live environment from within a test run
+turned out to be the wrong shape - the test stays a test, and Replay is its own surface.
+
+- **A scenario catalogue** - browse and search the scenarios available for an environment, grouped
+  and tagged, with the steps and fixtures that make them up.
+- **Interactive sessions** - run a scenario step by step against a chosen environment, vary the
+  values that were marked as safe to vary, and send ad-hoc messages alongside the captured ones.
+- **Live event view** - watch messages flow through the systems as the scenario runs, rather than
+  reading about it afterwards.
+- **Evidence capture** - export what happened during a run, so a demo can become a record.
+
+Replay is in active development in its own right; the shape above is what exists today, not a
+commitment to a released feature set.
+
+### The report beyond the test run
+
+Smaller than the three above, and nearer. These are accepted and next in line once 1.0 is out; the same caveat applies - described so you can see the direction, not because they are ready.
+
+- **A picture on unfurl cards** (1.0.1) - the link unfurl pages gain an Open Graph image of the test's sentences, so a card pasted into a chat or a ticket shows the behaviour rather than only its title.
+- **Parallel and block polling** (1.1) - block forms of `thenEventually` and `thenContinually` that take several assertions and poll them in parallel within one window, on the Kotest and Hamkrest bridges, which are the ones that take lambdas. See [assertion bridges](./api/assertion-bridges.md) for what each bridge supports today.
+- **Wiki export** - copy a test or a sequence diagram in a form that pastes cleanly into a wiki page or a ticket, for the places an embed cannot go.
+
+## Recently shipped
+
+### v1.0.0
+- Java lambdas may throw checked exceptions - `Action.of`, `StateCollector.of` and `SetupStep.of` take throwing lambdas and pass the exception to the report unchanged
+- `CapturedOutputs.highlight(label, value)` - highlight a one-off value without declaring a key
+- MCP `list_failures` with `partial: true` reads the failures of a run still in progress
+- `Named` parameter labels survive commas in other arguments
+- Kotlin 2.4.21
+
+### v0.9.6
+- Three MCP log tools, `list_log_sources`, `invocation_logs` and `read_log`, backed by a log source manifest in `run.json`
+- Parameter values are typed in the report, and log tabs with no entries show instead of hiding
+- Embed frames shrink as well as grow
+- Amber accent, and dark mode follows the OS until you choose
+- Kotlin 2.4.20; `TableRenderer` removed
+
+### v0.9.5
+- Embed mode - one test class or method rendered with no sidebar, header or search, for framing in a wiki page, a design doc or a service catalogue. See [Embedding](./reports/embedding.md)
+- `withLinkBaseUrl` / `KENSA_LINK_BASE_URL` - the report's published address, so copied links point at where the report lives rather than where it was opened
+- Link unfurl pages - a static page per class and method with Open Graph tags, so a pasted link shows a card in Slack, Teams and Jira
+- Sticky test name - the report header names the test you have expanded once its own header has scrolled off screen
+- Filter by issue or epic from the badge right-click menu
+
+### v0.9.4
+- `SetupStep.setup(scope)` - one step can act, wait for state, read a value out and act again; `SetupSteps(list)`, `setupActions(...)` and `setupStep { }` for one-line steps
+- `#/issue/<key>` and `#/epic/<id>` report links open the first matching test with the filter applied
+- `suite_summary` MCP tool and compact `list_tests` / `get_test` listings
+- `?theme=dark|light` on report URLs; report scrolling stays inside the report when embedded
+- Polling block rendering no longer reads "Then eventually then a and b"
+
+### v0.9.3
+- Deep links copied from the class, test and invocation headers
+- `withCoroutineContextProviders` - user thread locals visible inside `thenEventually` / `thenContinually` checks
+- MCP `captured_interactions` no longer fails on empty attribute groups
+
+### v0.9.2
+- `run.json` run marker with live counts, so a finished bundle can be told from one in flight or abandoned
+- MCP `run_status` and `await_results`; `captured_interactions` and per-method `failure_evidence`
+- CLI wrapper detects the architecture, pins with `KENSA_VERSION` and verifies downloads against `checksums.txt`
+- A link naming both a test and an `issue:` filter keeps the linked test
+
+### v0.9.1
+- `TestContextUtil.withTestContext` is public again, gated behind `@KensaInternalApi` and deprecated in favour of `SetupStep`
+
+### v0.9.0
+- API freeze ahead of 1.0; `COMPATIBILITY.md` and the support matrix
+- `@KensaExperimental` and `@KensaInternalApi` opt-in markers
+- `@Epic` and the report overview page - a landing view per source where every panel segment is a filter
+- Replay links on issue badges when a report is served with a `replayUrl`
+- **Breaking:** implementation packages are now `internal`; `issueTrackerUrl` is nullable
+- Configuration surface completed and tidied - the Java builder now reaches everything the Kotlin DSL does
+- Parallel-invocation and polling-block context fixes
+
+### v0.8.x
+- **MCP server** in the CLI - structured access to test results for AI agents
+- Fixture values from shared objects (`by fixtures(...)`), rendered as fixture tokens
+- Chained references through value containers; qualified enum constants render cleanly
+- UI testing support (Playwright and Selenium)
+- **Breaking:** the legacy UI was removed
+
+### v0.7.x
+- The modern UI became the default
+- **Breaking:** all deprecated API components were removed

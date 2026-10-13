@@ -1,0 +1,247 @@
+---
+title: Asserting on XML Fields in Kotlin Tests
+sidebar_label: XML Fields
+sidebar_position: 3
+description: "Reference for the XML field classes: XmlField, XmlStringField, XmlTextField, XmlNodeField, XmlListField, XmlSetField, and XPathExpressionWrapper."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# XML Fields
+
+XML fields implement `MatcherField<Node, R>` and extract values from a W3C DOM `Node` via XPath. No external XML library is required — extraction uses the JDK's `javax.xml.xpath` API.
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+**Artifact:** `dev.kensa:kensa-kotest-test-support-xml`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/kotest/xml/src/main/kotlin/dev/kensa/kotest/testsupport/field/xml/)
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+**Artifact:** `dev.kensa:kensa-hamkrest-test-support-xml`
+
+[Source](https://github.com/kensa-dev/kensa/blob/master/test-support/hamkrest/xml/src/main/kotlin/dev/kensa/hamkrest/testsupport/field/xml/)
+
+</TabItem>
+</Tabs>
+
+All XML field classes are `open` and available for subclassing. The only difference between the Kotest and Hamkrest variants is the package of the base `MatcherField` interface they import.
+
+---
+
+## Two construction styles
+
+Every XML field class accepts either a path **string** or a pre-compiled **`XPathExpression`**. Pick whichever fits the case:
+
+| | Path-string constructor | `XPathExpression` constructor |
+|---|---|---|
+| Use when | Plain XPath, no namespaces | Namespaces, fluent XPath builders, dynamic / lazy compilation |
+| Compilation | Internal, thread-safe, lazy on first extract | Caller-managed |
+| `path` property | Always non-null | Non-null only when wrapped in [`XPathExpressionWrapper`](#xpathexpressionwrapper) |
+| Default `name` | The path string | Class simple name |
+
+The path-string form is the simpler default. Reach for the `XPathExpression` form only when you need to inject a `NamespaceContext` or compose paths via a builder DSL.
+
+---
+
+## Field classes
+
+### `XmlField<T>`
+
+The base class. Evaluates an XPath expression against a `Node` and applies `transform` to the matched node.
+
+```kotlin
+// Path-string form (recommended for plain XPath):
+val aProvider = XmlField<Provider>("/order/@provider") {
+    Provider.fromString(it.nodeValue)
+}
+
+// Compiled-expression form (use for namespaces / builders):
+val aProvider = XmlField(
+    compileXPath("/order/@provider"),
+    "Provider"
+) { node -> Provider.fromString(node.nodeValue) }
+```
+
+**Constructors:**
+
+| Signature | Notes |
+|-----------|-------|
+| `XmlField(path: String, transform: (Node) -> T?)` | Compiles internally; `name` defaults to `path` |
+| `XmlField(path: String, name: String, transform: (Node) -> T?)` | Compiles internally; explicit name |
+| `XmlField(expression: XPathExpression, transform: (Node) -> T?)` | Name derived from class simple name |
+| `XmlField(expression: XPathExpression, name: String, transform: (Node) -> T?)` | Explicit name |
+| `XmlField(expressionProvider: () -> XPathExpression, transform: (Node) -> T?)` | Lazy expression |
+| `XmlField(expressionProvider: () -> XPathExpression, name: String?, transform: (Node) -> T?)` | Lazy + explicit name |
+
+The `path` property returns the XPath string when the expression is an `XPathExpressionWrapper`; `null` otherwise. Path-string constructors always wrap, so `path` is non-null in that case.
+
+### `XmlTextField<T>`
+
+Extracts `textContent` from the matched node and applies `transform`. Prefer `XmlStringField` when the identity transform is sufficient.
+
+```kotlin
+val anAmount = XmlTextField(compileXPath("/order/amount"), "Amount") { it.toBigDecimal() }
+```
+
+### `XmlStringField`
+
+Returns the matched node's `textContent` verbatim. Use this when you don't need a transform — it's the closest XML analogue to JSON's `JsonTextField`.
+
+```kotlin
+val status = XmlStringField("/FeasibilityResponse/Status")
+val customerName = XmlStringField("/order/customer/name", "Customer Name")
+```
+
+Also accepts a pre-compiled `XPathExpression` or a lazy `() -> XPathExpression` for namespace / builder cases.
+
+### `XmlNodeField`
+
+Returns the matched `Node` itself. Use when downstream code needs the raw DOM node.
+
+### `XmlListField<T>`
+
+Extracts an ordered `List<T>` by evaluating the XPath as a node-set and mapping each node through `transform`.
+
+```kotlin
+val profileTypes = XmlListField(
+    compileXPath("/FeasibilityResponse/Profiles/Profile/Type"),
+    "Profile Types"
+) { it.textContent }
+```
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+Use with `withListOf` for exact ordered assertions, or `matching(containExactlyInAnyOrder(...))` for order-insensitive checks.
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+Use with `withListOf` for exact ordered assertions. `withListOf` uses `equalTo(list)` — elements must be in the same order.
+
+</TabItem>
+</Tabs>
+
+### `XmlSetField<T>`
+
+Like `XmlListField<T>` but deduplicates results into a `Set<T>`. Use with `withSetOf` — set equality is order-insensitive.
+
+---
+
+## `XPathExpressionWrapper`
+
+```kotlin
+class XPathExpressionWrapper(
+    private val xPathExpression: XPathExpression,
+    val path: String
+) : XPathExpression
+```
+
+Wraps a compiled `XPathExpression` and retains the original path string. Wrapping ensures that:
+
+1. The `path` property on `XmlField` returns the XPath string (useful for tooling and report rendering).
+2. The path is readable when debugging test failures.
+
+The path-string constructors apply this wrapper automatically. Use `compileXPath` directly when you want to compile once and reuse the result:
+
+```kotlin
+val orderId = compileXPath("/order/@id")  // returns an XPathExpressionWrapper
+val a = XmlField<String>(orderId) { it.nodeValue }
+val b = XmlField<Int>(orderId, "Numeric Id") { it.nodeValue.toInt() }
+```
+
+For namespace-aware compilation, build your own `XPathExpression` with a `NamespaceContext` and pass it directly to the field's constructor (then wrap it yourself if you want the `path` property populated).
+
+---
+
+## Node extension helpers
+
+Defined in `XmlExtensions.kt`. Used internally by the field classes and available for direct use.
+
+| Function | Description |
+|----------|-------------|
+| `Node.getNodeOrNull(path: XPathExpression): Node?` | Returns the single matched node, or `null`. |
+| `Node.getNodes(path: XPathExpression): List<Node>` | Returns all matched nodes in document order. |
+
+---
+
+## Worked example
+
+Declare fields in a Kotlin `object`:
+
+```kotlin
+object FibreVisionResponseFields {
+    val status                     = XmlStringField("/FeasibilityResponse/Status", "Status")
+    val firstProfileType           = XmlStringField("/FeasibilityResponse/Profiles/Profile[1]/Type", "Profile Type")
+    val firstProfileDownloadSpeed  = XmlField<Int>("/FeasibilityResponse/Profiles/Profile[1]/DownloadSpeed", "Download Speed") {
+        it.textContent.toInt()
+    }
+    val profileTypes               = XmlListField<String>("/FeasibilityResponse/Profiles/Profile/Type", "Profile Types") {
+        it.textContent
+    }
+}
+```
+
+Parse the response document and compose the matcher in the test:
+
+<Tabs groupId="matcher-library">
+<TabItem value="kotest" label="Kotest">
+
+```kotlin
+import dev.kensa.kotest.testsupport.field.matching
+import dev.kensa.kotest.testsupport.field.of
+import io.kotest.matchers.and
+import io.kotest.matchers.collections.containExactlyInAnyOrder
+
+@Test
+fun `FibreVision XML response — asserted via XmlField DSL`() {
+    given(bothSuppliersAreServiceable())
+    whenever(aFeasibilityCheckIsRequestedForTheServiceAddress())
+
+    then(theFibreVisionResponseDocument(),
+        (status of "SERVICEABLE")
+            .and(firstProfileType of "FTTC")
+            .and(firstProfileDownloadSpeed of fixtures[broadbandDownloadSpeed])
+            .and(profileTypes matching containExactlyInAnyOrder("FTTC"))
+    )
+}
+
+private fun theFibreVisionResponseDocument() = StateCollector<Document> {
+    val xml = fibreVisionStub.feasibilityResponseFor(fixtures[trackingId])
+        ?: error("no response captured")
+    DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        .parse(ByteArrayInputStream(xml.toByteArray()))
+}
+```
+
+</TabItem>
+<TabItem value="hamkrest" label="Hamkrest">
+
+```kotlin
+import com.natpryce.hamkrest.and
+import dev.kensa.hamkrest.testsupport.field.of
+import dev.kensa.hamkrest.testsupport.field.withListOf
+
+@Test
+fun `FibreVision XML response — asserted via XmlField DSL`() {
+    given(bothSuppliersAreServiceable())
+    whenever(aFeasibilityCheckIsRequestedForTheServiceAddress())
+
+    then(theFibreVisionResponseDocument(),
+        (status of "SERVICEABLE")
+            and (firstProfileType of "FTTC")
+            and (firstProfileDownloadSpeed of 80)
+            and profileTypes.withListOf("FTTC")
+    )
+}
+```
+
+</TabItem>
+</Tabs>
+
+For a complete working example see [FibreVisionResponseFields.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FibreVisionResponseFields.kt) and [FieldDslExamplesTest.kt](https://github.com/kensa-dev/clearwave-example/blob/master/src/test/kotlin/com/clearwave/fields/FieldDslExamplesTest.kt) in clearwave-example.

@@ -1,0 +1,8 @@
+{
+  "label": "Field Assertion DSL",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Composable, named field matchers for JSON and XML payloads — assertions that read like English at the test call-site."
+  }
+}
