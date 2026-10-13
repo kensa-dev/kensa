@@ -1,5 +1,10 @@
 <h2 class="github">Changelog</h2>
 
+### v1.0.1
+
+Fixes:
+  - **Sequence diagrams keep their styling and highlighting.** PlantUML 1.2026.8, shipped in 1.0.0, stopped emitting the participant, lifeline and message groups the report styles and highlights, so diagrams rendered unstyled, the group box stayed white in dark mode, and selecting an interaction or participant highlighted nothing. PlantUML is back on 1.2026.6, and a test now guards the SVG structure (#254).
+
 ### v1.0.0
 
 Added:

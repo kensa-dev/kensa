@@ -380,6 +380,19 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
+    fun `rendered SVG keeps the participant, lifeline and message groups the report styles and highlights`() {
+        val interactions = interactions()
+        capture(interactions, "Alpha", "Bravo")
+
+        val diagram = SequenceDiagramFactory({ listOf(participant("Alpha"), participant("Bravo")) }).create(interactions)
+
+        diagram.shouldNotBeNull()
+        val groupClasses = Regex("""<g [^>]*class="([^"]+)"""").findAll(diagram.toString()).flatMap { it.groupValues[1].split(" ") }.toSet()
+        groupClasses shouldContainAll listOf("participant", "participant-lifeline", "message")
+        diagram.toString() shouldContain """data-qualified-name="Alpha""""
+    }
+
+    @Test
     fun `factory observes umlDirectives populated via deprecated setter after factory construction`() {
         val configuration = Configuration()
         val factory = SequenceDiagramFactory({ configuration.sequenceDiagram.directivesSnapshot() })
