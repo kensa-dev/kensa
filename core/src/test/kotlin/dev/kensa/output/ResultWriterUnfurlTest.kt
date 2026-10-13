@@ -39,8 +39,11 @@ class ResultWriterUnfurlTest {
         managedKeys.forEach { System.clearProperty(it) }
     }
 
+    private val writers = mutableListOf<ResultWriter>()
+
     @AfterEach
-    fun restoreProperties() {
+    fun finishRunsThenRestoreProperties() {
+        writers.forEach { it.write(emptyList()) }
         managedKeys.forEach { key ->
             val saved = savedProperties[key]
             if (saved == null) System.clearProperty(key) else System.setProperty(key, saved)
@@ -61,7 +64,7 @@ class ResultWriterUnfurlTest {
 
     @Test
     fun `no pages are written without a linkBaseUrl`(@TempDir tempDir: Path) {
-        val writer = ResultWriter(configuration(tempDir), ComponentDiagramFactory())
+        val writer = writer(configuration(tempDir))
 
         writer.writeTest(container())
 
@@ -70,7 +73,7 @@ class ResultWriterUnfurlTest {
 
     @Test
     fun `a page per method carries the method card and sends the reader to its embed`(@TempDir tempDir: Path) {
-        val writer = ResultWriter(configuration(tempDir, base), ComponentDiagramFactory())
+        val writer = writer(configuration(tempDir, base))
 
         writer.writeTest(container())
 
@@ -87,7 +90,7 @@ class ResultWriterUnfurlTest {
 
     @Test
     fun `a method named with spaces gets a page named the same way`(@TempDir tempDir: Path) {
-        val writer = ResultWriter(configuration(tempDir, base), ComponentDiagramFactory())
+        val writer = writer(configuration(tempDir, base))
 
         writer.writeTest(container())
 
@@ -99,7 +102,7 @@ class ResultWriterUnfurlTest {
 
     @Test
     fun `the class page carries the class state and method count`(@TempDir tempDir: Path) {
-        val writer = ResultWriter(configuration(tempDir, base), ComponentDiagramFactory())
+        val writer = writer(configuration(tempDir, base))
 
         writer.writeTest(container())
 
@@ -111,7 +114,7 @@ class ResultWriterUnfurlTest {
 
     @Test
     fun `a directory base points at its index html`(@TempDir tempDir: Path) {
-        val writer = ResultWriter(configuration(tempDir, "https://reports.example.com/latest/"), ComponentDiagramFactory())
+        val writer = writer(configuration(tempDir, "https://reports.example.com/latest/"))
 
         writer.writeTest(container())
 
@@ -121,7 +124,7 @@ class ResultWriterUnfurlTest {
 
     @Test
     fun `writing the class again replaces its pages`(@TempDir tempDir: Path) {
-        val writer = ResultWriter(configuration(tempDir, base), ComponentDiagramFactory())
+        val writer = writer(configuration(tempDir, base))
 
         writer.writeTest(container())
         writer.writeTest(container(rejectedState = Passed))
@@ -134,7 +137,7 @@ class ResultWriterUnfurlTest {
     fun `a site mode source is named by its kensa source id`(@TempDir tempDir: Path) {
         System.setProperty("kensa.output.root", tempDir.toString())
         System.setProperty("kensa.source.id", "uiTest")
-        val writer = ResultWriter(configuration(tempDir, base), ComponentDiagramFactory())
+        val writer = writer(configuration(tempDir, base))
 
         writer.writeTest(container())
 
@@ -162,6 +165,8 @@ class ResultWriterUnfurlTest {
     )
 
     private fun sentence(vararg words: String) = RenderedSentence(words.map { RenderedValueToken(it, setOf("wd")) }, lineNumber = 1)
+
+    private fun writer(configuration: Configuration) = ResultWriter(configuration, ComponentDiagramFactory()).also(writers::add)
 
     private fun configuration(dir: Path, linkBase: String? = null) = Configuration().apply {
         outputDir = dir
