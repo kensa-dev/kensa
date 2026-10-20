@@ -64,15 +64,15 @@
   stroke: hsl(220 50% 60% / 0.4) !important;
 }
 
-/* Group label text (bold) */
-.sequence-diagram svg text[font-weight="bold"] {
+/* Test group label: the text after the gold tab and its frame. Divider labels share its font-weight */
+.sequence-diagram svg path[fill="#FFD700"] + rect + text {
   fill: hsl(220 60% 45%) !important;
   font-family: 'IBM Plex Sans', sans-serif !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   letter-spacing: 0.05em !important;
 }
-.dark .sequence-diagram svg text[font-weight="bold"] {
+.dark .sequence-diagram svg path[fill="#FFD700"] + rect + text {
   fill: hsl(220 70% 75%) !important;
 }
 
