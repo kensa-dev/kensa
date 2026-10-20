@@ -290,15 +290,30 @@ internal class SequenceDiagramFactoryTest {
     }
 
     @Test
-    fun `buildMarkup keeps a top-level declaration of the primary name and drops the primary shape`() {
+    fun `buildMarkup gives a plain participant declaration the primary's shape in place`() {
         val interactions = interactions()
         interactions.divider("Something")
 
-        val markup = buildMarkup(participant("Store").asUml(), database("Store"), interactions)
+        val directives = listOf(surroundingBox("Systems", participant("Store").withColour("#Pink")), participant("Other"))
+        val markup = buildMarkup(directives.flatMap { it.asUml() }, database("Store"), interactions)
 
         markup.shouldNotBeNull()
-        (markup.lines().count { it == "participant Store" }) shouldBe 1
-        markup shouldNotContain "database Store"
+        (markup.lines().count { it == "database Store #Pink" }) shouldBe 1
+        markup shouldNotContain "participant Store"
+        markup.indexOf("database Store") shouldBeGreaterThan markup.indexOf("box")
+        markup.indexOf("database Store") shouldBeLessThan markup.indexOf("participant Other")
+    }
+
+    @Test
+    fun `buildMarkup keeps the shape of a declaration when the primary is a plain participant`() {
+        val interactions = interactions()
+        interactions.divider("Something")
+
+        val markup = buildMarkup(database("Store").asUml(), participant("Store"), interactions)
+
+        markup.shouldNotBeNull()
+        (markup.lines().count { it == "database Store" }) shouldBe 1
+        markup shouldNotContain "participant Store"
     }
 
     @Test

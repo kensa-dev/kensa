@@ -68,8 +68,15 @@ internal fun buildMarkup(participants: List<String>, primary: UmlParticipant?, i
 private fun mergePrimary(primary: UmlParticipant?, participants: List<String>): List<String> {
     if (primary == null) return participants
     val primaryLines = primary.asUml()
-    val primaryName = participantNames(primaryLines).singleOrNull() ?: return primaryLines + participants
-    return if (primaryName in participantNames(participants)) participants else primaryLines + participants
+    val primaryMatch = primaryLines.singleOrNull()?.let { participantNamePattern.find(it) } ?: return primaryLines + participants
+    val (primaryShape, primaryName) = primaryMatch.destructured
+    if (primaryName !in participantNames(participants)) return primaryLines + participants
+    return participants.map { line ->
+        participantNamePattern.find(line)
+            ?.takeIf { it.groupValues[1] == "participant" && it.groupValues[2] == primaryName }
+            ?.let { line.replaceRange(it.groups[1]!!.range, primaryShape) }
+            ?: line
+    }
 }
 
 private fun participantNames(lines: List<String>): Set<String> =
