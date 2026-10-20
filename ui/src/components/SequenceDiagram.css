@@ -49,6 +49,12 @@
   stroke: hsl(var(--border)) !important;
 }
 
+/* Setup group box */
+.dark .sequence-diagram svg g > rect[fill="#ECECEC"] {
+  fill: hsl(var(--muted) / 0.3) !important;
+  stroke: hsl(var(--border)) !important;
+}
+
 /* Group label tab (yellow "Test" path) */
 .sequence-diagram svg path[fill="#FFD700"],
 .sequence-diagram svg path[fill="#ffD700"],
