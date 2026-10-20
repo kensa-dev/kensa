@@ -123,6 +123,12 @@
   font-size: 12px !important;
 }
 
+/* Time-passing label: bare text under the root group; group and divider labels carry a font-weight */
+.sequence-diagram svg > g > text:not([font-weight]) {
+  fill: hsl(var(--muted-foreground)) !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
 /* ─── Expand button ───────────────────────────────────────── */
 .sd-expand {
   position: absolute;
