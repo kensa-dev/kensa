@@ -70,6 +70,10 @@ fun `order is never cancelled`() {
 
 Both accept either a matcher (`Matcher<T>`) or an assertion block (`T.() -> Unit`), just like `then()`.
 
+:::note
+The `thenContinually` window starts when the assertion is called, not when the action under test ran. Assertions earlier in the test use up part of that time, so for a requirement such as "stays confirmed for 5 seconds after the order is placed", put the `thenContinually` first or allow for the time the earlier assertions take.
+:::
+
 ## AssertJ (Java)
 
 `WithAssertJ` provides `thenEventually` with the same collector-plus-assertion shape as its `then`:
