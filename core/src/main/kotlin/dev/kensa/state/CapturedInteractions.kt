@@ -6,6 +6,7 @@ import dev.kensa.util.Attributes
 import dev.kensa.util.Attributes.Companion.emptyAttributes
 import dev.kensa.util.Attributes.Key.Group
 import dev.kensa.util.KensaMap
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Defines how setup interactions are rendered in the Sequence Diagram.
@@ -38,6 +39,10 @@ class CapturedInteractions(private val setupStrategy: SetupStrategy) : KensaMap<
         }
 
     private var isSetup = true
+
+    private val interactionIds = AtomicInteger()
+
+    internal fun nextInteractionId(): String = "interaction-${interactionIds.incrementAndGet()}"
 
     fun capture(builder: CapturedInteractionBuilder) {
         if (isSetup) {

@@ -9,7 +9,6 @@ import dev.kensa.util.Attributes.Key.Group
 import dev.kensa.util.Attributes.Key.InteractionId
 import dev.kensa.util.Attributes.Key.Seam
 import java.time.Instant
-import java.util.UUID
 
 class CapturedInteractionBuilder private constructor(private val fromParty: Party) {
     private var attributes = of()
@@ -20,8 +19,6 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     private var arrowStyle : ArrowStyle = ArrowStyle.UmlSynchronous
     private var timestamp : Long? = null
     private var seam: SeamDefinition? = null
-
-    private val interactionId: String = UUID.randomUUID().toString()
 
     fun arrowStyle(arrowStyle: ArrowStyle) = apply { this.arrowStyle = arrowStyle }
 
@@ -57,6 +54,7 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     }
 
     fun applyTo(interactions: CapturedInteractions) {
+        val interactionId = interactions.nextInteractionId()
         attributes = group?.let { attributes.merge(of(Group, it, Arrow, arrowStyle, InteractionId, interactionId)) }
             ?: attributes.merge(of(Arrow, arrowStyle, InteractionId, interactionId))
 

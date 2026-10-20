@@ -170,6 +170,19 @@ internal class CapturedInteractionsTest {
         }
     }
 
+    @Test
+    fun `builder interactions get the same distinct ids on every run`() {
+        fun idsOfARun() = CapturedInteractions(SetupStrategy.Ungrouped).apply {
+            capture(from(Ygritte).to(Jon).with("You know nothing", "Snarky comment"))
+            capture(from(Ygritte).to(Jon).with("You know nothing", "Snarky comment"))
+        }.entrySet().map { it.attributes.get<String>(Attributes.Key.InteractionId) }
+
+        val ids = idsOfARun()
+
+        ids.toSet().size shouldBe 2
+        idsOfARun() shouldBe ids
+    }
+
     internal enum class GOTParty : Party {
         Daenerys, Jon, Ygritte, NightKing;
 
