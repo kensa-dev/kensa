@@ -7,6 +7,9 @@ Fixes:
   - **A primary participant keeps its shape.** A primary such as `database Store` next to a plain `participant Store` declaration lost its shape; it now replaces the declaration's shape in place, keeping its box, alias and colour (#234).
   - **Builder-captured interactions get stable ids.** `CapturedInteractionBuilder` minted a random id per interaction, so reports differed run to run and a golden could not pin them. Ids now count up within each test (#232).
 
+Changed:
+  - **Kotest 6.2.6.** Dependency bumps; no API changes. Also Byte Buddy 1.18.15, Selenium 4.51.0.
+
 ### v1.0.1
 
 Fixes:
