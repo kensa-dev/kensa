@@ -76,9 +76,11 @@ const config: Config = {
           // Released docs serve at /docs/; work in progress at /docs/next/. A fix to
           // released docs goes into versioned_docs/version-1.0 as well as docs/.
           // The local search plugin indexes only the latest released version.
+          // Next is noindex: Google was indexing /docs/next/ pages as duplicates of their
+          // /docs/ twins and picking its own canonical (Search Console, 2026-10-26).
           lastVersion: '1.0',
           versions: {
-            current: { label: 'Next', path: 'next', banner: 'unreleased' },
+            current: { label: 'Next', path: 'next', banner: 'unreleased', noIndex: true },
             '1.0': { label: '1.0' },
           },
         },
@@ -94,6 +96,8 @@ const config: Config = {
         sitemap: {
           changefreq: 'weekly',
           priority: 0.5,
+          // Keep the noindex Next docs out of the sitemap.
+          ignorePatterns: ['/docs/next/**'],
         },
         gtag: {
           trackingID: 'G-XBGTKEJ8KH',
