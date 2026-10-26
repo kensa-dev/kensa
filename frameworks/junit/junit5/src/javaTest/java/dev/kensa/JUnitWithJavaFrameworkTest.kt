@@ -88,6 +88,7 @@ internal class JUnitWithJavaFrameworkTest : JUnitTestBase("Java") {
                 JavaWithAnnotationFeatureTest::class,
                 JavaWithRecordTest::class,
                 JavaWithExpandableSentenceTest::class,
+                JavaWithExpandableRenderedValueTest::class,
                 JavaWithLiteralsTest::class,
                 JavaWithTypeArgumentsTest::class,
                 JavaWithFixturesTest::class,

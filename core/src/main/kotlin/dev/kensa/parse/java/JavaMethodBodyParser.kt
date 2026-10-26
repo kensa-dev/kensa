@@ -123,7 +123,7 @@ internal class JavaMethodBodyParser(
         }
         if (suppressedContainerMembers.remove(ctx)) return
         with(parseContext) {
-            stateMachine.apply(ctx.asContainerChainOrNull() ?: ctx.asField() ?: ctx.asParameter() ?: ctx.asConstantReferenceOrNull() ?: ctx.asIdentifier())
+            stateMachine.apply(ctx.asContainerChainOrNull() ?: ctx.asField() ?: ctx.asParameter() ?: ctx.asExpandableValueProperty() ?: ctx.asConstantReferenceOrNull() ?: ctx.asIdentifier())
         }
     }
 

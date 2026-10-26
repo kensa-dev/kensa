@@ -9,6 +9,7 @@ import dev.kensa.example.*
 import dev.kensa.parse.*
 import dev.kensa.sentence.TemplateSentence
 import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
+import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
 import dev.kensa.sentence.TemplateToken.SimpleTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
@@ -437,6 +438,23 @@ internal class JavaMethodParserTest {
 
         private fun parseTokens(methodName: String) =
             createParserFor(classMethodNamed(methodName)).parse(JavaWithChainedExpandable::class.java.findMethod(methodName)).sentences.single().tokens
+    }
+
+    @Nested
+    inner class ExpandableValue {
+
+        @Test
+        fun `a field annotated ExpandableRenderedValue is an expandable value`() {
+            parseTokens("expandableValueField").filterIsInstance<ExpandableValueTemplateToken>().single().name shouldBe "theObservedFields"
+        }
+
+        @Test
+        fun `a method annotated ExpandableRenderedValue called through this is not an expandable value`() {
+            parseTokens("qualifiedCallToExpandableValueMethod").filterIsInstance<ExpandableValueTemplateToken>().shouldBeEmpty()
+        }
+
+        private fun parseTokens(methodName: String) =
+            createParserFor(classMethodNamed(methodName)).parse(JavaWithExpandableValue::class.java.findMethod(methodName)).sentences.single().tokens
     }
 
     @Nested

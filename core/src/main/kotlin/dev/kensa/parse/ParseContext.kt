@@ -26,7 +26,7 @@ internal class ParseContext(
     private val imports: Imports? = null
 ) {
 
-    private val expandableRenderedValueMethodNames = methods.filterValues { it.isExpandableRenderedValue }.keys
+    private val expandableRenderedValues: Map<String, ElementDescriptor> = (properties + methods).filterValues { it.isExpandableRenderedValue }
     private val renderedValueMethodNames = methods.filterValues { it.isRenderedValue }.keys
     private val methodNames = methods.filterValues { it.isRenderedValue || it.isHighlight }.keys
     private val fieldNames = properties.filterValues { it.isRenderedValue || it.isHighlight }.keys
@@ -37,10 +37,9 @@ internal class ParseContext(
 
     internal fun ParseTree.asIdentifier() = Identifier(location, text)
     internal fun ParseTree.asExpandableSentence() = takeIf { expandableMethodNames.contains(text) }?.let { ExpandableSentence(location, text, expandableSentencesFor(text)) }
-    internal fun ParseTree.asExpandableValue() = takeIf { expandableRenderedValueMethodNames.contains(text) }?.let {
-        val md = methods[text]!!
-        ExpandableValue(location, text, md.renderedValueStyle, md.renderedValueHeaders)
-    }
+    internal fun ParseTree.asExpandableValue() = expandableRenderedValues[text]?.asExpandableValueAt(location)
+    internal fun ParseTree.asExpandableValueProperty() = properties[text]?.takeIf { it.isExpandableRenderedValue }?.asExpandableValueAt(location)
+    private fun ElementDescriptor.asExpandableValueAt(location: Location) = ExpandableValue(location, name, renderedValueStyle, renderedValueHeaders)
     internal fun ParseTree.asParameter() = takeIf { parameterNames.contains(text) }?.let { Parameter(location, text) }
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }

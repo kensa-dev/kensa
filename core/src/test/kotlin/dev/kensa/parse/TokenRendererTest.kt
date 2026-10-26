@@ -27,6 +27,7 @@ import dev.kensa.sentence.RenderedToken
 import dev.kensa.sentence.TemplateToken
 import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
 import dev.kensa.sentence.TemplateToken.HintedTemplateToken
+import dev.kensa.sentence.TemplateToken.TabularTemplateToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.aRenderedValueOf
 import dev.kensa.sentence.asTemplateToken
@@ -78,6 +79,8 @@ class TokenRendererTest {
         "prop3" to ElementDescriptor.forProperty(TheTestClass::prop3),
         "prop4" to ElementDescriptor.forProperty(TheTestClass::prop4),
         "prop5" to ElementDescriptor.forProperty(TheTestClass::prop5),
+        "prop6" to ElementDescriptor.forProperty(TheTestClass::prop6),
+        "prop7" to ElementDescriptor.forProperty(TheTestClass::prop7),
         "aStringField" to ElementDescriptor.forHintedProperty(HintedFields::aStringField, RenderingDirective(UseIdentifierName, "", HintFromProperty, "path"))
     )
 
@@ -632,6 +635,19 @@ class TokenRendererTest {
         }
 
         @Test
+        fun `renders a property annotated ExpandableRenderedValue from the test instance`() {
+            RenderedValueInvocationContextHolder.bindToCurrentThread(RenderedValueInvocationContext())
+
+            val token = renderSingle(ExpandableValueTemplateToken("prop6", setOf(Expandable), "prop6"))
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableToken>()
+            token.expandableTokens shouldContainExactly listOf(
+                listOf(RenderedToken.RenderedValueToken("***x***", setOf("tk-wd"))),
+                listOf(RenderedToken.RenderedValueToken("***y***", setOf("tk-wd"))),
+            )
+        }
+
+        @Test
         fun `produces no expandable tokens when no invocation was captured`() {
             RenderedValueInvocationContextHolder.bindToCurrentThread(RenderedValueInvocationContext())
 
@@ -651,6 +667,29 @@ class TokenRendererTest {
             val context = RenderedValueInvocationContext()
             context.recordInvocation(TheTestClass::class.java.findMethod(methodName), value)
             RenderedValueInvocationContextHolder.bindToCurrentThread(context)
+        }
+    }
+
+    @Nested
+    inner class ExpandableRenderedValueTabular {
+
+        @AfterEach
+        fun tearDown() {
+            RenderedValueInvocationContextHolder.clearFromThread()
+        }
+
+        @Test
+        fun `renders a tabular property annotated ExpandableRenderedValue from the test instance`() {
+            RenderedValueInvocationContextHolder.bindToCurrentThread(RenderedValueInvocationContext())
+
+            val token = renderer.render(listOf(TabularTemplateToken("prop7", setOf(Expandable, Table), "prop7", emptyList(), listOf("Key", "Value")))).single()
+
+            token.shouldBeInstanceOf<RenderedToken.RenderedExpandableTabularToken>()
+            token.headers shouldBe listOf("Key", "Value")
+            token.rows shouldContainExactly listOf(
+                listOf(RenderedToken.RenderedValueToken("***a***", setOf("tk-wd")), RenderedToken.RenderedValueToken("***1***", setOf("tk-wd"))),
+                listOf(RenderedToken.RenderedValueToken("***b***", setOf("tk-wd")), RenderedToken.RenderedValueToken("***2***", setOf("tk-wd"))),
+            )
         }
     }
 

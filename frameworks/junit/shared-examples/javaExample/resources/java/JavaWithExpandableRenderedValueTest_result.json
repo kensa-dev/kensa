@@ -1,0 +1,214 @@
+{
+  "testClass": "dev.kensa.example.JavaWithExpandableRenderedValueTest",
+  "displayName": "Java With Expandable Rendered Value Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "epics": [],
+  "tags": [],
+  "tests": [
+    {
+      "testMethod": "rendersAnExpandableValueFromAField",
+      "displayName": "Renders An Expandable Value From A Field",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 22,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a dispatched shipment"
+                }
+              ]
+            },
+            {
+              "lineNumber": 24,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the courier reports"
+                },
+                {
+                  "types": [
+                    "tk-ex"
+                  ],
+                  "value": "the Recorded Lifecycle",
+                  "parameterTokens": [],
+                  "tokens": [
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Acknowledged"
+                      }
+                    ],
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Committed"
+                      }
+                    ],
+                    [
+                      {
+                        "types": [
+                          "tk-wd"
+                        ],
+                        "value": "Dispatched"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersAnExpandableValueFromAField()"
+        }
+      ]
+    },
+    {
+      "testMethod": "rendersATableFromAField",
+      "displayName": "Renders A Table From A Field",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 29,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "a dispatched shipment"
+                }
+              ]
+            },
+            {
+              "lineNumber": 31,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the courier reports"
+                },
+                {
+                  "types": [
+                    "tk-ex",
+                    "tk-tab"
+                  ],
+                  "value": "the Stored Rates",
+                  "parameterTokens": [],
+                  "tokens": [
+                    {
+                      "type": "table",
+                      "headers": [
+                        "Currency",
+                        "Rate"
+                      ],
+                      "rows": [
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "GBPUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.2710"
+                          }
+                        ],
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "EURUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.0885"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersATableFromAField()"
+        }
+      ]
+    }
+  ]
+}

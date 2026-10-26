@@ -1381,6 +1381,15 @@ internal class KotlinFunctionParserTest {
         }
 
         @Test
+        fun `a property annotated ExpandableRenderedValue is an expandable value`() {
+            val parser = createParserFor(aFunctionNamed("expandableValueProperty"))
+            val method = KotlinExpressionExpandable::class.java.findMethod("expandableValueProperty")
+            val tokens = parser.parse(method).sentences.single().tokens
+
+            tokens.filterIsInstance<ExpandableValueTemplateToken>().single().name shouldBe "theObservedFields"
+        }
+
+        @Test
         fun `chained call after argument-less navigated expandable stays in the sentence`() {
             val parser = createParserFor(aFunctionNamed("chainedAfterArgumentlessNavigatedExpandable"))
             val method = KotlinExpressionExpandable::class.java.findMethod("chainedAfterArgumentlessNavigatedExpandable")

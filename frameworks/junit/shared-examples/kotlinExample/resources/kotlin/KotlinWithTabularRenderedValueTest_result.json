@@ -569,6 +569,114 @@
           "displayName": "rendersATableWithNoHeaders()"
         }
       ]
+    },
+    {
+      "testMethod": "rendersATableFromAProperty",
+      "displayName": "Renders A Table From A Property",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 49,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 51,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the broker publishes"
+                },
+                {
+                  "types": [
+                    "tk-ex",
+                    "tk-tab"
+                  ],
+                  "value": "the Stored Rates",
+                  "parameterTokens": [],
+                  "tokens": [
+                    {
+                      "type": "table",
+                      "headers": [
+                        "Currency",
+                        "Rate"
+                      ],
+                      "rows": [
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "GBPUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.2710"
+                          }
+                        ],
+                        [
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "EURUSD"
+                          },
+                          {
+                            "types": [
+                              "tk-wd"
+                            ],
+                            "value": "1.0885"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "sequenceDiagram": null,
+          "componentDiagram": null,
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "rendersATableFromAProperty()"
+        }
+      ]
     }
   ]
 }

@@ -98,6 +98,7 @@ sealed interface ElementDescriptor {
     class PropertyElementDescriptor(private val property: KProperty<*>) : ElementDescriptor {
         override val name: String = property.name
         override val isRenderedValue: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValue>()
+        override val isExpandableRenderedValue: Boolean = property.hasKotlinOrJavaAnnotation<ExpandableRenderedValue>()
         override val isRenderedValueContainer: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValueContainer>()
         override val isHighlight: Boolean = property.hasKotlinOrJavaAnnotation<Highlight>()
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()

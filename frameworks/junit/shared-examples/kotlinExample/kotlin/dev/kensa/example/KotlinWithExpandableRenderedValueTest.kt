@@ -22,6 +22,16 @@ class KotlinWithExpandableRenderedValueTest : KotlinExampleTest() {
         whenever(theCourierReports(theObservedLifecycleFor("TRK-99")))
     }
 
+    @Test
+    fun rendersAnExpandableValueFromAProperty() {
+        given(aDispatchedShipment())
+
+        whenever(theCourierReports(theRecordedLifecycle))
+    }
+
+    @ExpandableRenderedValue
+    private val theRecordedLifecycle = listOf("Acknowledged", "Committed", "Dispatched")
+
     @ExpandableRenderedValue
     private fun theObservedLifecycle(): List<String> = listOf("Acknowledged", "Committed", "Dispatched")
 

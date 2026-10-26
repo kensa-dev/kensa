@@ -193,6 +193,7 @@ internal class MethodParser(
                 .filter {
                     val propertyClass = it.returnType.classifier as? KClass<*>
                     it.hasKotlinOrJavaAnnotation<RenderedValue>() ||
+                        it.hasKotlinOrJavaAnnotation<ExpandableRenderedValue>() ||
                         it.hasKotlinOrJavaAnnotation<RenderedValueContainer>() ||
                         it.hasKotlinOrJavaAnnotation<Highlight>() ||
                         directives.appliesTo(propertyClass)

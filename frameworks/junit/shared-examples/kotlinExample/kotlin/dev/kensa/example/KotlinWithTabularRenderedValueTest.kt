@@ -44,6 +44,16 @@ class KotlinWithTabularRenderedValueTest : KotlinExampleTest() {
         whenever(theBrokerPublishes(theUnlabelledRates()))
     }
 
+    @Test
+    fun rendersATableFromAProperty() {
+        given(anOpenTradingSession())
+
+        whenever(theBrokerPublishes(theStoredRates))
+    }
+
+    @ExpandableRenderedValue(renderAs = RenderedValueStyle.Tabular, headers = ["Currency", "Rate"])
+    private val theStoredRates = listOf("GBPUSD" to "1.2710", "EURUSD" to "1.0885")
+
     @ExpandableRenderedValue(renderAs = RenderedValueStyle.Tabular, headers = ["Currency", "Rate"])
     private fun theQuotedRates(): List<Pair<String, String>> = listOf("GBPUSD" to "1.2710", "EURUSD" to "1.0885")
 

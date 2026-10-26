@@ -1,6 +1,8 @@
 package dev.kensa.example
 
+import dev.kensa.ExpandableRenderedValue
 import dev.kensa.Highlight
+import dev.kensa.RenderedValueStyle.Tabular
 
 @Suppress("unused")
 class TheTestClass {
@@ -10,6 +12,10 @@ class TheTestClass {
     val prop3 = 20
     val prop4 = true
     val prop5 = Wrapper("MyString")
+    @ExpandableRenderedValue
+    val prop6 = listOf("x", "y")
+    @ExpandableRenderedValue(renderAs = Tabular, headers = ["Key", "Value"])
+    val prop7 = listOf("a" to 1, "b" to 2)
 
     @Highlight
     fun method1() = "method1"

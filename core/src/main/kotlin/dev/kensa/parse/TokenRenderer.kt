@@ -116,16 +116,11 @@ internal class TokenRenderer(
         )
 
     private fun ExpandableValueTemplateToken.asExpandableValue(): RenderedToken {
-        val invocation = renderedValueInvocationContext().nextInvocationFor(name)
-
-        val expandableTokens: List<List<RenderedToken>> = if (invocation is RealRenderedValueInvocation) {
-            when (val returnValue = invocation.returnValue) {
-                is Iterable<*> -> returnValue.map { item -> singleValueRow(item) }
-                is Array<*> -> returnValue.map { item -> singleValueRow(item) }
-                else -> listOf(singleValueRow(returnValue))
-            }
-        } else {
-            emptyList()
+        val expandableTokens: List<List<RenderedToken>> = expandableProperty(name)?.let { property ->
+            rowsFor(property.resolveValue(testInstance))
+        } ?: when (val invocation = renderedValueInvocationContext().nextInvocationFor(name)) {
+            is RealRenderedValueInvocation -> rowsFor(invocation.returnValue)
+            else -> emptyList()
         }
 
         return RenderedExpandableToken(
@@ -137,14 +132,23 @@ internal class TokenRenderer(
         )
     }
 
+    private fun expandableProperty(name: String): ElementDescriptor? = properties[name]?.takeIf { it.isExpandableRenderedValue }
+
+    private fun rowsFor(value: Any?): List<List<RenderedToken>> = when (value) {
+        is Iterable<*> -> value.map { item -> singleValueRow(item) }
+        is Array<*> -> value.map { item -> singleValueRow(item) }
+        else -> listOf(singleValueRow(value))
+    }
+
     private fun singleValueRow(value: Any?): List<RenderedToken> =
         listOf(RenderedValueToken(renderers.renderValue(value), setOf(Word.asCss())))
 
     private fun TabularTemplateToken.asTabular(): RenderedToken {
-        val returnValue = when (val invocation = renderedValueInvocationContext().nextInvocationFor(name)) {
-            is RealRenderedValueInvocation -> invocation.returnValue
-            else -> null
-        }
+        val returnValue = expandableProperty(name)?.resolveValue(testInstance)
+            ?: when (val invocation = renderedValueInvocationContext().nextInvocationFor(name)) {
+                is RealRenderedValueInvocation -> invocation.returnValue
+                else -> null
+            }
 
         val renderedRows = if (returnValue != null) {
             renderers.renderTable(returnValue).map { row ->

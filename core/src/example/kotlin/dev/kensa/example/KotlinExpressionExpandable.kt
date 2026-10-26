@@ -12,6 +12,9 @@ class KotlinExpressionExpandable {
     @RenderedValue
     private val aLastName = "Smith"
 
+    @ExpandableRenderedValue
+    private val theObservedFields = listOf("John", "Smith")
+
     fun simpleTest() {
         assertThatHas(theCorrectDetails())
     }
@@ -28,6 +31,10 @@ class KotlinExpressionExpandable {
 
     fun chainedAfterArgumentlessExpandableValue() {
         assertThatHas(theObservedDetails().and(aFirstName of "John"))
+    }
+
+    fun expandableValueProperty() {
+        assertThatHas(theObservedFields)
     }
 
     fun chainedAfterArgumentlessNavigatedExpandable() {
@@ -57,6 +64,7 @@ class KotlinExpressionExpandable {
     private fun myMatchers(vararg values: String): Array<Matcher> = arrayOf()
     private fun assertThatHas(matchers: Array<Matcher>) = Unit
     private fun assertThatHas(matchers: Matchers) = Unit
+    private fun assertThatHas(values: List<String>) = Unit
     private fun anA(): Matchers = Matchers()
     private fun aB(): Matchers = Matchers()
 
