@@ -6,6 +6,7 @@ Fixes:
   - **Sequence diagrams read in dark mode.** A `captureTimePassing` label, the Test group label and the Setup group box kept PlantUML's black text or light fill on the dark background (#255).
   - **A primary participant keeps its shape.** A primary such as `database Store` next to a plain `participant Store` declaration lost its shape; it now replaces the declaration's shape in place, keeping its box, alias and colour (#234).
   - **Builder-captured interactions get stable ids.** `CapturedInteractionBuilder` minted a random id per interaction, so reports differed run to run and a golden could not pin them. Ids now count up within each test (#232).
+  - **Interactions in the same millisecond keep their order.** `CapturedInteractionBuilder.with(Instant)` truncated to epoch millis, so two hops captured within one millisecond from different sources could draw in the wrong order. The Instant's full precision now orders the diagram (#260).
 
 Changed:
   - **Kotest 6.2.6.** Dependency bumps; no API changes. Also Byte Buddy 1.18.15, Selenium 4.51.0.

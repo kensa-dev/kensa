@@ -17,7 +17,7 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
     private var content: Any? = null
     private var contentDescriptor: String? = null
     private var arrowStyle : ArrowStyle = ArrowStyle.UmlSynchronous
-    private var timestamp : Long? = null
+    private var timestamp: Instant? = null
     private var seam: SeamDefinition? = null
 
     fun arrowStyle(arrowStyle: ArrowStyle) = apply { this.arrowStyle = arrowStyle }
@@ -28,9 +28,9 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
 
     fun underTest(isUnderTest: Boolean): CapturedInteractionBuilder = apply { if (group == null && isUnderTest) group = "Test" }
 
-    fun with(timestamp: Instant) = with(timestamp.toEpochMilli())
+    fun with(timestamp: Instant) = apply { this.timestamp = timestamp }
 
-    fun with(timestamp: Long) = apply { this.timestamp = timestamp }
+    fun with(timestamp: Long) = with(Instant.ofEpochMilli(timestamp))
 
     fun with(content: Any, contentDescriptor: String): CapturedInteractionBuilder = apply {
         this.content = content
@@ -62,7 +62,7 @@ class CapturedInteractionBuilder private constructor(private val fromParty: Part
 
         val key = "$contentDescriptor __idx __from ${fromParty.asString()} to ${toParty!!.asString()}"
 
-        interactions.putWithUniqueKey(key, content, timestamp ?: System.currentTimeMillis(), attributes)
+        interactions.putWithUniqueKey(key, content, timestamp ?: Instant.now(), attributes)
     }
 
     companion object {

@@ -159,6 +159,14 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
         }
 
         @Test
+        fun embeddedJsonIsCorrectForTestWithInteractionOrder() {
+            testConfiguration {
+                sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
+            }
+            executeTestAndVerifyJson(KotlinWithInteractionOrderTest::class.java, "sequenceDiagram", "componentDiagram")
+        }
+
+        @Test
         fun embeddedJsonIsCorrectForTestWithInteractionRenderer() {
             testConfiguration {
                 sourceLocations = listOf(Path("src/kotlinExample/kotlin"))
@@ -188,13 +196,13 @@ internal class JUnitWithKotlinFrameworkTest : JUnitTestBase("Kotlin") {
             executeTestAndVerifyJson(KotlinWithAcronymsTest::class.java)
         }
 
-        private fun executeTestAndVerifyJson(testClass: Class<*>) {
+        private fun executeTestAndVerifyJson(testClass: Class<*>, vararg alsoRemove: String) {
             executeAllTestsIn(testClass)
                 .verifyZeroFailures()
 
-            val expectedResultJson = testClass.json("result").cleanseForComparison("elapsedTime")
+            val expectedResultJson = testClass.json("result").cleanseForComparison("elapsedTime", *alsoRemove)
             val path = kensaOutputDir.resolve("results").resolve("${testClass.name}.json")
-            val resultJson = path.readText().cleanseForComparison("elapsedTime")
+            val resultJson = path.readText().cleanseForComparison("elapsedTime", *alsoRemove)
             resultJson.shouldEqualJson(expectedResultJson)
         }
 

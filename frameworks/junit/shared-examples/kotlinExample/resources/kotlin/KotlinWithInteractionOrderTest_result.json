@@ -1,0 +1,126 @@
+{
+  "testClass": "dev.kensa.example.KotlinWithInteractionOrderTest",
+  "displayName": "Kotlin With Interaction Order Test",
+  "state": "Passed",
+  "notes": null,
+  "packageName": "dev.kensa.example",
+  "issues": [],
+  "epics": [],
+  "tags": [],
+  "tests": [
+    {
+      "testMethod": "ordersInteractionsCapturedInTheSameMillisecondByTimestamp",
+      "displayName": "Orders Interactions Captured In The Same Millisecond By Timestamp",
+      "issues": [],
+      "epics": [],
+      "tags": [],
+      "state": "Passed",
+      "autoOpenTab": "None",
+      "invocations": [
+        {
+          "highlights": [],
+          "sentences": [
+            {
+              "lineNumber": 17,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "Given"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "an open trading session"
+                }
+              ]
+            },
+            {
+              "lineNumber": 19,
+              "tokens": [
+                {
+                  "types": [
+                    "tk-kw"
+                  ],
+                  "value": "When"
+                },
+                {
+                  "types": [
+                    "tk-wd"
+                  ],
+                  "value": "the broker and the client exchange messages"
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "parameterKinds": {},
+          "capturedInteractions": [
+            {
+              "id": "interaction-2",
+              "name": "Quote from Broker to Client",
+              "from": "Broker",
+              "to": "Client",
+              "rendered": {
+                "values": [
+                  {
+                    "name": "Value",
+                    "value": "GBPUSD 1.2710",
+                    "language": "plainText"
+                  }
+                ],
+                "attributes": []
+              },
+              "attributes": [
+                {
+                  "Group": "Test"
+                },
+                {
+                  "ArrowStyle": "UmlSynchronous"
+                },
+                {
+                  "InteractionId": "interaction-2"
+                }
+              ]
+            },
+            {
+              "id": "interaction-1",
+              "name": "Acknowledgement from Client to Broker",
+              "from": "Client",
+              "to": "Broker",
+              "rendered": {
+                "values": [
+                  {
+                    "name": "Value",
+                    "value": "ACK",
+                    "language": "plainText"
+                  }
+                ],
+                "attributes": []
+              },
+              "attributes": [
+                {
+                  "Group": "Test"
+                },
+                {
+                  "ArrowStyle": "UmlSynchronous"
+                },
+                {
+                  "InteractionId": "interaction-1"
+                }
+              ]
+            }
+          ],
+          "capturedOutputs": [],
+          "fixtures": [],
+          "fixtureSpecs": [],
+          "state": "Passed",
+          "executionException": {},
+          "displayName": "ordersInteractionsCapturedInTheSameMillisecondByTimestamp()"
+        }
+      ]
+    }
+  ]
+}

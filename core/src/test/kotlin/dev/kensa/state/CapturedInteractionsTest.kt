@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Instant
 
 internal class CapturedInteractionsTest {
     private lateinit var interactions: CapturedInteractions
@@ -167,6 +168,18 @@ internal class CapturedInteractionsTest {
         with(interactions) {
             capture(from(Jon).to(Daenerys).seam(seam).with("content", "Royal Decree"))
             entrySet().single().attributes.get<SeamDefinition>(Attributes.Key.Seam) shouldBe seam
+        }
+    }
+
+    @Test
+    fun `interactions in the same millisecond keep their timestamp order`() {
+        val base = Instant.parse("2026-10-26T10:00:00.000Z")
+
+        with(interactions) {
+            capture(from(Ygritte).to(Jon).with("second", "Later").with(base.plusNanos(500_000)))
+            capture(from(Jon).to(Ygritte).with("first", "Earlier").with(base))
+
+            entrySet().map { it.value } shouldBe listOf("first", "second")
         }
     }
 

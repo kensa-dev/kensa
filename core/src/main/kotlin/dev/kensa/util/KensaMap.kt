@@ -1,22 +1,22 @@
 package dev.kensa.util
 
 import dev.kensa.util.Attributes.Companion.emptyAttributes
+import java.time.Instant
 import java.util.*
-import kotlin.text.get
 
 abstract class KensaMap<M : KensaMap<M>> {
 
     private val lock = Any()
     private val values: MutableMap<String, Entry> = LinkedHashMap()
 
-    fun put(value: Any, timestamp: Long = System.currentTimeMillis()): M = putWithUniqueKey(value.javaClass.simpleName + "__idx__", value,timestamp, emptyAttributes())
+    fun put(value: Any, timestamp: Long = System.currentTimeMillis()): M = putWithUniqueKey(value.javaClass.simpleName + "__idx__", value, Instant.ofEpochMilli(timestamp))
 
     @JvmOverloads
     fun put(key: String, value: Any?, timestamp: Long = System.currentTimeMillis(), attributes: Attributes = emptyAttributes()): M = self().apply {
         synchronized(lock) { values[key] = Entry(key, value, timestamp, attributes) }
     }
 
-    internal fun putWithUniqueKey(key: String, value: Any?, timestamp: Long = System.currentTimeMillis(), attributes: Attributes = emptyAttributes()): M = self().apply {
+    internal fun putWithUniqueKey(key: String, value: Any?, timestamp: Instant = Instant.now(), attributes: Attributes = emptyAttributes()): M = self().apply {
         fun baseKeyFrom(result: MatchResult) = result.groups["prefix"]?.value + result.groups["suffix"]?.value
         fun indexedKeyFrom(result: MatchResult, index: Int) = (result.groups["prefix"]?.value + (result.groups["prekey"]?.value + index +
                 if (result.groups["suffix"]?.value?.isNotBlank() == true) result.groups["postkey"]?.value else "") + result.groups["suffix"]?.value)
@@ -53,14 +53,20 @@ abstract class KensaMap<M : KensaMap<M>> {
 
     fun containsKey(key: String): Boolean = synchronized(lock) { values.containsKey(key) }
 
-    fun entrySet(): Set<Entry> = synchronized(lock) { LinkedHashSet(values.values.sortedBy(Entry::timestamp)) }
+    fun entrySet(): Set<Entry> = synchronized(lock) { LinkedHashSet(values.values.sortedBy(Entry::epochNanos)) }
 
     @Suppress("UNCHECKED_CAST")
     private fun self(): M = this as M
 
-    class Entry(val key: String, val value: Any?, val timestamp: Long, val attributes: Attributes = emptyAttributes())
+    class Entry internal constructor(val key: String, val value: Any?, val timestamp: Long, val attributes: Attributes, internal val epochNanos: Long) {
+        constructor(key: String, value: Any?, timestamp: Long, attributes: Attributes = emptyAttributes()) : this(key, value, timestamp, attributes, timestamp * NANOS_PER_MILLI)
+
+        internal constructor(key: String, value: Any?, timestamp: Instant, attributes: Attributes) : this(key, value, timestamp.toEpochMilli(), attributes, timestamp.epochSecond * NANOS_PER_SECOND + timestamp.nano)
+    }
 
     companion object {
+        private const val NANOS_PER_MILLI = 1_000_000L
+        private const val NANOS_PER_SECOND = 1_000_000_000L
         private val KEY_REGEX = "(?<prefix>.*)(?<key>__(?<prekey>[ ]*)idx(?<postkey>[ ]*)__)(?<suffix>.*)".toRegex()
     }
 }
