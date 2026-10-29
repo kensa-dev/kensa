@@ -14,7 +14,7 @@ Fixes:
   - **A nested And or But takes its sentence's keyword colour.** Inside a multi-line sentence such as a `thenContinually` block, every keyword after the first rendered in the plain text colour. Each And or But now takes the colour of the nearest Given, When or Then before it (#268).
 
 Changed:
-  - **Kotest 6.2.6.** Dependency bumps; no API changes. Also Byte Buddy 1.18.15, Selenium 4.51.0.
+  - **Kotest 6.2.6.** Dependency bumps; no API changes. Also Byte Buddy 1.18.16, Selenium 4.51.0, Gradle 9.8.2.
 
 ### v1.0.1
 
