@@ -8,6 +8,7 @@ Fixes:
   - **Builder-captured interactions get stable ids.** `CapturedInteractionBuilder` minted a random id per interaction, so reports differed run to run and a golden could not pin them. Ids now count up within each test (#232).
   - **Interactions in the same millisecond keep their order.** `CapturedInteractionBuilder.with(Instant)` truncated to epoch millis, so two hops captured within one millisecond from different sources could draw in the wrong order. The Instant's full precision now orders the diagram (#260).
   - **`@ExpandableRenderedValue` works on a field or property.** The annotation allowed `FIELD` and `PROPERTY_GETTER` targets but only a method took effect. An annotated field or property now renders as an expandable value, in Kotlin and Java, for the default and tabular styles (#230).
+  - **A nested And or But takes its sentence's keyword colour.** Inside a multi-line sentence such as a `thenContinually` block, every keyword after the first rendered in the plain text colour. Each And or But now takes the colour of the nearest Given, When or Then before it (#268).
 
 Changed:
   - **Kotest 6.2.6.** Dependency bumps; no API changes. Also Byte Buddy 1.18.15, Selenium 4.51.0.

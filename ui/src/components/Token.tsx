@@ -10,6 +10,7 @@ import {TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/componen
 import {ErrorTokenData, ExpandableItem, Token as TokenType} from '@/types/Test';
 import {isRelatedFixture} from '@/util/fixtureHighlight';
 import {resolveGesture} from '@/util/suiteSearchGesture';
+import {keywordClass} from '@/util/keywords';
 import {fixtureNamesForValue} from '@/util/fixtureNameResolver';
 import {SuiteSearchContextMenu, type ContextMenuPosition} from '@/components/SuiteSearchContextMenu';
 
@@ -359,20 +360,6 @@ const FixtureToken = ({value}: { value: string }) => {
 const isErrorTokenData = (item: ExpandableItem): item is ErrorTokenData =>
     !Array.isArray(item) && 'type' in item && item.type === 'error';
 
-export const keywordColors: Record<string, string> = {
-    'given': 'text-sky-600 dark:text-sky-400',
-    'when':  'text-amber-600 dark:text-amber-400',
-    'then':  'text-emerald-600 dark:text-emerald-500',
-};
-
-const MAJOR_KEYWORDS = new Set(['given', 'when', 'then']);
-export const isMajorKeyword = (v: string) => MAJOR_KEYWORDS.has(v.toLowerCase().trim());
-
-const getKeywordCls = (value: string, inheritedKeyword?: string): string => {
-    const key = value.toLowerCase().trim();
-    return keywordColors[key] ?? (inheritedKeyword ? (keywordColors[inheritedKeyword] ?? 'text-foreground') : 'text-foreground');
-};
-
 const styles: Record<string, string> = {
     'tk-kw': 'font-bold tracking-tight',
     'tk-wd': 'text-foreground/90',
@@ -417,7 +404,7 @@ export const Token = ({token, inheritedKeyword}: TokenProps) => {
         );
     }
 
-    if (types.includes("tk-kw")) return <span className={cn('font-bold tracking-tight inline', getKeywordCls(value, inheritedKeyword))}>{value}</span>;
+    if (types.includes("tk-kw")) return <span className={cn('font-bold tracking-tight inline', keywordClass(value, inheritedKeyword))}>{value}</span>;
     if (types.includes("tk-ex") || types.includes("tk-tab")) return <Expandable token={token}/>;
     if (types.includes("tk-ac")) return <InfoToken value={value} tooltipContent={value ? acronyms[value] : null} tokenCls={tokenCls}/>;
     if (types.includes("tk-hi")) return <InfoToken value={value} tooltipContent={hint ? hint : null} tokenCls={tokenCls}/>;

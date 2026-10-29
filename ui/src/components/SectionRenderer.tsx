@@ -6,7 +6,7 @@ import {useContext, useState} from "react";
 import {ConfigContext} from "@/contexts/ConfigContext";
 import {FixtureHighlightProvider} from "@/contexts/FixtureHighlightContext";
 import {Invocation, ParseError, RenderError, Sentence as SentenceType, TestState} from "@/types/Test";
-import {isMajorKeyword} from "@/components/Token";
+import {isMajorKeyword} from "@/util/keywords";
 import {Separator} from "@/components/ui/separator";
 import { getFailingLine } from '@/util/stackTrace';
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";

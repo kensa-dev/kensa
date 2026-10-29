@@ -2,6 +2,7 @@ import * as React from 'react';
 import {cn} from "@/lib/utils";
 import { Token as TokenType } from '@/types/Test';
 import Token from "@/components/Token";
+import {inheritedKeywords} from "@/util/keywords";
 
 interface SentenceProps {
     sentence: TokenType[];
@@ -30,18 +31,16 @@ const Sentence = ({ sentence, lineNumber, failingLine, isExpandable = false, inh
         );
     }
 
-    // Split tokens into lines at tk-nl boundaries
-    const lines: TokenType[][] = [[]];
-    for (const token of sentence) {
+    const inherited = inheritedKeywords(sentence, inheritedKeyword);
+    const lines: {token: TokenType, inheritedKeyword?: string}[][] = [[]];
+    sentence.forEach((token, i) => {
         if (token.types?.includes('tk-nl')) {
             lines.push([]);
         } else {
-            lines[lines.length - 1].push(token);
+            lines[lines.length - 1].push({token, inheritedKeyword: inherited[i]});
         }
-    }
+    });
 
-    // firstKwSeen tracks across all lines so only the first keyword gets inherited context
-    let firstKwSeen = false;
     const isFailingLine = failingLine !== undefined && lineNumber === failingLine;
 
     return (
@@ -52,22 +51,19 @@ const Sentence = ({ sentence, lineNumber, failingLine, isExpandable = false, inh
         )}>
             {lines.map((line, lineIdx) => (
                 <div key={lineIdx} className="flex flex-wrap items-baseline">
-                    {line.map((token, tokenIdx) => {
+                    {line.map(({token, inheritedKeyword}, tokenIdx) => {
                         const types = token.types || [];
 
                         if (types.includes('tk-in')) {
                             return <div key={tokenIdx} className="w-4 shrink-0" />;
                         }
 
-                        const isFirstKw = types.includes('tk-kw') && !firstKwSeen;
-                        if (isFirstKw) firstKwSeen = true;
-
                         return (
                             <React.Fragment key={tokenIdx}>
-                                {tokenIdx > 0 && !line[tokenIdx - 1].types?.includes('tk-in') && (
+                                {tokenIdx > 0 && !line[tokenIdx - 1].token.types?.includes('tk-in') && (
                                     <span className="select-none">&nbsp;</span>
                                 )}
-                                <Token token={token} inheritedKeyword={isFirstKw ? inheritedKeyword : undefined} />
+                                <Token token={token} inheritedKeyword={inheritedKeyword} />
                             </React.Fragment>
                         );
                     })}
