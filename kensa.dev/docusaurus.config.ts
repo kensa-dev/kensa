@@ -198,7 +198,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Kensa is Apache 2.0, built by Paul Brooks. Questions and ideas go to <a href="https://github.com/kensa-dev/kensa/discussions">GitHub Discussions</a>.<br/>© ${new Date().getFullYear()} Kensa — BDD Testing for Kotlin &amp; Java`,
+      copyright: `Kensa is Apache 2.0, built by Paul Brooks. Questions and ideas go to <a href="https://github.com/kensa-dev/kensa/discussions">GitHub Discussions</a>.<br/>© ${new Date().getFullYear()} Kensa — BDD Testing for Kotlin &amp; Java<span class="footer__company">Seru Systems Limited, registered in England and Wales, no. 04819260. Registered office: 71-75 Shelton Street, Covent Garden, London WC2H 9JQ.</span>`,
     },
     prism: {
       theme: prismThemes.oneLight,
