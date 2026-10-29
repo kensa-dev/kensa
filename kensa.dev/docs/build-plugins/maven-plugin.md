@@ -45,6 +45,7 @@ Since plugin v0.9.0, the Maven plugin and `kensa-core` version independently.
 
 | Plugin     | Default kensa-core | Min kensa-core | Notes                                |
 | ---------- | ------------------ | -------------- | ------------------------------------ |
+| 1.0.1      | 1.0.2              | 1.0.0          | Default kensa-core bumped to 1.0.2 (`thenContinually` window from the action #243; dark-mode diagrams #255; #234, #232, #260, #230, #268 fixes; 1.0.1 restored diagram styling #254); no Maven changes |
 | 1.0.0      | 1.0.0              | 1.0.0          | Built with Kotlin 2.4.21. Minimum consumer Kotlin is now 2.4.21; default kensa-core 1.0.0 (Java throwing lambdas #253, `Named` labels fix #250); min kensa-core raised to 1.0.0 |
 | 0.9.19     | 0.9.6              | 0.9.6          | Built with Kotlin 2.4.20 — minimum consumer Kotlin is now 2.4.20; default `kensaCoreVersion` bumped to 0.9.6 (MCP log tools #228, amber accent, #242 fix); min kensa-core raised to 0.9.6. |
 | 0.9.18     | 0.9.5              | 0.8.0          | Site shell now copies `kensa-embed.js` and `favicon.png` from the core jar (build-plugins #8); cores older than 0.9.5 still assemble. |
