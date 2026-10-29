@@ -1472,6 +1472,23 @@ internal class KotlinFunctionParserTest {
         }
     }
 
+    @Nested
+    inner class MomentMarking {
+
+        @Test
+        fun `marking a Moment property is dropped from the sentence`() {
+            parseTemplates("markedAction") shouldBe listOf("When", "some", "action")
+        }
+
+        @Test
+        fun `marking anything other than a Moment stays in the sentence`() {
+            parseTemplates("markingWithoutAMoment") shouldBe listOf("When", "a", "brush", "marking", "the", "colour")
+        }
+
+        private fun parseTemplates(functionName: String) =
+            createParserFor(aFunctionNamed(functionName)).parse(KotlinWithMoment::class.java.findMethod(functionName)).sentences.single().tokens.map { it.template }
+    }
+
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }
 
     private fun createParserFor(isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean): MethodParser =

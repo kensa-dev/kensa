@@ -458,6 +458,23 @@ internal class JavaMethodParserTest {
     }
 
     @Nested
+    inner class MomentMarking {
+
+        @Test
+        fun `marking a Moment field is dropped from the sentence`() {
+            parseTemplates("markedAction") shouldBe listOf("When", "some", "action")
+        }
+
+        @Test
+        fun `marking anything other than a Moment stays in the sentence`() {
+            parseTemplates("markingWithoutAMoment") shouldBe listOf("When", "a", "brush", "marking", "the", "colour")
+        }
+
+        private fun parseTemplates(methodName: String) =
+            createParserFor(classMethodNamed(methodName)).parse(JavaWithMoment::class.java.findMethod(methodName)).sentences.single().tokens.map { it.template }
+    }
+
+    @Nested
     inner class ReplaceSentence {
 
         @Test

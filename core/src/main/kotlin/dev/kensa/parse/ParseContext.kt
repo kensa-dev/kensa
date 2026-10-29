@@ -1,6 +1,7 @@
 package dev.kensa.parse
 
 import dev.kensa.KensaException
+import dev.kensa.Moment
 import dev.kensa.parse.Event.MultilineString
 import dev.kensa.parse.LocatedEvent.*
 import dev.kensa.parse.LocatedEvent.Literal.*
@@ -43,6 +44,7 @@ internal class ParseContext(
     internal fun ParseTree.asParameter() = takeIf { parameterNames.contains(text) }?.let { Parameter(location, text) }
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
+    internal fun isMoment(name: String) = properties[name]?.type == Moment::class
     internal fun ParseTree.asFixture() = fixturesPattern.matchEntire(text)?.let { FixturesExpression(location, it.groupValues[1], it.groupValues[2]) }
     internal fun ParseTree.asOutputs() = asOutputsByName() ?: asOutputsByKey()
     private fun ParseTree.asOutputsByName() = outputsByNamePattern.matchEntire(text)?.let { PathExpression.OutputsByNameExpression(location, it.groupValues[1], it.groupValues[2]) }

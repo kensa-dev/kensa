@@ -22,6 +22,7 @@ sealed interface ElementDescriptor {
     val renderedValueStyle: RenderedValueStyle get() = RenderedValueStyle.Default
     val renderedValueHeaders: List<String> get() = emptyList()
     val containerRenderedMembers: Set<String> get() = emptySet()
+    val type: KClass<*>? get() = null
 
     fun resolveValue(target: Any, path: String? = null): Any?
 
@@ -107,6 +108,7 @@ sealed interface ElementDescriptor {
         override val containerRenderedMembers: Set<String> =
             if (isRenderedValueContainer) (property.returnType.classifier as? KClass<*>)?.java?.renderedMemberNames().orEmpty()
             else emptySet()
+        override val type: KClass<*>? = property.returnType.classifier as? KClass<*>
 
         override fun resolveValue(target: Any, path: String?): Any? =
             property.resolveFrom(target)?.let { resolvePath(it, path) }

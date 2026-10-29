@@ -58,6 +58,15 @@ fun interface Action<C> {
      */
     fun execute(context: C)
 
+    /**
+     * Returns an action that runs this one and then marks [moment], so a later window can be measured
+     * from the point this action completed. See [Moment].
+     */
+    fun marking(moment: Moment): Action<C> = Action { context ->
+        execute(context)
+        moment.mark()
+    }
+
     companion object {
         /**
          * Adapts a [ThrowingAction] to an [Action], so a Java lambda can throw checked exceptions.

@@ -73,6 +73,22 @@ class KotlinWithPollingBlocksTest : KotlinExampleTest(), WithHamkrest {
         }
     }
 
+    @Test
+    fun measuresAContinuallyWindowFromAMarkedAction() {
+        given(somePrerequisites())
+
+        whenever(someAction().marking(theActionCompleted))
+
+        then(theFirstValue(), equalTo("first"))
+
+        thenContinually(500.milliseconds since theActionCompleted) {
+            then(theSecondValue(), equalTo("second"))
+            and(theThirdValue(), equalTo("third"))
+        }
+    }
+
+    private val theActionCompleted = Moment()
+
     private fun theFirstValue() = StateCollector { "first" }
 
     private fun theSecondValue() = StateCollector { "second" }

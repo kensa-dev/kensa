@@ -196,6 +196,7 @@ internal class MethodParser(
                         it.hasKotlinOrJavaAnnotation<ExpandableRenderedValue>() ||
                         it.hasKotlinOrJavaAnnotation<RenderedValueContainer>() ||
                         it.hasKotlinOrJavaAnnotation<Highlight>() ||
+                        propertyClass == Moment::class ||
                         directives.appliesTo(propertyClass)
                 }
                 .flatMap { property ->

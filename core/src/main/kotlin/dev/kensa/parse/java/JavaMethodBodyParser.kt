@@ -35,6 +35,7 @@ internal class JavaMethodBodyParser(
     private var replacedStatementDepth = 0
     private var suppressedConstantMember: Java20Parser.IdentifierContext? = null
     private val suppressedContainerMembers = HashSet<Java20Parser.IdentifierContext>()
+    private val suppressedMomentMarkings = HashSet<Java20Parser.IdentifierContext>()
 
     //  For Debugging:
     override fun enterEveryRule(ctx: ParserRuleContext) {
@@ -122,6 +123,7 @@ internal class JavaMethodBodyParser(
             return
         }
         if (suppressedContainerMembers.remove(ctx)) return
+        if (suppressedMomentMarkings.remove(ctx) || ctx.suppressesMomentMarking()) return
         with(parseContext) {
             stateMachine.apply(ctx.asContainerChainOrNull() ?: ctx.asField() ?: ctx.asParameter() ?: ctx.asExpandableValueProperty() ?: ctx.asConstantReferenceOrNull() ?: ctx.asIdentifier())
         }
@@ -142,6 +144,30 @@ internal class JavaMethodBodyParser(
         val type = with(parseContext) { containerChainTypeFor(text, members.first().text) } ?: return null
         suppressedContainerMembers.addAll(members)
         return ContainerChainExpression(Location(start.line, start.charPositionInLine), type, text, members.joinToString(".") { it.text })
+    }
+
+    // `action.marking(moment)` is plumbing for a `since` window, so it leaves the sentence when the
+    // argument is a Moment field of the test class. Any other `marking(...)` renders as written.
+    private fun Java20Parser.IdentifierContext.suppressesMomentMarking(): Boolean {
+        if (text != "marking") return false
+        val argumentList = when (val call = parent) {
+            is Java20Parser.MethodInvocationContext -> call.argumentList()
+            is Java20Parser.PNNAContext -> call.argumentList()
+            else -> null
+        }
+        val argument = argumentList?.expression()?.singleOrNull()?.singleIdentifier() ?: return false
+        if (!parseContext.isMoment(argument.text)) return false
+        suppressedMomentMarkings.add(argument)
+        return true
+    }
+
+    private fun ParserRuleContext.singleIdentifier(): Java20Parser.IdentifierContext? {
+        var ctx: ParserRuleContext = this
+        while (ctx !is Java20Parser.IdentifierContext) {
+            if (ctx.childCount != 1) return null
+            ctx = ctx.getChild(0) as? ParserRuleContext ?: return null
+        }
+        return ctx
     }
 
     private fun Java20Parser.IdentifierContext.asConstantReferenceOrNull(): Event? {

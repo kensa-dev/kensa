@@ -36,6 +36,7 @@ internal class KotlinFunctionBodyParser(
     private var renderableBody: RenderableBody? = null
     private var suppressedConstantMember: KotlinParser.SimpleIdentifierContext? = null
     private val suppressedContainerMembers = HashSet<KotlinParser.SimpleIdentifierContext>()
+    private val suppressedMomentMarkings = HashSet<KotlinParser.SimpleIdentifierContext>()
 
     private class RenderableBody(
         val expression: KotlinParser.ExpressionContext,
@@ -188,6 +189,7 @@ internal class KotlinFunctionBodyParser(
             return
         }
         if (suppressedContainerMembers.remove(ctx)) return
+        if (suppressedMomentMarkings.remove(ctx) || ctx.suppressesMomentMarking()) return
         with(parseContext) {
             stateMachine.apply(
                 ctx.asContainerChainOrNull()
@@ -220,6 +222,28 @@ internal class KotlinFunctionBodyParser(
         val type = with(parseContext) { containerChainTypeFor(text, members.first().text) } ?: return null
         suppressedContainerMembers.addAll(members)
         return ContainerChainExpression(Location(start.line, start.charPositionInLine), type, text, members.joinToString(".") { it.text })
+    }
+
+    // `action.marking(moment)` is plumbing for a `since` window, so it leaves the sentence when the
+    // argument is a Moment property of the test class. Any other `marking(...)` renders as written.
+    private fun KotlinParser.SimpleIdentifierContext.suppressesMomentMarking(): Boolean {
+        if (text != "marking") return false
+        val suffix = (parent as? KotlinParser.NavigationSuffixContext)?.parent as? KotlinParser.PostfixUnarySuffixContext ?: return false
+        val suffixes = (suffix.parent as? KotlinParser.PostfixUnaryExpressionContext)?.postfixUnarySuffix() ?: return false
+        val argument = suffixes.getOrNull(suffixes.indexOf(suffix) + 1)?.callSuffix()?.valueArguments()?.valueArgument()?.singleOrNull()
+            ?.expression()?.singleSimpleIdentifier() ?: return false
+        if (!parseContext.isMoment(argument.text)) return false
+        suppressedMomentMarkings.add(argument)
+        return true
+    }
+
+    private fun ParserRuleContext.singleSimpleIdentifier(): KotlinParser.SimpleIdentifierContext? {
+        var ctx: ParserRuleContext = this
+        while (ctx !is KotlinParser.SimpleIdentifierContext) {
+            if (ctx.childCount != 1) return null
+            ctx = ctx.getChild(0) as? ParserRuleContext ?: return null
+        }
+        return ctx
     }
 
     private fun KotlinParser.SimpleIdentifierContext.asConstantReferenceOrNull(): Event? {

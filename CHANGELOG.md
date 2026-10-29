@@ -2,6 +2,9 @@
 
 ### v1.0.2
 
+Added:
+  - **A `thenContinually` window measured from the action.** `whenever(action.marking(moment))` records a `Moment` when the action completes, and `thenContinually(5.seconds since moment)` polls only the time left of that window, failing if it has already passed. From Java, `moment.remaining(Duration)`. Assertions between the action and the window no longer eat into it. The `marking` call stays out of the sentence when its argument is a `Moment` property or field (#243).
+
 Fixes:
   - **Sequence diagrams read in dark mode.** A `captureTimePassing` label, the Test group label and the Setup group box kept PlantUML's black text or light fill on the dark background (#255).
   - **A primary participant keeps its shape.** A primary such as `database Store` next to a plain `participant Store` declaration lost its shape; it now replaces the declaration's shape in place, keeping its box, alias and colour (#234).
