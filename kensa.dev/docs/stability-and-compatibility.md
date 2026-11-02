@@ -82,7 +82,7 @@ The experimental tier currently holds:
 
 The required Kotlin version and the minimum JDK are a separate support axis from the API promise, and are listed per release on the [support matrix](./support-matrix.md) page.
 
-Kensa's Kotlin compiler plugin, which powers `@RenderedValue` and `@ExpandableSentence` capture, is binary-locked to the Kotlin compiler version: a plugin built against Kotlin _X_ loads only in the Kotlin _X_ compiler. The Kotlin requirement is therefore a property of the toolchain rather than of the authored API, so a Kotlin bump is published as a **minor release with a documented compatibility note**, paired with a [build plugin](./build-plugins/gradle-plugin.md) release that pins the matching compiler-plugin coordinate. It is not an API-major.
+Kensa's Kotlin compiler plugin, which powers `@RenderedValue` and `@ExpandableSentence` capture, uses the Kotlin compiler's internal API, which can change between Kotlin minor versions: a plugin built for Kotlin 2.3.x fails under 2.4.0. The Kotlin requirement is therefore a property of the toolchain rather than of the authored API, so a Kotlin bump is published as a **minor release with a documented compatibility note**, paired with a [build plugin](./build-plugins/gradle-plugin.md) release that pins the matching compiler-plugin coordinate. It is not an API-major.
 
 ## Reporting a break
 

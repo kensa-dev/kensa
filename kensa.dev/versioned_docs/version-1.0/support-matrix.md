@@ -13,19 +13,19 @@ The versions here are a separate axis from the API promise described on [Stabili
 
 ## How to read this
 
-Two columns are hard requirements: **Kotlin**, because the compiler plugin is binary-locked to the compiler version, and **JDK**, because the published modules are compiled to Java 17 bytecode. The **coroutines** entry is a runtime floor. Everything else is the version Kensa is built and tested against; older minors of the same major usually work, but are not verified.
+Two columns are hard requirements: **Kotlin**, because the compiler plugin uses the Kotlin compiler's internal API, and **JDK**, because the published modules are compiled to Java 17 bytecode. The **coroutines** entry is a runtime floor. Everything else is the version Kensa is built and tested against; older minors of the same major usually work, but are not verified.
 
 ## Toolchain
 
 | Requirement | Version | Kind |
 | --- | --- | --- |
-| Kotlin (consumer compiler, with the compiler plugin) | 2.4.21 (1.0.0 and later), 2.4.20 (0.9.6), 2.4.10 (0.9.0 to 0.9.5) | Hard requirement |
+| Kotlin (consumer compiler, with the compiler plugin) | 2.4.21 or later (1.0.0 and later), 2.4.20 (0.9.6), 2.4.10 (0.9.0 to 0.9.5) | Hard minimum |
 | JDK | 17 or later | Hard requirement |
 | kotlinx-coroutines (runtime classpath) | 1.11.0 or later | Runtime floor |
 
 ### Kotlin and the compiler plugin
 
-The compiler plugin that powers `@RenderedValue` and `@ExpandableSentence` capture is compiled against `kotlin-compiler-embeddable` **2.4.21** (2.4.20 for 0.9.6, 2.4.10 up to 0.9.5) and loads only in that compiler. A project on a different Kotlin version needs a Kensa release built for it; there is no version range.
+The compiler plugin that powers `@RenderedValue` and `@ExpandableSentence` capture is compiled against `kotlin-compiler-embeddable` **2.4.21** (2.4.20 for 0.9.6, 2.4.10 up to 0.9.5). It uses the compiler's internal API, which can change between Kotlin minor versions: a plugin built for 2.3.x fails under 2.4.0. Later patch releases in the same minor line have worked: a project on Kotlin 2.4.20 ran Kensa 0.9.4, built on 2.4.10, with the compiler plugin active. A project on a new Kotlin minor may need a new Kensa release.
 
 The [Gradle plugin](./build-plugins/gradle-plugin.md) makes this explicit at apply time: it is built with the same Kotlin version and rejects a project whose applied Kotlin plugin is older, with a message naming the minimum. The [Maven plugin](./build-plugins/maven-plugin.md) carries no such check, so a Maven project must keep its Kotlin version aligned by hand. Each build-plugin release pins the `kensa-core` and compiler-plugin coordinates it was built against; the compatibility tables on those pages say which Kotlin each release was built with.
 

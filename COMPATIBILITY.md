@@ -97,9 +97,9 @@ Opting in to one marker does not opt you in to the other.
 
 The required Kotlin version and the minimum JDK are a **separate support axis** from the
 API-semver promise. A Kotlin bump is published as a **documented compatibility note**
-(a minor release with a caveat), **not** an API-major — see the binary-lock note below.
+(a minor release with a caveat), **not** an API-major — see the compiler-plugin note below.
 
-| Kensa | Required Kotlin (consumer) | Min JDK | Min kotlinx-coroutines (runtime) | Test frameworks verified |
+| Kensa | Min Kotlin (consumer) | Min JDK | Min kotlinx-coroutines (runtime) | Test frameworks verified |
 |-------|----------------------------|---------|----------------------------------|--------------------------|
 | 1.0.x | 2.4.21                     | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.2.5) |
 | 0.9.x | 2.4.20 (0.9.6), 2.4.10 (0.9.0 to 0.9.5) | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.2.4) |
@@ -109,8 +109,10 @@ Notes:
 - **Min JDK 17** for the published modules (`core`, `frameworks/*`, `assertions/*`,
   integrations). JVM bytecode target is 17. (The `adoptabot` example targets JDK 21, but
   it is not a published artifact.)
-- **Required Kotlin 2.4.21** (2.4.20 for 0.9.6, 2.4.10 up to 0.9.5): consumers must compile with exactly that version. This is driven by
-  the compiler plugin (below), not merely by stdlib usage.
+- **Min Kotlin 2.4.21** (2.4.20 for 0.9.6, 2.4.10 up to 0.9.5): the Gradle plugin fails the build
+  below this version. Later patch releases in the same minor line have worked: a consumer on
+  Kotlin 2.4.20 ran Kensa 0.9.4, built on 2.4.10, with the compiler plugin active. A new Kotlin
+  minor can break the compiler plugin (below) and may need a new Kensa release.
 - **Min kotlinx-coroutines 1.11 (0.9.x)**: Kensa is built against kotlinx-coroutines
   1.11, whose `runBlocking` has a new JVM binary signature, so an older coroutines on the
   **runtime classpath** fails Kensa's polling assertions with
@@ -126,8 +128,9 @@ Notes:
 ## Why a Kotlin bump is a compatibility note, not an API-major
 
 Kensa's Kotlin **compiler plugin** (which powers `@RenderedValue` and `@ExpandableSentence`
-capture) is **binary-locked to the Kotlin compiler version**: a compiler plugin built
-against Kotlin _X_ only loads in the Kotlin _X_ compiler. Consequently:
+capture) uses the Kotlin compiler's internal API, which can change between Kotlin minor
+versions: a plugin built for Kotlin 2.3.x fails with a `ClassCastException` under 2.4.0.
+Consequently:
 
 - A kensa-core Kotlin version bump **forces a paired build-plugins release** that bumps the
   bundled default `kensaCoreVersion` (and the pinned `MIN_KOTLIN_VERSION` / compiler-plugin
