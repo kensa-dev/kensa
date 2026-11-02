@@ -6,3 +6,5 @@ build
 /ui/dev-data/
 .worktrees/
 
+.superpowers/
+docs/superpowers/
