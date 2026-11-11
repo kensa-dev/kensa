@@ -19,6 +19,7 @@ import dev.kensa.parse.ParseContext.Companion.asNullLiteral
 import dev.kensa.parse.ParseContext.Companion.asNumberLiteral
 import dev.kensa.parse.ParseContext.Companion.asOperator
 import dev.kensa.parse.ParseContext.Companion.asIgnoreHint
+import dev.kensa.parse.ParseContext.Companion.asLineStrRefNode
 import dev.kensa.parse.ParseContext.Companion.asReplaceSentenceHint
 import dev.kensa.parse.ParseContext.Companion.asStringLiteral
 import dev.kensa.parse.ParserStateMachine
@@ -297,8 +298,18 @@ internal class KotlinFunctionBodyParser(
                     MultiLineStrText -> stateMachine.apply(asMultilineString())
                     DoubleLiteral, FloatLiteral, HexLiteral, LongLiteral, IntegerLiteral, RealLiteral, UnsignedLiteral -> stateMachine.apply(asNumberLiteral())
                     NullLiteral -> stateMachine.apply(asNullLiteral())
+                    LineStrRef -> stateMachine.apply(
+                        with(parseContext) {
+                            asLineStrRefNode().let {
+                                it.asParameter()
+                                    ?: it.asField()
+                                    ?: it.asExpandableValue()
+                                    ?: it.asIdentifier()
+                            }
+                        }
+                    )
                 }
-            }
+        }
     }
 
     private fun KotlinParser.FunctionBodyContext.asRenderableBody(): RenderableBody? {
@@ -335,11 +346,13 @@ internal class KotlinFunctionBodyParser(
         val callSuffix = when (val owner = parent) {
             is KotlinParser.PrimaryExpressionContext ->
                 (owner.parent as? KotlinParser.PostfixUnaryExpressionContext)?.postfixUnarySuffix()?.firstOrNull()
+
             is KotlinParser.NavigationSuffixContext -> {
                 val suffix = owner.parent as? KotlinParser.PostfixUnarySuffixContext
                 val suffixes = (suffix?.parent as? KotlinParser.PostfixUnaryExpressionContext)?.postfixUnarySuffix()
                 suffixes?.getOrNull(suffixes.indexOf(suffix) + 1)
             }
+
             else -> null
         }
         return callSuffix?.callSuffix()?.valueArguments()?.valueArgument()?.isNotEmpty() ?: false
