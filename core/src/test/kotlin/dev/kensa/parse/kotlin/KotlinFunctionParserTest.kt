@@ -13,6 +13,7 @@ import dev.kensa.parse.ParsedExpandableMethod
 import dev.kensa.parse.ParserCache
 import dev.kensa.sentence.ProtectedPhrase
 import dev.kensa.sentence.TemplateSentence
+import dev.kensa.sentence.TemplateToken
 import dev.kensa.sentence.TemplateToken.RenderedValueToken
 import dev.kensa.sentence.TemplateToken.Type.*
 import dev.kensa.sentence.asTemplateToken
@@ -29,6 +30,8 @@ import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.collections.shouldBeEmpty
 import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
 import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
+import io.kotest.assertions.withClue
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -36,6 +39,9 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import kotlin.collections.mapIndexed
 import kotlin.io.path.Path
 
 internal class KotlinFunctionParserTest {
@@ -148,6 +154,255 @@ internal class KotlinFunctionParserTest {
             }
         }
 
+    }
+
+    @Nested
+    inner class StringInterpolation {
+
+        @ParameterizedTest
+        @ValueSource(strings = [
+            "lineStringReferenceTest",
+            "simpleLineStringExpressionTest",
+        ])
+        fun `recognises simple variable references and expressions in line strings`(functionName: String) {
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithStringInterpolation::class.java.findMethod(functionName, java.lang.String::class.java, java.lang.String::class.java, java.lang.String::class.java)
+            val parsedMethod = parser.parse(method)
+
+            val commonTokens = listOf(
+                "assert",
+                "that",
+                "the",
+                "string",
+                "result",
+                "is",
+                "equal",
+                "to",
+            )
+                .map(Word::asTemplateToken)
+                .toTypedArray()
+
+            val expectedSentences = listOf(
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    Word.asTemplateToken("simple"),
+                    Word.asTemplateToken("field"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    FieldValue.asTemplateToken("renderedSimpleField:"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    FieldValue.asTemplateToken("highlightedSimpleField:"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    ExpandableValueTemplateToken(
+                        template = "expandable Simple Field",
+                        types = setOf(Expandable),
+                        name = "expandableSimpleField",
+                    ),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    Word.asTemplateToken("normal"),
+                    Word.asTemplateToken("param"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    ParameterValue.asTemplateToken("renderedParam:"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    ParameterValue.asTemplateToken("highlightedParam:"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    Word.asTemplateToken("STRING_CONSTANT"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+            )
+
+            parsedMethod.sentences.shouldBeTheSameAs(expectedSentences)
+        }
+
+        @Test
+        fun `recognises method calls in expressions in line strings`() {
+            val functionName = "methodCallsInLineStringExpressionTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithStringInterpolation::class.java.findMethod(functionName, java.lang.String::class.java, java.lang.String::class.java, java.lang.String::class.java)
+            val parsedMethod = parser.parse(method)
+
+            val commonTokens = arrayOf(
+                Word.asTemplateToken("assert"),
+                Word.asTemplateToken("that"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("string"),
+                Word.asTemplateToken("result"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("equal"),
+                Word.asTemplateToken("to")
+            )
+
+            val expectedSentences = listOf(
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    Word.asTemplateToken("simple"),
+                    Word.asTemplateToken("function"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    ExpandableValueTemplateToken(
+                        "expandable Simple Function",
+                        types = setOf(Expandable),
+                        name="expandableSimpleFunction",
+                    ),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    RenderedValueToken("renderedSimpleFunction"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    ExpandableTemplateToken(
+                        "expandable Sentence",
+                        types = setOf(Expandable),
+                        name="expandableSentence",
+                        expandableTokens = listOf("assert that simple field is equal to simple field".split(" ").map(Word::asTemplateToken))
+                    ),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    FixturesValue.asTemplateToken("myFixtureFx:"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    OutputsValueByName.asTemplateToken("myCapturedOutputCo:"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    OutputsValueByName.asTemplateToken("myCapturedOutputCo:"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+            )
+
+            parsedMethod.sentences.shouldBeTheSameAs(expectedSentences)
+        }
+
+        @Test
+        fun `recognises chained method calls in expressions in line strings`() {
+            val functionName = "chainedMethodCallsInLineStringExpressionTest"
+            val expectedSuffix = "toString()"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val method = KotlinWithStringInterpolation::class.java.findMethod(functionName, java.lang.String::class.java, java.lang.String::class.java, java.lang.String::class.java)
+            val parsedMethod = parser.parse(method)
+
+            val commonTokens = arrayOf(
+                Word.asTemplateToken("assert"),
+                Word.asTemplateToken("that"),
+                Word.asTemplateToken("the"),
+                Word.asTemplateToken("string"),
+                Word.asTemplateToken("result"),
+                Word.asTemplateToken("is"),
+                Word.asTemplateToken("equal"),
+                Word.asTemplateToken("to")
+            )
+
+            val expectedSentences = listOf(
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    Word.asTemplateToken("simple"),
+                    Word.asTemplateToken("function"),
+                    Word.asTemplateToken("to"),
+                    Word.asTemplateToken("string"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    ExpandableValueTemplateToken(
+                        "expandable Simple Function",
+                        types = setOf(Expandable),
+                        name="expandableSimpleFunction",
+                    ),
+                    Word.asTemplateToken("to"),
+                    Word.asTemplateToken("string"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    MethodValue.asTemplateToken("renderedSimpleFunction:toString()"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    ExpandableTemplateToken(
+                        "expandable Sentence",
+                        types = setOf(Expandable),
+                        name="expandableSentence",
+                        expandableTokens = listOf("assert that simple field is equal to simple field".split(" ").map(Word::asTemplateToken))
+                    ),
+                    Word.asTemplateToken("to"),
+                    Word.asTemplateToken("string"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    FixturesValue.asTemplateToken("myFixtureFx:$expectedSuffix"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    OutputsValueByName.asTemplateToken("myCapturedOutputCo:$expectedSuffix"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+                TemplateSentence(listOf(
+                    *commonTokens,
+                    StringLiteral.asTemplateToken("one "),
+                    OutputsValueByName.asTemplateToken("myCapturedOutputCo:$expectedSuffix"),
+                    StringLiteral.asTemplateToken(" four"),
+                )),
+            )
+
+            parsedMethod.sentences.shouldBeTheSameAs(expectedSentences)
+        }
     }
 
     @Nested
@@ -1502,6 +1757,34 @@ internal class KotlinFunctionParserTest {
                 )
             )
         )
+
+    private val List<TemplateToken>.printable: String
+        get() = mapIndexed { tokenIndex, token -> "$tokenIndex. ${token.javaClass.simpleName}: ${token.types}, '${token.template}'" }
+                .joinToString(separator = "\n")
+
+    private fun List<TemplateSentence>.shouldBeTheSameAs(expectedSentences: List<TemplateSentence>) {
+        val indent = "|    "
+        this.forEachIndexed { sentenceIndex, sentence ->
+            withClue(
+                """
+                |Sentence index: $sentenceIndex
+                |Expected:
+                ${expectedSentences[sentenceIndex].tokens.printable.prependIndent(indent)}
+                |Actual:
+                ${sentence.tokens.printable.prependIndent(indent)}
+                """.trimMargin()
+            ) {
+                expectedSentences[sentenceIndex].tokens.forEachIndexed { tokenIndex, expectedToken ->
+                    withClue("Token $tokenIndex") {
+                        sentence.tokens[tokenIndex] shouldBe expectedToken
+                    }
+                }
+                sentence.tokens shouldContainExactly expectedSentences[sentenceIndex].tokens
+            }
+        }
+
+        this shouldHaveSize expectedSentences.size
+    }
 
     companion object {
         @BeforeAll

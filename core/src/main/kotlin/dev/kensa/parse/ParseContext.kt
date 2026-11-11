@@ -150,6 +150,17 @@ internal class ParseContext(
         return Identifier(location, expr)
     }
 
+    internal class LineStrRefNode(private val original: TerminalNode) : TerminalNode by original {
+        override fun getText(): String? {
+            return original.text?.removeLeadingDollar()
+        }
+
+        private fun String.removeLeadingDollar(): String =
+            takeIf { it.startsWith("$") }
+                ?.substring(1)
+                ?: error("Expected string '$this' to start with '$'")
+    }
+
     companion object {
 
         internal fun ParserRuleContext.asNote() = (start as? KensaToken)?.asNote()
@@ -177,6 +188,8 @@ internal class ParseContext(
         internal fun ParseTree.asEnterBodyExpression() = EnterBodyExpression(location)
         internal fun ParseTree.asEnterExpression() = EnterExpression(location)
         internal fun ParseTree.asMethodInvocation() = EnterMethodInvocation(location)
+
+        internal fun TerminalNode.asLineStrRefNode() = LineStrRefNode(this)
 
         private fun KensaToken.asNote() = note.takeIf { it.isNotBlank() }?.let { Note(Location(line, charPositionInLine), it) }
         private fun String.removeQuotes(): String = removeSurrounding("\"")
