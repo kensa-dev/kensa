@@ -232,7 +232,7 @@ export const InteractionContent = ({
                         ))}
                     </div>
 
-                    <div className="overflow-y-auto p-4 custom-scrollbar">
+                    <div className="overflow-y-auto p-4">
                         {activeGroup ? (
                             <div className="ml-3">
                                 <DataTable data={activeGroupTableData} testState={isPassed ? "Passed" : "Failed"} highlights={highlights}/>
@@ -309,7 +309,7 @@ export const InteractionContent = ({
                     </div>
 
                     <pre className={cn(
-                        "flex-1 overflow-auto p-6 text-[13px] font-mono leading-relaxed selection:bg-primary/20 custom-scrollbar transition-all bg-transparent",
+                        "flex-1 overflow-auto p-6 text-[13px] font-mono leading-relaxed selection:bg-primary/20 transition-all bg-transparent",
                         isWrapped ? "whitespace-pre-wrap" : "whitespace-pre"
                     )}>
                         <code
