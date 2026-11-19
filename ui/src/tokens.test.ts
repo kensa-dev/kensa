@@ -35,6 +35,11 @@ describe('accent tokens', () => {
         expect(dark).toContain('--sidebar-ring: 36 76% 55%;');
     });
 
+    it('native controls and scrollbars follow the theme', () => {
+        expect(block(':root')).toContain('color-scheme: light;');
+        expect(block('.dark')).toContain('color-scheme: dark;');
+    });
+
     it('no blue survives in the sidebar tokens', () => {
         expect(sheet).not.toContain('217.2 91.2% 59.8%');
         expect(sheet).not.toContain('224.3 76.3% 56%');

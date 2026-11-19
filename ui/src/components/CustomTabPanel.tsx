@@ -360,7 +360,7 @@ const TextTabPanel: React.FC<{content: string; testState?: TestState; maxHeight:
     );
 
     const inlineContent = (
-        <div className="flex-1 overflow-auto custom-scrollbar" style={{maxHeight}}>
+        <div className="flex-1 overflow-auto" style={{maxHeight}}>
             {contentArea(inlineCodeRef)}
         </div>
     );
@@ -370,7 +370,7 @@ const TextTabPanel: React.FC<{content: string; testState?: TestState; maxHeight:
             <div className="shrink-0 sticky top-0 z-10">
                 {toolbar}
             </div>
-            <div className="flex-1 overflow-auto custom-scrollbar">
+            <div className="flex-1 overflow-auto">
                 {contentArea(modalCodeRef)}
             </div>
         </div>

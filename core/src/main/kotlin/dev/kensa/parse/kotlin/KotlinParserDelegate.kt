@@ -20,6 +20,8 @@ internal class KotlinParserDelegate(
     private val sourceCode: SourceCode
 ) : ParserDelegate {
 
+    private val predictionCaches = PredictionCaches()
+
     override fun Class<*>.isParsable(): Boolean = isKotlinClass
 
     override fun Class<*>.parse(stateMachine: ParserStateMachine, parseContext: ParseContext, dc: MethodDeclarationContext) {
@@ -81,7 +83,7 @@ internal class KotlinParserDelegate(
 
     private fun CharStream.compilationUnit(): KotlinParser.KotlinFileContext =
         // Reset the CharStream to the beginning
-        KotlinParser(CommonTokenStream(KensaKotlinLexer(apply { seek(0) }))).apply {
+        predictionCaches.attachTo(KotlinParser(CommonTokenStream(KensaKotlinLexer(apply { seek(0) })))).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.kotlinFile()
