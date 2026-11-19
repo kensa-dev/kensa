@@ -42,6 +42,14 @@ internal class ParseContext(
     internal fun ParseTree.asExpandableValueProperty() = properties[text]?.takeIf { it.isExpandableRenderedValue }?.asExpandableValueAt(location)
     private fun ElementDescriptor.asExpandableValueAt(location: Location) = ExpandableValue(location, name, renderedValueStyle, renderedValueHeaders)
     internal fun ParseTree.asParameter() = takeIf { parameterNames.contains(text) }?.let { Parameter(location, text) }
+    internal fun TerminalNode.asStringTemplateReference(): LocatedEvent {
+        val name = text.removePrefix("$")
+        return when (name) {
+            in parameterNames -> Parameter(location, name)
+            in fieldNames -> Field(location, name)
+            else -> properties[name]?.takeIf { it.isExpandableRenderedValue }?.asExpandableValueAt(location) ?: Identifier(location, name)
+        }
+    }
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
     internal fun isMoment(name: String) = properties[name]?.type == Moment::class
