@@ -2,8 +2,14 @@
 
 ### v1.0.3
 
+Added:
+  - **Variable references in strings render.** `"your id is $trackingId"` used to drop the reference from the sentence. A `$name` in a string, single-line or triple-quoted, now renders as `${name}` already did: the value for a `@RenderedValue`, `@Highlight` or `@ExpandableRenderedValue` field, property or parameter, and the name as words for anything else (#275).
+
 Fixes:
   - **The source parser no longer eats the test JVM's heap.** ANTLR kept the parser's DFA and prediction contexts in static fields that grew with every distinct source file parsed and were never cleared: about 330 MB after a hundred Kotlin test sources, enough to run a long suite out of a 512 MB heap. Kensa now holds those caches itself and replaces them once they pass 20,000 DFA states, which keeps about 55 MB for much the same parse time (#281).
+
+Changed:
+  - **Kotest 6.2.7.** Dependency bumps; no API changes. Also Gradle 9.9.1, Jackson 2.23.0, Byte Buddy 1.18.17, Playwright 1.65.0, Selenium 4.52.0.
 
 ### v1.0.2
 
