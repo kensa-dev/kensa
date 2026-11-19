@@ -21,6 +21,8 @@ internal class JavaParserDelegate(
     private val sourceCode: SourceCode
 ) : ParserDelegate {
 
+    private val predictionCaches = PredictionCaches()
+
     override fun Class<*>.isParsable(): Boolean = !isKotlinClass
 
     override fun Class<*>.toSimpleName(): (Class<*>) -> String = Class<*>::getSimpleName
@@ -81,7 +83,7 @@ internal class JavaParserDelegate(
 
     private fun CharStream.compilationUnit(): Java20Parser.CompilationUnitContext =
         // Reset the CharStream to the beginning
-        Java20Parser(CommonTokenStream(KensaJavaLexer(apply { seek(0) }))).apply {
+        predictionCaches.attachTo(Java20Parser(CommonTokenStream(KensaJavaLexer(apply { seek(0) })))).apply {
             takeIf { antlrErrorListenerDisabled }?.removeErrorListeners()
             interpreter.predictionMode = antlrPredicationMode
         }.compilationUnit()
