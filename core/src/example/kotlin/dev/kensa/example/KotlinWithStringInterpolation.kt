@@ -91,6 +91,15 @@ class KotlinWithStringInterpolation : WithFixturesAndOutputs {
         assertThat(theStringResult()).isEqualTo("one ${outputs[myCapturedOutputCo].toString()} four")
     }
 
+    fun multiLineStringReferenceTest() {
+        assertThat(theStringResult()).isEqualTo("""
+            one $renderedSimpleField four
+        """)
+        assertThat(theStringResult()).isEqualTo("""
+            one ${renderedSimpleField} four
+        """)
+    }
+
     private fun theStringResult() = StateCollector { "one two three four" }
 
     companion object {

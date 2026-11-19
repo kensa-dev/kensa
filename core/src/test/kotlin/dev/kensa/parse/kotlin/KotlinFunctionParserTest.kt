@@ -31,6 +31,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import dev.kensa.sentence.TemplateToken.ExpandableTemplateToken
 import dev.kensa.sentence.TemplateToken.ExpandableValueTemplateToken
 import io.kotest.assertions.withClue
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -241,6 +242,17 @@ internal class KotlinFunctionParserTest {
             )
 
             parsedMethod.sentences.shouldBeTheSameAs(expectedSentences)
+        }
+
+        @Test
+        fun `renders a reference in a multi-line string as it does the same name in braces`() {
+            val functionName = "multiLineStringReferenceTest"
+            val parser = createParserFor(aFunctionNamed(functionName))
+
+            val (reference, expression) = parser.parse(KotlinWithStringInterpolation::class.java.findMethod(functionName)).sentences
+
+            reference.tokens shouldContain FieldValue.asTemplateToken("renderedSimpleField:")
+            reference.tokens shouldBe expression.tokens
         }
 
         @Test

@@ -42,6 +42,14 @@ internal class ParseContext(
     internal fun ParseTree.asExpandableValueProperty() = properties[text]?.takeIf { it.isExpandableRenderedValue }?.asExpandableValueAt(location)
     private fun ElementDescriptor.asExpandableValueAt(location: Location) = ExpandableValue(location, name, renderedValueStyle, renderedValueHeaders)
     internal fun ParseTree.asParameter() = takeIf { parameterNames.contains(text) }?.let { Parameter(location, text) }
+    internal fun TerminalNode.asStringTemplateReference(): LocatedEvent {
+        val name = text.removePrefix("$")
+        return when (name) {
+            in parameterNames -> Parameter(location, name)
+            in fieldNames -> Field(location, name)
+            else -> properties[name]?.takeIf { it.isExpandableRenderedValue }?.asExpandableValueAt(location) ?: Identifier(location, name)
+        }
+    }
     internal fun ParseTree.asField() = takeIf { fieldNames.contains(text) }?.let { Field(location, text) }
     internal fun ParseTree.asMethod() = takeIf { methodNames.contains(text) }?.let { Method(location, text) }
     internal fun isMoment(name: String) = properties[name]?.type == Moment::class
@@ -150,17 +158,6 @@ internal class ParseContext(
         return Identifier(location, expr)
     }
 
-    internal class LineStrRefNode(private val original: TerminalNode) : TerminalNode by original {
-        override fun getText(): String? {
-            return original.text?.removeLeadingDollar()
-        }
-
-        private fun String.removeLeadingDollar(): String =
-            takeIf { it.startsWith("$") }
-                ?.substring(1)
-                ?: error("Expected string '$this' to start with '$'")
-    }
-
     companion object {
 
         internal fun ParserRuleContext.asNote() = (start as? KensaToken)?.asNote()
@@ -188,8 +185,6 @@ internal class ParseContext(
         internal fun ParseTree.asEnterBodyExpression() = EnterBodyExpression(location)
         internal fun ParseTree.asEnterExpression() = EnterExpression(location)
         internal fun ParseTree.asMethodInvocation() = EnterMethodInvocation(location)
-
-        internal fun TerminalNode.asLineStrRefNode() = LineStrRefNode(this)
 
         private fun KensaToken.asNote() = note.takeIf { it.isNotBlank() }?.let { Note(Location(line, charPositionInLine), it) }
         private fun String.removeQuotes(): String = removeSurrounding("\"")
