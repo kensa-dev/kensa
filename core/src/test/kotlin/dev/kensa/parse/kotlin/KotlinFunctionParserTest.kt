@@ -1756,6 +1756,23 @@ internal class KotlinFunctionParserTest {
             createParserFor(aFunctionNamed(functionName)).parse(KotlinWithMoment::class.java.findMethod(functionName)).sentences.single().tokens.map { it.template }
     }
 
+    @Nested
+    inner class VarargSugar {
+
+        @Test
+        fun `having reads as a word, its arguments stay substituted and the spread is dropped`() {
+            parseTemplates("havingTest").single() shouldBe listOf("assert", "that", "the", "response", "having", "aStatus:", "aBody:", "is", "equal", "to", "ok")
+        }
+
+        @Test
+        fun `every vararg sugar word reads as a word`() {
+            parseTemplates("otherWordsTest").map { it[4] } shouldBe listOf("has", "have", "including", "containing", "with")
+        }
+
+        private fun parseTemplates(functionName: String) =
+            createParserFor(aFunctionNamed(functionName)).parse(KotlinWithVarargSugar::class.java.findMethod(functionName)).sentences.map { sentence -> sentence.tokens.map { it.template } }
+    }
+
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }
 
     private fun createParserFor(isTest: (KotlinParser.FunctionDeclarationContext) -> Boolean): MethodParser =

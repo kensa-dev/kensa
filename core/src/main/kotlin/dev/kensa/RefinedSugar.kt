@@ -60,4 +60,22 @@ object RefinedSugar {
 
     @JvmStatic
     fun with(duration: java.time.Duration) = duration
+
+    @JvmStatic
+    fun <T> has(vararg items: T): Array<out T> = items
+
+    @JvmStatic
+    fun <T> have(vararg items: T): Array<out T> = items
+
+    @JvmStatic
+    fun <T> having(vararg items: T): Array<out T> = items
+
+    @JvmStatic
+    fun <T> including(vararg items: T): Array<out T> = items
+
+    @JvmStatic
+    fun <T> containing(vararg items: T): Array<out T> = items
+
+    @JvmStatic
+    fun <T> with(vararg items: T): Array<out T> = items
 }
