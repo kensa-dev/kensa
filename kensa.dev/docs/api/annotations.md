@@ -52,6 +52,18 @@ private final Money paymentAmount = new Money(100, "GBP");
 </TabItem>
 </Tabs>
 
+#### In a Kotlin string
+
+A reference inside a string literal renders too, in a single-line or a triple-quoted string. `$name` and `${name}` behave alike: the value for a `@RenderedValue`, `@Highlight` or `@ExpandableRenderedValue` field, property or parameter, and the name as words for anything else. *`$name` is available from 1.0.3; `${name}` rendered before.*
+
+```kotlin
+@RenderedValue
+private val trackingId = "TRK-001"
+
+// Then the message should be your id is TRK-001
+then(theMessage(), shouldBe("your id is $trackingId"))
+```
+
 ---
 
 ### `@ExpandableRenderedValue`
