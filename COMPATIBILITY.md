@@ -101,7 +101,7 @@ API-semver promise. A Kotlin bump is published as a **documented compatibility n
 
 | Kensa | Min Kotlin (consumer) | Min JDK | Min kotlinx-coroutines (runtime) | Test frameworks verified |
 |-------|----------------------------|---------|----------------------------------|--------------------------|
-| 1.0.x | 2.4.21                     | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.2.5) |
+| 1.0.x | 2.4.21                     | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.2.7) |
 | 0.9.x | 2.4.20 (0.9.6), 2.4.10 (0.9.0 to 0.9.5) | 17      | 1.11                             | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.2.4) |
 | 0.8.x | 2.4.10                     | 17      | none documented                  | JUnit 5 (5.14.x), JUnit 6 (6.0.x), TestNG (7.12.x), Kotest (6.1.x) |
 
