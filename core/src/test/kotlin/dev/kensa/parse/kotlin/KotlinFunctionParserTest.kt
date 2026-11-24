@@ -38,6 +38,7 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldNotContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
@@ -1771,6 +1772,67 @@ internal class KotlinFunctionParserTest {
 
         private fun parseTemplates(functionName: String) =
             createParserFor(aFunctionNamed(functionName)).parse(KotlinWithVarargSugar::class.java.findMethod(functionName)).sentences.map { sentence -> sentence.tokens.map { it.template } }
+    }
+
+    @Nested
+    inner class InheritedSourceMembers {
+
+        @Test
+        fun `a hinted property an object source inherits from a sealed parent resolves against the object`() {
+            val hinted = parse<KotlinWithObjectSources>().properties.getValue("aSealedField").resolveValue(KotlinWithObjectSources()).shouldBeInstanceOf<HintedValue>()
+
+            hinted.value shouldBe "aSealedField"
+            hinted.hint shouldBe "a/field"
+        }
+
+        @Test
+        fun `a hinted property an object source inherits from an abstract parent resolves against the object`() {
+            val hinted = parse<KotlinWithObjectSources>().properties.getValue("anAbstractField").resolveValue(KotlinWithObjectSources()).shouldBeInstanceOf<HintedValue>()
+
+            hinted.hint shouldBe "abstract/field"
+        }
+
+        @Test
+        fun `a rendered property and method an object source inherits resolve against the object`() {
+            val parsed = parse<KotlinWithObjectSources>()
+
+            parsed.properties.getValue("aSealedValue").resolveValue(KotlinWithObjectSources()) shouldBe "a value"
+            parsed.methods.getValue("aSealedMethod").resolveValue(KotlinWithObjectSources()) shouldBe "a method"
+        }
+
+        @Test
+        fun `the last listed of two object sources sharing a property name wins`() {
+            val hinted = parse<KotlinWithTwoObjectSources>().properties.getValue("aSealedField").resolveValue(KotlinWithTwoObjectSources()).shouldBeInstanceOf<HintedValue>()
+
+            hinted.hint shouldBe "b/field"
+        }
+
+        @Test
+        fun `a sealed source with no instance resolves to nothing without calling the accessor`() {
+            val parsed = parse<KotlinWithSealedSource>()
+
+            val stderr = capturingStdErr {
+                parsed.properties.getValue("aSealedField").resolveValue(KotlinWithSealedSource()).shouldBeNull()
+                parsed.properties.getValue("aSealedValue").resolveValue(KotlinWithSealedSource()).shouldBeNull()
+                parsed.methods.getValue("aSealedMethod").resolveValue(KotlinWithSealedSource()).shouldBeNull()
+            }
+
+            stderr shouldNotContain "KotlinWithSealedSource"
+        }
+
+        private inline fun <reified T : Any> parse() = createParserFor(aFunctionNamed("simpleTest")).parse(T::class.java.findMethod("simpleTest"))
+
+        private fun capturingStdErr(block: () -> Unit): String {
+            val original = System.err
+            val captured = java.io.ByteArrayOutputStream()
+            System.setErr(java.io.PrintStream(captured))
+            try {
+                block()
+            } finally {
+                System.setErr(original)
+            }
+            return captured.toString()
+        }
     }
 
     private fun aFunctionNamed(functionName: String): (KotlinParser.FunctionDeclarationContext) -> Boolean = { it.simpleIdentifier().text == functionName.substringBefore("$") }

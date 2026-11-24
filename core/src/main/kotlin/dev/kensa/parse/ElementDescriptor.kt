@@ -5,10 +5,12 @@ import dev.kensa.RenderedHintStrategy.*
 import dev.kensa.RenderedValueStrategy.*
 import dev.kensa.util.*
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.javaGetter
 
 @dev.kensa.KensaInternalApi
 sealed interface ElementDescriptor {
@@ -27,23 +29,30 @@ sealed interface ElementDescriptor {
     fun resolveValue(target: Any, path: String? = null): Any?
 
     companion object {
-        fun forProperty(property: KProperty<*>): PropertyElementDescriptor = PropertyElementDescriptor(property)
+        fun forProperty(property: KProperty<*>, owner: Any? = null): PropertyElementDescriptor = PropertyElementDescriptor(property, owner)
 
-        fun forHintedProperty(property: KProperty<*>, directive: RenderingDirective): HintedPropertyElementDescriptor = HintedPropertyElementDescriptor(property, directive)
+        fun forHintedProperty(property: KProperty<*>, directive: RenderingDirective, owner: Any? = null): HintedPropertyElementDescriptor = HintedPropertyElementDescriptor(property, directive, owner)
 
         fun forHintedEnumConstant(enum: Enum<*>, directive: RenderingDirective): HintedEnumConstantElementDescriptor = HintedEnumConstantElementDescriptor(enum, directive)
 
         fun forResolveHolder(parentDescriptor: PropertyElementDescriptor, property: KProperty<*>): ResolveHolderElementDescriptor = ResolveHolderElementDescriptor(parentDescriptor, property)
 
-        fun forMethod(method: Method): MethodElementDescriptor = MethodElementDescriptor(method)
+        fun forMethod(method: Method, owner: Any? = null): MethodElementDescriptor = MethodElementDescriptor(method, owner)
 
         fun forParameter(parameter: Parameter, name: String, index: Int): ParameterElementDescriptor = ParameterElementDescriptor(name, parameter, index)
 
         internal fun Class<*>.renderedMemberNames(): Set<String> =
             allProperties.filter { it.hasKotlinOrJavaAnnotation<RenderedValue>() }.map { it.name }.toSet()
 
-        private fun KProperty<*>.resolveFrom(target: Any): Any? {
-            val actualTarget = javaField?.declaringClass?.kotlin?.objectInstance ?: target
+        // A member an object source inherits is declared on a parent with no instance of its own, so the
+        // object the descriptor was built from is the receiver. The test instance is one only for its own members.
+        private fun Class<*>.receiverFor(owner: Any?, target: Any): Any? =
+            owner ?: kotlin.objectInstance ?: target.takeIf { isInstance(it) }
+
+        private fun KProperty<*>.resolveFrom(owner: Any?, target: Any): Any? {
+            val declaringClass = javaField?.declaringClass ?: javaGetter?.declaringClass
+            val isStatic = javaField?.let { Modifier.isStatic(it.modifiers) } == true
+            val actualTarget = if (isStatic || declaringClass == null) owner ?: target else declaringClass.receiverFor(owner, target) ?: return null
             return try {
                 valueOfKotlinPropertyIn(actualTarget)
             } catch (e: Exception) {
@@ -51,8 +60,8 @@ sealed interface ElementDescriptor {
             }
         }
 
-        private fun Method.resolveFrom(target: Any): Any? {
-            val actualTarget = declaringClass.kotlin.objectInstance ?: target
+        private fun Method.resolveFrom(owner: Any?, target: Any): Any? {
+            val actualTarget = if (Modifier.isStatic(modifiers)) owner ?: target else declaringClass.receiverFor(owner, target) ?: return null
             return try {
                 actualTarget.invokeMethodOrNull(this)
             } catch (e: Exception) {
@@ -80,7 +89,7 @@ sealed interface ElementDescriptor {
         }
     }
 
-    class MethodElementDescriptor(private val method: Method) : ElementDescriptor {
+    class MethodElementDescriptor(private val method: Method, private val owner: Any? = null) : ElementDescriptor {
         override val name: String = method.name
         override val isRenderedValue: Boolean = method.hasAnnotation<RenderedValue>()
         override val isExpandableRenderedValue: Boolean = method.hasAnnotation<ExpandableRenderedValue>()
@@ -93,10 +102,10 @@ sealed interface ElementDescriptor {
 
         override fun resolveValue(target: Any, path: String?): Any? =
             if (hasParameters) null
-            else method.resolveFrom(target)?.let { resolvePath(it, path) }
+            else method.resolveFrom(owner, target)?.let { resolvePath(it, path) }
     }
 
-    class PropertyElementDescriptor(private val property: KProperty<*>) : ElementDescriptor {
+    class PropertyElementDescriptor(private val property: KProperty<*>, private val owner: Any? = null) : ElementDescriptor {
         override val name: String = property.name
         override val isRenderedValue: Boolean = property.hasKotlinOrJavaAnnotation<RenderedValue>()
         override val isExpandableRenderedValue: Boolean = property.hasKotlinOrJavaAnnotation<ExpandableRenderedValue>()
@@ -111,12 +120,13 @@ sealed interface ElementDescriptor {
         override val type: KClass<*>? = property.returnType.classifier as? KClass<*>
 
         override fun resolveValue(target: Any, path: String?): Any? =
-            property.resolveFrom(target)?.let { resolvePath(it, path) }
+            property.resolveFrom(owner, target)?.let { resolvePath(it, path) }
     }
 
     class HintedPropertyElementDescriptor(
         private val property: KProperty<*>,
-        private val directive: RenderingDirective
+        private val directive: RenderingDirective,
+        private val owner: Any? = null
     ) : ElementDescriptor {
         override val name: String = property.name
         override val isRenderedValue: Boolean = true
@@ -124,7 +134,7 @@ sealed interface ElementDescriptor {
         override val highlight: Highlight? = property.findKotlinOrJavaAnnotation<Highlight>()
 
         override fun resolveValue(target: Any, path: String?): HintedValue? =
-            property.resolveFrom(target)?.let { instance ->
+            property.resolveFrom(owner, target)?.let { instance ->
                 HintedValue(
                     value = computeValue(instance),
                     hint = computeHint(instance)
