@@ -4,6 +4,7 @@
 
 Added:
   - **Variable references in strings render.** `"your id is $trackingId"` used to drop the reference from the sentence. A `$name` in a string, single-line or triple-quoted, now renders as `${name}` already did: the value for a `@RenderedValue`, `@Highlight` or `@ExpandableRenderedValue` field, property or parameter, and the name as words for anything else (#275).
+  - **Sugar words take a list.** `RefinedSugar` gains `having`, `including` and `containing`, and `has`, `have` and `with` gain a vararg form, each returning its arguments as an array: `theResponse(*having(aStatus, aBody))` reads as "the response having", then the two values. The single-argument forms are unchanged (#283).
 
 Fixes:
   - **The source parser no longer eats the test JVM's heap.** ANTLR kept the parser's DFA and prediction contexts in static fields that grew with every distinct source file parsed and were never cleared: about 330 MB after a hundred Kotlin test sources, enough to run a long suite out of a 512 MB heap. Kensa now holds those caches itself and replaces them once they pass 20,000 DFA states, which keeps about 55 MB for much the same parse time (#281).
