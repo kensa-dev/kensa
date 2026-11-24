@@ -78,7 +78,7 @@ internal class MethodParser(
                 val directives = cache.getOrPutRenderingDirectives(testClass) { testClass.findAllRenderingDirectives() }
                 val properties = cache.getOrPutProperties(testClass) {
                     relatedClasses.fold(mutableMapOf()) { acc, clazz ->
-                        acc.apply { putAll(clazz.prepareProperties(directives)) }
+                        acc.apply { merge(clazz.prepareProperties(directives), clazz.canBeReadFor(testClass)) }
                     }
                 }
                 val testMethodParameters = cache.getOrPutParameters(method) {
@@ -87,7 +87,7 @@ internal class MethodParser(
 
                 val methods = cache.getOrPutMethods(testClass) {
                     relatedClasses.fold(mutableMapOf()) { acc, clazz ->
-                        acc.apply { putAll(clazz.prepareMethods()) }
+                        acc.apply { merge(clazz.prepareMethods(), clazz.canBeReadFor(testClass)) }
                     }
                 }
                 val expandableMethods = relatedClasses.fold(emptyMap<String, ParsedExpandableMethod>()) { acc, clazz ->
@@ -167,6 +167,14 @@ internal class MethodParser(
             sentences to parseErrors
         }
 
+    private fun Class<*>.canBeReadFor(testClass: Class<*>): Boolean = kotlin.objectInstance != null || isAssignableFrom(testClass)
+
+    // A class with no instance to read, such as the sealed parent of an object source, must not displace
+    // the descriptors of the object that inherits its members.
+    private fun <D : ElementDescriptor> MutableMap<String, D>.merge(descriptors: Map<String, D>, canBeRead: Boolean) {
+        if (canBeRead) putAll(descriptors) else descriptors.forEach { (name, descriptor) -> putIfAbsent(name, descriptor) }
+    }
+
     private fun Class<*>.prepareMethods(): Map<String, MethodElementDescriptor> =
         allMethods
             .filter {
@@ -175,7 +183,7 @@ internal class MethodParser(
                     it.hasAnnotation<ExpandableSentence>() ||
                     it.hasAnnotation<Highlight>()
             }
-            .map { ElementDescriptor.forMethod(it) }
+            .map { ElementDescriptor.forMethod(it, kotlin.objectInstance) }
             .associateBy(ElementDescriptor::name)
 
     private fun Class<*>.prepareProperties(directives: RenderingDirectives): Map<String, ElementDescriptor> =
@@ -204,9 +212,9 @@ internal class MethodParser(
                         val propertyClass = property.returnType.classifier as? KClass<*>
 
                         directives[propertyClass]?.let { directive ->
-                            add(ElementDescriptor.forHintedProperty(property, directive))
+                            add(ElementDescriptor.forHintedProperty(property, directive, kotlin.objectInstance))
                         } ?: run {
-                            val descriptor = ElementDescriptor.forProperty(property).also { add(it) }
+                            val descriptor = ElementDescriptor.forProperty(property, kotlin.objectInstance).also { add(it) }
 
                             if (descriptor.isRenderedValueContainer) {
                                 (property.returnType.classifier as? KClass<*>)?.let { classifier ->

@@ -220,7 +220,7 @@ internal class TokenRenderer(
                     is HintedPropertyElementDescriptor -> {
                         pd.resolveValue(testInstance, path)?.let { v ->
                             asToken(renderers.renderValue(v.value), Word, pd.isHighlight, v.hint)
-                        }
+                        } ?: asToken(renderers.renderValue(name), Word, pd.isHighlight)
                     }
 
                     is HintedEnumConstantElementDescriptor -> {

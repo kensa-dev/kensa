@@ -54,6 +54,11 @@ class TokenRendererTest {
         val aStringField = Field("path/to/string")
     }
 
+    @Suppress("unused")
+    sealed class UnreadableFields {
+        val anUnreadableField = Field("path/to/unreadable")
+    }
+
     private val renderers = Renderers().apply {
         addValueRenderer(String::class, ValueRenderer { value -> "***$value***" })
         addValueRenderer(Number::class, ValueRenderer { value -> "***$value***" })
@@ -81,7 +86,8 @@ class TokenRendererTest {
         "prop5" to ElementDescriptor.forProperty(TheTestClass::prop5),
         "prop6" to ElementDescriptor.forProperty(TheTestClass::prop6),
         "prop7" to ElementDescriptor.forProperty(TheTestClass::prop7),
-        "aStringField" to ElementDescriptor.forHintedProperty(HintedFields::aStringField, RenderingDirective(UseIdentifierName, "", HintFromProperty, "path"))
+        "aStringField" to ElementDescriptor.forHintedProperty(HintedFields::aStringField, RenderingDirective(UseIdentifierName, "", HintFromProperty, "path")),
+        "anUnreadableField" to ElementDescriptor.forHintedProperty(UnreadableFields::anUnreadableField, RenderingDirective(UseIdentifierName, "", HintFromProperty, "path"))
     )
 
     object TestFixtures : FixtureContainer {
@@ -268,6 +274,13 @@ class TokenRendererTest {
             )
 
             renderedTokens shouldContainExactly expected
+        }
+
+        @Test
+        fun `renders a hinted property with no instance to read as its name without a hint`() {
+            renderer.render(listOf(FieldValue.asTemplateToken("anUnreadableField:"))) shouldContainExactly listOf(
+                aRenderedValueOf("***anUnreadableField***", setOf("tk-wd"))
+            )
         }
 
         @Test
