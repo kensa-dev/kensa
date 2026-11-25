@@ -9,9 +9,10 @@ Added:
 Fixes:
   - **The source parser no longer eats the test JVM's heap.** ANTLR kept the parser's DFA and prediction contexts in static fields that grew with every distinct source file parsed and were never cleared: about 330 MB after a hundred Kotlin test sources, enough to run a long suite out of a 512 MB heap. Kensa now holds those caches itself and replaces them once they pass 20,000 DFA states, which keeps about 55 MB for much the same parse time (#281).
   - **A `@Sources` object reads the members it inherits.** A property or method declared on a sealed or abstract parent of an `object` listed in `@Sources` was read from the test instance: the getter threw, Kensa printed a stack trace per invocation and the value and hint were missing. It is now read from the object. A source with no instance, such as the sealed parent on its own, resolves to nothing without a stack trace and a hinted name renders without its hint (#289).
+  - **Scrollbars follow the report's theme.** In dark mode the report's scrollbars stayed light. They now match the theme in both modes (#279).
 
 Changed:
-  - **Kotest 6.2.7.** Dependency bumps; no API changes. Also Gradle 9.9.1, Jackson 2.23.0, Byte Buddy 1.18.17, Playwright 1.65.0, Selenium 4.52.0.
+  - **Kotest 6.2.7.** Dependency bumps; no API changes. Also Gradle 9.9.2, Jackson 2.23.0, Byte Buddy 1.18.17, Playwright 1.65.1, Selenium 4.53.0.
 
 ### v1.0.2
 
