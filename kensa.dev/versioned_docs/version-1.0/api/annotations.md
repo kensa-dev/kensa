@@ -52,6 +52,18 @@ private final Money paymentAmount = new Money(100, "GBP");
 </TabItem>
 </Tabs>
 
+#### In a Kotlin string
+
+A reference inside a string literal renders too, in a single-line or a triple-quoted string. `$name` and `${name}` behave alike: the value for a `@RenderedValue`, `@Highlight` or `@ExpandableRenderedValue` field, property or parameter, and the name as words for anything else. *`$name` is available from 1.0.3; `${name}` rendered before.*
+
+```kotlin
+@RenderedValue
+private val trackingId = "TRK-001"
+
+// Then the message should be your id is TRK-001
+then(theMessage(), shouldBe("your id is $trackingId"))
+```
+
 ---
 
 ### `@ExpandableRenderedValue`
@@ -573,6 +585,32 @@ For Kensa to discover and render values from a referenced class/object — for e
 
 :::tip Diagnosing a missing requirement
 If a `@RenderedValue` function from a referenced class renders as the **literal call text** (the de-camel-cased function name) instead of its value, one of the above is usually unmet — most commonly the helper shares a file with a differently-named class (requirement 2), or `@Sources` was not added at all (requirement 1).
+:::
+
+#### Members read from a source
+
+A property, or a `@RenderedValue` function, from a source outside the test's own hierarchy is read from an instance, so the source must be an `object`. Members the object inherits from a sealed or abstract parent are read from the object. Listing the parent alone gives Kensa nothing to read: the name still renders, without its value or hint. *Inherited members are read from the object from 1.0.3.*
+
+```kotlin
+sealed class OrderFields(version: String) {
+    val aBuyersId = PathField("/$version/buyersId")
+
+    data object V1 : OrderFields("v1")
+    data object V2 : OrderFields("v2")
+}
+
+@Sources(OrderFields.V1::class)   // not OrderFields::class
+class OrderV1Test : KensaTest, WithKotest { ... }
+```
+
+:::caution Two sources with the same member names
+Members are looked up by name, once per test class, across everything the class reaches through `@Sources`, its own and its superclasses'. If two sources supply the same name, such as `V1` and `V2` above, the last one found wins and the other's values and hints are wrong, with no warning. A superclass's `@Sources` are found after the test class's own.
+
+Until a name can be resolved against the object it is used on, give each test class exactly one of them:
+
+- List no such object on a shared base class; whatever it lists wins.
+- List on each concrete test class the object its sentences actually use, including those inside an `@ExpandableSentence` function written `with(OrderFields.V1) { ... }`.
+- A test class whose sentences use both objects cannot be made right this way.
 :::
 
 ---

@@ -6,7 +6,7 @@ description: Where Kensa is heading - the road to 1.0, and the stub server, outp
 
 # Roadmap
 
-Kensa is at **1.0.1** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes.
+Kensa is at **1.0.3** - see [GitHub releases](https://github.com/kensa-dev/kensa/releases) for detailed release notes.
 
 ## v1.0
 
@@ -91,6 +91,19 @@ Smaller than the three above, and nearer. These are accepted and next in line on
 - **Wiki export** - copy a test or a sequence diagram in a form that pastes cleanly into a wiki page or a ticket, for the places an embed cannot go.
 
 ## Recently shipped
+
+### v1.0.3
+- A `$name` reference inside a Kotlin string renders its value, as `${name}` already did
+- `having`, `including` and `containing` join `RefinedSugar`, with vararg forms of `has`, `have` and `with`
+- The source parser no longer grows the test JVM's heap over a long suite
+- Members an `@Sources` object inherits from a sealed or abstract parent are read from that object
+- The report's scrollbars follow the theme
+
+### v1.0.2
+- A `thenContinually` window measured from the action - `whenever(action.marking(moment))` records a `Moment`, and the window runs from there
+- Sequence diagrams read in dark mode; a primary participant keeps its shape
+- Builder-captured interactions get stable ids and keep their order within a millisecond
+- `@ExpandableRenderedValue` works on a field or property
 
 ### v1.0.1
 - Sequence diagrams keep their styling and interaction highlighting again; PlantUML is back on 1.2026.6

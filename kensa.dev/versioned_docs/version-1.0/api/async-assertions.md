@@ -70,9 +70,30 @@ fun `order is never cancelled`() {
 
 Both accept either a matcher (`Matcher<T>`) or an assertion block (`T.() -> Unit`), just like `then()`.
 
-:::note
-The `thenContinually` window starts when the assertion is called, not when the action under test ran. Assertions earlier in the test use up part of that time, so for a requirement such as "stays confirmed for 5 seconds after the order is placed", put the `thenContinually` first or allow for the time the earlier assertions take.
-:::
+### Measuring the window from the action
+
+A `thenContinually` window starts when the assertion is called, not when the action under test ran. Assertions earlier in the test use up part of that time, so "nothing is sent for 5 seconds after the trigger" can flake under load even though the system behaved. To measure the window from the action instead, mark the action with a `Moment` and open the window `since` it:
+
+```kotlin
+private val theTriggerWasSent = Moment()
+
+@Test
+fun `nothing reaches downstream for five seconds after the trigger`() {
+    whenever(upstream.sends(aTrigger()).marking(theTriggerWasSent))
+
+    then(theUpstreamAcknowledgement(), be("ACCEPTED"))
+
+    thenContinually(5.seconds since theTriggerWasSent) {
+        then(theDownstreamMessages(), beEmpty())
+    }
+}
+```
+
+`Action.marking(moment)` records the moment the action completes. `window since moment` returns the part of the window still to run, so only the remaining time is polled. If the window has already passed by the time the assertion begins, the test fails with a message saying so rather than passing trivially; an unmarked moment is an error. The `marking` call is plumbing, so it does not render when its argument is a `Moment` property or field of the test class: the sentences read *When upstream sends a trigger* and *Then continually 5 seconds since the trigger was sent*.
+
+From Java, `moment.remaining(Duration.ofSeconds(5))` is the same window for `WithHamcrest`'s `thenContinually(duration, collector, matcher)`.
+
+*Available from 1.0.2.*
 
 ## AssertJ (Java)
 

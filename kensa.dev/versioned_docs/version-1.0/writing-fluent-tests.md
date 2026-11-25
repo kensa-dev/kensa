@@ -252,6 +252,17 @@ then(courier.hasDispatched(aShipmentWith(theShipmentFields())));
 
 The report shows a two-column table headed "Field / Expected". The test body is one line. The BA can scan all 30 fields without touching the code.
 
+## Filler words — `RefinedSugar`
+
+`dev.kensa.RefinedSugar` holds identity functions whose only job is to put a word in the sentence: `has`, `have`, `a`, `an`, `andA`, `andAn`, `andThe`, `at`, `does`, `in`, `is`, `of`, `that`, `the`, `to`, `with`. Each returns its argument unchanged. `with`, `within` and `over` also take a `Duration`.
+
+The list-reading words `has`, `have`, `having`, `including`, `containing` and `with` also take several arguments and return them as an array, for a step function with a `vararg` parameter. Kotlin needs the spread; it does not show in the sentence. Java passes the array straight to a varargs parameter.
+
+```kotlin
+// Then the response having <aStatus> <aBody>
+then(theResponse(*having(aStatus, aBody)))
+```
+
 ## Decision table
 
 | Situation | Use |
