@@ -20,7 +20,7 @@ byteBuddy = "1.18.17"
 shadow = "9.6.1"
 
 playwright = "1.65.1"
-selenium = "4.53.0"
+selenium = "4.54.0"
 
 http4k = "6.23.1.0"
 jackson = "2.23.0"
